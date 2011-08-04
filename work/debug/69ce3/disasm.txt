@@ -1,0 +1,47 @@
+; da65 V2.11.0 - (C) Copyright 2000-2005,  Ullrich von Bassewitz
+; Created:    2011-07-11 01:48:39
+; Input file: ff3.nes
+; Page:       1
+
+
+        .setcpu "65C02"
+
+; ----------------------------------------------------------------------------
+player_index    := $0052
+call_battle_function_01:= $8016
+call_battle_function_05:= $8026                 ; $31:aa16 calc_battle_parameters
+unknown1        := $874D
+unknown2        := $87BE
+unknown3        := $9474
+load_player_status:= $9D1D
+update_player_offset:= $A541
+; ----------------------------------------------------------------------------
+        jsr     unknown1                        ; 9CE3 20 4D 87
+        jsr     call_battle_function_01         ; 9CE6 20 16 80
+        jsr     unknown2                        ; 9CE9 20 BE 87
+        jsr     unknown3                        ; 9CEC 20 74 94
+        jsr     load_players_status             ; 9CEF 20 06 9D
+        lda     #$00                            ; 9CF2 A9 00
+        sta     player_index                    ; 9CF4 85 52
+L9CF6:  jsr     call_battle_function_05         ; 9CF6 20 26 80
+        inc     player_index                    ; 9CF9 E6 52
+        lda     player_index                    ; 9CFB A5 52
+        cmp     #$04                            ; 9CFD C9 04
+        bne     L9CF6                           ; 9CFF D0 F5
+        lda     #$00                            ; 9D01 A9 00
+        sta     player_index                    ; 9D03 85 52
+        rts                                     ; 9D05 60
+; ----------------------------------------------------------------------------
+load_players_status:
+        lda     #$00                            ; 9D06 A9 00
+        sta     player_index                    ; 9D08 85 52
+L9D0A:  jsr     update_player_offset            ; 9D0A 20 41 A5
+        jsr     load_player_status              ; 9D0D 20 1D 9D
+        inc     player_index                    ; 9D10 E6 52
+        lda     player_index                    ; 9D12 A5 52
+        cmp     #$04                            ; 9D14 C9 04
+        bne     L9D0A                           ; 9D16 D0 F2
+        lda     #$00                            ; 9D18 A9 00
+        sta     player_index                    ; 9D1A 85 52
+        rts                                     ; 9D1C 60
+; ----------------------------------------------------------------------------

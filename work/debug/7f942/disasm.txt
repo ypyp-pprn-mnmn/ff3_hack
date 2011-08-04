@@ -1,0 +1,124 @@
+; da65 V2.11.0 - (C) Copyright 2000-2005,  Ullrich von Bassewitz
+; Created:    2011-07-17 21:03:15
+; Input file: ff3.nes
+; Page:       1
+
+
+        .setcpu "65C02"
+
+; ----------------------------------------------------------------------------
+source_addr     := $007E                        ; if indirect flag set, not referenced.
+dest_vram_addr  := $0080
+length_in_tiles := $0082                        ; 1 tile = 10 bytes (8x8 pixel)
+remaining_tiles_to_copy:= $0083                 ; $82 & 3
+source_bank     := $0084                        ; 16k bytes/bank
+use_palette     := $0092                        ; 1:yes ($7e is pointer to index buffer, which indexes $7300). 0:no ($7e is direct pointer to source data)
+ppu_scroll      := $2005                        ; for effect taken, read/write access must be operated twice.
+vram_addr_register:= $2006                      ; for effect taken, read/write access must be operated twice.
+vram_port       := $2007
+pattern_palette := $7300                        ; used to reverse pattern bits
+encounter_mode  := $78C3                        ; set by $34:87be
+init_completed  := $7CF3                        ; 1: yes, 0: no (still initializing)
+switch_lower_2banks:= $F891                     ; jmp $fb87
+update_ppu_scroll_nowait:= $F8CB
+set_vram_addr   := $F8E0
+multiply_A_by_X := $F8EA
+add16_to_$7e    := $F8F2
+add16_to_$80    := $F8FE
+set_nmi_irq_handler_for_battle_mode:= $FAB5     ; save_nmi_irq_handler_and_set_handler_for_battle
+save_field_variables:= $FB17
+wait_on_nmi     := $FB80
+switch_lower_2banks:= $FB87
+; ----------------------------------------------------------------------------
+        lda     encounter_mode                  ; F942 AD C3 78
+        cmp     #$88                            ; F945 C9 88
+        bne     LF94C                           ; F947 D0 03
+        jmp     LF94F                           ; F949 4C 4F F9
+; ----------------------------------------------------------------------------
+LF94C:  jmp     copy_to_vram_direct             ; F94C 4C 69 F9
+; ----------------------------------------------------------------------------
+LF94F:  ldx     #$00                            ; F94F A2 00
+LF951:  ldy     #$08                            ; F951 A0 08
+        txa                                     ; F953 8A
+LF954:  asl     a                               ; F954 0A
+        ror     $18                             ; F955 66 18
+        dey                                     ; F957 88
+        bne     LF954                           ; F958 D0 FA
+        lda     $18                             ; F95A A5 18
+        sta     pattern_palette,x               ; F95C 9D 00 73
+        inx                                     ; F95F E8
+        bne     LF951                           ; F960 D0 EF
+        lda     #$01                            ; F962 A9 01
+        sta     use_palette                     ; F964 85 92
+        jmp     copy_to_vram                    ; F966 4C 70 F9
+; ----------------------------------------------------------------------------
+copy_to_vram_direct:
+        lda     #$00                            ; F969 A9 00
+        sta     use_palette                     ; F96B 85 92
+        jmp     copy_to_vram                    ; F96D 4C 70 F9
+; ----------------------------------------------------------------------------
+copy_to_vram:
+        lda     length_in_tiles                 ; F970 A5 82
+        and     #$03                            ; F972 29 03
+        sta     remaining_tiles_to_copy         ; F974 85 83
+        lsr     length_in_tiles                 ; F976 46 82
+        lsr     length_in_tiles                 ; F978 46 82
+LF97A:  lda     source_bank                     ; F97A A5 84
+        jsr     switch_lower_2banks             ; F97C 20 87 FB
+        lda     init_completed                  ; F97F AD F3 7C
+        beq     LF987                           ; F982 F0 03
+        jsr     wait_on_nmi                     ; F984 20 80 FB
+LF987:  lda     dest_vram_addr+1                ; F987 A5 81
+        ldx     dest_vram_addr                  ; F989 A6 80
+        jsr     set_vram_addr                   ; F98B 20 E0 F8
+        ldy     #$00                            ; F98E A0 00
+LF990:  lda     (source_addr),y                 ; F990 B1 7E
+        ldx     use_palette                     ; F992 A6 92
+        beq     LF99A                           ; F994 F0 04
+        tax                                     ; F996 AA
+        lda     pattern_palette,x               ; F997 BD 00 73
+LF99A:  sta     vram_port                       ; F99A 8D 07 20
+        iny                                     ; F99D C8
+        cpy     #$40                            ; F99E C0 40
+        bne     LF990                           ; F9A0 D0 EE
+        lda     init_completed                  ; F9A2 AD F3 7C
+        beq     LF9AA                           ; F9A5 F0 03
+        jsr     update_ppu_scroll_nowait        ; F9A7 20 CB F8
+LF9AA:  lda     #$00                            ; F9AA A9 00
+        sta     ppu_scroll                      ; F9AC 8D 05 20
+        sta     ppu_scroll                      ; F9AF 8D 05 20
+        lda     #$40                            ; F9B2 A9 40
+        jsr     add16_to_$7e                    ; F9B4 20 F2 F8
+        lda     #$40                            ; F9B7 A9 40
+        jsr     add16_to_$80                    ; F9B9 20 FE F8
+        dec     length_in_tiles                 ; F9BC C6 82
+        bne     LF97A                           ; F9BE D0 BA
+        lda     remaining_tiles_to_copy         ; F9C0 A5 83
+        beq     LF9FE                           ; F9C2 F0 3A
+        ldx     #$10                            ; F9C4 A2 10
+        jsr     multiply_A_by_X                 ; F9C6 20 EA F8
+        sta     length_in_tiles                 ; F9C9 85 82
+        lda     init_completed                  ; F9CB AD F3 7C
+        beq     LF9D3                           ; F9CE F0 03
+        jsr     wait_on_nmi                     ; F9D0 20 80 FB
+LF9D3:  lda     dest_vram_addr+1                ; F9D3 A5 81
+        ldx     dest_vram_addr                  ; F9D5 A6 80
+        jsr     set_vram_addr                   ; F9D7 20 E0 F8
+        ldy     #$00                            ; F9DA A0 00
+LF9DC:  lda     (source_addr),y                 ; F9DC B1 7E
+        ldx     use_palette                     ; F9DE A6 92
+        beq     LF9E6                           ; F9E0 F0 04
+        tax                                     ; F9E2 AA
+        lda     pattern_palette,x               ; F9E3 BD 00 73
+LF9E6:  sta     vram_port                       ; F9E6 8D 07 20
+        iny                                     ; F9E9 C8
+        cpy     length_in_tiles                 ; F9EA C4 82
+        bne     LF9DC                           ; F9EC D0 EE
+        lda     init_completed                  ; F9EE AD F3 7C
+        beq     LF9F6                           ; F9F1 F0 03
+        jsr     update_ppu_scroll_nowait        ; F9F3 20 CB F8
+LF9F6:  lda     #$00                            ; F9F6 A9 00
+        sta     ppu_scroll                      ; F9F8 8D 05 20
+        sta     ppu_scroll                      ; F9FB 8D 05 20
+LF9FE:  jmp     switch_lower_2banks             ; F9FE 4C 91 F8
+; ----------------------------------------------------------------------------

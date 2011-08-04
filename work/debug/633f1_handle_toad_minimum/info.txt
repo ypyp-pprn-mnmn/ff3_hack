@@ -1,0 +1,91 @@
+GLOBAL {
+	COMMENTS	3;
+	CPU	"65C02";
+	INPUTNAME	"ff3_hack_beta.nes";
+	INPUTOFFS	$63401;
+	STARTADDR	$b3f1;
+	INPUTSIZE	$83;
+	OUTPUTNAME	"disasm.txt";
+};
+
+LABEL {
+	NAME	"handle_toad_minimum";
+	ADDR	$b3f1;
+};
+
+LABEL {
+	NAME	"get_actor_2c";
+	ADDR	$a2b5;
+};
+
+LABEL {
+	NAME	"calc_magic_hit_count_and_clear_target_if_none_hit";
+	ADDR	$b8e7;
+};
+
+LABEL {
+	NAME	"get_target_2c";
+	ADDR	$bc25;
+};
+
+LABEL {
+	NAME	"set_result_damage_as_invalid";
+	ADDR	$b74b;
+};
+
+LABEL {
+	NAME	"clear_effect_target_bits";
+	ADDR	$b926;
+};
+
+LABEL {
+	NAME	"battle_messages";
+	ADDR	$78d9;
+	SIZE	16;
+};
+LABEL {
+	NAME	"battle_mode";
+	ADDR	$7ed8;
+};
+LABEL {
+	NAME	"magic_parameters";
+	ADDR	$7400;
+	SIZE	8;
+};
+
+LABEL {
+	NAME	"p_target";
+	ADDR	$70;
+	SIZE	2;
+};
+
+LABEL {
+	NAME	"damage";
+	ADDR	$78;
+	SIZE	2;
+};
+
+LABEL {
+	NAME	"target_status_cache";
+	ADDR	$e0;
+	SIZE	16;
+};
+LABEL {
+	NAME	"actor_status_cache";
+	ADDR	$f0;
+	SIZE	16;
+};
+
+LABEL {
+	NAME	"current_status";
+	ADDR	$18;
+};
+LABEL {
+	NAME	"result_status";
+	ADDR	$19;
+};
+LABEL {
+	NAME	"target_index";
+	ADDR	$64;
+};
+

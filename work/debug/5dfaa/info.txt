@@ -1,0 +1,45 @@
+GLOBAL {
+	COMMENTS	3;
+	CPU	"65C02";
+	INPUTNAME	"ff3.nes";
+	INPUTOFFS	$5dfaa;
+	STARTADDR	$9faa;
+	INPUTSIZE	$80;
+	OUTPUTNAME	"disasm.txt";
+};
+
+LABEL {
+    NAME    "number_of_enemies_spawned";
+    ADDR    $7d6f;
+    SIZE    4;
+};
+LABEL {
+    NAME    "enemy_graphics_params";
+    ADDR    $7d73;
+    SIZE    8;
+    COMMENT "{ graphics_id, flags }";
+};
+LABEL {
+    NAME    "enemy_graphics_layout_id";
+    ADDR    $7d7b;
+    COMMENT "[out]";
+};
+
+LABEL {
+    NAME    "encounter_mode";
+    ADDR    $78c3;
+    COMMENT "set by $34:87be";
+};
+
+LABEL {
+    NAME    "init_completed";
+    ADDR    $7cf3;
+    COMMENT "1: yes, 0: no (still initializing)";
+};
+
+LABEL {
+    NAME    "graphics_size_tag";
+    ADDR    $7e;
+    COMMENT "bit7-5 of graphics_id";
+};
+

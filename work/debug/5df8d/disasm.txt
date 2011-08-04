@@ -1,0 +1,159 @@
+; da65 V2.11.0 - (C) Copyright 2000-2005,  Ullrich von Bassewitz
+; Created:    2011-07-11 00:46:42
+; Input file: ff3.nes
+; Page:       1
+
+
+        .setcpu "65C02"
+
+; ----------------------------------------------------------------------------
+current_status  := $0018
+result_status   := $0019
+actor_status_offset:= $0062
+target_status_offset:= $0064
+actor_index     := $0066
+target_index    := $0068
+p_actor         := $006E
+p_target        := $0070
+target_status_cache:= $00E0
+actor_status_cache:= $00F0
+LA0E7           := $A0E7
+get_actor_2c    := $A2B5
+copy_status     := $A2BA
+get_target_2c   := $BC25
+LF8E0           := $F8E0
+LF8EA           := $F8EA
+; ----------------------------------------------------------------------------
+        ldy     #$00                            ; 9F8D A0 00
+        lda     #$F0                            ; 9F8F A9 F0
+L9F91:  sta     $0200,y                         ; 9F91 99 00 02
+        iny                                     ; 9F94 C8
+        bne     L9F91                           ; 9F95 D0 FA
+        rts                                     ; 9F97 60
+; ----------------------------------------------------------------------------
+        lda     #$00                            ; 9F98 A9 00
+        tax                                     ; 9F9A AA
+        ldy     #$30                            ; 9F9B A0 30
+        jsr     LF8E0                           ; 9F9D 20 E0 F8
+L9FA0:  sta     $2007                           ; 9FA0 8D 07 20
+        dex                                     ; 9FA3 CA
+        bne     L9FA0                           ; 9FA4 D0 FA
+        dey                                     ; 9FA6 88
+        bne     L9FA0                           ; 9FA7 D0 F7
+        rts                                     ; 9FA9 60
+; ----------------------------------------------------------------------------
+        lda     $7D73                           ; 9FAA AD 73 7D
+        and     #$E0                            ; 9FAD 29 E0
+        sta     $7E                             ; 9FAF 85 7E
+        and     #$C0                            ; 9FB1 29 C0
+        bne     L9FBA                           ; 9FB3 D0 05
+        lda     #$00                            ; 9FB5 A9 00
+        jmp     LA026                           ; 9FB7 4C 26 A0
+; ----------------------------------------------------------------------------
+L9FBA:  lda     $7E                             ; 9FBA A5 7E
+        cmp     #$A0                            ; 9FBC C9 A0
+        bne     L9FC5                           ; 9FBE D0 05
+        lda     #$07                            ; 9FC0 A9 07
+        jmp     LA026                           ; 9FC2 4C 26 A0
+; ----------------------------------------------------------------------------
+L9FC5:  and     #$C0                            ; 9FC5 29 C0
+        cmp     #$C0                            ; 9FC7 C9 C0
+        bne     L9FD0                           ; 9FC9 D0 05
+        lda     #$09                            ; 9FCB A9 09
+        jmp     LA026                           ; 9FCD 4C 26 A0
+; ----------------------------------------------------------------------------
+L9FD0:  cmp     #$40                            ; 9FD0 C9 40
+        bne     L9FE5                           ; 9FD2 D0 11
+        lda     $7D77                           ; 9FD4 AD 77 7D
+        and     #$C0                            ; 9FD7 29 C0
+        beq     L9FE0                           ; 9FD9 F0 05
+        lda     #$03                            ; 9FDB A9 03
+        jmp     LA026                           ; 9FDD 4C 26 A0
+; ----------------------------------------------------------------------------
+L9FE0:  lda     #$01                            ; 9FE0 A9 01
+        jmp     LA026                           ; 9FE2 4C 26 A0
+; ----------------------------------------------------------------------------
+L9FE5:  lda     $7D6F                           ; 9FE5 AD 6F 7D
+        cmp     #$01                            ; 9FE8 C9 01
+        bne     LA00F                           ; 9FEA D0 23
+        lda     $7D75                           ; 9FEC AD 75 7D
+        and     #$C0                            ; 9FEF 29 C0
+        bne     L9FF8                           ; 9FF1 D0 05
+        lda     #$02                            ; 9FF3 A9 02
+        jmp     LA026                           ; 9FF5 4C 26 A0
+; ----------------------------------------------------------------------------
+L9FF8:  cmp     #$40                            ; 9FF8 C9 40
+        bne     LA001                           ; 9FFA D0 05
+        lda     #$04                            ; 9FFC A9 04
+        jmp     LA026                           ; 9FFE 4C 26 A0
+; ----------------------------------------------------------------------------
+LA001:  lda     $7D75                           ; A001 AD 75 7D
+        and     #$E0                            ; A004 29 E0
+        cmp     #$A0                            ; A006 C9 A0
+        bne     LA00F                           ; A008 D0 05
+        lda     #$08                            ; A00A A9 08
+        jmp     LA026                           ; A00C 4C 26 A0
+; ----------------------------------------------------------------------------
+LA00F:  lda     $7D6F                           ; A00F AD 6F 7D
+        cmp     #$02                            ; A012 C9 02
+        bne     LA024                           ; A014 D0 0E
+        lda     $7D75                           ; A016 AD 75 7D
+        and     #$C0                            ; A019 29 C0
+        cmp     #$40                            ; A01B C9 40
+        bne     LA024                           ; A01D D0 05
+        lda     #$05                            ; A01F A9 05
+        jmp     LA026                           ; A021 4C 26 A0
+; ----------------------------------------------------------------------------
+LA024:  lda     #$06                            ; A024 A9 06
+LA026:  sta     $7D7B                           ; A026 8D 7B 7D
+        rts                                     ; A029 60
+; ----------------------------------------------------------------------------
+        lda     $7CED                           ; A02A AD ED 7C
+        sta     $7E                             ; A02D 85 7E
+        lda     $7CEE                           ; A02F AD EE 7C
+        sta     $7F                             ; A032 85 7F
+        asl     $7E                             ; A034 06 7E
+        rol     $7F                             ; A036 26 7F
+        lda     $7E                             ; A038 A5 7E
+        clc                                     ; A03A 18
+        adc     #$00                            ; A03B 69 00
+        sta     $7E                             ; A03D 85 7E
+        lda     $7F                             ; A03F A5 7F
+        adc     #$80                            ; A041 69 80
+        sta     $7F                             ; A043 85 7F
+        ldy     #$00                            ; A045 A0 00
+        lda     ($7E),y                         ; A047 B1 7E
+        sta     $7D67                           ; A049 8D 67 7D
+        iny                                     ; A04C C8
+        lda     ($7E),y                         ; A04D B1 7E
+        sta     $7D68                           ; A04F 8D 68 7D
+        lda     $7D67                           ; A052 AD 67 7D
+        ldx     #$06                            ; A055 A2 06
+        jsr     LF8EA                           ; A057 20 EA F8
+        clc                                     ; A05A 18
+        adc     #$00                            ; A05B 69 00
+        sta     $7E                             ; A05D 85 7E
+        txa                                     ; A05F 8A
+        adc     #$84                            ; A060 69 84
+        sta     $7F                             ; A062 85 7F
+        ldy     #$00                            ; A064 A0 00
+LA066:  lda     ($7E),y                         ; A066 B1 7E
+        sta     $7D69,y                         ; A068 99 69 7D
+        iny                                     ; A06B C8
+        cpy     #$06                            ; A06C C0 06
+        bne     LA066                           ; A06E D0 F6
+        ldx     #$00                            ; A070 A2 00
+        ldy     #$00                            ; A072 A0 00
+LA074:  lda     $7D6B,x                         ; A074 BD 6B 7D
+        jsr     LA0E7                           ; A077 20 E7 A0
+        lda     $7E                             ; A07A A5 7E
+        sta     $7D73,y                         ; A07C 99 73 7D
+        lda     $7F                             ; A07F A5 7F
+        sta     $7D74,y                         ; A081 99 74 7D
+        iny                                     ; A084 C8
+        iny                                     ; A085 C8
+        inx                                     ; A086 E8
+        cpx     #$04                            ; A087 E0 04
+        bne     LA074                           ; A089 D0 E9
+        .byte   $AD                             ; A08B AD
+        pla                                     ; A08C 68

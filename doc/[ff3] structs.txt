@@ -1,0 +1,784 @@
+nesheader = 10hbytes
+sram mapped to $6000
+
+enum jobindex {
+	onion,fighter,monk,priest
+	,mage,red,hunter,knight
+	,thief,scholar,geomancer,dragonknight
+	,viking,martialist,darkknight,il
+	,bard,magus,devout,summoner
+	,sage,ninja
+};
+
+(sram00c0)
+//$60c0	u8 itemid[32]
+//$60e0	u8 itemcount[32]
+
+union BackpackItem {
+	struct {
+		u8 id;	//00=free
+		u8 count;
+	} battle[32];
+	struct {
+		u8 id[32];
+		u8 count[32];
+	} field;
+};
+
+$60c0 BackpackItem items
+
+$6100 (SRAM0100) playerparams
+	+00.b job
+	+01.b lv-1
+	+02.b status
+	+03.3b exp
+	+06.6b name
+	+0c.2b hp
+	+0e.2b maxhp
+	+10.b joblevel
+	+11.b jobexp?
+	+12 { str,agi,vit,int,men } original
+	+17 { str,agi,vit,int,men } modified
+	+1d { defcount,evade,def } magical
+	+21 { atkcount,hit,atk } right
+	+26 { atkcount,hit,atk } left
+	+2a.b attr resist
+	+2b { defcount,evade,def } physical
+	+2e.b status resist 
+	+30. { mp,maxmp } [8]
+
+$6200 playerequipments
+	+00 { head,body,accessory }	
+	+03 { lefthand, count }
+	+05 { righthand, count }
+	+07 magicflags[8] //Lvはアドレス昇順 
+		bit7 未使用(0)
+		bit6 召還
+		bit5-3 白魔法
+		bit2-0 黒魔法
+
+
+$7200(sram:1200) equipable flag?
+
+$7be3(sram:1be3) rand for battle
+
+
+struct JobBaseInfo {
+	u8 coords;
+	u8 requiredLevel;
+	u8 str,agi,vit,int,men;
+	u8 mpType;
+};
+
+$39:8000(file:72010) JobBaseInfo jobParams[22] = {};
+
+$39:1b88(file:73b98) u8 initialMp[8][9] = {};
+
+rom73b98			[00/00/00/00/00/00/00/00]
+rom73ba0 priest/mage mp(lv1)	[08/00/00/00/00/00/00/00]
+rom73ba8 red mage?		[04/00/00/00/00/00/00/00]
+rom73bb0 hunter/darkknight?	[04/00/00/00/00/00/00/00]
+rom73bb8 il?			[02/00/00/00/00/00/00/00]
+rom73bc0 devout?		[10/09/08/07/06/05/04/03]
+rom73bc8 magus?			[10/09/08/07/06/05/04/03]
+rom73bd0 summoner?		[04/03/02/01/00/00/00/00]	
+rom73bd8 sage mp(lv1)		[20/15/10/05/04/03/02/01]
+rom73be0 ninja			[00/00/00/00/00/00/00/00]
+
+$3d:ad59(file:7ad69) u16 lvupParamAddrs[22] = {
+	D6 81  9A 82  5E 83  22 84 
+	E6 84  AA 85  6E 86  32 87
+	F6 87  BA 88  7E 89  42 8A
+	06 8B  CA 8B  8E 8C  52 8D
+	16 8E  DA 8E  9E 8F  62 90
+	26 91  EA 91
+};
+
+struct LvUpParam {
+	u8 inc : 3;	//この値だけステータスが上がる
+	u8 men : 1;	//onならステータス上昇
+	u8 int : 1;
+	u8 vit : 1;
+	u8 agi : 1;
+	u8 str : 1;
+	u8 mp;//bit7 87654321 bit0
+};
+
+$39:a1d6(file:721e6) LvUpParam lvupParams[98][22] = {};
+
+$39:a5aa(file:725ba) LvUpParam redmage[98] =
+{	//
+	       F9 01  41 01  D9 00  01 03  F9 02  01 01  D9 02  41 00  21 07
+  	D9 04  41 00  99 07  61 00  D9 0C  01 0B  D9 00  21 0C  41 03  D9 08
+	01 04  F9 02  41 09  99 04  41 00  F9 0B  01 04  41 00  99 0A  61 01
+	D9 04  01 08  D9 02  61 05  99 00  41 08  41 02  B9 05  41 08  99 00
+	41 02  F9 04  01 09  D9 00  41 00  21 06  D9 09  41 00  99 00  61 02
+	99 0C  41 01  D9 00  21 00  41 06  D9 09  01 00  F9 00  41 02  99 0C
+	41 01  B9 00  41 00  41 06  99 08  61 01  D9 00  01 00  D9 0E  61 00
+	99 01  41 00  01 00  F9 0E  41 00  99 01  41 00  F9 00  01 0E  D9 00
+	41 00  21 01  D9 00  01 0C  D9 02  61 00  99 01  41 00  D9 08  21 06
+	41 00  D9 01  01 00  F9 00  01 0E  D9 00  41 00  B9 01  41 00
+}
+
+$7675: mob0 (40hbytes)
+	+00	lv
+	+01	status1	サイレス10
+	+02	status2	コンフュ28 > シェイドB8>B0(90?)
+	+03	hp
+	+05	maxhp
+	+07	? (player :mp[8])
+	+0E	(mob: data[0x0E]=attack pattern index,player: mp(lv8))
+	+0F	jobLevel (data[4])
+	+10	(mob: data[7] & 0x0F * 6, player: 0 => 742b)
+	+11	(mob: data[7] & 0xF0 * 3 / 8 , player: 0 => 742c)
+	+12	? weakAttr (data[5])
+	+13	mdefcount
+	+14	mevade
+	+15	mdef
+	+16 1b	? atkAttr (data[8]) left/right
+	+17 1c	atkcount
+	+18 1d	hit
+	+19 1e	atk
+	+1a 1f	? enchant (data[0xA])
+	+20	? defAttr (data[0xB])
+	+21	defcount
+	+22	evade/ (mob:escape success rate)
+	+23	def
+	+24	? statusresist (data[0xD])
+	+26	?
+	+27	? escape flag? charge count? damage multiplier? (jump=2)
+	+28	? critical rate (per99) (mob:5,player: jobParam.+0)
+	+29	? critical bonus atk (mob:atk/2,player: jobparam.+1) (jump=9)
+	+2a	? (player: jobparam.+2)
+	+2b	? (player: jobparam.+3)
+	+2c	//? ($27 | 0x80 & 0xe7) (playerNo)
+		u8 index : 3;
+		u8 actionMode : 2;
+		u8 unk : 2;
+		u8 isMob : 1;
+	+2e	(player) actionId			($75a3)
+	+2f	(player) actionTarget? (bit 7=enemy0)	($75a4)
+	+30	(player) actionFlag? 敵80 全体化40	($75a5)
+	+31	右手フラグ
+		80:盾 08:竪琴(idチェック無しで遠距離扱い) 04:矢(弓装備時) 02:弓(矢装備時)  01:片手武器 00:それ以外
+	+32	左手
+	+33	多目的フラグ
+		u8 formation : 1; //1 = 後列
+		u8 equipFlag : 2; //(素手:00 片手:02 両手遠距離(竪琴):04 弓(矢装備時):06)
+		u8 unk : 2;
+		u8 attrBoost : 3; //>>3された上で使用技の属性とmask,1ならヒット数20%増加
+	+35	? (1st byte of $30:9200[data[0xe] ] ) (player: jobexp multiplier? player1:$75aa)
+	+36	? data[0xF] dropListIndex
+	+37	? data[0x3] 特殊攻撃確率
+	+38	(mob:attackPatterns (actionIdList) (8bytes from $30:9200[data[0xe] ] )
+		(player: bonus atk )
+	+39	(plyaer: bonus atk )
+	+3e	(player: item flag (1 = equip)
+	+3f	(player: used item id)
+-------------------------------------------------------------------------------------
+enum attr {
+	none = 0x00,
+	heal = 0x01,
+	dark = 0x02,
+	thunder = 0x04,
+	ice = 0x08,
+	fire = 0x10,
+	air = 0x20,
+	earth = 0x40,
+	holy = 0x80
+};
+enum enchantStatus {
+	//battleOnlyFlag = 0x01
+	poison = 0x2,
+	blind = 0x4,
+	minimum = 0x8,
+	seal = 0x10,
+	toad = 0x20,
+	stone = 0x40,
+	dead = 0x80,
+	graduallyPetrify = 0x01 | 0x0E,
+	confuse = 0x01 | 0x20 | 0x08,
+	sleep = 0x01 | 0x40 | 0x10,
+	paralyze = 0x01 | 0x80 | 0x18,
+};
+
+struct EnchantedBadStatus {
+	u8 selectStatusType_0 : 1;	//0
+	u8 poisoned : 1;
+	u8 blind : 1;
+	u8 minimum : 1;
+	u8 sealed : 1;
+	u8 toad : 1;
+	u8 stone : 1;
+	u8 dead : 1;
+	//
+	u8 selectStatusType_1 : 1;	//1
+	u8 petrifyLevel : 2;	//overflowで石化
+	u8 remainLevel : 2;	//打撃を受けるたびに1減る
+	u8 confused : 1;
+	u8 sleeping : 1;
+	u8 paralyzed : 1;
+};
+
+struct EquipableItem {
+	u8 attr;
+	u8 hit;
+	u8 power;
+	u8 enchant;
+	actionId embeddedMagic;
+	u8 bonusPower :7;	//両手にかかる追加攻撃力
+	u8 consumeFlag : 1;	//矢と手裏剣は設定されているが反映されてない
+	u8 bonusFlag;
+	u8 equipType : 6;
+	u8 unk2 : 1;
+	u8 isProtector : 1;	//防具なら1，パラメータの解釈が変わる(攻撃属性でなくなる)
+};
+
+//index= itemid - 98h
+$2e:91a0(file:5d1b0) actionId cosumeableItemParam[0x30?]
+{
+	7F 7F 7F 7F  7F 7F 7F 7F  7F 7F 7F 7F  7F 7F
+	//potion
+	3F 3F 40 19  12 5A 58 59  28 35 27 23  24 25 0E 1D
+	15 07 20 13  1A 16 27 01  09 11 17 1E  21 33 00 0C
+	00 05
+}
+//index= itemid - a6
+$00:a35e(file:0236e) u8 magicItemHitCounts[0x22] {
+	//a6
+	03 0C 01 01  01 01 01 01  01 01 00 02  02 02 03 03
+	//b6
+	03 03 03 03  03 03 03 03  03 03 03 03  03 03 03 03
+	//c6
+	03 03
+}
+//itemid < $98
+$30:9400(file:61410) EquipableItem itemData[0x98] = {
+}
+
+struct MagicParam {
+	u8 attr;	//+00
+	u8 hit;		//+01
+	u8 power;	//+02
+	u8 enchant;	//+03
+	u8 handlerIndex;//+04
+	u8 unk1 : 4;
+	u8 dependsOnMen : 1; //1 = men
+	u8 allowMultipleTarget : 1;
+	u8 targetAll : 1;
+	u8 targetDefaultsPlayerSide : 1;
+	u8 effectType; 	//6=死亡チェック省略(分裂系が該当)
+	u8 invokerType;	//+07
+};
+enum magicHandler {
+	damage =0,
+	heal = 1,
+	tornado = 2,
+	applyStatus = 4,
+	ressurect = 5,
+	clearStatus = 6,
+	toadMinimum = 7,
+	protect = 8,
+	haste = 9,
+	reflect = 0xa,
+	erase = 0xb,
+	sight = 0xc,
+	library = 0xd,
+	segmentate = 0x11
+};
+
+//itemid >= $c8
+$30:98c0(file:618d0) MagicParam magicData[0x38] = {
+	//属性? 命中率? 威力 追加効果? kind? ?? effect? 装備タイプ
+	//フレア デス メテオ
+	00 64 C8 00 00 0F 00 3D  00 23 00 80 04 2F 00 3D  00 64 B4 00 00 4F 03 3D
+	//トルネド アレイズ ホーリー
+	20 28 04 00 02 17 00 3E  01 00 FF 80 05 B7 05 3E  80 64 A0 00 00 37 00 3E
+	//バハムル
+	00 64 FA 00 00 07 00 3F
+	//$61908: クエイク ブレクガ ドレイン
+	40 64 85 00 00 4E 02 2E  40 28 00 40 04 2E 07 2E  01 64 A0 00 03 2E 04 2E
+	//ケアルガ エスナ リフレク
+	01 64 DC 00 01 96 00 30  00 3C 00 FF 06 B6 00 30  00 4B 00 00 0A B6 00 30
+	//リバイア
+	00 64 B4 00 00 06 00 3F
+	//$61940: ファイガ バイオ デジョン
+	10 64 96 00 00 0D 00 2E  00 64 82 00 00 0D 00 2E  00 00 00 80 04 2D 00 2E
+	//エアロガ ストナ ヘイスト 
+	28 64 73 00 00 15 00 30  00 3C 00 07 06 B5 00 30  00 10 05 00 09 B5 00 30
+	//カタスト
+	00 64 96 00 00 05 00 3F
+	//$61978: サンダガ キル イレース
+	04 64 6E 00 00 0C 00 2E  00 64 64 80 04 4C 01 2E  00 3C 00 00 0B 0C 00 2E
+	//ケアルダ レイズ プロテス
+	01 64 B4 00 01 94 00 30  01 0F 01 80 05 B4 05 30  00 4B 05 00 08 B4 00 30
+	//ハイパ
+	00 64 78 00 00 04 00 3F
+	//ブレイク ブリザガ シェイド
+	40 32 00 05 00 2B 00 2F  08 64 55 00 00 0B 00 2F  00 50 00 99 04 0B 00 2F
+	//ライブラ コンフュ サイレス
+	00 64 00 00 0D 33 00 31  00 19 00 29 04 13 00 31  00 3C 00 10 04 13 00 31
+	//ヒートラ
+	00 64 55 00 00 03 00 3F
+	//ファイラ ブリザラ サンダラ
+	10 64 37 00 00 0A 00 2F  08 64 37 00 00 0A 00 2F  04 64 37 00 00 0A 00 2F
+	//ケアルラ テレポ ブライナ
+	01 64 7D 00 01 92 00 32  00 00 00 80 04 32 00 32  00 4B 00 04 06 B1 00 32
+	//スパルク
+	00 64 41 00 00 02 00 3F
+	//サンダー ポイズン ブライン
+	04 64 23 00 00 09 00 2F  00 3C 14 02 00 09 00 2F  00 3C 0A 04 04 09 00 2F
+	//エアロ トード ミニマム
+	28 64 2D 00 00 11 00 31  00 00 00 20 07 32 08 32  00 00 00 08 07 31 0D 32
+	//アイスン
+	00 64 32 00 00 01 00 3F
+	//ファイア ブリザド スリプル
+	10 64 19 00 00 08 00 2F  08 64 19 00 00 08 00 2F  00 0F 00 51 04 08 00 2F
+	//ケアル ポイゾナ サイトロ
+	01 64 2A 00 01 90 00 32  00 32 00 02 06 B0 00 32  00 64 00 00 0C 30 00 32
+	//エスケプ
+	00 64 28 00 00 00 00 3F
+}
+//enemy specific action
+$30:98c0 + 0x38*8
+$30:9a80(file:61a90) specialAttack[0x20] = {
+	00 64 20 00 00 4F 00 00  10 64 28 00 00 4D 10 00
+	08 64 28 00 00 4A 11 00  04 64 28 00 00 4A 12 00
+	00 50 00 02 00 49 00 00  40 64 50 00 00 4E 02 00
+	40 50 00 40 04 2E 0B 00  01 64 1E 00 18 B0 00 00
+	00 64 00 00 14 B0 00 00  00 64 25 00 00 4E 0A 00
+	00 64 50 00 17 4E 09 00  00 64 00 00 12 2A 0C 00
+	00 50 00 51 04 28 0B 00  00 50 00 29 04 33 0B 00
+	00 3C 00 99 04 2B 00 00  00 50 00 99 04 4B 0B 00
+	00 64 00 00 10 80 06 00  00 64 00 00 0F 2B 06 00
+	00 64 50 00 00 4F 0B 00  00 64 00 00 15 AB 00 00
+	00 64 28 00 16 2B 00 00  00 64 00 00 13 AB 0B 00
+	00 64 00 00 0E AB 06 00  00 64 00 00 11 AB 06 00
+	40 32 5A 00 00 40 0E 00  00 1E 00 80 04 20 00 00
+	20 1E 78 00 33 20 00 00  00 28 00 80 04 20 00 00
+	04 28 00 80 04 20 00 00  20 3C 78 00 00 20 00 00
+	20 3C 78 00 00 20 00 00  40 28 78 00 00 40 03 00
+}
+
+//ジョブ番号が若い方が高いアドレスに入るので注意
+//bit  7 6 5 4 3 2 1 0
+//$3b xxxx忍賢界導魔吟
+//$3c 幻暗空バ竜風学シ
+//$3d ナ狩赤黒白モ戦葱
+$00:8900(file:00910) equipableFlags[64?] = {
+	3F FF FF  00 00 00  20 00 04  3A 80 30
+	3A 00 00  34 00 28  34 00 00  20 08 00
+	20 09 01  20 01 00  20 10 00  20 00 83
+	20 00 20  20 00 82  20 00 80  20 40 00
+	
+	3E 80 38  21 00 00  36 02 18  20 04 00
+	20 00 73  20 00 40  20 19 A3  20 1B A3
+	20 18 A3  20 18 83  28 99 82  3F BF FF
+	20 19 A3  20 19 E2  20 20 04  3F 86 40
+	
+	3F BF FF  21 19 E3  20 19 E3  20 18 C2
+	3E 80 38  3E 86 38  20 19 C2  3C 80 28
+	3A 80 30  3F 9F FE  21 3F E6  20 40 80
+	20 18 E3  1E 80 00  12 00 10  12 00 30
+	
+	14 00 08  14 00 28  14 40 68  14 00 08
+	20 01 B3  30 02 00  20 18 80  20 18 80
+	20 20 00  00 00 01  20 00 00  20 58 A3
+	20 18 A3  12 00 00  14 00 00  18 80 00
+};
+
+//type= 30hと33hは全く同じで33hは未使用
+0	葱戦モ白黒赤狩ナシ学風竜バ空暗幻吟魔導界賢忍 
+1	-------------------------------------------- 
+2	----モ------------------------------------忍 
+3	--------黒赤------------------幻--魔--界賢忍 
+4	----------------------------------魔--界賢忍 
+5	------白--赤------------------------導--賢忍 
+6	------------------------------------導--賢忍 
+7	----------------------竜------------------忍 
+8	葱--------------シ----竜------------------忍 
+9	----------------シ------------------------忍 
+a	------------------------バ----------------忍 
+b	葱戦----------ナ--------------------------忍 
+c	----------赤------------------------------忍 
+d	--戦----------ナ--------------------------忍 
+e	--------------ナ--------------------------忍 
+f	----------------------------暗------------忍 
+10	------白黒赤------------------幻--魔導界賢忍 
+11	--------------------------------吟--------忍 
+12	------白黒--------学--------------魔導--賢忍 
+13	--------------------風--------------------忍 
+14	葱戦----黒赤狩----------------------------忍 
+15	------------狩----------------------------忍 
+16	葱戦------赤--ナシ----竜バ----------------忍 
+17	葱戦------赤--ナシ学--竜バ----------------忍 
+18	葱戦------赤--ナ------竜バ----------------忍 
+19	葱戦----------ナ------竜バ----------------忍 
+1a	--戦----------ナシ----竜バ----幻------界--忍 
+1b	葱戦モ白黒赤狩ナシ学風竜バ空--幻吟魔導界賢忍 
+1c	葱戦------赤--ナシ----竜バ----------------忍 
+1d	--戦------赤狩ナシ----竜バ----------------忍 
+1e	----モ--------------------空--------------忍 
+1f	------------狩----学風--------幻吟魔導界賢忍 
+20	葱戦モ白黒赤狩ナシ学風竜バ空--幻吟魔導界賢忍 
+21	葱戦------赤狩ナシ----竜バ------吟--------忍 
+22	葱戦------赤狩ナシ----竜バ----------------忍 
+23	--戦--------狩ナ------竜バ----------------忍 
+24	------白黒赤------------------幻--魔導界賢忍 
+25	------白黒赤------学風--------幻--魔導界賢忍 
+26	--戦--------狩ナシ----竜バ----------------忍 
+27	------白--赤------------------幻----導界賢忍 
+28	--------黒赤------------------幻--魔--界賢忍 
+29	--戦モ白黒赤狩ナシ学風竜バ----幻吟魔導界賢忍 
+2a	--戦モ----赤狩ナシ学風竜バ空----吟--------忍 
+2b	--------------ナ------------暗------------忍 
+2c	葱戦------赤狩ナ------竜バ----------------忍 
+2d	------------------------------幻--魔導界賢-- 
+2e	--------黒------------------------魔----賢-- 
+2f	--------黒赤----------------------魔----賢-- 
+30	------白----------------------------導--賢-- 
+31	------白--赤------------------------導--賢-- 
+32	------白--赤狩--------------暗------導--賢-- 
+33	------白----------------------------導--賢-- 
+34	葱戦----黒赤--ナシ------------------------忍 
+35	------------------学--------------------賢忍 
+36	--------------ナ------竜バ----------------忍 
+37	--------------ナ------竜バ----------------忍 
+38	--------------------------空--------------忍 
+39	葱------------------------------------------ 
+3a	------------------------------------------忍 
+3b	葱戦------赤--ナ------竜バ--暗------------忍 
+3c	葱戦------赤--ナ------竜バ----------------忍 
+3d	----------------------------------魔----賢-- 
+3e	------------------------------------導--賢-- 
+3f	------------------------------幻------界賢-- 
+
+--------------------------------------------------------------------------------------
+struct MonsterBaseParam {
+	u8 lv;			//00
+	u16 hp;			//01
+	u8 specialRate;	//03
+	u8 skillLv; 	//04 ? dest[0x0F]
+	u8 weakAttr;	//05 ?
+	u8 mdefIndex;	//06 
+	u8 int : 4;		//07 *6
+	u8 men : 4;		//07 *6
+	u8 atkAttr;		//08 ?
+	u8 atkIndex;	//09 
+	u8 unk3;		//0A enchant?
+	u8 defAttr;		//0B ?
+	u8 defIndex;	//0C
+	u8 resist;		//0D resist?
+	u8 actionPatternIndex;	//0E
+	u8 dropIndex : 5;	//0F dest[0x36]
+	u8 dropRate : 3;	//0F x/7
+};
+
+$30:8000(file:60010) MonsterBaseParam[256] = {
+};
+$30:9000(file:61010) MonsterBattleParam[170] = {
+	//回数 成功率 値(攻撃/防御)
+	00 0A 01  00 0A 01  00 0F 01  00 14 01  00 19 01  00 1E 01  01 0A 02  01 0F 02
+	01 14 02  01 19 02  01 1E 02  01 23 03  01 28 03  01 2D 03  01 32 03  01 3C 03
+	//10
+	02 0A 03  02 0F 03  02 14 04  02 19 04  02 1E 04  02 23 04  02 28 04  02 2D 04
+	02 32 04  02 3C 04  02 0A 04  02 0F 05  02 14 05  02 19 05  02 1E 05  02 28 05
+	//20
+	02 32 05  02 3C 07  03 14 07  03 19 07  03 1E 07  03 23 07  03 28 07  03 2D 08
+	03 32 08  03 3C 08  03 14 08  03 19 08  03 1E 08  03 23 09  03 28 09  03 2D 09
+	//30
+	03 32 09  03 3C 09  03 3C 09  04 14 0A  04 19 0A  04 1E 0A  04 23 0A  04 28 0A
+	04 2D 0A  04 32 0B  04 3C 0B  05 14 0B  05 1E 0B  05 28 0B  05 32 0B  20 63 FF	//2ヘッドドラゴン
+	//40
+	03 3C 05  03 41 07  03 46 09  03 4B 0A  03 3C 0C  03 41 0D  03 46 0E  03 4B 0F
+	03 3C 10  03 46 11  03 50 12  03 5A 13  03 3C 14  03 46 15  03 50 16  03 5A 17
+	//50
+	04 3C 18  04 46 19  04 50 1A  04 5A 1B  04 3C 1C  04 46 1D  04 50 1E  04 5A 1F
+	04 3C 20  04 46 21  04 50 22  04 5A 23  04 3C 24  04 46 25  04 50 26  04 5A 27
+	//60
+	05 3C 28  05 46 2A  05 50 2C  05 5A 2E  05 3C 30  05 46 32  05 50 34  05 5A 36
+	05 3C 38  05 46 3A  05 50 3C  05 5A 3E  05 3C 40  05 46 42  05 50 44  05 5A 46
+	//70
+	06 3C 48  06 46 4A  06 50 4C  06 5A 4E  06 46 50  06 50 53  06 5A 55  06 46 57
+	06 50 5A  07 5A 5D  07 46 5F  07 50 61  07 46 64  07 50 67  07 5A 69  07 46 6B
+	//80
+	08 50 6E  08 5A 71  08 46 73  08 50 75  08 5A 78  08 46 7B  08 50 7D  08 5A 7F
+	08 46 82  09 50 85  09 5A 87  09 46 89  09 50 8C  09 5A 8F  09 46 91  09 50 93
+	//90
+	0A 5A 96  0A 46 99  0A 50 9B  0A 5A 9D  0A 46 A0  0A 50 A3  0A 5A A5  0A 46 A7
+	0A 50 AA  0B 5A AF  0B 46 B9  0B 53 F0  01 20 28  02 28 30  03 30 50  05 38 60
+	//a0
+	03 15 0A  03 20 10  04 20 15  04 24 1A  04 24 20  05 24 25  06 24 2A  07 24 30
+	08 24 40  01 10 20
+};
+
+$30:9200(file:61210) AttackPatterns[8][?] = {
+};
+
+//mobparam.0F &1F
+$10:9b80(file:21b90) u8 dropItemTable[8][32] = {} ;
+
+struct JobParam
+{
+	u8 criticalRate;
+	u8 criticalBonusAtk;
+	u8 escapeBaseRate;	//?
+	u8 unk[1];
+	u8 actionExp0 : 2;
+	u8 actionExp1 : 2;
+	u8 actionExp2 : 2;
+	u8 actionExp3 : 2;
+};
+
+$39:bb1a(file:73b2a) JobParam jobParams[22] = {};
+
+enum actionId {
+	doNothing = 0x0,
+	tryToRecover = 0x1,
+	forward = 0x2,
+	back = 0x3,
+	fight = 0x04,
+	guard = 0x05,
+	escape = 0x06,
+	sneakAway = 0x07,//とんずら
+	jump = 0x08,
+	//miss = 0x09;
+	//finalAttack = 0x0a;
+	geography = 0xb,	//地形
+	inspect = 0xc,	//調べる
+	detect = 0xd,		//見破る
+	steal = 0xe,
+	charge = 0xf,
+	sing = 0x10,
+	intimidate = 0x11,
+	cheer = 0x12,
+	useItem = 0x14;
+	castMagic = 0x15;
+};
+
+$34:9b21(file:69b31) actionId jobActionLists[4][22] = {
+	04 05 06 14  04 05 06 14  04 05 06 14  04 15 06 14 
+	04 15 06 14  04 15 06 14  04 05 15 14  04 05 06 14
+	04 0E 07 14  04 0C 0D 14  04 0B 05 14  04 08 05 14
+	04 05 06 14  04 0F 05 14  04 05 15 14  04 15 06 14
+	10 11 12 14  04 15 06 14  04 15 06 14  04 15 06 14
+	04 15 06 14  04 05 06 14
+};
+//per1bit flag
+//i = id >> 3; bit = 7 - (id & 7);
+$35:a5fd(file:6a60d) u8 actionFlags[32];
+
+struct EncounterParam {
+	u8 partyId;
+	u8 countId : 6;
+	u8 boss : 1;
+	u8 disableEscape : 1;
+};
+
+$2e:8000(5c010) EncounterParam
+//=========================================================================================
+//names
+$18:8200($30210)
+$18:8990(file:309a0) u16 actionNameOffsets[];
+$18:8c40(file:30c50) u16 battleMessageOffsets[];
+//=========================================================================================
+$34:8afa(file:68b0a) u16 cursorPositionsPtrs[2][3] = {	
+	00 8B  08 8B  28 8B
+};
+$34:8b00(file:68b10) u8 cursorPositions[] = { // {top,right}
+	A8 28  B8 28  C8 28  D8 28
+8b08:	A8 50  B8 50  C8 50  D8 50
+	A8 88  B8 88  C8 88  D8 88
+	A8 C0  B8 C0  C8 C0  D8 C0
+	B8 10  B8 10  D8 10  D8 10
+8b28:	A8 08  B8 08  C8 08  D8 08
+	A8 80  B8 80  C8 80  D8 80
+}
+//=========================================================================================
+enum weaponBlowType {
+	fist = 0,
+	axe = 1,
+	spear = 1,
+	sword = 1,
+	rod = 2,
+	book = 2,
+	bell = 2,
+	bow = 3,
+	harp = 4,
+	boomerang = 5,
+	ring = 6,
+	shuriken = 7,
+	arrow = 8,
+	claw = 9
+}
+
+struct BlowEffectParam {
+	u8 weaponBlowType;
+	u8 spriteIndex;	//offset to 10h bytes data (base = $2b:b000)
+	u8 color;	//unk1;
+};
+
+//index:itemid
+$2e:9098(file:5d0a8) BlowEffectParam params[] = {
+}
+ 
+$33:a077(file:66087) blowEffect_swingCountBoundForWeaponTypes = {
+	07 05 05 07 05 07 07 07 07
+}
+//-----------------------------------------------------------------------
+struct Draw1LineWindowParam //@$34:8e83
+{
+	u16 vramBaseAddr;
+	u8 cx;
+	u16 prevTilesCachePtr;
+	u8 unk[4]; 
+};
+//----------------------------------------------------------------------------------------------------
+$2e:91d0(file:5d1e0) SpriteLoadParam []
+
+struct SpriteLoadParam {
+	u8 unk : 6
+	u8 indexHigh : 1;
+	u8 copyUsingLoader6 : 1
+	u8 indexLow;
+	u8 color?;//$33:a440のパラメータ
+};
+
+struct EffectFrameStream {
+	u8 length;	//in bytes
+	EffectFrameParam frames[];
+};
+struct EffectFrameParam {
+	u8 paramId : 7;	//ff:reverse-y flag (set reverse-y mode,fetch more 1byte and treat it as usual)
+	u8 reverseX : 1;
+};
+struct EffectSpriteTiling { //$33:b89b
+	u8 beginX;
+	u8 incrementX;
+	u8 beginY;
+	u8 incrementY;
+};
+$33:b8ab u8 EffectSpriteAttr[4];	//index:coordinate mode
+
+union SpriteTileParam {	//@$7900, user:loadEffectFrame($33:b7cf)
+	struct {
+		u8 tileIndex : 5;
+		u8 reverseHorizontal : 1;
+		u8 reverseVertical : 1;
+		u8 repeat : 1;
+	};
+	u8 repeatCount;	//if repeat flag = 1,next byte contains this
+};
+
+//@$33:beb2(file:67ec2) [18];
+//@$2f:a15f(file:5e16f) []; 2=righthand 3=lefthand
+struct LoadToVramParam { 
+	u16 srcOffset;
+	u16 vramOffset;
+	u8 size;	//in bytes
+	u8 srcBank;
+};
+
+
+//=========================================================================================
+//jumptables
+$34:8acf(file:68adf) u16 moveSelection_inputHandlers[8] = {
+	//A B SELECT START UP DOWN LEFT RIGHT
+	E6 89  DE 89
+	BE 8A  BE 8A
+	EE 89  35 8A  82 8A  9F 8A
+};
+$34:9a16(file:69a26) u16 commandWindowHandlers[] = {
+	68 9A  68 9A  1C A7  50 A7
+	43 A8  77 A8  AB A8  B5 A8
+	AB A9  68 9A  68 9A  22 AA
+	6E AB  07 AB  9F AB  65 AC
+	D0 AC  0C AD  6B AD  68 9A
+	AF AD  46 B6
+};
+
+$34:9fac(file:69fbc) u16 commandHandlers[21] = {
+	A8 9F  8A A6  DF A7  EA A7
+	04 A1  81 A8  BF A8  3B A9
+	D8 A9  11 AA  A8 9F  5D AA
+	73 AB  0C AB  A4 AB  6F AC
+	D5 AC  16 AD  75 AD  BB A3
+	67 A3
+};
+
+$34:950d(file:6951d) u16 dispCommandListPtrTable[6] = {
+	19 95  28 95  37 95  3B 95 
+	42 95  48 95
+};
+
+$34:9519(file:69529) u8 dispCommandLists = {
+	$9519:	05 07 0B 06 0C 08 0D 09 0A 04 03 01 02 00 FF
+	$9528:	05 06 07 0B 0C 08 09 0D 0A 04 03 02 01 00 FF
+	$9537:	09 0A 04 FF
+	$953b:	09 0B 0C 0E 0A 04 FF
+	$9542:	05 09 0A 04 00 FF
+	$9548:	09 0C 0A 04 FF
+};
+
+$34:954d(file:6955d) u16 dispCommandHandlerTable[0x0F] = {
+	D6 94  D6 94  D6 94  E7 94
+	D6 94  5B 90  A0 90  77 91
+	D4 91  FE 91  50 94  4E 93
+	54 93  5F 93  C4 93  
+};
+
+$34:956b(file:6957b) u16 dispCommand09_subCommandJumpTable[] = {
+	3C 92  5F 92  75 92  DB 92
+	2B 93  00 00  00 00  00 00
+	00 00  00 00  00 00  00 00
+	00 00  10 10  00 00  04 00
+};
+
+$34:83f8-8410(file:68408) u8 $8411_tableIndex[] = {
+	03 03 04 05 00 06 0D 0D
+	07 08 03 03 03 03 03 09
+	00 0A 0B 01 01 0C 0E 0F
+	10
+}
+$34:843e-845f(file:6844e) u16 $8411_jumptable[] = {
+	13 86  77 85  ED 85  76 85
+	3B 85  40 85  28 85  2D 85
+	16 85  0A 85  05 85  FB 84
+	F6 84  D7 84  70 84  60 84
+	55 85
+}
+
+$35:ba2a u16 commandWindow_OnMagic_inputHandlers[8] = {
+	77 B8  EE B8  74 B8  74 B8
+	F9 B7  2A B8  63 B8  6C B8
+}
+//	functionId : 
+//		0 then doAction //ex.ほのお
+//		3 then たたかう
+//		5 then recalcBattleParams (OnCloseItemWindow etc)
+//		7 then calcDataAddress (OnExecuteAction)
+$30:9e76(file:61e86) u16 battleFunctions[0xa] = { //-8a
+	77 AF  00 A4  32 A7  8A 9E
+	5E A6  16 AA  E9 A2  9D BE
+	BF BE  17 BF
+};
+
+$31:ba9c(file:63aac) u16 actionHandlers[] = {
+	7C B1  33 B2  76 B2  B5 B2  0C B3  7A B3  CA B3  F1 B3
+	74 B4  80 B4  8C B4  9B B4  C8 B4  B9 B4  C9 B4  D4 B4
+	F4 B4  D4 B4  1F B5  6C B5  AA B5  E7 B5  2C B6  54 B6
+	33 B2  58 B6  57 B6  79 B6  7F B6  79 B6  79 B6  7F B6
+	79 B6  79 B6  7C B6  79 B6  79 B6  79 B6  79 B6  79 B6
+	85 B6  79 B6  88 B6  7F B6  79 B6  79 B6  82 B6  B0 B6
+	79 B6  79 B6  7F B6  79 B6  7F B6  7F B6  79 B6  79 B6
+	79 B6
+}
+
+
+$2f:af74(file:5ef84) u16 presentScene_functionTable[0x26] = {
+	69 B4  C7 B3  CD B3  2A B4  43 B4  F6 B3  D9 B3  D3 B3
+	8B B3  8E B3  3E B3  43 B3  48 B3  4D B3  04 B3  EB B2
+	FA B2  60 B2  4F B2  4C B2  01 B2  46 B2  D8 B1  E0 B1
+	CF B1  C1 B1  B5 B1  AF B1  AC B1  5E B1  50 B0  24 B0
+	05 B0  24 AF  FF AF  E7 AF  44 AF  D8 AF
+}

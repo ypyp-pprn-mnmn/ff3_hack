@@ -1,0 +1,51 @@
+GLOBAL {
+	COMMENTS	3;
+	CPU	"65C02";
+	INPUTNAME	"ff3.nes";
+	INPUTOFFS	$69ce3;
+	STARTADDR	$9ce3;
+	INPUTSIZE	$3a;
+	OUTPUTNAME	"disasm.txt";
+};
+
+
+LABEL {
+	NAME	"player_index";
+	ADDR	$52;
+};
+
+LABEL {
+    NAME    "call_battle_function_01";
+    ADDR    $8016;
+};
+LABEL {
+    NAME    "call_battle_function_05";
+    ADDR    $8026;
+    COMMENT "$31:aa16 calc_battle_parameters";
+};
+LABEL {
+    NAME    "load_player_status";
+    ADDR    $9d1d;
+};
+LABEL {
+    NAME    "update_player_offset";
+    ADDR    $a541;
+};
+
+LABEL {
+    NAME    "load_players_status";
+    ADDR    $9d06;
+};
+LABEL {
+    NAME    "unknown1";
+    ADDR    $874d;
+};
+LABEL {
+    NAME    "unknown2";
+    ADDR    $87be;
+};
+
+LABEL {
+    NAME    "unknown3";
+    ADDR    $9474;
+};

@@ -1,0 +1,727 @@
+struct LOGFONT
+{
+	LONG    lfHeight;
+	LONG    lfWidth;
+	LONG    lfEscapement;
+	LONG    lfOrientation;
+	LONG    lfWeight;
+	BYTE    lfItalic;
+	BYTE    lfUnderline;
+	BYTE    lfStrikeOut;
+	BYTE    lfCharSet;
+	BYTE    lfOutPrecision;
+	BYTE    lfClipPrecision;
+	BYTE    lfQuality;
+	BYTE    lfPitchAndFamily;
+	BYTE    lfFaceName[32];
+};
+
+struct RGBQUAD
+{
+	BYTE	rgbBlue ;
+	BYTE	rgbGreen ;
+	BYTE	rgbRed ;
+	BYTE	rgbReserved ;
+} ;
+
+struct BITMAPFILEHEADER
+{
+	WORD    bfType; 
+	DWORD   bfSize; 
+	WORD    bfReserved1; 
+	WORD    bfReserved2; 
+	DWORD   bfOffBits; 
+};
+
+struct BITMAPINFOHEADER
+{
+	DWORD  biSize; 
+	LONG   biWidth; 
+	LONG   biHeight; 
+	WORD   biPlanes; 
+	WORD   biBitCount ;
+	DWORD  biCompression; 
+	DWORD  biSizeImage; 
+	LONG   biXPelsPerMeter ;
+	LONG   biYPelsPerMeter; 
+	DWORD  biClrUsed; 
+	DWORD  biClrImportant; 
+};
+
+struct BITMAPINFO
+{
+	BITMAPINFOHEADER	bmiHeader ;
+	RGBQUAD			bmiColors[256] ;
+} ;
+
+
+struct BITMAP256_SAMPLE
+{
+	BITMAPFILEHEADER	FileHeader ;
+	BITMAPINFOHEADER	bmiHeader ;
+	RGBQUAD			bmiColors[256] ;
+} ;
+
+struct IMAGE_DOS_HEADER {      // DOS .EXE header
+    WORD   e_magic;                     // Magic number
+    WORD   e_cblp;                      // Bytes on last page of file
+    WORD   e_cp;                        // Pages in file
+    WORD   e_crlc;                      // Relocations
+    WORD   e_cparhdr;                   // Size of header in paragraphs
+    WORD   e_minalloc;                  // Minimum extra paragraphs needed
+    WORD   e_maxalloc;                  // Maximum extra paragraphs needed
+    WORD   e_ss;                        // Initial (relative) SS value
+    WORD   e_sp;                        // Initial SP value
+    WORD   e_csum;                      // Checksum
+    WORD   e_ip;                        // Initial IP value
+    WORD   e_cs;                        // Initial (relative) CS value
+    WORD   e_lfarlc;                    // File address of relocation table
+    WORD   e_ovno;                      // Overlay number
+    WORD   e_res[4];                    // Reserved words
+    WORD   e_oemid;                     // OEM identifier (for e_oeminfo)
+    WORD   e_oeminfo;                   // OEM information; e_oemid specific
+    WORD   e_res2[10];                  // Reserved words
+    DWORD   e_lfanew;                    // File address of new exe header
+ };
+
+struct IMAGE_FILE_HEADER {
+    WORD    Machine;
+    WORD    NumberOfSections;
+    DWORD   TimeDateStamp;
+    DWORD   PointerToSymbolTable;
+    DWORD   NumberOfSymbols;
+    WORD    SizeOfOptionalHeader;
+    WORD    Characteristics;
+};
+
+struct IMAGE_DATA_DIRECTORY {
+    DWORD   VirtualAddress;
+    DWORD   Size;
+};
+
+struct IMAGE_OPTIONAL_HEADER32 {
+    //
+    // Standard fields.
+    //
+
+    WORD    Magic;
+    BYTE    MajorLinkerVersion;
+    BYTE    MinorLinkerVersion;
+    DWORD   SizeOfCode;
+    DWORD   SizeOfInitializedData;
+    DWORD   SizeOfUninitializedData;
+    DWORD   AddressOfEntryPoint;
+    DWORD   BaseOfCode;
+    DWORD   BaseOfData;
+
+    //
+    // NT additional fields.
+    //
+
+    DWORD   ImageBase;
+    DWORD   SectionAlignment;
+    DWORD   FileAlignment;
+    WORD    MajorOperatingSystemVersion;
+    WORD    MinorOperatingSystemVersion;
+    WORD    MajorImageVersion;
+    WORD    MinorImageVersion;
+    WORD    MajorSubsystemVersion;
+    WORD    MinorSubsystemVersion;
+    DWORD   Win32VersionValue;
+    DWORD   SizeOfImage;
+    DWORD   SizeOfHeaders;
+    DWORD   CheckSum;
+    WORD    Subsystem;
+    WORD    DllCharacteristics;
+    DWORD   SizeOfStackReserve;
+    DWORD   SizeOfStackCommit;
+    DWORD   SizeOfHeapReserve;
+    DWORD   SizeOfHeapCommit;
+    DWORD   LoaderFlags;
+    DWORD   NumberOfRvaAndSizes;
+    IMAGE_DATA_DIRECTORY DataDirectory[16]; //IMAGE_NUMBEROF_DIRECTORY_ENTRIES=16
+};
+
+struct IMAGE_NT_HEADERS32 {
+    DWORD Signature;
+    IMAGE_FILE_HEADER FileHeader;
+    IMAGE_OPTIONAL_HEADER32 OptionalHeader;
+};
+//*
+struct IMAGE_SECTION_HEADER {
+	BYTE Name[8]; //IMAGE_SIZEOF_SHORT_NAME=8
+	DWORD VirtualSizeOrPhysicalAddress;
+	DWORD VirtualAddress;
+	DWORD SizeOfRawData;
+	DWORD PointerToRawData;
+	DWORD PointerToRelocations;
+	DWORD PointerToLinenumbers;
+	WORD NumberOfRelocations;
+	WORD NumberOfLinenumbers;
+	DWORD Characteristics;
+};//*/
+//*
+struct IMAGE_IMPORT_DESCRIPTOR {
+ 	DWORD OriginalFirstThunk;
+ 	DWORD TimeDateStamp;
+ 	DWORD ForwarderChain;
+ 	DWORD Name;
+ 	DWORD FirstThunk;
+};//*/
+
+//
+struct FF3_LvUpParam {
+	BYTE param;
+	BYTE mp;
+};
+
+struct FF3_LvUpParams {
+	FF3_LvUpParam params[98];
+};
+
+struct FF3_ItemBaseParam {
+	BYTE attr;
+	byte hit;
+	byte power;
+	BYTE status;
+	BYTE embeddedSpecial;
+	BYTE unk[1];
+	BYTE bonus;
+	BYTE equipType;
+};
+
+struct FF3_ItemBaseParams {	//61410
+	FF3_ItemBaseParam equip[152];
+	//FF3_ItemBaseParam magic[56];
+	//FF3_ItemBaseParam special[32];
+};
+
+struct FF3_SpecialParam {
+	BYTE attr;	//+00
+	byte hit;		//+01
+	byte power;	//+02
+	BYTE enchant;	//+03
+	BYTE handlerIndex;//+04
+	BYTE flags;
+	BYTE effectType; 	//6=死亡チェック省略(分裂系が該当)
+	BYTE invokerType;	//+07
+};
+
+struct FF3_Specials {	//618d0
+	FF3_SpecialParam params[256];
+};
+
+struct FF3_EquipableFlags {
+	BYTE flag[64][3];
+};
+
+//struct FF3_EnemyBattleParamHeader {
+//	BYTE unk1;
+//	BYTE paramIndex;
+//	BYTE unk2;
+//};
+
+struct FF3_JobParam {
+	BYTE unk[4];
+	BYTE actionExp;	//2bit values 
+};
+
+struct FF3_JobParams { //$73b2a
+	FF3_JobParam params[22];
+};
+
+struct FF3_JobActionLists { //$69b31
+	BYTE lists[22][4];
+};
+
+struct FF3_Draw1RowWindowParam {	//$34:8e83($68e93)
+	WORD vramBaseAddr;
+	byte cx;
+	WORD prevTilesCachePtr;
+	BYTE unk[4]; 
+};
+
+struct FF3_1RowWindows {
+	FF3_Draw1RowWindowParam windows[5];	//4=status
+};
+
+struct FF3_StringOffsetTable {
+	WORD statusAndAreaNames[256];	//$18:8200($30210)
+	WORD pad0[712];
+	WORD actionNames[88];		//$18:8990($309a0)
+	WORD enemyNames[256];		//$18:8a40($30a50)
+	WORD battleMessages[256];	//$18:8c40($30c50)
+};
+
+struct FF3_LoadToVramParam {
+	WORD srcOffset;
+	WORD vramOffset;
+	BYTE per40hSizeShl2;	
+	BYTE srcPer16kBank;
+};
+
+struct FF3_LoadToVramParams { //@$33:beb2(file:67ec2)
+	FF3_LoadToVramParam params[18];
+};
+
+struct FF3_EffectSpriteTiling { //$33:b89b(file:678ab)
+	byte beginX;
+	char dx;
+	byte beginY;
+	char dy;
+};
+
+struct FF3_EffectSpriteInitParams { //$33:b89b
+	FF3_EffectSpriteTiling tiling[4];
+	BYTE attributes[4];
+};
+
+struct FF3_BlowEffectParam { 
+	BYTE weaponType;
+	BYTE spriteIndex;	//offset to effect graphics (pattern data) (base = $2b:b000)
+	BYTE color;	//unk1;
+};
+
+struct FF3_BlowEffectParams { //$2e:9098(file:5d0a8)
+	FF3_BlowEffectParam weapons[88];
+};
+
+struct FF3_SpriteLoadParam { //$2e:91d0(5d1e0)
+	//u8 unk : 6
+	//u8 indexHigh : 1;
+	//u8 patternFlag? : 1
+	BYTE flags;
+	BYTE indexLow;
+	BYTE color;
+};
+
+//----------------------------------------------------------------------------------------------------
+//encounter data.
+
+struct FF3_EncounterParam {
+	BYTE partyId;
+	BYTE groupNumberIdAndFlags;
+};
+
+struct FF3_CountForEachGroups { 
+	BYTE groups[4];
+};
+
+struct FF3_EnemyParty {
+	BYTE paletteId[2];
+	BYTE enemyId[4];
+};
+
+struct FF3_EncounterTable {
+	BYTE encounterId[8];
+};
+
+//struct FF3_EncounterParams { //5c000(2e:8000)
+//	FF3_EncounterParam floatingLand[256];
+//	FF3_EncounterParam underWorld[256];
+//};
+
+//struct FF3_EnemyParties { //5c400 (2e:8400)
+//	FF3_EnemyParty parties[256];
+//};
+
+//struct FF3_EncounterNumberTable { //5ca00(2e:8a00)
+//	FF3_CountForEachGroups table[64];
+//};
+
+struct FF3_EncounterAndParty { //5c000
+	FF3_EncounterParam floatingLand[256];
+	FF3_EncounterParam underWorld[256];
+	FF3_EnemyParty parties[256];
+	FF3_CountForEachGroups counts[64];
+	BYTE graphicsId[256];	//8b00
+	BYTE unknown[1776];
+	//92f0
+	BYTE warpIdToEncounterTableForFloatingLand[256];
+	BYTE warpIdToEncounterTableForUnderWorld[256];
+	FF3_EncounterTable table[256];
+};
+
+struct FF3_EncounterBounds { //39:be00 (73e00)
+	BYTE floatingLand[256];	//index: warpId
+	BYTE underWorld[256];	//index: warpId
+};
+
+//----------------------------------------------------------------------------------------------------
+//enemy data.
+
+struct FF3_EnemyBaseParam {
+	byte lv;			//00
+	word hp;			//01
+	byte specialRate;		//03
+	byte skillLv; 			//04 dest[0x0F]
+	//FF3_EnemyBattleParamHeader mdef;//05
+	//FF3_EnemyBattleParamHeader atk;	//08
+	//FF3_EnemyBattleParamHeader def;	//0B
+	BYTE weakAttr;	//05
+	BYTE mdefIndex;	//06 
+	BYTE int_men;	//07
+	BYTE atkAttr;	//08
+	BYTE atkIndex;	//09 
+	BYTE enchant;	//0a
+	BYTE defAttr;	//0B ?
+	BYTE defIndex;	//0C
+	BYTE resist;	//0D
+	BYTE attackPatternIndex;	//0E
+	BYTE dropParam; 		//0F dest[0x36]  bit0-4:index bit5-7:rate (x/7)
+};
+
+struct FF3_EnemyBattleParam
+{
+	byte count;
+	byte rate;
+	byte power;
+};
+
+struct FF3_ActionList {
+	BYTE actionId[8];
+};
+
+//struct FF3_EnemyBaseParams {	//$60010
+//	FF3_EnemyBaseParam enemy[256];
+//};
+//struct FF3_EnemyBattleParams { //61000
+//	FF3_EnemyBattleParam params[170];
+//};
+//
+//struct FF3_EnemyActionLists {	//61200
+//	FF3_ActionList list[64];
+//};
+
+struct FF3_EnemyData { //60000
+	FF3_EnemyBaseParam baseParams[256];
+	FF3_EnemyBattleParam countRateValues[170];
+	BYTE padding[2];
+	FF3_ActionList actionPatterns[64];
+};
+
+//----------------------------------------------------------------------------------------------------
+//field map.
+
+struct FF3_ChipToTile { //00:a000 (00000)
+//index : chipId
+	BYTE leftTop[64];
+	BYTE rightTop[64];
+	BYTE leftBottom[64];
+	BYTE rightBottom[64];
+};
+
+struct FF3_ChipDef { //00:a000 (00000)
+	FF3_ChipToTile common;
+	FF3_ChipToTile floatingLand;
+	FF3_ChipToTile underWorld;
+	FF3_ChipToTile submarine;
+};
+
+struct FF3_ChipToPalette { // 00:a400
+	//
+	BYTE commonChips[64];
+	BYTE floatingLand[64];
+	BYTE underWorld[64];
+	BYTE submarine[64];
+};
+
+struct FF3_ChipEvent
+{
+	BYTE unk;
+	BYTE eventParam;
+};
+
+struct FF3_ChipEvents { //00:a500 (00500)
+	FF3_ChipEvent floatingLand[128];
+	FF3_ChipEvent underWorld[128];
+	FF3_ChipEvent submarine[128];
+};
+
+struct FF3_Entrances {	//00:8800
+	BYTE warpIdForFloatingLand[64];	//warpId
+	BYTE warpIdForUnderWorld[64];	//warpId
+};
+
+struct FF3_WarpIdToFloorId { //00:8a00 (00a00)
+	BYTE floatingLand[256];	//floorId
+	BYTE underWorld[256];	//floorId
+};
+
+struct FF3_WarpIdToTileSet { //00:8c00
+	BYTE floatingLand[256];	//tileSetId
+	BYTE underWorld[256];
+};
+
+//tileCount for each index: x = $3e:df00.x;
+struct FF3_TileSet {
+	WORD patternOffsetFrom06000[8];	//base: 03:8000
+};
+
+struct FF3_TileSetsForFloor { //00:8e00
+	FF3_TileSet tileSets[48];
+};
+
+struct FF3_Palette { //00:b100 (01100)
+	BYTE color01[256];
+	BYTE color02[256];
+	BYTE color03[256];
+};
+
+struct FF3_ObjectIdToPatternIndex { //00:9400 (1400)
+	//index: pattern addr
+	//00-3F: $0e:8000 + index * 100h
+	//40-57: $0a:8000 + (index-40) * 80h
+	//58-FF: $0d:8000 + (index-58) * 40h
+	BYTE indices[256];
+};
+
+struct FF3_MapParams { //00:8000
+	FF3_ChipDef chips;
+	FF3_ChipToPalette chipPalettes;
+	BYTE unk[128];
+	FF3_ChipEvents events;
+	FF3_Entrances entrances;
+	FF3_WarpIdToFloorId floorIds;
+	FF3_WarpIdToTileSet tileSetIds;
+	FF3_TileSetsForFloor tileSets[48];
+	FF3_Palette palettes;
+};
+
+//loading address: $0780
+//rom address: $04000 (02:a000)
+struct FF3_WarpParam
+{
+	byte initX;		//5bit
+	byte initY;		//5bit
+	BYTE areaNameId;	//_to4b; stringId (base=8200)
+	BYTE defaultChip;	//=> $4c chipId
+	BYTE objectPlacementId;	//??
+	BYTE backgroundPalettes[3];
+	BYTE spritePalettes[2];	//1st 2palettes are reserved
+	BYTE musicId;		//=>$4d
+	BYTE _to0730;
+	WORD offsetToWarpList;	//10:offset => $0700
+	BYTE treasureListId;	//index of 20000(ptr array), => $0710
+	BYTE eventListId;	//index of 20200(ptr array), => $0720
+};
+
+struct FF3_TreasreListOffsets //$10:a000 20000
+{
+	WORD offsetFrom18000[256];
+};
+//
+//	ChipDef $01:a380(2380)[?][4][128]
+//	ChipToPalette $01:b100(03100)[4][128]
+//	ChipAttributes $01:b500(03500)[8][128] : chipAttributeTable { attributes, event }
+
+struct FF3_ChipAttr {
+	BYTE attributes;//80:event 40:encounter 08:damage 07:walklayer
+	BYTE event;	//higher 4bit:eventId, lower:param
+};
+
+struct FF3_ChipAttributes { //01:b500 (03500)
+	FF3_ChipAttr attrs[8][128];	//index: higher 3bits of warpParam.initX
+};
+
+struct FF3_Treasures {	//$01:9c00 (3c00)
+	BYTE itemid[512];	//index: treasureId (msb = 0:floating land 1:others)
+};
+
+struct FF3_WarpParams { //02:a000 (04000)
+	FF3_WarpParam floatingLand[256];
+	FF3_WarpParam underWorld[256];
+};
+
+struct FF3_FieldMapDataOffsets { //06:9000 (0d000)
+	WORD offsetFrom0D000[4][256];
+};
+
+struct FF3_TreasureListOffsets { //10:a000 (20000)
+	WORD offsetFrom18000[256]; //actually bank10's pointer
+};
+
+struct FF3_EventListOffsets { //10:a200 (20200)
+	WORD offsetFrom18000[256]; //actually bank10's pointer
+};
+
+//treasure list stream : 206b6-
+//event list stream : 208e9-20935
+
+struct FF3_FloorDataOffsets { //11:0000 (22000)
+	WORD offsetFrom22000[256];	//index: floorId
+};
+
+struct FF3_ObjectPlacementListOffsets { //2c:8000 (58000)
+	//ptr to null terminated list
+	WORD offsetFrom58000[256];
+};
+//4bytes
+struct FF3_ObjectPlacement { //2c:ptr
+	BYTE spriteId;	//? 00=list end
+	byte x;
+	byte y;
+	BYTE moveAttr;
+};
+struct FF3_BattleBackground { //39:bc00 (73c00)
+	//index: warpId
+	BYTE backgroundId[512]; //浮遊大陸256, 下の世界256
+};
+
+struct FF3_ObjectSpriteBuilder { //$3b:b41a
+	BYTE tileIndex;
+	BYTE attribute;
+};
+struct FF3_ObjectSpriteBuilders { // $3b:b41a
+	FF3_ObjectSpriteBuilder builders[16][4];
+};
+//==================================================================================================
+struct FF3_チップID→タイル { //00:a000 (00000)
+//index : chipId
+	BYTE 左上タイルID[64];
+	BYTE 右上タイルID[64];
+	BYTE 左下タイルID[64];
+	BYTE 右下タイルID[64];
+};
+
+struct FF3_チップタイル定義 { //00:a100 (00100)
+	FF3_チップID→タイル 共通;
+	FF3_チップID→タイル 浮遊大陸;
+	FF3_チップID→タイル 下の世界;
+	FF3_チップID→タイル 海中;
+};
+
+struct FF3_チップID→パレット { // 00:a400
+	//
+	BYTE 共通[64];
+	BYTE 各世界固有[64];
+};
+
+struct FF3_チップイベント
+{
+	//[地上における意味] 
+	//80:イベントあり
+	//01:平地 02:河川 04:海 10:空
+	//↑は現在の移動手段($42)から取得するマスクとANDして結果同じならイベント不発
+	//mask: 徒歩:01 チョコボ:03 カヌー:02 船:04 各種飛空艇:10
+	BYTE 属性;	
+	BYTE イベントパラメータ; //ワープの場合は入口ID
+};
+
+struct FF3_チップイベント定義 { //00:a500 (00500)
+	FF3_チップイベント 浮遊大陸[128];
+	FF3_チップイベント 下の世界[128];
+	FF3_チップイベント 海中[128];
+};
+
+struct FF3_入口 {	//00:8800
+	BYTE 浮遊大陸[64];	//warpId
+	BYTE 下の世界[64];	//warpId
+};
+
+struct FF3_ワープID→フロアID { //00:8a00 (00a00)
+	BYTE 浮遊大陸[256];	//floorId
+	BYTE 下の世界[256];	//floorId
+};
+
+struct FF3_ワープID→タイルセットID { //00:8c00
+	BYTE 浮遊大陸[256];	//tileSetId
+	BYTE 下の世界[256];
+};
+
+struct FF3_パターンアドレスセット {
+	WORD 06000からのオフセット[8];	//base: 03:8000
+};
+
+struct FF3_タイルセット { //00:8e00
+	FF3_パターンアドレスセット タイルセット[48];
+};
+
+struct FF3_パレット定義 { //00:b100 (01100)
+	//色00は予約 (透明)
+	BYTE 色01[256];
+	BYTE 色02[256];
+	BYTE 色03[256];
+};
+
+struct NES_4色パレット {
+	BYTE 色ID[4];
+};
+
+struct FF3_フィールド用パレット定義 { //00:b640 (01640)
+	NES_4色パレット 浮遊大陸背景[4];
+	NES_4色パレット 下の世界背景[4];
+	NES_4色パレット 海中背景[4];
+	NES_4色パレット 浮遊大陸と下の世界オブジェクト基本[4];
+	NES_4色パレット 海中オブジェクト基本[4];
+};
+
+struct FF3_マップ定義 { //00:8000
+	FF3_チップタイル定義 chips;
+	FF3_チップID→パレット chipPalettes;
+	BYTE unk[128];
+	FF3_チップイベント定義 events;
+	FF3_入口 entrances;
+	FF3_ワープID→フロアID floorIds;
+	FF3_ワープID→タイルセットID tileSetIds;
+	FF3_タイルセット tileSets[48];
+	FF3_パレット定義 palettes;
+};
+
+struct FF3_ワープ
+{
+	byte X初期値と使用属性テーブルID;		//higher3bit:id, lower5bit:x
+	byte Y初期値;		//5bit
+	BYTE エリア名ID;	//_to4b; stringId (base=8200)
+	BYTE 背景チップID;	//chipId
+	BYTE objectPlacementId;	//??
+	BYTE 背景用パレットID[3];
+	BYTE オブジェクト用パレットID[2];	//1st 2palettes are reserved
+	BYTE 音楽ID;		//=>$4d
+	BYTE _to0730;
+	WORD ワープIDリストへのオフセット;	//10:offset => $0700
+	BYTE 宝物リストID;	//index of 20000(ptr array), => $0710
+	BYTE イベントリストID;	//index of 20200(ptr array), => $0720
+};
+
+struct FF3_チップ属性 {
+	BYTE 属性;	//80:event 40:encounter 08:damage
+	BYTE イベントパラメータ;	//higher 4bit:eventId, lower:param
+};
+
+struct FF3_チップ属性リスト { //01:b500 (03500)
+	FF3_チップ属性 attrs[8][128];	//index: higher 3bits of warpParam.initX
+};
+
+struct FF3_ワープ定義 { //02:a000 (04000)
+	FF3_ワープ 浮遊大陸[256];
+	FF3_ワープ 下の世界[256];
+};
+
+struct FF3_MapDataAddr {
+	WORD 0D000からのオフセット; //[0800-6400)
+};
+
+struct FF3_地上マップデータオフセット { //06:9000 (0d000)
+	//WORD offsetFrom0D000[4][256];
+	FF3_MapDataAddr 浮遊大陸[256];
+	FF3_MapDataAddr 下の世界(沈没)[256];
+	FF3_MapDataAddr 下の世界(浮上後)[256];
+	FF3_MapDataAddr 海中[256];
+};
+
+struct FF3_宝物リストオフセット { //10:a000 (20000)
+	//index: treasureListId
+	WORD 18000からのオフセット[256]; //actually bank10's pointer
+};
+
+struct FF3_イベントリストオフセット { //10:a200 (20200)
+	WORD 18000からのオフセット[256]; //actually bank10's pointer
+};
+
+struct FF3_フロアマップデータオフセット { //11:0000 (22000)
+	//index: floorId
+	WORD 22000からのオフセット[256]; //[0200-e000)
+};
+
+
