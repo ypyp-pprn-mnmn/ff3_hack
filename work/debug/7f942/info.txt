@@ -1,0 +1,142 @@
+GLOBAL {
+	COMMENTS	3;
+	CPU	"65C02";
+	INPUTNAME	"ff3.nes";
+	INPUTOFFS	$7f942;
+	STARTADDR	$f942;
+	INPUTSIZE	$bf;
+	OUTPUTNAME	"disasm.txt";
+};
+
+LABEL {
+    NAME    "copy_to_vram_direct";
+    ADDR    $f969;
+};
+
+LABEL {
+    NAME    "copy_to_vram";
+    ADDR    $f970;
+};
+
+LABEL {
+    NAME    "update_ppu_scroll_nowait";
+    ADDR    $f8cb;
+};
+
+LABEL {
+    NAME    "set_vram_addr";
+    ADDR    $f8e0;
+};
+
+LABEL {
+    NAME    "multiply_A_by_X";
+    ADDR    $f8ea;
+};
+
+LABEL {
+    NAME    "add16_to_$7e";
+    ADDR    $f8f2;
+};
+
+LABEL {
+    NAME    "add16_to_$80";
+    ADDR    $f8fe;
+};
+
+LABEL {
+    NAME    "set_nmi_irq_handler_for_battle_mode";
+    ADDR    $fab5;
+    COMMENT "save_nmi_irq_handler_and_set_handler_for_battle";
+};
+
+LABEL {
+    NAME    "save_field_variables";
+    ADDR    $fb17;
+};
+
+LABEL {
+    NAME    "wait_on_nmi";
+    ADDR    $fb80;
+};
+
+LABEL {
+    NAME    "switch_lower_2banks";
+    ADDR    $fb87;
+};
+LABEL {
+    NAME    "switch_lower_2banks";
+    ADDR    $f891;
+    COMMENT "jmp $fb87";
+};
+
+LABEL {
+    NAME    "ppu_scroll";
+    ADDR    $2005;
+    COMMENT "for effect taken, read/write access must be operated twice.";
+};
+
+LABEL {
+    NAME    "vram_addr_register";
+    ADDR    $2006;
+    COMMENT "for effect taken, read/write access must be operated twice.";
+};
+
+LABEL {
+    NAME    "vram_port";
+    ADDR    $2007;
+};
+
+LABEL {
+    NAME    "pattern_palette";
+    ADDR    $7300;
+    SIZE    256;
+    COMMENT "used to reverse pattern bits";
+};
+
+LABEL {
+    NAME    "encounter_mode";
+    ADDR    $78c3;
+    COMMENT "set by $34:87be";
+};
+
+LABEL {
+    NAME    "init_completed";
+    ADDR    $7cf3;
+    COMMENT "1: yes, 0: no (still initializing)";
+};
+
+LABEL {
+    NAME    "source_addr";
+    ADDR    $7e;
+    SIZE    2;
+    COMMENT "if indirect flag set, not referenced.";
+};
+
+LABEL {
+    NAME    "dest_vram_addr";
+    ADDR    $80;
+    SIZE    2;
+};
+
+LABEL {
+    NAME    "length_in_tiles";
+    ADDR    $82;
+    COMMENT "1 tile = 10 bytes (8x8 pixel)";
+};
+LABEL {
+    NAME    "remaining_tiles_to_copy";
+    ADDR    $83;
+    COMMENT "$82 & 3";
+};
+
+LABEL {
+    NAME    "source_bank";
+    ADDR    $84;
+    COMMENT "16k bytes/bank";
+};
+
+LABEL {
+    NAME    "use_palette";
+    ADDR    $92;
+    COMMENT "1:yes ($7e is pointer to index buffer, which indexes $7300). 0:no ($7e is direct pointer to source data)";
+};

@@ -1,0 +1,82 @@
+; da65 V2.11.0 - (C) Copyright 2000-2005,  Ullrich von Bassewitz
+; Created:    2011-07-17 22:46:06
+; Input file: ff3.nes
+; Page:       1
+
+
+        .setcpu "65C02"
+
+; ----------------------------------------------------------------------------
+graphics_size_tag:= $007E                       ; bit7-5 of graphics_id
+encounter_mode  := $78C3                        ; set by $34:87be
+init_completed  := $7CF3                        ; 1: yes, 0: no (still initializing)
+number_of_enemies_spawned:= $7D6F
+enemy_graphics_params:= $7D73                   ; { graphics_id, flags }
+enemy_graphics_layout_id:= $7D7B                ; [out]
+; ----------------------------------------------------------------------------
+        lda     enemy_graphics_params           ; 9FAA AD 73 7D
+        and     #$E0                            ; 9FAD 29 E0
+        sta     graphics_size_tag               ; 9FAF 85 7E
+        and     #$C0                            ; 9FB1 29 C0
+        bne     L9FBA                           ; 9FB3 D0 05
+        lda     #$00                            ; 9FB5 A9 00
+        jmp     LA026                           ; 9FB7 4C 26 A0
+; ----------------------------------------------------------------------------
+L9FBA:  lda     graphics_size_tag               ; 9FBA A5 7E
+        cmp     #$A0                            ; 9FBC C9 A0
+        bne     L9FC5                           ; 9FBE D0 05
+        lda     #$07                            ; 9FC0 A9 07
+        jmp     LA026                           ; 9FC2 4C 26 A0
+; ----------------------------------------------------------------------------
+L9FC5:  and     #$C0                            ; 9FC5 29 C0
+        cmp     #$C0                            ; 9FC7 C9 C0
+        bne     L9FD0                           ; 9FC9 D0 05
+        lda     #$09                            ; 9FCB A9 09
+        jmp     LA026                           ; 9FCD 4C 26 A0
+; ----------------------------------------------------------------------------
+L9FD0:  cmp     #$40                            ; 9FD0 C9 40
+        bne     L9FE5                           ; 9FD2 D0 11
+        lda     enemy_graphics_params+4         ; 9FD4 AD 77 7D
+        and     #$C0                            ; 9FD7 29 C0
+        beq     L9FE0                           ; 9FD9 F0 05
+        lda     #$03                            ; 9FDB A9 03
+        jmp     LA026                           ; 9FDD 4C 26 A0
+; ----------------------------------------------------------------------------
+L9FE0:  lda     #$01                            ; 9FE0 A9 01
+        jmp     LA026                           ; 9FE2 4C 26 A0
+; ----------------------------------------------------------------------------
+L9FE5:  lda     number_of_enemies_spawned       ; 9FE5 AD 6F 7D
+        cmp     #$01                            ; 9FE8 C9 01
+        bne     LA00F                           ; 9FEA D0 23
+        lda     enemy_graphics_params+2         ; 9FEC AD 75 7D
+        and     #$C0                            ; 9FEF 29 C0
+        bne     L9FF8                           ; 9FF1 D0 05
+        lda     #$02                            ; 9FF3 A9 02
+        jmp     LA026                           ; 9FF5 4C 26 A0
+; ----------------------------------------------------------------------------
+L9FF8:  cmp     #$40                            ; 9FF8 C9 40
+        bne     LA001                           ; 9FFA D0 05
+        lda     #$04                            ; 9FFC A9 04
+        jmp     LA026                           ; 9FFE 4C 26 A0
+; ----------------------------------------------------------------------------
+LA001:  lda     enemy_graphics_params+2         ; A001 AD 75 7D
+        and     #$E0                            ; A004 29 E0
+        cmp     #$A0                            ; A006 C9 A0
+        bne     LA00F                           ; A008 D0 05
+        lda     #$08                            ; A00A A9 08
+        jmp     LA026                           ; A00C 4C 26 A0
+; ----------------------------------------------------------------------------
+LA00F:  lda     number_of_enemies_spawned       ; A00F AD 6F 7D
+        cmp     #$02                            ; A012 C9 02
+        bne     LA024                           ; A014 D0 0E
+        lda     enemy_graphics_params+2         ; A016 AD 75 7D
+        and     #$C0                            ; A019 29 C0
+        cmp     #$40                            ; A01B C9 40
+        bne     LA024                           ; A01D D0 05
+        lda     #$05                            ; A01F A9 05
+        jmp     LA026                           ; A021 4C 26 A0
+; ----------------------------------------------------------------------------
+LA024:  lda     #$06                            ; A024 A9 06
+LA026:  sta     enemy_graphics_layout_id        ; A026 8D 7B 7D
+        rts                                     ; A029 60
+; ----------------------------------------------------------------------------

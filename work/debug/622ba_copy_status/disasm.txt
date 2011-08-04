@@ -1,0 +1,51 @@
+; da65 V2.11.0 - (C) Copyright 2000-2005,  Ullrich von Bassewitz
+; Created:    2011-07-09 23:52:07
+; Input file: ff3_hack_beta.nes
+; Page:       1
+
+
+        .setcpu "65C02"
+
+; ----------------------------------------------------------------------------
+current_status  := $0018
+result_status   := $0019
+actor_status_offset:= $0062
+target_status_offset:= $0064
+actor_index     := $0066
+target_index    := $0068
+p_actor         := $006E
+p_target        := $0070
+target_status_cache:= $00E0
+actor_status_cache:= $00F0
+get_actor_2c    := $A2B5
+get_target_2c   := $BC25
+; ----------------------------------------------------------------------------
+copy_status:
+        jsr     get_actor_2c                    ; A2BA 20 B5 A2
+        and     #$07                            ; A2BD 29 07
+        sta     actor_index                     ; A2BF 85 66
+        asl     a                               ; A2C1 0A
+        sta     actor_status_offset             ; A2C2 85 62
+        lda     (p_target),y                    ; A2C4 B1 70
+        and     #$07                            ; A2C6 29 07
+        sta     target_index                    ; A2C8 85 68
+        asl     a                               ; A2CA 0A
+        sta     target_status_offset            ; A2CB 85 64
+        ldx     actor_status_offset             ; A2CD A6 62
+        ldy     #$01                            ; A2CF A0 01
+        lda     (p_actor),y                     ; A2D1 B1 6E
+        sta     actor_status_cache,x            ; A2D3 95 F0
+        inx                                     ; A2D5 E8
+        iny                                     ; A2D6 C8
+        lda     (p_actor),y                     ; A2D7 B1 6E
+        sta     actor_status_cache,x            ; A2D9 95 F0
+        ldx     target_status_offset            ; A2DB A6 64
+        dey                                     ; A2DD 88
+        lda     (p_target),y                    ; A2DE B1 70
+        sta     target_status_cache,x           ; A2E0 95 E0
+        inx                                     ; A2E2 E8
+        iny                                     ; A2E3 C8
+        lda     (p_target),y                    ; A2E4 B1 70
+        sta     target_status_cache,x           ; A2E6 95 E0
+        rts                                     ; A2E8 60
+; ----------------------------------------------------------------------------

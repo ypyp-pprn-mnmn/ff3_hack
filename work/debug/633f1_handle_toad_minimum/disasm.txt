@@ -1,0 +1,88 @@
+; da65 V2.11.0 - (C) Copyright 2000-2005,  Ullrich von Bassewitz
+; Created:    2011-07-09 23:17:50
+; Input file: ff3_hack_beta.nes
+; Page:       1
+
+
+        .setcpu "65C02"
+
+; ----------------------------------------------------------------------------
+current_status  := $0018
+result_status   := $0019
+target_index    := $0064
+p_target        := $0070
+damage          := $0078
+target_status_cache:= $00E0
+actor_status_cache:= $00F0
+magic_parameters:= $7400
+battle_messages := $78D9
+battle_mode     := $7ED8
+get_actor_2c    := $A2B5
+set_result_damage_as_invalid:= $B74B
+calc_magic_hit_count_and_clear_target_if_none_hit:= $B8E7
+clear_effect_target_bits:= $B926
+get_target_2c   := $BC25
+; ----------------------------------------------------------------------------
+handle_toad_minimum:
+        jsr     get_actor_2c                    ; B3F1 20 B5 A2
+        bmi     LB3FA                           ; B3F4 30 04
+        lda     (p_target),y                    ; B3F6 B1 70
+        bpl     LB3FF                           ; B3F8 10 05
+LB3FA:  jsr     calc_magic_hit_count_and_clear_target_if_none_hit; B3FA 20 E7 B8
+        beq     LB473                           ; B3FD F0 74
+LB3FF:  jsr     get_target_2c                   ; B3FF 20 25 BC
+        bpl     LB40F                           ; B402 10 0B
+        lda     battle_mode                     ; B404 AD D8 7E
+        bpl     LB40F                           ; B407 10 06
+        jsr     clear_effect_target_bits        ; B409 20 26 B9
+        jmp     LB473                           ; B40C 4C 73 B4
+; ----------------------------------------------------------------------------
+LB40F:  ldy     #$01                            ; B40F A0 01
+        lda     (p_target),y                    ; B411 B1 70
+        sta     current_status                  ; B413 85 18
+        eor     magic_parameters+3              ; B415 4D 03 74
+        sta     (p_target),y                    ; B418 91 70
+        sta     result_status                   ; B41A 85 19
+        ldx     target_index                    ; B41C A6 64
+        and     #$28                            ; B41E 29 28
+        beq     LB427                           ; B420 F0 05
+        lda     (p_target),y                    ; B422 B1 70
+        ora     magic_parameters+3              ; B424 0D 03 74
+LB427:  sta     target_status_cache,x           ; B427 95 E0
+        lda     result_status                   ; B429 A5 19
+        and     #$20                            ; B42B 29 20
+        beq     LB43C                           ; B42D F0 0D
+        lda     current_status                  ; B42F A5 18
+        and     #$20                            ; B431 29 20
+        bne     LB473                           ; B433 D0 3E
+        lda     #$0F                            ; B435 A9 0F
+        sta     battle_messages                 ; B437 8D D9 78
+        bne     LB473                           ; B43A D0 37
+LB43C:  lda     result_status                   ; B43C A5 19
+        and     #$08                            ; B43E 29 08
+        beq     LB44F                           ; B440 F0 0D
+        lda     current_status                  ; B442 A5 18
+        and     #$08                            ; B444 29 08
+        bne     LB473                           ; B446 D0 2B
+        lda     #$11                            ; B448 A9 11
+        sta     battle_messages                 ; B44A 8D D9 78
+        bne     LB473                           ; B44D D0 24
+LB44F:  lda     current_status                  ; B44F A5 18
+        and     #$20                            ; B451 29 20
+        beq     LB462                           ; B453 F0 0D
+        lda     result_status                   ; B455 A5 19
+        and     #$20                            ; B457 29 20
+        bne     LB473                           ; B459 D0 18
+        lda     #$05                            ; B45B A9 05
+        sta     battle_messages                 ; B45D 8D D9 78
+        bne     LB473                           ; B460 D0 11
+LB462:  lda     current_status                  ; B462 A5 18
+        and     #$08                            ; B464 29 08
+        beq     LB473                           ; B466 F0 0B
+        lda     result_status                   ; B468 A5 19
+        and     #$08                            ; B46A 29 08
+        bne     LB473                           ; B46C D0 05
+        lda     #$07                            ; B46E A9 07
+        sta     battle_messages                 ; B470 8D D9 78
+LB473:  rts                                     ; B473 60
+; ----------------------------------------------------------------------------

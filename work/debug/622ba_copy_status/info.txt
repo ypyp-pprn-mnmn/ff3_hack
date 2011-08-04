@@ -1,0 +1,70 @@
+GLOBAL {
+	COMMENTS	3;
+	CPU	"65C02";
+	INPUTNAME	"ff3_hack_beta.nes";
+	INPUTOFFS	$622ca;
+	STARTADDR	$a2ba;
+	INPUTSIZE	$2f;
+	OUTPUTNAME	"disasm.txt";
+};
+
+LABEL {
+	NAME	"copy_status";
+	ADDR	$a2ba;
+};
+
+LABEL {
+	NAME	"get_actor_2c";
+	ADDR	$a2b5;
+};
+
+LABEL {
+	NAME	"get_target_2c";
+	ADDR	$bc25;
+};
+LABEL {
+	NAME	"p_actor";
+	ADDR	$6e;
+	SIZE	2;
+};
+LABEL {
+	NAME	"p_target";
+	ADDR	$70;
+	SIZE	2;
+};
+
+LABEL {
+	NAME	"target_status_cache";
+	ADDR	$e0;
+	SIZE	16;
+};
+LABEL {
+	NAME	"actor_status_cache";
+	ADDR	$f0;
+	SIZE	16;
+};
+
+LABEL {
+	NAME	"current_status";
+	ADDR	$18;
+};
+LABEL {
+	NAME	"result_status";
+	ADDR	$19;
+};
+LABEL {
+	NAME	"target_index";
+	ADDR	$68;
+};
+LABEL {
+	NAME	"target_status_offset";
+	ADDR	$64;
+};
+LABEL {
+	NAME	"actor_index";
+	ADDR	$66;
+};
+LABEL {
+	NAME	"actor_status_offset";
+	ADDR	$62;
+};
