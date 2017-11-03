@@ -4,7 +4,7 @@
 ;	master file to assmeble
 ;
 ; version:
-;	0.22 (2007-08-22)
+;	0.23
 ;
 ;----------------------------------------------------------------------------------------------------------
 	.inesprg	$20		;total 512k
@@ -14,13 +14,13 @@
 	.mlist
 ;----------------------------------------------------------------------------------------------------------
 	.ifdef BALANCED_VERSION
-		.ifdef TEST_MAP
-			.incbin "ff3_maptest.nes"
+		.ifdef EXTRA_MAP
+			.incbin "base-binary/ff3_extra_map.nes.noheader"
 		.else
-			.incbin "ff3_hack_base_ex.nes"
+			.incbin "base-binary/ff3_hack_base_ex.nes.noheader"
 		.endif
 	.else
-		.incbin	"ff3_hack_base.nes"	;header must be stripped
+		.incbin	"base-binary/ff3_hack_base.nes.noheader"	;header must be stripped
 	.endif	;BALANCED_VERSION
 	.include "ff3_asm.h"
 	.bank	$00
