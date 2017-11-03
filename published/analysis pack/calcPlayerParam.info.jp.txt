@@ -1,0 +1,81 @@
+GLOBAL {
+	COMMENTS	3;
+	CPU	"65C02";
+	INPUTNAME	"ff3_hack_beta.nes";
+	INPUTOFFS	$62e40;
+	STARTADDR	$ae30;
+	INPUTSIZE	$34;
+	OUTPUTNAME	"ff3.disasm.txt";
+};
+
+LABEL {
+	NAME	"calcPlayerParam_physicalEvade";
+	ADDR	$ae30;
+	COMMENT	"$31:ae30 (62e40)";
+};
+
+LABEL {
+	NAME	"shiftRight2";
+	ADDR	$fd47;
+};
+
+LABEL {
+	NAME	"右手装備タイプ";
+	ADDR	$48;
+};
+
+LABEL {
+	NAME	"左手装備タイプ";
+	ADDR	$49;
+};
+
+LABEL {
+	NAME	"右手装備回避値";
+	ADDR	$24;
+};
+
+LABEL {
+	NAME	"左手装備回避値";
+	ADDR	$25;
+};
+
+LABEL {
+	NAME	"物理回避";
+	ADDR	$44;
+};
+
+LABEL {
+	NAME	"頭装備パラメータ";
+	ADDR	$7400;
+	SIZE	8;
+};
+
+LABEL {
+	NAME	"体装備パラメータ";
+	ADDR	$7408;
+	SIZE	8;
+};
+
+LABEL {
+	NAME	"腕装備パラメータ";
+	ADDR	$7410;
+	SIZE	8;
+};
+
+LABEL {
+	NAME	"右手装備パラメータ";
+	ADDR	$7418;
+	SIZE	8;
+};
+
+LABEL {
+	NAME	"左手装備パラメータ";
+	ADDR	$7420;
+	SIZE	8;
+};
+
+LABEL {
+	NAME	"素早さ(キャッシュ)";
+	ADDR	$7429;
+};
+
