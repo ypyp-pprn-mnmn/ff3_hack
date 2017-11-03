@@ -15,7 +15,7 @@
 ;----------------------------------------------------------------------------------------------------------
 	.ifdef BALANCED_VERSION
 		.ifdef EXTRA_MAP
-			.incbin "base-binary/ff3_extra_map.nes.noheader"
+			.incbin "extra-map/ff3_extra_map.nes.noheader"
 		.else
 			.incbin "base-binary/ff3_hack_base_ex.nes.noheader"
 		.endif
