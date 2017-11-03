@@ -1,0 +1,52 @@
+; da65 V2.11.0 - (C) Copyright 2000-2005,  Ullrich von Bassewitz
+; Created:    2007-08-30 03:42:50
+; Input file: ff3_hack_beta.nes
+; Page:       1
+
+
+        .setcpu "65C02"
+
+; ----------------------------------------------------------------------------
+pTarget         := $0070
+damage          := $0078
+setResultDamageToInvalid:= $B74B
+clearEffectTargetBit:= $B926
+; ----------------------------------------------------------------------------
+magic_protect:
+        ldy     #$23                            ; B704 A0 23
+        lda     (pTarget),y                     ; B706 B1 70
+        cmp     #$FF                            ; B708 C9 FF
+        bne     LB714                           ; B70A D0 08
+        ldy     #$15                            ; B70C A0 15
+        lda     (pTarget),y                     ; B70E B1 70
+        cmp     #$FF                            ; B710 C9 FF
+        beq     LB745                           ; B712 F0 31
+LB714:  ldy     #$23                            ; B714 A0 23
+        clc                                     ; B716 18
+        lda     (pTarget),y                     ; B717 B1 70
+        adc     damage                          ; B719 65 78
+        sta     (pTarget),y                     ; B71B 91 70
+        lda     #$00                            ; B71D A9 00
+        adc     damage+1                        ; B71F 65 79
+        sta     damage+1                        ; B721 85 79
+        lda     damage+1                        ; B723 A5 79
+        beq     LB72B                           ; B725 F0 04
+        lda     #$FF                            ; B727 A9 FF
+        sta     (pTarget),y                     ; B729 91 70
+LB72B:  ldy     #$15                            ; B72B A0 15
+        clc                                     ; B72D 18
+        lda     (pTarget),y                     ; B72E B1 70
+        adc     damage                          ; B730 65 78
+        sta     (pTarget),y                     ; B732 91 70
+        lda     #$00                            ; B734 A9 00
+        adc     damage+1                        ; B736 65 79
+        sta     damage+1                        ; B738 85 79
+        lda     damage+1                        ; B73A A5 79
+        beq     LB742                           ; B73C F0 04
+        lda     #$FF                            ; B73E A9 FF
+        sta     (pTarget),y                     ; B740 91 70
+LB742:  jmp     setResultDamageToInvalid        ; B742 4C 4B B7
+; ----------------------------------------------------------------------------
+LB745:  jsr     setResultDamageToInvalid        ; B745 20 4B B7
+        jmp     clearEffectTargetBit            ; B748 4C 26 B9
+; ----------------------------------------------------------------------------

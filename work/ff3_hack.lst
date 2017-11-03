@@ -1,0 +1,934 @@
+#[1]   ff3_hack.asm
+   15                     ;----------------------------------------------------------------------------------------------------------
+   16           0000              .ifdef BALANCED_VERSION
+   22                             .else
+   23  00:0000                            .incbin "ff3_hack_base.nes"     ;header must be stripped
+   24                             .endif  ;BALANCED_VERSION
+#[3]   ff3_asm.h
+   25                             .include "ff3_asm.h"
+    1                     ; ff3_asm.h
+    2                     ;
+    3                     ; include file for hackcodes
+    4                     ;======================================================================================================
+    5                     ;consts
+#[4]   ff3_const.h
+    6                             .include "ff3_const.h"
+    1                     ; ff3_const.h
+    2                     ;
+    3                     ; various constant value definitions
+    4                     ;--------------------------------------------------------------------------------
+    5                     ; original consts
+    6                     
+    7                     ;--------------------------------------------------------------------------------
+    8                     ;status flags
+    9                     ;
+   10           0001      STATUS_LITE_MASK        = $01
+   11                     ; heavy
+   12           0002      STATUS_POISON           = $02
+   13           0004      STATUS_BLIND            = $04
+   14           0008      STATUS_MINIMUM          = $08
+   15           0010      STATUS_SEALED           = $10
+   16           0020      STATUS_TOAD             = $20
+   17           0040      STATUS_STONE            = $40
+   18           0080      STATUS_DEAD             = $80
+   19                     ; lite
+   20           0001      STATUS_JUMPING          = $01   ; valid only in battle (cannot enchant)
+   21           0006      STATUS_PETRIFY_MASK     = $06
+   22           0018      STATUS_REMAIN_MASK      = $18
+   23           0020      STATUS_CONFUSED         = $20
+   24           0040      STATUS_SLEEPING         = $40
+   25           0080      STATUS_PARALYZED        = $80
+   26                     
+   27                     ;--------------------------------------------------------------------------------
+   28                     ;BattleChar related
+   29                     ;
+   30           0001      BP_OFFSET_STATUS_HEAVY          = $01
+   31           0002      BP_OFFSET_STATUS_LITE           = $02
+   32           001E      X_BP_OFFSET_PARAM                       = $1e
+   33           001F      X_BP_OFFSET_TYPE                        = $1f
+   34           0027      BP_OFFSET_ATTACK_MULTIPLIER = $27
+   35           0028      BP_OFFSET_CRITICAL_RATE         = $28
+   36           002C      BP_OFFSET_INDEX_AND_MODE        = $2c
+   37           002E      BP_OFFSET_ACTION_ID             = $2e
+   38           002F      BP_OFFSET_ACTION_TARGET = $2f
+   39           0030      BP_OFFSET_TARGET_FLAG           = $30
+   40           0037      BP_OFFSET_SPECIAL_RATE          = $37
+   41                     
+   42           0080      TARGET_ENEMY_PARTY      = $80
+   43           0040      TARGET_MULTIPLE         = $40
+   44                     
+   45                     ;--------------------------------------------------------------------------------
+   46                     ; action ids
+   47                     ;
+   48                     
+   49           0000      ACTION_NOTHING  = $00
+   50           0004      ACTION_FIGHT    = $04
+   51           0006      ACTION_ESCAPE   = $06
+   52                     
+   53                     
+   54                     ;--------------------------------------------------------------------------------
+   55                     ; job ids
+   56                     ;
+   57                     
+   58           0008      JOB_THIEF       = $08
+   59                     
+   60                     ;--------------------------------------------------------------------------------
+   61                     ; chip ids
+   62                     ;
+   63                     
+   64           007C      CHIPID_TREASURE_BOX = $7c
+   65           007D      CHIPID_OPENED_TREASURE_BOX = $7d
+   66                     
+   67                     ;--------------------------------------------------------------------------------
+   68                     ; treasure
+   69                     
+   70           00E0      TREASURE_WITH_ENCOUNTER_BASE = $e0
+   71                     
+   72                     ;--------------------------------------------------------------------------------
+   73                     ; event flags
+   74                     
+   75           0020      EVENT_FLAG_ENCOUNTER = $20
+   76                     
+   77                     ;--------------------------------------------------------------------------------
+   78                     ; extention to original
+   79                     
+   80                     ;EXSTATUS_OFFSET_PARAM  = $1e
+   81                     ;EXSTATUS_OFFSET_TYPE   = $1f
+   82                     
+   83           0019      EFFECT_PROVOKE  = $19
+   84           001A      EFFECT_ABYSS    = $1a
+   85                     
+   86           0016      CMDX_ID_BEGIN           = $16
+   87           0016      CMDX_PROVOKE            = $16
+   88           0017      CMDX_DISORDERED_SHOT= $17
+   89           0018      CMDX_ABYSS                      = $18
+   90           0019      CMDX_RAID                       = $19
+   91           001A      CMDX_ID_END                     = $1a
+   92                     
+   93           0006      BATTLE_PROCESS_EX_DISORDERED_SHOT = $06
+   94                     
+   95           0026      PRESENT_SCENE_EX_BLOWONLY = $26
+   96           0027      PRESENT_SCENE_EX_ABYSS = $27
+   97                     
+   98           000A      BF_PICK_RANDOM_TARGET = $0a
+   99           000B      BF_GET_RANDOM_SUCCEEDED_COUNT = $0b
+  100           000C      BF_CALC_DAMAGE = $0c
+#[3]   ff3_asm.h
+    7                     ;proc addrs
+#[4]   ff3_30-31.h
+    8                             .include "ff3_30-31.h"
+    1                     ; ff3_30-31.h
+    2                     ;
+    3                     ;description:
+    4                     ;       include file for bank $30,$31
+    5                     ;
+    6                     ;version:
+    7                     ;       v0.05 (2007-08-21)
+    8                     ;
+    9                     ;======================================================================================================
+   10                     ;$30-31
+   11           22B5      b31_getActor2C                          = $a2b5 ;2c:index & flag
+   12           22BA      cacheStatus                                     = $a2ba
+   13           3300      getRandomTarget                         = $a300
+   14           3368      sumDamage                                       = $a368
+   15           3389      addValueAtOffsetToAttack        = $a389
+   16           3397      isRangedWeapon                          = $a397
+   17           4482      loadPlayerParam                         = $a482
+   18           44F6      loadEnemyParam                          = $a4f6
+   19           88C8      getActionMode                           = $a8c8 ;[in] $2c: battleChar* [out] y : #2c, a : $24.+2c
+   20           88CD      setRandomTargetFromEnemyParty = $a8cd   ;[in] BattleChar* $24
+   21           88EC      getLeastLvInPlayerParty         = $a8ec
+   22           991B      decideEnemyActionTarget         = $a91b
+   23           99F7      isValidTarget                           = $a9f7 ;[out] bool zero :valid
+   24           AA16      recalcPlayerParam                       = $aa16
+   25           FF77      calcAction                                      = $af77
+   26           99AB      segmentate                                      = $b9ab
+   27                     ;getRandomSucceededCount                = $bb28 ;$24:count, $25:rate, [out] $30:succeededCount
+   28           BB28      getNumberOfRandomSuccess        = $bb28
+   29           BB44      calcDamage                                      = $bb44 ;[out] $1c,1d : damage
+   30           BBE2      isTargetWeakToHoly                      = $bbe2 ;[out] $27: 2=weak
+   31           CC25      b31_getTarget2C                         = $bc25
+   32                     ;applyDamage                                    = $bcd2
+   33           CCD2      damageHp                                        = $bcd2
+   34           DD24      healHp                                          = $bd24
+   35           DDAA      shiftRightDamageBy2                     = $bdaa
+   36           DDB3      set24ToActor                            = $bdb3
+   37           DDBC      set24ToTarget                           = $bdbc
+   38           EE14      checkEnchantedStatus            = $be14
+   39           EE90      b31_updatePlayerOffset          = $be90
+   40           EE98      b31_setYtoOffsetOf                      = $be98
+   41           EE9D      calcDataAddress                         = $be9d
+   42           EEB4      b31_getBattleRandom                     = $beb4
+   43           FF53      checkSegment                            = $bf53
+#[3]   ff3_asm.h
+#[4]   ff3_32-33.h
+    9                             .include "ff3_32-33.h"
+    1                     ; ff3_32-33.h
+    2                     ;
+    3                     ;description:
+    4                     ;       include file for bank $32,33
+    5                     ;
+    6                     ;version:
+    7                     ;       v0.02 (2006-10-23)
+    8                     ;
+    9                     ;======================================================================================================
+   10                     ;$32-33
+   11           AAE6      incrementSwingFrame                     = $8ae6 ;a = ++$b6
+   12           0059      beginSwingFrame                         = $a059 ;$b6 = 0
+   13           0094      blowEffect_limitHitCount        = $a094
+   14           00C0      effect_playerBlow                       = $a0c0 ;[effectFunction_04]
+   15           2245      getSwingCountOfCurrentHand      = $a245
+   16           444F      getSys0Random_00_ff                     = $a44f
+#[3]   ff3_asm.h
+#[4]   ff3_34-35.h
+   10                             .include "ff3_34-35.h"
+    1                     ; ff3_34-35.h
+    2                     ;
+    3                     ;description:
+    4                     ;       label definition for bank $34-35
+    5                     ;
+    6                     ;version:
+    7                     ;       0.03 (2006-10-19)
+    8                     ;
+    9                     ;======================================================================================================
+   10                     ;$34-35
+   11           001E      dispatchBattleFunction_03       = $801e
+   12           0026      dispatchBattleFunction_05       = $8026
+   13           002A      dispatchBattleFunction_06       = $802a
+   14           002E      dispatchBattleFunction_07       = $802e
+   15           1185      presentCharacter                        = $8185
+   16                     ;playEffect                                     = $8411 ;hacked
+   17                     ;set52toIndexFromActorBit       = $8532 ;[in] $7e98 : target indicator bits?,
+   18           5545      dispatchPresentScene_1f         = $8545
+   19           66AB      targetBitToCharIndex            = $86ab ;[in] x = side? [out] y = index
+   20           992E      tileSprites2x2                          = $892e
+   21           9966      loadCursor                                      = $8966
+   22           999E      getInputAndUpdateCursorWithSound = $899e
+   23           AADF      clearSprites2x2                         = $8adf
+   24                     
+   25           BB38      draw8LineWindow                         = $8b38 ;[in] $18:left, $19:right, $1a:borderFlag, $7ac0:tilePtr
+   26           DD03      setBackgroundProperty           = $8d03 ;
+   27           DD1B      draw1LineWindow                         = $8d1b ;[in] $18:windowkind
+   28           EEB0      eraseWindow                                     = $8eb0
+   29           FF0B      eraseFromLeftBottom0Bx0A        = $8f0b
+   30           11CE      setNoTargetMessage                      = $91ce
+   31           55BD      setBaseAddrTo_8a40                      = $95bd
+   32           55C6      setBaseAddrTo_8c40                      = $95c6
+   33           55CF      set18toTargetCache                      = $95cf
+   34           55E1      itoa_16                                         = $95e1
+   35           666A      strToTileArray                          = $966a
+   36                     ;initTileArrayStorage           = $9754 ;hacked (fill $7200[0x200] and set $4e to point $7200)
+   37                     ;getCommandInput_next           = $99fd ;hacked
+   38           AA69      createCommandWindow                     = $9a69
+   39           AAE7      putCanceledItem                         = $9ae7
+   40           BB79      requestSoundEffect18                    = $9b79 ;setCA_18_and_incC9
+   41           BB7D      requestSoundEffect05                    = $9b7d ;setCA_05_and_incC9
+   42           BB81      requestSoundEffect06                    = $9b81 ;setCA_06_and_incC9
+   43           BB88      setYtoOffsetOf                          = $9b88 ;y = $5f + a
+   44           BB8D      setYtoOffset03                          = $9b8d
+   45           BB94      setYtoOffset2F                          = $9b94 ;target indicator
+   46           BB9B      setYtoOffset2E                          = $9b9b ;action id
+   47           BBA2      drawInfoWindow                          = $9ba2
+   48           DD1D      cachePlayerStatus                       = $9d1d
+   49           DD9E      drawEnemyNamesWindow            = $9d9e
+   50           FF7B      setActorActionAndClearMode      = $9f7b
+   51           FF87      setActionTargetToSelf           = $9f87
+   52                     ;getIndexOfGreatest                     = $a30f ;hacked [in] u16 $1a[4] : values ,$24[4] : indices [out] x : index
+   53           3353      consumeEquippedItem                     = $a353 ;x unchanges
+   54           442E      getActor2C                                      = $a42e
+   55           5541      getPlayerOffset                         = $a541
+   56           5549      initString                                      = $a549 ;fill x bytes at $7ad7 #$00ff (null terminated)
+   57           5558      offsetTilePtr                           = $a558
+   58           5564      getSys1Random                           = $a564
+   59           6609      loadString                                      = $a609
+   60                     ;itemWindowInputLoop            = $aeaa ;hacked
+   61                     ;endItemWindow                          = $b1b0 ;hacked
+   62                     ;itemWindow_OnB                         = $b198 ;hacked
+   63                     ;loadTileArrayForItemWindowColumn = $b48b
+   64                     ;moveCursor                                     = $b4d4 ;hacked
+   65                     ;itemWindow_OnUse                       = $b4f7 ;hacked
+   66                     ;drawEquipWindow                        = $b419 ;hacked
+   67                     ;drawEquipWindowNoErase         = $b5f9 ;hacked
+   68                     ;isPlayerAllowedToUseItem       = $b8fd ;hacked
+   69           9979      setActionTargetByParam          = $b979
+   70           AA3A      loadTo7400FromBank30            = $ba3a
+#[3]   ff3_asm.h
+   11                     ;$3e-3f
+   12           7750      field_callSoundDriver           = $c750
+   13           998F      field_cacheWindowPalette        = $c98f
+   14           99A9      field_setWindowPalette          = $c9a9
+   15           DD56      field_fill_07c0_ff                      = $ed56
+   16           DDE1      field_setBgScrollTo0            = $ede1
+   17           66AA      field_putWindowTiles            = $f6aa
+   18           7727      switchBanksTo3c3d                       = $f727
+   19           88B0      updateDmaPpuScrollSyncNmiEx = $f8b0
+   20           88C5      updateDmaPpuScrollSyncNmi       = $f8c5 ;(y is unchanged)
+   21           88CB      updatePpuScrollNoWait           = $f8cb
+   22           88E0      setVramAddr                                     = $f8e0 ;[in] a:high, x:low
+   23           88EA      mul_8x8_reg                                     = $f8ea ;a,x = a * x
+   24           AA0E      call_2e_9d53                            = $fa0e
+   25           AA26      doBattle                                        = $fa26
+   26           BB80      waitNmi                                         = $fb80 ;wait on $05 clear
+   27           BB87      switchFirst2Banks                       = $fb87 ;[in] a : per16k bank index
+   28           BBAA      getPad1Input                            = $fbaa ;[out] $12 : inputFlags
+   29           BBEF      getBattleRandom                         = $fbef ;[out] a : rand [min:x - max:a] max included
+   30           CC27      initBattleRandom                        = $fc27
+   31           CC92      div_16                                          = $fc92 ;$1c = $18,19 / $1a,1b; $1d = $18,19 % $1a,1b
+   32           CCD6      mul_8x8                                         = $fcd6 ;$1a,1b = a * x
+   33           CCF5      mul_16x16                                       = $fcf5 ;$1c,1d,1e,1f = $18,19 * $1a,1b
+   34           DD20      flagTargetBit                           = $fd20
+   35           DD2C      clearTargetBit                          = $fd2c
+   36           DD38      maskTargetBit                           = $fd38
+   37           DD3C      shiftLeft6                                      = $fd3c
+   38           DD43      shiftRight6                                     = $fd43
+   39           DD4A      loadStringWorker                        = $fd4a
+   40           DD60      get2byteAtBank18                        = $fd60
+   41           DDA6      loadTo7400Ex                            = $fda6
+   42           DDDC      copyTo7400                                      = $fddc
+   43                     ;call_30_9e58                           = $fdf3
+   44           DDF3      invoke_b30_battleFunction       = $fdf3
+   45           FF00      waitNmiBySetHandler                     = $ff00
+   46           FF06      call_switch1stBank                      = $ff06
+   47           FF09      call_switch2ndBank                      = $ff09
+   48                     ;----------------------------------------------------------------------------------------------------------
+   49                     ;well known vars
+   50           1101      pNmiHandler                     = $0101 ;$0100 jmp xxxx
+   51           1104      pIrqHandler                     = $0104 ;$0103 jmp xxxx
+   52           0000      irqFlag                         = $00
+   53           0001      enableScanlineCounter = $01     ;mmc3's irq
+   54           0003      irqCountDown            = $03
+   55           0005      nmiFlag                         = $05
+   56           0006      ppuCtrl1SetOnNmi        = $06
+   57           0008      ppuCtrl1SetOnIrq        = $08
+   58           0009      ppuCtrl2SetOnNmi        = $09
+   59           000C      scrollXSetOnNmi         = $0c
+   60           000D      scrollYSetOnNmi         = $0d
+   61           0010      scrollXSetOnIrq         = $10
+   62           0011      scrollYSetOnIrq         = $11
+   63           0012      inputBits                       = $12
+   64           00B3      selectTarget_behavior           = $b3   ;param of presentSceneFunction10($2e:9d53)
+   65           00B4      selectTarget_selectedBits       = $b4
+   66           00B5      selectTarget_targetFlag         = $b5
+   67           00C0      playerX                         = $c0   ;*4
+   68           00C4      playerY                         = $c4   ;*4
+   69           00C9      playSoundEffect         = $c9   ;1=play
+   70           00CA      soundEffectId           = $ca   ; played on irq if $c9 != 0
+   71           00E0      targetStatusCache       = $e0   ;in process battle phase
+   72           00F0      actorStatusCache        = $f0   ;
+   73           88D5      presentActionParams     = $78d5 ;?,actor,action,targetflag,effectmsg,messages
+   74           88D5      battleProcessType       = $78d5
+   75           88D7      actionName                      = $78d7
+   76           88D8      targetName                      = $78d8
+   77           88D9      effectMessage           = $78d9
+   78           88DA      battleMessages          = $78da
+   79           88EE      battleMessageCount      = $78ee
+   80                     ;pTileArray                     = $7ac0
+   81           AAC7      selectedMagicLv         = $7ac7 ;[4]
+   82           AAD7      stringCache                     = $7ad7
+   83           BBE3      battleRandoms           = $7be3
+   84           CCED      encounterId                     = $7ced
+   85           CCF3      isRendering                     = $7cf3
+   86                     
+   87           DD6B      groupToEnemyIdMap       = $7d6b ;*4
+   88                     ;;indexToGroupMap               = $7da7
+   89           DDD7      enemyPos                        = $7dd7 ;{x,y}*8
+   90                     ;param for playing (magic) effect
+   91           EE1F      play_weaponRight                = $7e1f
+   92           EE20      play_weaponLeft                 = $7e20
+   93           EE4F      play_damages                    = $7e4f
+   94           EE6F      play_damageTarget               = $7e6f ;0=player
+   95           EE98      play_actorBits                  = $7e98
+   96           EE96      play_arrowTarget                = $7e96
+   97           EE99      play_castTargetBits             = $7e99 ;battle
+   98           EE9A      play_effectTargetSide   = $7e9a ;80:actor enemy 40:target enemy
+   99           EE9B      play_effectTargetBits   = $7e9b ;param of presentActionEffect($33:b68d)
+  100           EE9D      play_magicType                  = $7e9d
+  101           EEB8      play_reflectedTargetBits= $7eb8 ;param of presentEffectAtTarget($33:b64f)
+  102                     
+  103           EEC2      effectHandlerIndex      = $7ec2 ;
+  104           EEC3      effectHandlerFlag       = $7ec3
+  105           EEC4      effect_enemyStatus      = $7ec4
+  106           EECD      indexToGroupMap         = $7ecd ;*8
+  107           EED8      battleMode                      = $7ed8 ; 80:boss? 20:fireCannon(invincible) 10:disallowEnlarge 08:? 01:disallowEscape
+  108           EEDF      play_protectionTargetBits = $7edf
+  109           EEE1      play_segmentedGroup = $7ee1
+  110                     
+  111           FF40      soundDriver_playingMusicId = $7f40
+  112           FF41      soundDriver_lastMusicId = $7f41
+  113           FF42      soundDriver_control     = $7f42 ;01:playNew(7f43) 02:playLast(7f41,saved when 01) 04:stop 80:playOn
+  114           FF43      soundDriver_musicId     = $7f43
+  115           FF49      soundDriver_effectId= $7f49     ;msb should be 1
+  116                     ;----------------------------------------------------------------------------------------------------------
+  117                     ;in memory structs
+  118           00C0      backpackItems           = $60c0
+  119           1100      playerBaseParams        = $6100
+  120           2200      playerEquips            = $6200
+  121           5575      playerBattleParams      = $7575 ;$40*4
+  122           6675      enemyBattleParams       = $7675 ;$40*8
+  123                     ;----------------------------------------------------------------------------------------------------------
+  124                     ;in rom structs
+  125           9900      userFlags                       = $00900
+  126           0000      stringPtrTable          = $30000
+  127           0000      monsterBaseParams       = $60000        ;8*256
+  128           0000      monsterBattleParams = $61000
+  129           4400      itemBaseParams          = $61400
+  130           BB88      initialMps                      = $73b88
+  131           DD59      lvupParamPtrTable       = $7ad59
+  132                     ;handler tables
+  133           33F8      commandIdToEffectMap    = $683f8
+  134           443E      commandEffectHandlers   = $6843e
+  135           AA16      commandWindowHandlers   = $69a16
+  136           FFAC      commandHandlers                 = $69fac
+  137                     ;------------------------------------------------------------------------------------------------------
+  138           9900      TEMP_RAM = $7900        ;we cannot use stack regeon due to dugeon's floor save
+  139                     ;------------------------------------------------------------------------------------------------------
+  140                     
+  141                     ;------------------------------------------------------------------------------------------------------
+  142                     ;macros
+  143                     INIT16  .macro  ;addr,val
+  144                             lda #LOW(\2)
+  145                             sta \1
+  146                             lda #HIGH(\2)
+  147                             sta \1+1
+  148                                     .endm
+  149                     
+  150                     INIT16_x        .macro  ;addr,val
+  151                             ldx #LOW(\2)
+  152                             stx \1
+  153                             ldx #HIGH(\2)
+  154                             stx \1+1
+  155                                     .endm
+  156                                             
+  157                     ADD16   .macro  ;addr,val               
+  158                             lda \1
+  159                             clc
+  160                             adc #LOW(\2)
+  161                             sta \1
+  162                             lda \1+1
+  163                             adc #HIGH(\2)
+  164                             sta \1+1
+  165                                     .endm
+  166                     
+  167                     ADD16by8        .macro
+  168                             lda \1
+  169                             clc
+  170                             adc \2
+  171                             sta \1
+  172                             bcc .add16by8_\@
+  173                                     inc \1+1
+  174                             .add16by8_\@:
+  175                             .endm
+  176                     
+  177                     SUB16   .macro  ;addr,val               
+  178                             lda \1
+  179                             sec
+  180                             sbc #LOW(\2)
+  181                             sta \1
+  182                             lda \1+1
+  183                             sbc #HIGH(\2)
+  184                             sta \1+1
+  185                                     .endm
+  186                     
+  187                     SUB16by8        .macro  ;addr,val
+  188                             lda \1
+  189                             sec
+  190                             sbc \2
+  191                             sta \1
+  192                             bcs .sub16by8_\@
+  193                                     dec \1+1
+  194                             .sub16by8_\@:
+  195                             .endm
+  196                     
+  197                     FILEORG .macro
+  198                             .bank   (\1) >> 13
+  199                             .org    ($8000 | ((\1) & $7fff))
+  200                                     .endm
+  201                                     
+  202                     RESTORE_PC      .macro
+  203                             .bank   BANK(\1)
+  204                             .org    \1
+  205                                     .endm
+  206                                     
+  207                     INIT_PATCH      .macro
+  208                             .bank   \1
+  209                             .org    \2
+  210                             .ds             ((\3) - (\2))
+  211                             .org    \2
+  212                                     .endm
+  213                     
+  214           0000              .ifdef RESPECT_ORIGINAL_ADDR
+  218                             .else
+  219                     ORIGINAL_ADDR   .macro
+  220                                     .endm
+  221                             .endif
+  222                             
+  223                     ALIGN_EVEN      .macro  ;value to align
+  224                             .check_align_\@:
+  225                             .if (.check_align_\@ & 1) != 0
+  226                                     nop     ;pad
+  227                             .endif
+  228                             .endm   ;ALIGN_EVEN
+  229                     
+  230                     VERIFY_PC       .macro
+  231                             .verify_pc_\@:
+  232                             .if (.verify_pc_\@ > \1)
+  233                                     .fail
+  234                             .endif
+  235                             .endm   ;VERIFY_PC
+#[2]   ff3_hack_master.asm
+   26           0000              .bank   $00
+   27           0000              .org    $8000
+#[3]   ff3_string.asm
+   28                             .include "ff3_string.asm"
+    1                     ; ff3_string.asm
+    2                     ;
+    3                     ; string related codes in bank $34-35
+    4                     ;
+    5                     ;version:
+    6                     ;       0.05 (2006-11-12)
+    7                     ;======================================================================================================
+    8  00:0000            ff3_string_begin:
+    9                     
+   10           2220      TILE_ARRAY_BASE = $7200+$20;(1 << UNROLL_SHIFT)
+   11                     ;======================================================================================================
+   12                     ;strToTileArray
+   13                     ; 意外にもフィールドのルーチンからも呼ばれる模様
+   14           0001              .ifdef ENABLE_strToTileArray
+   15                             ;.bank  $34
+   16                             ;.org   $966a
+   17                             INIT_PATCH $34,$966a,$9754
+                0034              .bank   $34
+                666A              .org    $966a
+       34:666A                    .ds             (($9754) - ($966a))
+                666A              .org    $966a
+   18                             
+   19  34:666A            strToTileArray:
+   20           0018      .cchLine        = $18
+   21           001C      .char           = $1c
+   22           001E      .pUpperLine     = $1e
+   23           004E      .pTileArray     = $4e
+   24           AAD7      .pString        = $7ad7
+   25  34:666A  A5 4E             lda <.pTileArray
+   26  34:666C  85 1E             sta <.pUpperLine
+   27  34:666E  A5 4F             lda <.pTileArray+1
+   28  34:6670  85 1F             sta <.pUpperLine+1
+   29  34:6672  A5 18             lda <.cchLine
+   30  34:6674  20 58 A5          jsr offsetTilePtr
+   31                             
+   32  34:6677  A0 00             ldy #0
+   33  34:6679  A2 00             ldx #0
+   34  34:667B            .decode_loop:
+   35  34:667B  8A                txa
+   36  34:667C  48                pha
+   37  34:667D  BD D7 7A          lda .pString,x
+   38  34:6680  F0 54             beq .return
+   39  34:6682  C9 01             cmp #1
+   40  34:6684  F0 56             beq .force_linefeed
+   41  34:6686  C9 02             cmp #2
+   42  34:6688  F0 5A             beq .space_run
+   43  34:668A  C4 18             cpy <.cchLine
+   44  34:668C  90 07             bcc .decode
+   45                                     ;.linefeed
+   46  34:668E  48                        pha
+   47  34:668F  A5 18                     lda <.cchLine
+   48  34:6691  20 C3 96                  jsr .do_feed
+   49  34:6694  68                        pla
+   50  34:6695            .decode:
+   51  34:6695  38                sec
+   52  34:6696  E9 29             sbc #$29
+   53  34:6698  C9 33             cmp #$5c-$29
+   54  34:669A  B0 1D             bcs .put_tile
+   55                                     ;original code 29-5f reaches here
+   56  34:669C  85 1C                     sta <.char
+   57                                     ;tax
+   58                                     ;lda .offsetAndFlags,x
+   59  34:669E  A2 00                     ldx #0
+   60  34:66A0                    .find_char_type:
+   61  34:66A0  DD EF 96                          cmp .codeBounds,x
+   62  34:66A3  E8                                inx
+   63  34:66A4  B0 FA                             bcs .find_char_type
+   64                                     ;x = type + 1
+   65  34:66A6  BD F9 96                  lda .offsetFlags-1,x
+   66  34:66A9  4A                        lsr a
+   67  34:66AA  48                        pha
+   68  34:66AB  A9 C0                     lda #$c0
+   69  34:66AD  69 00                     adc #0  ;take lsb as carry
+   70  34:66AF  91 1E                     sta [.pUpperLine],y
+   71  34:66B1  68                        pla
+   72  34:66B2  F0 24                     beq .put_he
+   73  34:66B4  69 60                     adc #$60
+   74  34:66B6  65 1C                     adc <.char
+   75  34:66B8  38                        sec
+   76  34:66B9            .put_tile:
+   77  34:66B9  69 28             adc #$28        ;carry
+   78  34:66BB            .put_only:      
+   79  34:66BB  91 4E             sta [.pTileArray],y
+   80  34:66BD  C8                iny
+   81  34:66BE            .next:
+   82  34:66BE  68                pla
+   83  34:66BF  AA                tax
+   84  34:66C0            .next_nopop:    
+   85  34:66C0  E8                inx
+   86  34:66C1  D0 B8             bne .decode_loop
+   87  34:66C3            .do_feed:
+   88  34:66C3  A0 00             ldy #0
+   89  34:66C5  48                pha
+   90  34:66C6  20 58 A5          jsr offsetTilePtr
+   91  34:66C9  18                clc
+   92  34:66CA  68                pla
+   93  34:66CB  65 1E             adc <.pUpperLine
+   94  34:66CD  85 1E             sta <.pUpperLine
+   95  34:66CF  A9 00             lda #0
+   96  34:66D1  65 1F             adc <.pUpperLine+1
+   97  34:66D3  85 1F             sta <.pUpperLine+1
+   98  34:66D5  60                rts
+   99  34:66D6            .return:
+  100  34:66D6  68                pla     ;dummy
+  101  34:66D7  60                rts     
+  102  34:66D8            .put_he:
+  103  34:66D8  A9 A6             lda #$a6
+  104  34:66DA  D0 DF             bne .put_only
+  105  34:66DC            .force_linefeed:
+  106  34:66DC  A5 18             lda <.cchLine
+  107  34:66DE  0A                asl a
+  108  34:66DF  20 C3 96          jsr .do_feed    
+  109  34:66E2  D0 DA             bne .next       ;always satisfied
+  110  34:66E4            .space_run:
+  111  34:66E4  68                pla
+  112  34:66E5  E8                inx
+  113  34:66E6  98                tya
+  114  34:66E7  18                clc
+  115  34:66E8  7D D7 7A          adc .pString,x
+  116  34:66EB  A8                tay
+  117  34:66EC  4C C0 96          jmp .next_nopop
+  118  34:66EF            .codeBounds:
+  119                                                             ;code (after subtracted by #$29 )
+  120  34:66EF  0F                .db $0f                 ;00-0e  +66 06 がぎぐげござじずぜぞだぢづでど (29 => 8f)
+  121  34:66F0  14                .db $14                 ;0f-13  +6b 0b ばびぶべぼ 12+89 (38 => a3)
+  122  34:66F1  19                .db $19                 ;14-18  +66 06 ぱぴぷぺぽ 17+89 (3d => a3)
+  123  34:66F2  1A                .db $1a                 ;19-19  +8a 2a ヴ (42 => cc)
+  124  34:66F3  29                .db $29                 ;1a-28  +8c 2c ガギグゲゴザジズゼゾダヂヅデト (43 => cf)
+  125  34:66F4  2C 2D 2E          .db $2c,$2d,$2e ;29-2d  +91 31 バビブベボ 2c+89 (ヘ: => a6)
+  126  34:66F7  31 32 33          .db $31,$32,$33 ;2e-32  +8c 2c パピプペポ 31+89
+  127  34:66FA            .offsetFlags:
+  128                             ;bit0 indicates 1='Handakuten'
+  129                             ;offset 0 is special;means 'he'
+  130                             ;higher bits are offset,subtracted by $60
+  131  34:66FA  0C                .db $0c
+  132  34:66FB  16                .db $16
+  133  34:66FC  0D                .db $0d
+  134  34:66FD  54                .db $54
+  135  34:66FE  58                .db $58
+  136  34:66FF  62 00 62          .db $62,$00,$62
+  137  34:7702  59 01 59          .db $59,$01,$59
+  138                             ;9719
+  139                             .endif  ;ENABLE_strToTileArray
+  140                     ;9754
+  141                     ;======================================================================================================
+  142                     ;$96f8:
+  143                     ;
+  144                     ;$34:9754 initTileArrayStorage
+  145                             INIT_PATCH $34,$9754,$9777
+                0034              .bank   $34
+                7754              .org    $9754
+       34:7754                    .ds             (($9777) - ($9754))
+                7754              .org    $9754
+  146  34:7754            initTileArrayStorage:
+  147  34:7754  A2 72             ldx #HIGH(TILE_ARRAY_BASE)      ;#$72
+  148  34:7756  8E 4F 00          stx $4f
+  149  34:7759  8E C1 7A          stx $7ac1
+  150  34:775C  A2 20             ldx #LOW(TILE_ARRAY_BASE)       ;#$20   ;original: 00
+  151  34:775E  8E 4E 00          stx $4e
+  152  34:7761  8E C0 7A          stx $7ac0
+  153  34:7764  A9 FF             lda #$ff
+  154  34:7766  A2 00             ldx #0
+  155  34:7768            .loop:
+  156  34:7768  9D 00 72          sta $7200,x     ;TILE_ARRAY_BASEによらず常に7200-73FFを初期化
+  157  34:776B  9D 00 73          sta $7300,x
+  158  34:776E  E8                inx
+  159  34:776F  D0 F7             bne .loop
+  160  34:7771  60                rts
+  161                     ;======================================================================================================
+  162                             INIT_PATCH $35,$a609,$a66c
+                0035              .bank   $35
+                6609              .org    $a609
+       35:6609                    .ds             (($a66c) - ($a609))
+                6609              .org    $a609
+  163  35:6609            loadString:
+  164                     ;$35:a609 loadString
+  165                     ;       [in] u16 $18 : tableBase
+  166                     ;       [in] u8 A : index
+  167                     ;       [in,out] u8 X : destOffset
+  168           0018      .pTableBase = $18
+  169           0018      .offset = $18
+  170           001A      .index = $1a
+  171                     ;----------------------------
+  172  35:6609  85 1A             sta <.index
+  173  35:660B  8A                txa
+  174  35:660C  48                pha
+  175  35:660D  20 60 FD          jsr get2byteAtBank18    ;get2byteAtBank18($1a) $fd60
+  176  35:6610  68                pla
+  177  35:6611  AA                tax
+  178  35:6612  A5 19             lda <.offset+1
+  179  35:6614  48                pha
+  180  35:6615  29 3F             and #$3f
+  181  35:6617  09 80             ora #$80
+  182  35:6619  85 19             sta <.offset+1
+  183  35:661B  68                pla
+  184  35:661C  20 43 FD          jsr shiftRight6 ;$fd43
+  185  35:661F  18                clc
+  186  35:6620  69 0C             adc #$0c
+  187  35:6622  4C 4A FD          jmp loadStringWorker    ;$3f:fd4a
+  188                     ;$a66c:
+  189                     ;======================================================================================================
+  190  35:6625            itoa_8:
+  191                     ;       [in] u8 a : value
+  192                     ;       [out] u8 $1a[3] : tileArray (higher first)
+  193           001A      .result = $1a
+  194  35:6625  A2 00             ldx #0
+  195  35:6627            .digit_loop:    
+  196  35:6627  A0 FF                     ldy #$ff
+  197  35:6629                    .subtraction_loop:      
+  198  35:6629  C8                                iny
+  199  35:662A  38                                sec
+  200  35:662B  FD 50 A6                          sbc .digits,x
+  201  35:662E  B0 F9                             bcs .subtraction_loop
+  202  35:6630  7D 50 A6                  adc .digits,x
+  203  35:6633  48                        pha
+  204  35:6634  98                        tya
+  205  35:6635  D0 04                     bne .has_digit
+  206  35:6637  A9 FF                             lda #$ff
+  207  35:6639  D0 02                             bne .store
+  208  35:663B                    .has_digit:
+  209  35:663B  09 80                             ora #$80
+  210  35:663D                    .store:
+  211  35:663D  95 1A                     sta <.result,x
+  212  35:663F  68                        pla
+  213  35:6640  E8                        inx
+  214  35:6641  E0 03                     cpx #3
+  215  35:6643  D0 E2             bne .digit_loop
+  216  35:6645  A5 1C             lda <.result+2
+  217  35:6647  C9 FF             cmp #$ff
+  218  35:6649  D0 04             bne .return
+  219  35:664B  A9 80             lda #$80
+  220  35:664D  85 1C             sta <.result+2
+  221  35:664F            .return:        
+  222  35:664F  60                rts
+  223  35:6650  64 0A 01  .digits .db     100,10,1
+  224                     ;======================================================================================================
+  225                             RESTORE_PC      ff3_string_begin
+                0000              .bank   BANK(ff3_string_begin)
+                0000              .org    ff3_string_begin
+#[2]   ff3_hack_master.asm
+#[3]   ff3_command_string.asm
+   29                             .include "ff3_command_string.asm"
+    1                     ; ff3_command_string.asm
+    2                     ;
+    3                     ;description:
+    4                     ;       defines extra strings
+    5                     ;
+    6                     ;version:
+    7                     ;       0.05 (2006-11-09)
+    8                     ;
+    9                     ;======================================================================================================
+   10  00:0000            ff3_command_string_begin:
+   11                             ;extra strings (reuse free space)
+   12                             FILEORG $3cbbd
+                001E              .bank   ($3cbbd) >> 13
+                BBBD              .org    ($8000 | (($3cbbd) & $7fff))
+   13  1E:BBBD                    cmdstr_provoke_fail:
+   14  1E:BBBD  8A 8B 9C                  .db     $8a,$8b,$9c,$9f,$94,$b3,$9e,$8f,$7c,$99,$c4,$00
+       1E:BBC0  9F 94 B3  
+       1E:BBC3  9E 8F 7C  
+       1E:BBC6  99 C4 00  
+   15                                     
+   16                             ;FILEORG        $3de12
+   17  1E:BBC9                    cmdstr_provoke_success:
+   18  1E:BBC9  9C 90 29                  .db $9c,$90,$29,$8e,$93,$7c,$99,$c4,$00
+       1E:BBCC  8E 93 7C  
+       1E:BBCF  99 C4 00  
+   19                             
+   20                             FILEORG $3a4f4
+                001D              .bank   ($3a4f4) >> 13
+                44F4              .org    ($8000 | (($3a4f4) & $7fff))
+   21  1D:44F4                    cmdstr_provoke: ;ちょうはつ
+   22  1D:44F4  9A 7F 8C                  .db $9a,$7f,$8c,$a3,$9b,$00     ;
+       1D:44F7  A3 9B 00  
+   23  1D:44FA                    cmdstr_disordered_shot: ;みだれうち
+   24  1D:44FA  A9 33 B3                  .db $a9,$33,$b3,$8c,$9a,$00
+       1D:44FD  8C 9A 00  
+   25  1D:5500                    cmdstr_abyss:                   ;あんこく
+   26  1D:5500  8A B6 93                  .db $8a,$b6,$93,$91,$00
+       1D:5503  91 00     
+   27  1D:5505                    cmdstr_raid:    ;ふみこむ
+   28  1D:5505  A5 A9 93                  .db $a5,$a9,$93,$aa,$00
+       1D:5508  AA 00     
+   29  1D:550A                    cmdstr_counter_message: ;カウンター!!
+   30  1D:550A  CF CC F6                  .db $cf,$cc,$f6,$d9,$c2,$c4,$c4,$00
+       1D:550D  D9 C2 C4  
+       1D:5510  C4 00     
+   31  1D:5512                    cmdstr_abyss_message:   ;やみのちからが からだをむしばむ
+   32  1D:5512  AD A9 A2                  .db $ad,$a9,$a2,$9a,$8f,$b0,$29,$ff,$8f,$b0,$33,$7b,$aa,$95,$38,$aa,$00
+       1D:5515  9A 8F B0  
+       1D:5518  29 FF 8F  
+       1D:551B  B0 33 7B  
+       1D:551E  AA 95 38  
+       1D:5521  AA 00     
+   33  1D:5523                    cmdstr_raid_message:    ;てきのはんげきをうけた!
+   34  1D:5523  9C 90 A2                  .db $9c,$90,$a2,$a3,$b6,$2c,$90,$7b,$8c,$92,$99,$c4,$00
+       1D:5526  A3 B6 2C  
+       1D:5529  90 7B 8C  
+       1D:552C  92 99 C4  
+       1D:552F  00        
+   35                             FILEORG $3dabd  ;string for command 0A (original:$3dafd)
+                001E              .bank   ($3dabd) >> 13
+                AABD              .org    ($8000 | (($3dabd) & $7fff))
+   36                     
+   37                             ;----------------------------------------------------------------------------------------       
+   38           0018              .bank   stringPtrTable >> 13
+   39           CC40              .org    $8000 + (stringPtrTable & $7fff) + $0c40; + ($87 * 2)
+   40                             
+   41  18:CC40                    battleMessageOffsets:
+   42           EE21      .nullstr = $de21
+   43           0057      EXTRA_BATTLE_MESSAGE_BEGIN = $57        ;87d
+   44           CC54              .org    battleMessageOffsets + ($0a * 2)        ;string ptr for command 0A
+   45  18:CC54  F4 A4                     .dw (cmdstr_provoke & $ffff)
+   46           CCEE              .org    battleMessageOffsets + (EXTRA_BATTLE_MESSAGE_BEGIN * 2) ;message
+   47  18:CCEE  C9 CB                     .dw (cmdstr_provoke_success & $ffff)            ;57
+   48  18:CCF0  BD CB                     .dw     (cmdstr_provoke_fail & $ffff);58
+   49  18:CCF2  0A A5                     .dw (cmdstr_counter_message & $ffff); 59
+   50  18:CCF4  FA A4                     .dw (cmdstr_disordered_shot & $ffff); 5a
+   51  18:CCF6  00 A5                     .dw     (cmdstr_abyss & $ffff)  ;5b
+   52  18:CCF8  05 A5                     .dw (cmdstr_raid & $ffff)       ;5c
+   53  18:CCFA  12 A5                     .dw     (cmdstr_abyss_message & $ffff)  ;5d
+   54  18:CCFC  23 A5                     .dw (cmdstr_raid_message & $ffff)       ;5e
+   55                                     ;5f = "HPかいふく!"
+   56                     ;------------------------------------------------------------------------------------------------------
+   57           0057              .rsset EXTRA_BATTLE_MESSAGE_BEGIN
+   58           0057      EXMSG_PROVOKE_SUCCESS   .rs 1
+   59           0058      EXMSG_PROVOKE_FAIL              .rs 1
+   60           0059      EXMSG_COUNTER                   .rs 1
+   61           005A      EXMSG_DISORDERED_SHOT   .rs 1
+   62           005B      EXMSG_ABYSS                             .rs 1
+   63           005C      EXMSG_RAID                              .rs 1
+   64           005D      EXMSG_ABYSS_MESSAGE             .rs 1
+   65           005E      EXMSG_RAID_MESSAGE              .rs 1
+   66                     ;======================================================================================================
+   67                             RESTORE_PC ff3_command_string_begin
+                0000              .bank   BANK(ff3_command_string_begin)
+                0000              .org    ff3_command_string_begin
+#[2]   ff3_hack_master.asm
+#[3]   ff3_rand.asm
+   30                             .include "ff3_rand.asm"
+    1                     ; ff3_rand.asm
+    2                     ;
+    3                     ; description:
+    4                     ;       small patch for pseudorandom generator for battle
+    5                     ;
+    6                     ; version:
+    7                     ;       0.01 (2006-10-12)
+    8                     ;
+    9                     ;======================================================================================================
+   10  00:0000            ff3_rand_begin:
+   11           003F              .bank   $3f
+   12           CC27              .org    $fc27
+   13  3F:CC27            initBattleRandom:
+   14           CC37              .org    $fc37
+   15                             
+   16  3F:CC37  69 0B             adc #RANDOM_LCG_A       ;original:3
+   17                     ;======================================================================================================
+   18                             RESTORE_PC ff3_rand_begin
+                0000              .bank   BANK(ff3_rand_begin)
+                0000              .org    ff3_rand_begin
+#[2]   ff3_hack_master.asm
+#[3]   ff3_fix.asm
+   31                             .include "ff3_fix.asm"
+    1                     ; ff3_fix.asm
+    2                     ;
+    3                     ;description:
+    4                     ;       small fixes
+    5                     ;
+    6                     ;version:
+    7                     ;       0.06 (2006-11-07)
+    8                     ;
+    9                     ;======================================================================================================
+   10  00:0000            ff3_fix_begin:
+   11                     
+   12           0001              .ifdef FIX_ATTR_BOOST
+   13           0031                      .bank   $31
+   14           BB62                      .org    $ab62
+   15  31:BB62                    resetAttributeBoostAndFormation:
+   16  31:BB62  29 01                     and #$01        ;original : $f9 (this improperly keeps previous attr-boost value,seems to be bug)
+   17           FF18                      .org    $af18
+   18  31:FF18                    storeAttributeBoostAndFormation:
+   19  31:FF18  29 F9                     and #$f9        ;original: 1 (this masks attr-boost out, seems to be bug)
+   20                             .endif  ;FIX_ATTR_BOOST
+   21                     ;------------------------------------------------------------------------------------------------------
+   22           0001              .ifdef FIX_HP_GROW
+   23           0035                      .bank   $35
+   24           EEC3                      .org    $bec3
+   25  35:EEC3            prize_doLevelUp:
+   26           0032      .lvBefore = $32
+   27           0024      .hpGrowth = $24
+   28           0057      .pBaseParam = $57
+   29                             ;a = lvAfter
+   30                             ;x = lvAfter
+   31                             ;y = offset01 (lv)
+   32  35:EEC3  91 57                     sta [.pBaseParam],y
+   33  35:EEC5  0A                        asl a
+   34  35:EEC6  85 24                     sta <.hpGrowth
+   35  35:EEC8  A9 14                     lda #$14
+   36  35:EECA  20 88 9B                  jsr setYtoOffsetOf
+   37  35:EECD  B1 57                     lda [.pBaseParam],y     ;vit
+   38  35:EECF  4A                        lsr a
+   39  35:EED0  20 64 A5                  jsr getSys1Random       ;a564 (y is unchanged)
+   40  35:EED3  18                        clc
+   41  35:EED4  71 57                     adc [.pBaseParam],y
+   42                                     ;carry should be cleared (99+48)
+   43  35:EED6  18                        clc
+   44  35:EED7  65 24                     adc <.hpGrowth
+   45  35:EED9  85 24                     sta <.hpGrowth
+   46  35:EEDB  A9 00                     lda #0
+   47  35:EEDD  69 00                     adc #0
+   48  35:EEDF  48                        pha
+   49  35:EEE0  A9 0E                     lda #$0e
+   50  35:EEE2  20 88 9B                  jsr setYtoOffsetOf      ;9b88
+   51  35:EEE5  18                        clc
+   52  35:EEE6  B1 57                     lda [.pBaseParam],y     ;maxHp
+   53  35:EEE8  65 24                     adc <.hpGrowth
+   54  35:EEEA  91 57                     sta [.pBaseParam],y
+   55  35:EEEC  C8                        iny
+   56  35:EEED  68                        pla
+   57  35:EEEE  71 57                     adc [.pBaseParam],y
+   58  35:EEF0  91 57                     sta [.pBaseParam],y
+   59  35:EEF2  88                        dey     ;set y to maxHp.low
+   60  35:EEF3  EA                        nop
+   61  35:EEF4  EA                        nop
+   62  35:EEF5  EA                        nop
+   63                     ;$bef6:         
+   64                             .endif  ;FIX_HP_GROW
+   65                     ;------------------------------------------------------------------------------------------------------
+   66           0001              .ifdef FIX_ITEM99
+   67           0035                      .bank   $35
+   68           FFC7                      .org    $bfc7
+   69  35:FFC7                    branchIfItemOverflow:
+   70  35:FFC7  B0 25                     bcs $bfee
+   71                             .endif  ;FIX_ITEM99
+   72                     ;------------------------------------------------------------------------------------------------------
+   73           0000              .ifdef FIX_255X_DAMAGE
+   88                             .endif ;FIX_255X_DAMAGE
+   89                     ;------------------------------------------------------------------------------------------------------
+   90           0000              .ifdef FIX_DUNGEON_FLOOR_SAVE
+   96                             .endif ;FIX_DUNGEON_FLOOR_SAVE
+   97                     ;======================================================================================================
+   98                             RESTORE_PC ff3_fix_begin
+                0000              .bank   BANK(ff3_fix_begin)
+                0000              .org    ff3_fix_begin
+#[2]   ff3_hack_master.asm
+   32                     
+   33           0000              .ifdef BETA
+   75                             .endif  ;BETA
+   76                     
+   77                             ;.include "ff3_battle_calc.asm"
+   78                     ;==========================================================================================================
+#[1]   ff3_hack.asm

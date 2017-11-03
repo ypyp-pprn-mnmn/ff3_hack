@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<function address="" name="">
+    <description>
+        <summary></summary>
+        <detail></detail>
+    </description>
+    <interface>
+        <input></input>
+        <output></output>
+        <preserved></preserved>
+        <call-outs></call-outs>
+    </interface>
+    <assumptions>
+    </assumptions>
+    <code>
+    </code>
+</function>
