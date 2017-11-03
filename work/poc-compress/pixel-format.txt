@@ -1,0 +1,21 @@
+https://wiki.nesdev.com/w/index.php/PPU_pattern_tables
+
+NES PPU pattern:
+	consists of a 'tile' which is made of 8x8 pixel (as indexed by nametable)
+
+each tile is layed out as follows:
+	2planes x 8rows x 8pixel x 1bpp
+	ie, 8 bytes for low bytes of line, followed by another 8 bytes for high bytes of the line
+
+offset|bit
+	0	1	2	3	4	5	6	7
+0/8	
+1/9
+2/a
+3/b
+4/c
+5/d
+6/e
+7/f
+
+Any pixel whose color is 0 is background/transparent (represented by '.' in the following diagram): 

@@ -1,0 +1,65 @@
+; da65 V2.11.0 - (C) Copyright 2000-2005,  Ullrich von Bassewitz
+; Created:    2007-08-30 03:41:29
+; Input file: uff3_typeb.nes
+; Page:       1
+
+
+        .setcpu "65C02"
+
+; ----------------------------------------------------------------------------
+pTarget         := $0070
+damage          := $0078
+setResultDamageToInvalid:= $B74B
+clearEffectTargetBit:= $B926
+; ----------------------------------------------------------------------------
+magic_protect:
+        ldy     #$23                            ; B704 A0 23
+        lda     (pTarget),y                     ; B706 B1 70
+        cmp     #$FF                            ; B708 C9 FF
+        bne     LB714                           ; B70A D0 08
+        ldy     #$15                            ; B70C A0 15
+        lda     (pTarget),y                     ; B70E B1 70
+        .byte   $C9                             ; B710 C9
+LB711:  bbs7    $F0,LB745                       ; B711 FF F0 31
+LB714:  ldy     #$23                            ; B714 A0 23
+        clc                                     ; B716 18
+        lda     (pTarget),y                     ; B717 B1 70
+        adc     damage                          ; B719 65 78
+        sta     (pTarget),y                     ; B71B 91 70
+        lda     #$00                            ; B71D A9 00
+        adc     damage+1                        ; B71F 65 79
+        sta     damage+1                        ; B721 85 79
+        lda     damage+1                        ; B723 A5 79
+        beq     LB711                           ; B725 F0 EA
+        nop                                     ; B727 EA
+        nop                                     ; B728 EA
+        nop                                     ; B729 EA
+        nop                                     ; B72A EA
+        nop                                     ; B72B EA
+        nop                                     ; B72C EA
+        nop                                     ; B72D EA
+        nop                                     ; B72E EA
+        nop                                     ; B72F EA
+        nop                                     ; B730 EA
+        nop                                     ; B731 EA
+        nop                                     ; B732 EA
+        nop                                     ; B733 EA
+        nop                                     ; B734 EA
+        nop                                     ; B735 EA
+        nop                                     ; B736 EA
+        nop                                     ; B737 EA
+        nop                                     ; B738 EA
+        nop                                     ; B739 EA
+        nop                                     ; B73A EA
+        nop                                     ; B73B EA
+        nop                                     ; B73C EA
+        nop                                     ; B73D EA
+        nop                                     ; B73E EA
+        nop                                     ; B73F EA
+        nop                                     ; B740 EA
+        nop                                     ; B741 EA
+        jmp     setResultDamageToInvalid        ; B742 4C 4B B7
+; ----------------------------------------------------------------------------
+LB745:  jsr     setResultDamageToInvalid        ; B745 20 4B B7
+        jmp     clearEffectTargetBit            ; B748 4C 26 B9
+; ----------------------------------------------------------------------------
