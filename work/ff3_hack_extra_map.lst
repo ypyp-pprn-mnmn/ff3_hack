@@ -2,7 +2,7 @@
    15                     ;----------------------------------------------------------------------------------------------------------
    16           0001              .ifdef BALANCED_VERSION
    17           0001                      .ifdef EXTRA_MAP
-   18  00:0000                                    .incbin "base-binary/ff3_extra_map.nes.noheader"
+   18  00:0000                                    .incbin "extra-map/ff3_extra_map.nes.noheader"
    19                                     .else
    21                                     .endif
    22                             .else
