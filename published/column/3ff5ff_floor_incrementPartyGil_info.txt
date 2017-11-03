@@ -1,0 +1,28 @@
+GLOBAL {
+	COMMENTS	3;
+	CPU	"65C02";
+	INPUTNAME	"ff3.nes";
+	INPUTOFFS	$7f60f;
+	STARTADDR	$f5ff;
+	INPUTSIZE	$41;
+	OUTPUTNAME	"ff3.3ff5ff.floor_incrementPartyGil.disasm.txt";
+};
+
+LABEL {
+	NAME	"floor_incrementPartyGil";
+	ADDR	$f5ff;
+	COMMENT	"$3f:f5ff floor_incrementPartyGil";
+};
+
+LABEL {
+	NAME	"ギル増分(24bits)";
+	ADDR	$80;
+	SIZE	3;
+};
+
+LABEL {
+	NAME	"パーティ所持ギル(24bits)";
+	ADDR	$601c;
+	SIZE	3;
+};
+

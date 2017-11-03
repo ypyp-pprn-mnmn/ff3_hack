@@ -1,0 +1,26 @@
+GLOBAL {
+	COMMENTS	3;
+	CPU	"65C02";
+	INPUTNAME	"ff3.nes";
+	INPUTOFFS	$6bfc3;
+	STARTADDR	$bfb3;
+	INPUTSIZE	$3f;
+	OUTPUTNAME	"ff3.35bfb3.incrementItem.disasm.txt";
+};
+
+LABEL {
+	NAME	"incrementItem";
+	ADDR	$bfb3;
+	COMMENT	"$35:bfb3";
+};
+
+LABEL {
+	NAME	"所持アイテムリスト{itemid, count}";
+	ADDR	$60c0;
+};
+
+LABEL {
+	NAME	"検索対象アイテムID";
+	ADDR	$18;
+};
+
