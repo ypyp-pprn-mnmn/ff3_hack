@@ -32,10 +32,13 @@ enemy:
 16 mandrake => aniel
 	gfx:42 => 54
 	str:d4e2 => CA DF CD F2 00
+	gil:48 => 1800
+	exp: 72 (id:08) => 3000 (id: 2d)
 63 captain => assasin
 	gfx:00 => 31
 	str:d6e8
 		D0 BD 59 DC F6 00 => CA D4 D5 F6 00 00
+	gil:410 => 8000
 66 phoenix => ironman
 	gfx:
 8d hob-goblin => little murder
