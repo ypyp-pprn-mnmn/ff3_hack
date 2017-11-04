@@ -85,10 +85,6 @@ field_drawWindowBox:
 		beq .adjust_window_metrics	;currentY == beginY
 		bcs .setupAttributes		;currentY >= beginY
 .adjust_window_metrics:
-;	$38++; $39++;
-;	$3c -= 2;
-;	$3d -= 2;
-;	return restoreBanksBy$57();	//jmp $ecf5();
 ; adjust metrics as borders don't need further drawing...
 	inc <.beginX
 	inc <.beginY
@@ -101,33 +97,18 @@ field_drawWindowBox:
 	bne .finish
 
 .updateAttributes:
+	lda #2
+	sta $4014	;DMA. if omitted, sprites are shown on top of window
 	jsr waitNmiBySetHandler
 	ldx #0
 	lda #$23
-	jsr .copyAttributes
+	jsr field_X_copyAttributes
 	ldx #$40
 	lda #$27
-	jsr .copyAttributes
-	;lda #2
-	;sta $4014	;DMA
+	jsr field_X_copyAttributes
 	jsr field_setBgScrollTo0	;if omitted, noticable glithces arose in town conversations
 .finish:
 	jmp field_restore_bank	;$ecf5
-.copyAttributes:
-	bit $2002
-	sta $2006
-	lda #$c0
-	sta $2006
-	jmp field_X_updateTileAttrEntirely
-
-;	ldy #$40	;update entire attr table in target BG (64 bytes)
-;.copy:
-;	lda .attrCache,x
-;	sta $2007
-;	inx
-;	dey
-;	bne .copy
-	;jsr field_setBgScrollTo0
 
 	VERIFY_PC $ed56
 
@@ -235,11 +216,11 @@ field_getWindowMetrics:
 	sta <.internal_bottom
 	;; done calcs
 	jsr field_hide_sprites_around_window	;$ec18
-	lda #2
-	sta $4014	;DMA
+	;lda #2
+	;sta $4014	;DMA
 	rts
 	VERIFY_PC $edb2
-
+	
 	.endif	;//FAST_FIELD_WINDOW
 ;------------------------------------------------------------------------------------------------------
 ;$3f:edc6 field::drawWindowLine
@@ -362,6 +343,27 @@ field_X_get_window_tiles:
 	db $fa, $ff, $fb
 	db $fa, $ff, $fb
 	db $fc, $fd, $fe
+;-----------
+;[in]
+;	u8 a: vram address high
+;	u8 x: offset into attr table cache
+;	attr_value[128] $0300: attr table cache
+field_X_copyAttributes:
+	bit $2002
+	sta $2006
+	lda #$c0
+	sta $2006
+field_X_updateTileAttrEntirely:
+.attr_cache = $0300
+	ldy #$40	;update entire attr table in target BG (64 bytes)
+.copy:
+	lda .attr_cache,x
+	sta $2007
+	inx
+	dey
+	bne .copy
+	rts
+;-----------
 
 	VERIFY_PC $ee61
 	.endif	;FAST_FIELD_WINDOW
@@ -532,20 +534,6 @@ field_drawWindowContent:
 
 	rts
 	;VERIFY_PC $f727
-;-----------
-;[in]
-;	u8 x: offset into attr table cache
-;	attr_value[128] $0300: attr table cache
-field_X_updateTileAttrEntirely:
-.attr_cache = $0300
-	ldy #$40	;update entire attr table in target BG (64 bytes)
-.copy:
-	lda .attr_cache,x
-	sta $2007
-	inx
-	dey
-	bne .copy
-	rts
 
 	VERIFY_PC $f727
 ;======================================================================================================
