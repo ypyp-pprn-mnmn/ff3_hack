@@ -1,8 +1,11 @@
-#[1]   ff3_hack_soundtest.asm
+#[1]   ff3_hack_DEV.asm
    15                     ;----------------------------------------------------------------------------------------------------------
-   16           0000              .ifdef BALANCED_VERSION
+   16           0001              .ifdef BALANCED_VERSION
+   17           0001                      .ifdef EXTRA_MAP
+   18  00:0000                                    .incbin "extra-map/ff3_extra_map.nes.noheader"
+   19                                     .else
+   21                                     .endif
    22                             .else
-   23  00:0000                            .incbin "base-binary/ff3_hack_base.nes.noheader"        ;header must be stripped
    24                             .endif  ;BALANCED_VERSION
 #[4]   ff3_asm.h
    25                             .include "ff3_asm.h"
@@ -10918,7 +10921,90 @@
     8                     ;======================================================================================================
     9  35:88EB            ff3_field_window_begin:
    10                     
-   11           0000              .ifdef FAST_FIELD_WINDOW
+   11           0001              .ifdef FAST_FIELD_WINDOW
+   12                             INIT_PATCH $3f,$ed02,$ed56
+                003F              .bank   $3f
+                DD02              .org    $ed02
+       3F:DD02                    .ds             (($ed56) - ($ed02))
+                DD02              .org    $ed02
+   13  3F:DD02            field_drawWindowBox:
+   14                     ;$3f:ed02 field::drawWindow
+   15                     ;//     [in] u8 $3c : width (border incl)
+   16                     ;//     [in] u8 $3d : height
+   17                     ;//caller:
+   18                     ;//     $3c:8efd
+   19                     ;//     $3c:8f0e
+   20                     ;//     $3c:8fd5
+   21                     ;//     $3c:90b1
+   22                     ;//     $3d:aaf4 (jmp)
+   23                     ;{
+   24           0037      .paletteUpdateRequired = $37
+   25           0039      .beginY = $39
+   26           003B      .line = $3b
+   27           003C      .width = $3c
+   28           003D      .height = $3d
+   29           3300      .paletteCache = $0300
+   30                     
+   31  3F:DD02  A6 96             ldx <$96
+   32  3F:DD04  20 61 ED          jsr $ed61       ;getWindowSize
+   33                             ;jsr $f670
+   34                             ;jsr field_fill_07c0_ff ;ed56
+   35  3F:DD07  A5 39             lda <.beginY
+   36  3F:DD09  85 3B             sta <.line
+   37  3F:DD0B  A5 3D             lda <.height
+   38  3F:DD0D  4A                lsr a
+   39  3F:DD0E  AA                tax
+   40  3F:DD0F            .setupPalette:
+   41  3F:DD0F  8A                        txa
+   42  3F:DD10  48                        pha
+   43  3F:DD11  20 8F C9                  jsr field_cacheWindowPalette
+   44  3F:DD14  E6 3B                     inc <.line
+   45  3F:DD16  E6 3B                     inc <.line
+   46  3F:DD18  68                        pla
+   47  3F:DD19  AA                        tax
+   48  3F:DD1A  CA                        dex
+   49  3F:DD1B  D0 F2                     bne .setupPalette
+   50                     
+   51                     ;       lda <.beginY
+   52                     ;       sta <.line
+   53                     
+   54                     ;       $38++; $39++;
+   55                     ;       $3c -= 2;
+   56                     ;       $3d -= 2;
+   57                     ;       return restoreBanksBy$57();     //jmp $ecf5();
+   58  3F:DD1D  E6 38             inc <$38
+   59  3F:DD1F  E6 39             inc <$39
+   60  3F:DD21  C6 3C             dec <$3c
+   61  3F:DD23  C6 3C             dec <$3c
+   62  3F:DD25  C6 3D             dec <$3d
+   63  3F:DD27  C6 3D             dec <$3d
+   64  3F:DD29  A5 37             lda <.paletteUpdateRequired
+   65  3F:DD2B  D0 26             bne .finish
+   66  3F:DD2D            .updatePalette:
+   67  3F:DD2D  20 00 FF          jsr waitNmiBySetHandler
+   68  3F:DD30  A2 00             ldx #0
+   69  3F:DD32  A9 23             lda #$23
+   70  3F:DD34  20 39 ED          jsr .copyPalette
+   71  3F:DD37  A9 27             lda #$27
+   72  3F:DD39            .copyPalette:
+   73  3F:DD39  2C 02 20          bit $2002
+   74  3F:DD3C  8D 06 20          sta $2006
+   75  3F:DD3F  A9 C0             lda #$c0
+   76  3F:DD41  8D 06 20          sta $2006
+   77  3F:DD44  A0 40             ldy #$40
+   78  3F:DD46            .copy:
+   79  3F:DD46  BD 00 03          lda .paletteCache,x
+   80  3F:DD49  8D 07 20          sta $2007
+   81  3F:DD4C  E8                inx
+   82  3F:DD4D  88                dey
+   83  3F:DD4E  D0 F6             bne .copy
+   84  3F:DD50  20 E1 ED          jsr field_setBgScrollTo0
+   85  3F:DD53            .finish:
+   86  3F:DD53  4C F5 EC          jmp $ecf5
+   87                             VERIFY_PC $ed56
+       3F:DD56                    .verify_pc_00138:
+                0000              .if (.verify_pc_00138 > $ed56)
+                                  .endif
    88                             .endif  ;//field_drawWindowBox
    89                     ;$3f:edc6 field::drawWindowLine
    90                     ;{
@@ -11030,8 +11116,8 @@
   192  3F:442A  60                rts
   193                     
   194                             VERIFY_PC $f435
-       3F:442B                    .verify_pc_00138:
-                0000              .if (.verify_pc_00138 > $f435)
+       3F:442B                    .verify_pc_00140:
+                0000              .if (.verify_pc_00140 > $f435)
                                   .endif
   195                     
   196                     ;------------------------------------------------------------------------------------------------------
@@ -11142,8 +11228,8 @@
   297  3F:7718  60                rts
   298                     
   299                             VERIFY_PC $f727
-       3F:7719                    .verify_pc_00140:
-                0000              .if (.verify_pc_00140 > $f727)
+       3F:7719                    .verify_pc_00142:
+                0000              .if (.verify_pc_00142 > $f727)
                                   .endif
   300                     
   301                     ;======================================================================================================
@@ -11333,8 +11419,8 @@
        3F:99B4  40 80     
   152                     ;e9bb
   153                             VERIFY_PC $e9bb
-       3F:99B6                    .verify_pc_00143:
-                0000              .if (.verify_pc_00143 > $e9bb)
+       3F:99B6                    .verify_pc_00145:
+                0000              .if (.verify_pc_00145 > $e9bb)
                                   .endif
   154                     ;-----------------------------------------------------------------------------------------------------
   155                     ; treasure functions
@@ -11457,8 +11543,8 @@
   268  3F:55C9  60                rts
   269                     
   270                             VERIFY_PC $f5d4
-       3F:55CA                    .verify_pc_00145:
-                0000              .if (.verify_pc_00145 > $f5d4)
+       3F:55CA                    .verify_pc_00147:
+                0000              .if (.verify_pc_00147 > $f5d4)
                                   .endif
   271                     ;-------------------------------------------------------------------------------------------------
   272                     ;$3f:f5d4 getItemValue ;getTreasureGil
@@ -11543,8 +11629,8 @@
   351  3F:6620  7F 96 98          .db $7f,$96,$98 ;9999999
   352                             
   353                             VERIFY_PC $f670
-       3F:6623                    .verify_pc_00146:
-                0000              .if (.verify_pc_00146 > $f670)
+       3F:6623                    .verify_pc_00148:
+                0000              .if (.verify_pc_00148 > $f670)
                                   .endif
   354                     
   355                     ;------------------------------------------------------------------------------------------------------
@@ -11599,113 +11685,112 @@
    85                             .endif  ;EXPERIMENT_IMPL
    86           0000              .if EXPERIMENT_IMPL = 3
   198                             .ENDIF  ;EXPERIMENT_IMPL = 3
-  199           0001              .if EXPERIMENT_IMPL = 4
-  200                             ;stop music
-  201  34:33C6  20 5A 94                  jsr .stopMusic
-  202  34:33C9  A2 03                     ldx #3
-  203  34:33CB                    .wait_loop:
-  204  34:33CB  20 80 FB                          jsr waitNmi
-  205  34:33CE  CA                                dex
-  206  34:33CF  D0 FA                             bne .wait_loop
-  207  34:33D1  A9 00                     lda #0
-  208  34:33D3  85 12                     sta <inputBits
-  209  34:33D5  48                        pha
-  210                                     
-  211  34:33D6                    .show_current_id:
-  212  34:33D6  A2 08                     ldx #8
-  213  34:33D8  20 49 A5                  jsr initString
-  214  34:33DB  20 54 97                  jsr initTileArrayStorage
-  215  34:33DE  68                        pla
-  216  34:33DF  29 7F                     and #$7f
-  217  34:33E1  48                        pha
-  218  34:33E2  20 25 A6                  jsr itoa_8
-  219  34:33E5  A2 02                     ldx #2
-  220  34:33E7                    .copy_number:   
-  221  34:33E7  BD 1A 00                          lda $1a,x
-  222  34:33EA  9D DB 7A                          sta stringCache+4,x
-  223  34:33ED  CA                                dex
-  224  34:33EE  10 F7                             bpl .copy_number
-  225  34:33F0  A9 08                     lda #8
-  226  34:33F2  85 18                     sta <$18
-  227  34:33F4  20 6A 96                  jsr strToTileArray
-  228  34:33F7  A9 03                     lda #3
-  229  34:33F9  20 1B 8D                  jsr draw1LineWindow     
-  230  34:33FC                    .input_handler:
-  231  34:33FC  20 AA FB                          jsr getPad1Input
-  232                                             ;lda <inputBits
-  233  34:33FF  4A                                lsr a
-  234  34:4400  B0 33                             bcs .OnA
-  235  34:4402  4A                                lsr a
-  236  34:4403  B0 3F                             bcs .OnB
-  237  34:4405  4A                                lsr a
-  238  34:4406  B0 4C                             bcs .OnSelect
-  239  34:4408  4A                                lsr a
-  240  34:4409  4A                                lsr a
-  241  34:440A  B0 11                             bcs .OnUp
-  242  34:440C  4A                                lsr a
-  243  34:440D  B0 1E                             bcs .OnDown
-  244  34:440F  4A                                lsr a
-  245  34:4410  B0 13                             bcs .OnLeft
-  246  34:4412  4A                                lsr a
-  247  34:4413  90 E7                             bcc .input_handler
-  248  34:4415                            .OnRight:
-  249  34:4415  68                                pla
-  250  34:4416  18                                clc
-  251  34:4417  69 0A                             adc #10
-  252  34:4419  48                                pha
-  253  34:441A  4C D6 93                          jmp .show_current_id
-  254  34:441D                            .OnUp:
-  255  34:441D  68                                pla
-  256  34:441E  18                                clc
-  257  34:441F  69 01                             adc #1
-  258  34:4421  48                                pha
-  259  34:4422  4C D6 93                          jmp .show_current_id
-  260  34:4425                            .OnLeft:
-  261  34:4425  68                                pla
-  262  34:4426  38                                sec
-  263  34:4427  E9 0A                             sbc #10
-  264  34:4429  48                                pha
-  265  34:442A  4C D6 93                          jmp .show_current_id
-  266  34:442D                            .OnDown:
-  267  34:442D  68                                pla
-  268  34:442E  38                                sec
-  269  34:442F  E9 01                             sbc #1
-  270  34:4431  48                                pha
-  271  34:4432  4C D6 93                          jmp .show_current_id
-  272  34:4435                            .OnA:
-  273  34:4435  68                                pla
-  274  34:4436  85 CA                             sta <soundEffectId
-  275  34:4438  E6 C9                             inc <playSoundEffect
-  276  34:443A  48                                pha     
-  277  34:443B  A9 00                             lda #0
-  278  34:443D                                    .wait_play_end:
-  279  34:443D  C5 C9                                     cmp <playSoundEffect
-  280  34:443F  D0 FC                                     bne .wait_play_end
-  281  34:4441  4C FC 93                          jmp .input_handler
-  282  34:4444                            .OnB:
-  283  34:4444  20 5A 94                          jsr .stopMusic
-  284  34:4447  68                                pla
-  285                                             ;valid id:00-40
-  286  34:4448  8D 43 7F                          sta soundDriver_musicId
-  287  34:444B  48                                pha
-  288  34:444C  A9 01                             lda #1  ;play
-  289  34:444E  8D 42 7F                          sta soundDriver_control
-  290  34:4451  4C FC 93                          jmp .input_handler
-  291  34:4454                            .OnSelect:
-  292  34:4454  68                                pla
-  293                                             ;
-  294  34:4455  A9 02                             lda #$02
-  295  34:4457  85 50                             sta <$50
-  296  34:4459  60                                rts
-  297  34:445A                            .stopMusic:
-  298  34:445A  A9 04                             lda #4
-  299  34:445C  8D 42 7F                          sta soundDriver_control
-  300  34:445F                            .wait_for_music_end:
-  301  34:445F  AD 40 7F                                  lda soundDriver_playingMusicId
-  302  34:4462  30 FB                             bmi .wait_for_music_end 
-  303  34:4464  60                                rts
+  199           0000              .if EXPERIMENT_IMPL = 4
   304                             .ENDIF
-  305           0000              .if EXPERIMENT_IMPL = 5
+  305           0001              .if EXPERIMENT_IMPL = 5
+  306                                     ;encounter select
+  307  34:33C6                    selectEncounterId:
+  308  34:33C6  A2 03                     ldx #3
+  309  34:33C8                    .wait_loop:
+  310  34:33C8  20 80 FB                          jsr waitNmi
+  311  34:33CB  CA                                dex
+  312  34:33CC  D0 FA                             bne .wait_loop
+  313  34:33CE  AC ED 7C                  ldy encounterId
+  314  34:33D1                    .show_current_id:
+  315  34:33D1  98                        tya
+  316  34:33D2  48                        pha
+  317                     
+  318  34:33D3  A2 08                     ldx #8
+  319  34:33D5  20 49 A5                  jsr initString
+  320  34:33D8  20 54 97                  jsr initTileArrayStorage
+  321  34:33DB  68                        pla
+  322  34:33DC  48                        pha
+  323  34:33DD  20 25 A6                  jsr itoa_8
+  324  34:33E0  A2 02                     ldx #2
+  325  34:33E2                    .copy_number:   
+  326  34:33E2  B5 1A                             lda <$1a,x
+  327  34:33E4  9D DB 7A                          sta stringCache+4,x
+  328  34:33E7  CA                                dex
+  329  34:33E8  10 F8                             bpl .copy_number
+  330  34:33EA  A9 08                     lda #8
+  331  34:33EC  85 18                     sta <$18
+  332  34:33EE  20 6A 96                  jsr strToTileArray
+  333  34:33F1  A9 03                     lda #3
+  334  34:33F3  20 1B 8D                  jsr draw1LineWindow
+  335  34:33F6  68                        pla
+  336  34:33F7  A8                        tay
+  337  34:33F8                    .input_handler:
+  338  34:33F8  98                                tya
+  339  34:33F9  48                                pha
+  340  34:33FA  20 AA FB                          jsr getPad1Input
+  341  34:33FD  AA                                tax
+  342  34:33FE  68                                pla
+  343  34:33FF  A8                                tay     ;index
+  344  34:4400  8A                                txa
+  345                     
+  346  34:4401  4A                                lsr a
+  347  34:4402  B0 29                             bcs .OnA
+  348  34:4404  4A                                lsr a
+  349  34:4405  B0 2A                             bcs .OnB
+  350  34:4407  4A                                lsr a
+  351  34:4408  B0 4E                             bcs .OnSelect
+  352  34:440A  4A                                lsr a
+  353  34:440B  4A                                lsr a
+  354  34:440C  B0 11                             bcs .OnUp
+  355  34:440E  4A                                lsr a
+  356  34:440F  B0 19                             bcs .OnDown
+  357  34:4411  4A                                lsr a
+  358  34:4412  B0 0E                             bcs .OnLeft
+  359  34:4414  4A                                lsr a
+  360  34:4415  90 E1                             bcc .input_handler
+  361  34:4417                            .OnRight:
+  362  34:4417  98                                tya
+  363  34:4418  18                                clc
+  364  34:4419  69 0A                             adc #10
+  365  34:441B  A8                                tay
+  366  34:441C  4C D1 93                          jmp .show_current_id
+  367  34:441F                            .OnUp:
+  368  34:441F  C8                                iny
+  369  34:4420  B0 AF                             bcs .show_current_id
+  370  34:4422                            .OnLeft:
+  371  34:4422  98                                tya
+  372  34:4423  38                                sec
+  373  34:4424  E9 0A                             sbc #10
+  374  34:4426  A8                                tay
+  375  34:4427  4C D1 93                          jmp .show_current_id
+  376  34:442A                            .OnDown:
+  377  34:442A  88                                dey
+  378  34:442B  B0 A4                             bcs .show_current_id
+  379  34:442D                            .OnA:
+  380  34:442D  A9 00                             lda #0
+  381  34:442F  F0 02                             beq .reencounter
+  382  34:4431                            .OnB:
+  383  34:4431  A9 01                             lda #1
+  384  34:4433                            .reencounter:
+  385  34:4433  48                                pha
+  386  34:4434  98                                tya
+  387  34:4435  48                                pha
+  388  34:4436  20 73 FA                          jsr $fa73       ;post battleLoop
+  389  34:4439  68                                pla
+  390  34:443A  8D ED 7C                          sta encounterId
+  391  34:443D  68                                pla
+  392  34:443E  8D EE 7C                          sta encounterId+1
+  393  34:4441  A2 06                             ldx #6  ;getInputAndUpdateCursorWithSound/getPlayerCommandInput/battleLoop/
+  394  34:4443                            .pop_retaddrs:
+  395  34:4443  68                                        pla
+  396  34:4444  CA                                        dex
+  397  34:4445  D0 FC                                     bne .pop_retaddrs
+  398                                             
+  399  34:4447  A9 81                             lda #$81
+  400  34:4449  8D D8 7E                          sta battleMode
+  401  34:444C  AD ED 7C                          lda encounterId
+  402  34:444F  AE EE 7C                          ldx encounterId+1
+  403  34:4452  AC EE 7C                          ldy encounterId+1       ;
+  404  34:4455  4C 26 FA                          jmp doBattle
+  405  34:4458                            .OnSelect:
+  406  34:4458  A9 02                             lda #$02
+  407  34:445A  85 50                             sta <$50
+  408  34:445C  60                                rts
   409                             .endif
 #[3]   ff3_hack_master.asm
    74                                     .endif  ;EXPERIMENTAL
@@ -11714,4 +11799,4 @@
    77                             ;.include "ff3_battle_calc.asm"
    78                     ;==========================================================================================================
 #[2]   ff3_hack_beta.asm
-#[1]   ff3_hack_soundtest.asm
+#[1]   ff3_hack_DEV.asm

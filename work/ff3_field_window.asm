@@ -8,7 +8,7 @@
 ;======================================================================================================
 ff3_field_window_begin:
 
-	.if 0
+	.ifdef FAST_FIELD_WINDOW
 	INIT_PATCH $3f,$ed02,$ed56
 field_drawWindowBox:
 ;$3f:ed02 field::drawWindow

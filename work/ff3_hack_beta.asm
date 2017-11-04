@@ -4,17 +4,20 @@
 ;	creates hacked file with newly implemented features
 ;
 ; version:
-;	0.07(2007-08-13)
+;	0.08(2017-11-04)
 ;
 ;======================================================================================================
 ;assemble flags
 BETA
+;FAST_FIELD_WINDOW
 ;BALANCED_VERSION
 ;TEST_MAP
 
 ;TEST_COUNTER_ATTACK
 ;EXPERIMENTAL
 ;EXPERIMENT_IMPL = 5
+
+;;here after, listed feature flags are considered more 'stable' than those listed above
 
 FIX_DUNGEON_FLOOR_SAVE
 FIX_ATTR_BOOST
