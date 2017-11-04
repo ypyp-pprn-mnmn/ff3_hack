@@ -95,18 +95,11 @@ field_drawWindowBox:
 
 	lda <.skipAttrUpdate
 	bne .finish
-
-.updateAttributes:
-	lda #2
-	sta $4014	;DMA. if omitted, sprites are shown on top of window
-	jsr waitNmiBySetHandler
-	ldx #0
-	lda #$23
-	jsr field_X_copyAttributes
-	ldx #$40
-	lda #$27
-	jsr field_X_copyAttributes
-	jsr field_setBgScrollTo0	;if omitted, noticable glithces arose in town conversations
+		lda #2
+		sta $4014	;DMA. if omitted, sprites are shown on top of window
+		jsr waitNmiBySetHandler
+		jsr field_X_updateVramAttributes
+		jsr field_setBgScrollTo0	;if omitted, noticable glithces arose in town conversations
 .finish:
 	jmp field_restore_bank	;$ecf5
 
@@ -344,6 +337,13 @@ field_X_get_window_tiles:
 	db $fa, $ff, $fb
 	db $fc, $fd, $fe
 ;-----------
+field_X_updateVramAttributes:
+	ldx #0
+	lda #$23
+	jsr field_X_copyAttributes
+	ldx #$40
+	lda #$27
+	;fall through
 ;[in]
 ;	u8 a: vram address high
 ;	u8 x: offset into attr table cache
