@@ -63,7 +63,7 @@ field_drawWindowBox:
 ;	return;
 ;$ed61:
 ;}
-.attrUpdateRequired = $37
+.skipAttrUpdate = $37
 .window_id = $96
 .currentY = $3b
 .beginX = $38	;loaded by field_getWindowMetrics
@@ -106,7 +106,7 @@ field_drawWindowBox:
 	dec <.height
 	dec <.height
 
-	lda <.attrUpdateRequired
+	lda <.skipAttrUpdate
 	bne .finish
 
 .updateAttributes:
