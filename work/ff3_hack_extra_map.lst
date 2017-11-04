@@ -261,228 +261,229 @@
    13           998F      field_updateTileAttrCache       = $c98f
    14           99A9      field_setTileAttrForWindow      = $c9a9
    15           BB6B      field_update_vram_by_07d0       = $cb6b ;[in] $07d0[16]: vram address low, $07e0[16]: vram high, $07f0[16]: vram value
-   16           CCF5      field_restore_bank                      = $ecf5 ;[in] $57: bank
-   17                     ;field_fill_07c0_ff                     = $ed56
-   18           DD56      field_loadWindowTileAttr        = $ed56
-   19           DD61      field_getWindowMetrics          = $ed61 ;[in] u8 $96: window_id / [out] $38, $39, $3c, $3d
-   20           DDE1      field_setBgScrollTo0            = $ede1
-   21                     ;field_putWindowTiles           = $f6aa
-   22           66AA      field_drawWindowContent         = $f6aa
-   23           7727      switchBanksTo3c3d                       = $f727
-   24           88B0      updateDmaPpuScrollSyncNmiEx = $f8b0
-   25           88C5      updateDmaPpuScrollSyncNmi       = $f8c5 ;(y is unchanged)
-   26           88CB      updatePpuScrollNoWait           = $f8cb
-   27           88E0      setVramAddr                                     = $f8e0 ;[in] a:high, x:low
-   28           88EA      mul_8x8_reg                                     = $f8ea ;a,x = a * x
-   29           AA0E      call_2e_9d53                            = $fa0e
-   30           AA26      doBattle                                        = $fa26
-   31           BB80      waitNmi                                         = $fb80 ;wait on $05 clear
-   32           BB87      switchFirst2Banks                       = $fb87 ;[in] a : per16k bank index
-   33           BBAA      getPad1Input                            = $fbaa ;[out] $12 : inputFlags
-   34           BBEF      getBattleRandom                         = $fbef ;[out] a : rand [min:x - max:a] max included
-   35           CC27      initBattleRandom                        = $fc27
-   36           CC92      div_16                                          = $fc92 ;$1c = $18,19 / $1a,1b; $1d = $18,19 % $1a,1b
-   37           CCD6      mul_8x8                                         = $fcd6 ;$1a,1b = a * x
-   38           CCF5      mul_16x16                                       = $fcf5 ;$1c,1d,1e,1f = $18,19 * $1a,1b
-   39           DD20      flagTargetBit                           = $fd20
-   40           DD2C      clearTargetBit                          = $fd2c
-   41           DD38      maskTargetBit                           = $fd38
-   42           DD3C      shiftLeft6                                      = $fd3c
-   43           DD43      shiftRight6                                     = $fd43
-   44           DD4A      loadStringWorker                        = $fd4a
-   45           DD60      get2byteAtBank18                        = $fd60
-   46           DDA6      loadTo7400Ex                            = $fda6
-   47           DDDC      copyTo7400                                      = $fddc
-   48                     ;call_30_9e58                           = $fdf3
-   49           DDF3      invoke_b30_battleFunction       = $fdf3
-   50           FF00      waitNmiBySetHandler                     = $ff00
-   51           FF06      call_switch1stBank                      = $ff06
-   52           FF09      call_switch2ndBank                      = $ff09
-   53                     ;----------------------------------------------------------------------------------------------------------
-   54                     ;well known vars
-   55           1101      pNmiHandler                     = $0101 ;$0100 jmp xxxx
-   56           1104      pIrqHandler                     = $0104 ;$0103 jmp xxxx
-   57           0000      irqFlag                         = $00
-   58           0001      enableScanlineCounter = $01     ;mmc3's irq
-   59           0003      irqCountDown            = $03
-   60           0005      nmiFlag                         = $05
-   61           0006      ppuCtrl1SetOnNmi        = $06
-   62           0008      ppuCtrl1SetOnIrq        = $08
-   63           0009      ppuCtrl2SetOnNmi        = $09
-   64           000C      scrollXSetOnNmi         = $0c
-   65           000D      scrollYSetOnNmi         = $0d
-   66           0010      scrollXSetOnIrq         = $10
-   67           0011      scrollYSetOnIrq         = $11
-   68           0012      inputBits                       = $12
-   69           00B3      selectTarget_behavior           = $b3   ;param of presentSceneFunction10($2e:9d53)
-   70           00B4      selectTarget_selectedBits       = $b4
-   71           00B5      selectTarget_targetFlag         = $b5
-   72           00C0      playerX                         = $c0   ;*4
-   73           00C4      playerY                         = $c4   ;*4
-   74           00C9      playSoundEffect         = $c9   ;1=play
-   75           00CA      soundEffectId           = $ca   ; played on irq if $c9 != 0
-   76           00E0      targetStatusCache       = $e0   ;in process battle phase
-   77           00F0      actorStatusCache        = $f0   ;
-   78           88D5      presentActionParams     = $78d5 ;?,actor,action,targetflag,effectmsg,messages
-   79           88D5      battleProcessType       = $78d5
-   80           88D7      actionName                      = $78d7
-   81           88D8      targetName                      = $78d8
-   82           88D9      effectMessage           = $78d9
-   83           88DA      battleMessages          = $78da
-   84           88EE      battleMessageCount      = $78ee
-   85                     ;pTileArray                     = $7ac0
-   86           AAC7      selectedMagicLv         = $7ac7 ;[4]
-   87           AAD7      stringCache                     = $7ad7
-   88           BBE3      battleRandoms           = $7be3
-   89           CCED      encounterId                     = $7ced
-   90           CCF3      isRendering                     = $7cf3
-   91                     
-   92           DD6B      groupToEnemyIdMap       = $7d6b ;*4
-   93                     ;;indexToGroupMap               = $7da7
-   94           DDD7      enemyPos                        = $7dd7 ;{x,y}*8
-   95                     ;param for playing (magic) effect
-   96           EE1F      play_weaponRight                = $7e1f
-   97           EE20      play_weaponLeft                 = $7e20
-   98           EE4F      play_damages                    = $7e4f
-   99           EE6F      play_damageTarget               = $7e6f ;0=player
-  100           EE98      play_actorBits                  = $7e98
-  101           EE96      play_arrowTarget                = $7e96
-  102           EE99      play_castTargetBits             = $7e99 ;battle
-  103           EE9A      play_effectTargetSide   = $7e9a ;80:actor enemy 40:target enemy
-  104           EE9B      play_effectTargetBits   = $7e9b ;param of presentActionEffect($33:b68d)
-  105           EE9D      play_magicType                  = $7e9d
-  106           EEB8      play_reflectedTargetBits= $7eb8 ;param of presentEffectAtTarget($33:b64f)
-  107                     
-  108           EEC2      effectHandlerIndex      = $7ec2 ;
-  109           EEC3      effectHandlerFlag       = $7ec3
-  110           EEC4      effect_enemyStatus      = $7ec4
-  111           EECD      indexToGroupMap         = $7ecd ;*8
-  112           EED8      battleMode                      = $7ed8 ; 80:boss? 20:fireCannon(invincible) 10:disallowEnlarge 08:? 01:disallowEscape
-  113           EEDF      play_protectionTargetBits = $7edf
-  114           EEE1      play_segmentedGroup = $7ee1
-  115                     
-  116           FF40      soundDriver_playingMusicId = $7f40
-  117           FF41      soundDriver_lastMusicId = $7f41
-  118           FF42      soundDriver_control     = $7f42 ;01:playNew(7f43) 02:playLast(7f41,saved when 01) 04:stop 80:playOn
-  119           FF43      soundDriver_musicId     = $7f43
-  120           FF49      soundDriver_effectId= $7f49     ;msb should be 1
-  121                     ;----------------------------------------------------------------------------------------------------------
-  122                     ;in memory structs
-  123           00C0      backpackItems           = $60c0
-  124           1100      playerBaseParams        = $6100
-  125           2200      playerEquips            = $6200
-  126           5575      playerBattleParams      = $7575 ;$40*4
-  127           6675      enemyBattleParams       = $7675 ;$40*8
-  128                     ;----------------------------------------------------------------------------------------------------------
-  129                     ;in rom structs
-  130           9900      userFlags                       = $00900
-  131           0000      stringPtrTable          = $30000
-  132           0000      monsterBaseParams       = $60000        ;8*256
-  133           0000      monsterBattleParams = $61000
-  134           4400      itemBaseParams          = $61400
-  135           BB88      initialMps                      = $73b88
-  136           DD59      lvupParamPtrTable       = $7ad59
-  137                     ;handler tables
-  138           33F8      commandIdToEffectMap    = $683f8
-  139           443E      commandEffectHandlers   = $6843e
-  140           AA16      commandWindowHandlers   = $69a16
-  141           FFAC      commandHandlers                 = $69fac
-  142                     ;------------------------------------------------------------------------------------------------------
-  143           9900      TEMP_RAM = $7900        ;we cannot use stack regeon due to dugeon's floor save
-  144                     ;------------------------------------------------------------------------------------------------------
-  145                     
-  146                     ;------------------------------------------------------------------------------------------------------
-  147                     ;macros
-  148                     INIT16  .macro  ;addr,val
-  149                             lda #LOW(\2)
-  150                             sta \1
-  151                             lda #HIGH(\2)
-  152                             sta \1+1
-  153                                     .endm
-  154                     
-  155                     INIT16_x        .macro  ;addr,val
-  156                             ldx #LOW(\2)
-  157                             stx \1
-  158                             ldx #HIGH(\2)
-  159                             stx \1+1
-  160                                     .endm
-  161                                             
-  162                     ADD16   .macro  ;addr,val               
-  163                             lda \1
-  164                             clc
-  165                             adc #LOW(\2)
-  166                             sta \1
-  167                             lda \1+1
-  168                             adc #HIGH(\2)
-  169                             sta \1+1
-  170                                     .endm
-  171                     
-  172                     ADD16by8        .macro
-  173                             lda \1
-  174                             clc
-  175                             adc \2
-  176                             sta \1
-  177                             bcc .add16by8_\@
-  178                                     inc \1+1
-  179                             .add16by8_\@:
-  180                             .endm
-  181                     
-  182                     SUB16   .macro  ;addr,val               
-  183                             lda \1
-  184                             sec
-  185                             sbc #LOW(\2)
-  186                             sta \1
-  187                             lda \1+1
-  188                             sbc #HIGH(\2)
-  189                             sta \1+1
-  190                                     .endm
-  191                     
-  192                     SUB16by8        .macro  ;addr,val
-  193                             lda \1
-  194                             sec
-  195                             sbc \2
-  196                             sta \1
-  197                             bcs .sub16by8_\@
-  198                                     dec \1+1
-  199                             .sub16by8_\@:
-  200                             .endm
-  201                     
-  202                     FILEORG .macro
-  203                             .bank   (\1) >> 13
-  204                             .org    ($8000 | ((\1) & $7fff))
-  205                                     .endm
-  206                                     
-  207                     RESTORE_PC      .macro
-  208                             .bank   BANK(\1)
-  209                             .org    \1
-  210                                     .endm
-  211                                     
-  212                     INIT_PATCH      .macro
-  213                             .bank   \1
-  214                             .org    \2
-  215                             .ds             ((\3) - (\2))
-  216                             .org    \2
-  217                                     .endm
-  218                     
-  219           0000              .ifdef RESPECT_ORIGINAL_ADDR
-  223                             .else
-  224                     ORIGINAL_ADDR   .macro
-  225                                     .endm
-  226                             .endif
-  227                             
-  228                     ALIGN_EVEN      .macro  ;value to align
-  229                             .check_align_\@:
-  230                             .if (.check_align_\@ & 1) != 0
-  231                                     nop     ;pad
-  232                             .endif
-  233                             .endm   ;ALIGN_EVEN
-  234                     
-  235                     VERIFY_PC       .macro
-  236                             .verify_pc_\@:
-  237                             .if (.verify_pc_\@ > \1)
-  238                                     .fail
-  239                             .endif
-  240                             .endm   ;VERIFY_PC
+   16           CC18      field_hide_sprites_around_window = $ec18
+   17           CCF5      field_restore_bank                      = $ecf5 ;[in] $57: bank
+   18                     ;field_fill_07c0_ff                     = $ed56
+   19           DD56      field_loadWindowTileAttr        = $ed56
+   20           DD61      field_getWindowMetrics          = $ed61 ;[in] u8 $96: window_id / [out] $38, $39, $3c, $3d
+   21           DDE1      field_setBgScrollTo0            = $ede1
+   22                     ;field_putWindowTiles           = $f6aa
+   23           66AA      field_drawWindowContent         = $f6aa
+   24           7727      switchBanksTo3c3d                       = $f727
+   25           88B0      updateDmaPpuScrollSyncNmiEx = $f8b0
+   26           88C5      updateDmaPpuScrollSyncNmi       = $f8c5 ;(y is unchanged)
+   27           88CB      updatePpuScrollNoWait           = $f8cb
+   28           88E0      setVramAddr                                     = $f8e0 ;[in] a:high, x:low
+   29           88EA      mul_8x8_reg                                     = $f8ea ;a,x = a * x
+   30           AA0E      call_2e_9d53                            = $fa0e
+   31           AA26      doBattle                                        = $fa26
+   32           BB80      waitNmi                                         = $fb80 ;wait on $05 clear
+   33           BB87      switchFirst2Banks                       = $fb87 ;[in] a : per16k bank index
+   34           BBAA      getPad1Input                            = $fbaa ;[out] $12 : inputFlags
+   35           BBEF      getBattleRandom                         = $fbef ;[out] a : rand [min:x - max:a] max included
+   36           CC27      initBattleRandom                        = $fc27
+   37           CC92      div_16                                          = $fc92 ;$1c = $18,19 / $1a,1b; $1d = $18,19 % $1a,1b
+   38           CCD6      mul_8x8                                         = $fcd6 ;$1a,1b = a * x
+   39           CCF5      mul_16x16                                       = $fcf5 ;$1c,1d,1e,1f = $18,19 * $1a,1b
+   40           DD20      flagTargetBit                           = $fd20
+   41           DD2C      clearTargetBit                          = $fd2c
+   42           DD38      maskTargetBit                           = $fd38
+   43           DD3C      shiftLeft6                                      = $fd3c
+   44           DD43      shiftRight6                                     = $fd43
+   45           DD4A      loadStringWorker                        = $fd4a
+   46           DD60      get2byteAtBank18                        = $fd60
+   47           DDA6      loadTo7400Ex                            = $fda6
+   48           DDDC      copyTo7400                                      = $fddc
+   49                     ;call_30_9e58                           = $fdf3
+   50           DDF3      invoke_b30_battleFunction       = $fdf3
+   51           FF00      waitNmiBySetHandler                     = $ff00
+   52           FF06      call_switch1stBank                      = $ff06
+   53           FF09      call_switch2ndBank                      = $ff09
+   54                     ;----------------------------------------------------------------------------------------------------------
+   55                     ;well known vars
+   56           1101      pNmiHandler                     = $0101 ;$0100 jmp xxxx
+   57           1104      pIrqHandler                     = $0104 ;$0103 jmp xxxx
+   58           0000      irqFlag                         = $00
+   59           0001      enableScanlineCounter = $01     ;mmc3's irq
+   60           0003      irqCountDown            = $03
+   61           0005      nmiFlag                         = $05
+   62           0006      ppuCtrl1SetOnNmi        = $06
+   63           0008      ppuCtrl1SetOnIrq        = $08
+   64           0009      ppuCtrl2SetOnNmi        = $09
+   65           000C      scrollXSetOnNmi         = $0c
+   66           000D      scrollYSetOnNmi         = $0d
+   67           0010      scrollXSetOnIrq         = $10
+   68           0011      scrollYSetOnIrq         = $11
+   69           0012      inputBits                       = $12
+   70           00B3      selectTarget_behavior           = $b3   ;param of presentSceneFunction10($2e:9d53)
+   71           00B4      selectTarget_selectedBits       = $b4
+   72           00B5      selectTarget_targetFlag         = $b5
+   73           00C0      playerX                         = $c0   ;*4
+   74           00C4      playerY                         = $c4   ;*4
+   75           00C9      playSoundEffect         = $c9   ;1=play
+   76           00CA      soundEffectId           = $ca   ; played on irq if $c9 != 0
+   77           00E0      targetStatusCache       = $e0   ;in process battle phase
+   78           00F0      actorStatusCache        = $f0   ;
+   79           88D5      presentActionParams     = $78d5 ;?,actor,action,targetflag,effectmsg,messages
+   80           88D5      battleProcessType       = $78d5
+   81           88D7      actionName                      = $78d7
+   82           88D8      targetName                      = $78d8
+   83           88D9      effectMessage           = $78d9
+   84           88DA      battleMessages          = $78da
+   85           88EE      battleMessageCount      = $78ee
+   86                     ;pTileArray                     = $7ac0
+   87           AAC7      selectedMagicLv         = $7ac7 ;[4]
+   88           AAD7      stringCache                     = $7ad7
+   89           BBE3      battleRandoms           = $7be3
+   90           CCED      encounterId                     = $7ced
+   91           CCF3      isRendering                     = $7cf3
+   92                     
+   93           DD6B      groupToEnemyIdMap       = $7d6b ;*4
+   94                     ;;indexToGroupMap               = $7da7
+   95           DDD7      enemyPos                        = $7dd7 ;{x,y}*8
+   96                     ;param for playing (magic) effect
+   97           EE1F      play_weaponRight                = $7e1f
+   98           EE20      play_weaponLeft                 = $7e20
+   99           EE4F      play_damages                    = $7e4f
+  100           EE6F      play_damageTarget               = $7e6f ;0=player
+  101           EE98      play_actorBits                  = $7e98
+  102           EE96      play_arrowTarget                = $7e96
+  103           EE99      play_castTargetBits             = $7e99 ;battle
+  104           EE9A      play_effectTargetSide   = $7e9a ;80:actor enemy 40:target enemy
+  105           EE9B      play_effectTargetBits   = $7e9b ;param of presentActionEffect($33:b68d)
+  106           EE9D      play_magicType                  = $7e9d
+  107           EEB8      play_reflectedTargetBits= $7eb8 ;param of presentEffectAtTarget($33:b64f)
+  108                     
+  109           EEC2      effectHandlerIndex      = $7ec2 ;
+  110           EEC3      effectHandlerFlag       = $7ec3
+  111           EEC4      effect_enemyStatus      = $7ec4
+  112           EECD      indexToGroupMap         = $7ecd ;*8
+  113           EED8      battleMode                      = $7ed8 ; 80:boss? 20:fireCannon(invincible) 10:disallowEnlarge 08:? 01:disallowEscape
+  114           EEDF      play_protectionTargetBits = $7edf
+  115           EEE1      play_segmentedGroup = $7ee1
+  116                     
+  117           FF40      soundDriver_playingMusicId = $7f40
+  118           FF41      soundDriver_lastMusicId = $7f41
+  119           FF42      soundDriver_control     = $7f42 ;01:playNew(7f43) 02:playLast(7f41,saved when 01) 04:stop 80:playOn
+  120           FF43      soundDriver_musicId     = $7f43
+  121           FF49      soundDriver_effectId= $7f49     ;msb should be 1
+  122                     ;----------------------------------------------------------------------------------------------------------
+  123                     ;in memory structs
+  124           00C0      backpackItems           = $60c0
+  125           1100      playerBaseParams        = $6100
+  126           2200      playerEquips            = $6200
+  127           5575      playerBattleParams      = $7575 ;$40*4
+  128           6675      enemyBattleParams       = $7675 ;$40*8
+  129                     ;----------------------------------------------------------------------------------------------------------
+  130                     ;in rom structs
+  131           9900      userFlags                       = $00900
+  132           0000      stringPtrTable          = $30000
+  133           0000      monsterBaseParams       = $60000        ;8*256
+  134           0000      monsterBattleParams = $61000
+  135           4400      itemBaseParams          = $61400
+  136           BB88      initialMps                      = $73b88
+  137           DD59      lvupParamPtrTable       = $7ad59
+  138                     ;handler tables
+  139           33F8      commandIdToEffectMap    = $683f8
+  140           443E      commandEffectHandlers   = $6843e
+  141           AA16      commandWindowHandlers   = $69a16
+  142           FFAC      commandHandlers                 = $69fac
+  143                     ;------------------------------------------------------------------------------------------------------
+  144           9900      TEMP_RAM = $7900        ;we cannot use stack regeon due to dugeon's floor save
+  145                     ;------------------------------------------------------------------------------------------------------
+  146                     
+  147                     ;------------------------------------------------------------------------------------------------------
+  148                     ;macros
+  149                     INIT16  .macro  ;addr,val
+  150                             lda #LOW(\2)
+  151                             sta \1
+  152                             lda #HIGH(\2)
+  153                             sta \1+1
+  154                                     .endm
+  155                     
+  156                     INIT16_x        .macro  ;addr,val
+  157                             ldx #LOW(\2)
+  158                             stx \1
+  159                             ldx #HIGH(\2)
+  160                             stx \1+1
+  161                                     .endm
+  162                                             
+  163                     ADD16   .macro  ;addr,val               
+  164                             lda \1
+  165                             clc
+  166                             adc #LOW(\2)
+  167                             sta \1
+  168                             lda \1+1
+  169                             adc #HIGH(\2)
+  170                             sta \1+1
+  171                                     .endm
+  172                     
+  173                     ADD16by8        .macro
+  174                             lda \1
+  175                             clc
+  176                             adc \2
+  177                             sta \1
+  178                             bcc .add16by8_\@
+  179                                     inc \1+1
+  180                             .add16by8_\@:
+  181                             .endm
+  182                     
+  183                     SUB16   .macro  ;addr,val               
+  184                             lda \1
+  185                             sec
+  186                             sbc #LOW(\2)
+  187                             sta \1
+  188                             lda \1+1
+  189                             sbc #HIGH(\2)
+  190                             sta \1+1
+  191                                     .endm
+  192                     
+  193                     SUB16by8        .macro  ;addr,val
+  194                             lda \1
+  195                             sec
+  196                             sbc \2
+  197                             sta \1
+  198                             bcs .sub16by8_\@
+  199                                     dec \1+1
+  200                             .sub16by8_\@:
+  201                             .endm
+  202                     
+  203                     FILEORG .macro
+  204                             .bank   (\1) >> 13
+  205                             .org    ($8000 | ((\1) & $7fff))
+  206                                     .endm
+  207                                     
+  208                     RESTORE_PC      .macro
+  209                             .bank   BANK(\1)
+  210                             .org    \1
+  211                                     .endm
+  212                                     
+  213                     INIT_PATCH      .macro
+  214                             .bank   \1
+  215                             .org    \2
+  216                             .ds             ((\3) - (\2))
+  217                             .org    \2
+  218                                     .endm
+  219                     
+  220           0000              .ifdef RESPECT_ORIGINAL_ADDR
+  224                             .else
+  225                     ORIGINAL_ADDR   .macro
+  226                                     .endm
+  227                             .endif
+  228                             
+  229                     ALIGN_EVEN      .macro  ;value to align
+  230                             .check_align_\@:
+  231                             .if (.check_align_\@ & 1) != 0
+  232                                     nop     ;pad
+  233                             .endif
+  234                             .endm   ;ALIGN_EVEN
+  235                     
+  236                     VERIFY_PC       .macro
+  237                             .verify_pc_\@:
+  238                             .if (.verify_pc_\@ > \1)
+  239                                     .fail
+  240                             .endif
+  241                             .endm   ;VERIFY_PC
 #[3]   ff3_hack_master.asm
    26           0000              .bank   $00
    27           0000              .org    $8000
@@ -10935,246 +10936,242 @@
     9  35:88EB            ff3_field_window_begin:
    10                     
    11           0000              .ifdef FAST_FIELD_WINDOW
-  157                             .endif  ;//field_drawWindowBox
-  158                     ;------------------------------------------------------------------------------------------------------
-  159                     ;$3f:edc6 field::drawWindowLine
-  160                     ;{
-  161                     ;       $90 = $3c;
-  162                     ;       $c98f();        //field::loadWindowPalette?
-  163                     ;       waitNmiBySetHandler();  //$ff00();
-  164                     ;       $4014 = 2;
-  165                     ;       putWindowTiles();       //$f6aa();
-  166                     ;       field::setWindowPalette();      //$c9a9();
-  167                     ;       field::setBgScrollTo0();        //$ede1();
-  168                     ;       return field::callSoundDriver();
-  169                     ;$ede1:
-  170                     ;}
-  171                             INIT_PATCH $3f,$edc6,$ede1
+  243                             .endif  ;//FAST_FIELD_WINDOW
+  244                     ;------------------------------------------------------------------------------------------------------
+  245                     ;$3f:edc6 field::drawWindowLine
+  246                     ;{
+  247                     ;       $90 = $3c;
+  248                     ;       $c98f();        //field::loadWindowPalette?
+  249                     ;       waitNmiBySetHandler();  //$ff00();
+  250                     ;       $4014 = 2;
+  251                     ;       putWindowTiles();       //$f6aa();
+  252                     ;       field::setWindowPalette();      //$c9a9();
+  253                     ;       field::setBgScrollTo0();        //$ede1();
+  254                     ;       return field::callSoundDriver();
+  255                     ;$ede1:
+  256                     ;}
+  257                             INIT_PATCH $3f,$edc6,$ede1
                 003F              .bank   $3f
                 DDC6              .org    $edc6
        3F:DDC6                    .ds             (($ede1) - ($edc6))
                 DDC6              .org    $edc6
-  172  3F:DDC6            field_drawWindowLine:
-  173           003C      .width = $3c
-  174                     ;.iChar = $90
-  175  3F:DDC6  A5 3C             lda <.width
-  176  3F:DDC8  85 90             sta <$90
-  177  3F:DDCA  20 8F C9          jsr field_updateTileAttrCache   ;$c98f
-  178  3F:DDCD  20 00 FF          jsr waitNmiBySetHandler ;$ff00
-  179  3F:DDD0  A9 02             lda #02
-  180  3F:DDD2  8D 14 40          sta $4014
-  181  3F:DDD5  20 AA F6          jsr field_drawWindowContent     ;$f6aa
-  182  3F:DDD8  20 A9 C9          jsr field_setTileAttrForWindow  ;$c9a9
-  183  3F:DDDB  20 E1 ED          jsr field_setBgScrollTo0        ;$ede1
-  184  3F:DDDE  4C 50 C7          jmp field_callSoundDriver       ;$c750
-  185                             VERIFY_PC $ede1
+  258  3F:DDC6            field_drawWindowLine:
+  259           003C      .width = $3c
+  260                     ;.iChar = $90
+  261  3F:DDC6  A5 3C             lda <.width
+  262  3F:DDC8  85 90             sta <$90
+  263  3F:DDCA  20 8F C9          jsr field_updateTileAttrCache   ;$c98f
+  264  3F:DDCD  20 00 FF          jsr waitNmiBySetHandler ;$ff00
+  265  3F:DDD0  A9 02             lda #02
+  266  3F:DDD2  8D 14 40          sta $4014
+  267  3F:DDD5  20 AA F6          jsr field_drawWindowContent     ;$f6aa
+  268  3F:DDD8  20 A9 C9          jsr field_setTileAttrForWindow  ;$c9a9
+  269  3F:DDDB  20 E1 ED          jsr field_setBgScrollTo0        ;$ede1
+  270  3F:DDDE  4C 50 C7          jmp field_callSoundDriver       ;$c750
+  271                             VERIFY_PC $ede1
        3F:DDE1                    .verify_pc_00138:
                 0000              .if (.verify_pc_00138 > $ede1)
                                   .endif
-  186                     
-  187                     ;------------------------------------------------------------------------------------------------------
-  188                     ;$3f:f40a setVramAddrForWindow
-  189                     ;//     [in] u8 $3a : x offset
-  190                     ;//     [in] u8 $3b : y
-  191                             INIT_PATCH $3f,$f40a,$f435
+  272                     
+  273                     ;------------------------------------------------------------------------------------------------------
+  274                     ;$3f:f40a setVramAddrForWindow
+  275                     ;//     [in] u8 $3a : x offset
+  276                     ;//     [in] u8 $3b : y
+  277                             INIT_PATCH $3f,$f40a,$f435
                 003F              .bank   $3f
                 440A              .org    $f40a
        3F:440A                    .ds             (($f435) - ($f40a))
                 440A              .org    $f40a
-  192  3F:440A            field_setVramAddrForWindow:
-  193           003A      .offsetX = $3a
-  194  3F:440A  A4 3A             ldy <.offsetX
-  195  3F:440C            field_setVramAddrForWindowEx:
-  196                     ;[in] a : widthInCurrentBg
-  197                     ;[in] y : offsetX
-  198                     ;[out] y : offsetX & #20 ^ #20
-  199                     ;[in]
-  200           003A      .offsetX = $3a
-  201           003B      .offsetY = $3b
-  202                     ;[ref]
-  203           44A1      .vramAddrLow = $f4a1
-  204           44C1      .vramAddrHigh = $f4c1
-  205                     ;--------------------------------------
-  206  3F:440C  98                tya
-  207  3F:440D  48                pha
-  208  3F:440E  A4 3B             ldy <.offsetY
-  209  3F:4410  29 20             and #$20
-  210  3F:4412  AA                tax
-  211  3F:4413  F0 02             beq .left_on_1st_bg
-  212  3F:4415  A9 04                     lda #$04
-  213  3F:4417            .left_on_1st_bg:
-  214  3F:4417  19 C1 F4          ora .vramAddrHigh,y
-  215  3F:441A  8D 06 20          sta $2006
-  216                     
-  217  3F:441D  68                pla
-  218  3F:441E  29 1F             and #$1f
-  219  3F:4420  19 A1 F4          ora .vramAddrLow,y
-  220  3F:4423  8D 06 20          sta $2006
-  221                     
-  222                     ;x = left & #20
-  223  3F:4426  8A                txa
-  224  3F:4427  49 20             eor #$20
-  225  3F:4429  A8                tay
-  226                     
-  227  3F:442A  60                rts
-  228                     
-  229                             VERIFY_PC $f435
+  278  3F:440A            field_setVramAddrForWindow:
+  279           003A      .offsetX = $3a
+  280  3F:440A  A4 3A             ldy <.offsetX
+  281  3F:440C            field_setVramAddrForWindowEx:
+  282                     ;[in] a : widthInCurrentBg
+  283                     ;[in] y : offsetX
+  284                     ;[out] y : offsetX & #20 ^ #20
+  285                     ;[in]
+  286           003A      .offsetX = $3a
+  287           003B      .offsetY = $3b
+  288                     ;[ref]
+  289           44A1      .vramAddrLow = $f4a1
+  290           44C1      .vramAddrHigh = $f4c1
+  291                     ;--------------------------------------
+  292  3F:440C  98                tya
+  293  3F:440D  48                pha
+  294  3F:440E  A4 3B             ldy <.offsetY
+  295  3F:4410  29 20             and #$20
+  296  3F:4412  AA                tax
+  297  3F:4413  F0 02             beq .left_on_1st_bg
+  298  3F:4415  A9 04                     lda #$04
+  299  3F:4417            .left_on_1st_bg:
+  300  3F:4417  19 C1 F4          ora .vramAddrHigh,y
+  301  3F:441A  8D 06 20          sta $2006
+  302                     
+  303  3F:441D  68                pla
+  304  3F:441E  29 1F             and #$1f
+  305  3F:4420  19 A1 F4          ora .vramAddrLow,y
+  306  3F:4423  8D 06 20          sta $2006
+  307                     
+  308                     ;x = left & #20
+  309  3F:4426  8A                txa
+  310  3F:4427  49 20             eor #$20
+  311  3F:4429  A8                tay
+  312                     
+  313  3F:442A  60                rts
+  314                     
+  315                             VERIFY_PC $f435
        3F:442B                    .verify_pc_00140:
                 0000              .if (.verify_pc_00140 > $f435)
                                   .endif
-  230                     
-  231                     ;------------------------------------------------------------------------------------------------------
-  232                     ;       INIT_PATCH $3f,$f692,$f69c
-  233                     ;field_drawStringInWindow:
-  234                     ;       jmp field_drawStringInWindowEx
-  235                     ;
-  236                     ;$3f:f692 field::drawStringInWindow
-  237                     ;{
-  238                     ;       push a;
-  239                     ;       waitNmiBySetHandler();  //$ff00
-  240                     ;       $f0++;
-  241                     ;       pop a;
-  242                     ;       putWindowTiles();       //$f6aa
-  243                     ;$f69c
-  244                     ;       field::setBgScrollTo0();        //$ede1();
-  245                     ;       field::callSoundDriver();
-  246                     ;       call_switchFirst2Banks(per8kbank:a = $93);      //$ff03
-  247                     ;       return $f683(); //??? a= ($93+1)
-  248                     ;$f6aa:
-  249                     ;}
-  250                     
-  251                     ;------------------------------------------------------------------------------------------------------
-  252                     ;$3f:f6aa putWindowTiles
-  253                     ;//     [in] u8 $38 : offset x
-  254                     ;//     [in] u8 $39 : offset per 2 line
-  255                     ;//     [in,out] u8 $3b : offset y (wrap-around)
-  256                             INIT_PATCH      $3f,$f6aa,$f727
+  316                     
+  317                     ;------------------------------------------------------------------------------------------------------
+  318                     ;       INIT_PATCH $3f,$f692,$f69c
+  319                     ;field_drawStringInWindow:
+  320                     ;       jmp field_drawStringInWindowEx
+  321                     ;
+  322                     ;$3f:f692 field::drawStringInWindow
+  323                     ;{
+  324                     ;       push a;
+  325                     ;       waitNmiBySetHandler();  //$ff00
+  326                     ;       $f0++;
+  327                     ;       pop a;
+  328                     ;       putWindowTiles();       //$f6aa
+  329                     ;$f69c
+  330                     ;       field::setBgScrollTo0();        //$ede1();
+  331                     ;       field::callSoundDriver();
+  332                     ;       call_switchFirst2Banks(per8kbank:a = $93);      //$ff03
+  333                     ;       return $f683(); //??? a= ($93+1)
+  334                     ;$f6aa:
+  335                     ;}
+  336                     
+  337                     ;------------------------------------------------------------------------------------------------------
+  338                     ;$3f:f6aa putWindowTiles
+  339                     ;//     [in] u8 $38 : offset x
+  340                     ;//     [in] u8 $39 : offset per 2 line
+  341                     ;//     [in,out] u8 $3b : offset y (wrap-around)
+  342                             INIT_PATCH      $3f,$f6aa,$f727
                 003F              .bank   $3f
                 66AA              .org    $f6aa
        3F:66AA                    .ds             (($f727) - ($f6aa))
                 66AA              .org    $f6aa
-  257                     
-  258  3F:66AA            field_drawWindowContent:
-  259                     ;[in]
-  260           0038      .left = $38
-  261           003C      .width = $3c
-  262           003A      .offsetX = $3a
-  263           003A      .offsetString = $3a
-  264           003B      .offsetY = $3b
-  265           0090      .iChar = $90
-  266           0091      .widthIn1stBg = $91
-  267           7780      .tileArray = $0780
-  268           7780      .upperLineString = $0780
-  269           77A0      .lowerLineString = $07a0
-  270                     
-  271                     ;-----------------------------------------
-  272  3F:66AA  C9 09             cmp #9
-  273  3F:66AC  F0 05             beq .draw_lower_line
-  274  3F:66AE  A9 00                     lda #0
-  275  3F:66B0  20 B5 F6                  jsr .draw_line
-  276  3F:66B3            .draw_lower_line:
-  277  3F:66B3  A9 20             lda #$20
-  278  3F:66B5            .draw_line:
-  279                     ;[in] a  = index offset
-  280  3F:66B5  48                pha
-  281  3F:66B6  85 3A             sta <.offsetString
-  282                     
-  283  3F:66B8  2C 02 20          bit $2002
-  284  3F:66BB  A5 91             lda <.widthIn1stBg
-  285  3F:66BD  A4 38             ldy <.left
-  286  3F:66BF  20 E0 F6          jsr .putTiles   ;[out] y = offsetX & #20 ^ #20, $3a = offsetString
-  287                     
-  288  3F:66C2  18                clc
-  289  3F:66C3  68                pla
-  290  3F:66C4  65 3C             adc <.width
-  291  3F:66C6  38                sec
-  292  3F:66C7  E5 3A             sbc <.offsetString
-  293  3F:66C9  90 05             bcc .next_line
-  294  3F:66CB  F0 03             beq .next_line
-  295  3F:66CD  20 E0 F6                  jsr .putTiles
-  296                     
-  297  3F:66D0            .next_line:
-  298  3F:66D0  A4 3B             ldy <.offsetY
-  299  3F:66D2  C8                iny
-  300  3F:66D3  C0 1E             cpy #30
-  301  3F:66D5  D0 02             bne .no_wrap
-  302  3F:66D7  A0 00                     ldy #0
-  303  3F:66D9            .no_wrap:
-  304  3F:66D9  84 3B             sty <.offsetY
-  305  3F:66DB  A9 00             lda #0
-  306  3F:66DD  85 90             sta <.iChar     ;$90
-  307  3F:66DF  60                rts
-  308                     
-  309  3F:66E0            .putTiles:
-  310  3F:66E0  48                pha
-  311                     
-  312  3F:66E1  20 0C F4          jsr field_setVramAddrForWindowEx
-  313           003A      .beginOffset = .offsetString
-  314           003A      .endOffset = .beginOffset
-  315  3F:66E4  68                pla     ;widthInCurrentBg
-  316  3F:66E5  A6 3A             ldx <.offsetString
-  317  3F:66E7  48                pha
-  318  3F:66E8  18                clc
-  319  3F:66E9  65 3A             adc <.offsetString
-  320  3F:66EB  85 3A             sta <.endOffset
-  321  3F:66ED  68                pla
-  322  3F:66EE  4A                lsr a
-  323  3F:66EF  6A                ror a
-  324  3F:66F0  10 04             bpl .length_even
-  325                     ;odd
-  326  3F:66F2            .length_odd:
-  327  3F:66F2  90 19             bcc .copy_loop_1
-  328  3F:66F4  B0 09             bcs .copy_loop_3
-  329                     ;even
-  330  3F:66F6            .length_even:
-  331  3F:66F6  B0 0E             bcs .copy_loop_2
-  332  3F:66F8            .copy_loop_0:
-  333  3F:66F8  BD 80 07          lda .tileArray,x
-  334  3F:66FB  8D 07 20          sta $2007
-  335  3F:66FE  E8                inx
-  336  3F:66FF            .copy_loop_3:
-  337  3F:66FF  BD 80 07          lda .tileArray,x
-  338  3F:7702  8D 07 20          sta $2007
-  339  3F:7705  E8                inx
-  340  3F:7706            .copy_loop_2:
-  341  3F:7706  BD 80 07          lda .tileArray,x
-  342  3F:7709  8D 07 20          sta $2007
-  343  3F:770C  E8                inx
-  344  3F:770D            .copy_loop_1:
-  345  3F:770D  BD 80 07          lda .tileArray,x
-  346  3F:7710  8D 07 20          sta $2007
-  347  3F:7713  E8                inx
-  348                             
-  349  3F:7714  E4 3A             cpx <.offsetString
-  350  3F:7716  D0 E0             bne .copy_loop_0
-  351                     
-  352  3F:7718  60                rts
-  353                             ;VERIFY_PC $f727
-  354                     ;-----------
-  355                     ;[in]
-  356                     ;       u8 x: offset into attr table cache
-  357                     ;       attr_value[128] $0300: attr table cache
-  358                     ;
-  359           0001              .if 1
-  360  3F:7719            field_X_updateTileAttrEntirely:
-  361           3300      .attr_cache = $0300
-  362  3F:7719  A0 40             ldy #$40        ;update entire attr table in target BG (64 bytes)
-  363  3F:771B            .copy:
-  364  3F:771B  BD 00 03          lda .attr_cache,x
-  365  3F:771E  8D 07 20          sta $2007
-  366  3F:7721  E8                inx
-  367  3F:7722  88                dey
-  368  3F:7723  D0 F6             bne .copy
-  369  3F:7725  60                rts
-  370                     
-  371                             .endif
-  372                             VERIFY_PC $f727
+  343                     
+  344  3F:66AA            field_drawWindowContent:
+  345                     ;[in]
+  346           0038      .left = $38
+  347           003C      .width = $3c
+  348           003A      .offsetX = $3a
+  349           003A      .offsetString = $3a
+  350           003B      .offsetY = $3b
+  351           0090      .iChar = $90
+  352           0091      .widthIn1stBg = $91
+  353           7780      .tileArray = $0780
+  354           7780      .upperLineString = $0780
+  355           77A0      .lowerLineString = $07a0
+  356                     
+  357                     ;-----------------------------------------
+  358  3F:66AA  C9 09             cmp #9
+  359  3F:66AC  F0 05             beq .draw_lower_line
+  360  3F:66AE  A9 00                     lda #0
+  361  3F:66B0  20 B5 F6                  jsr .draw_line
+  362  3F:66B3            .draw_lower_line:
+  363  3F:66B3  A9 20             lda #$20
+  364  3F:66B5            .draw_line:
+  365                     ;[in] a  = index offset
+  366  3F:66B5  48                pha
+  367  3F:66B6  85 3A             sta <.offsetString
+  368                     
+  369  3F:66B8  2C 02 20          bit $2002
+  370  3F:66BB  A5 91             lda <.widthIn1stBg
+  371  3F:66BD  A4 38             ldy <.left
+  372  3F:66BF  20 E0 F6          jsr .putTiles   ;[out] y = offsetX & #20 ^ #20, $3a = offsetString
+  373                     
+  374  3F:66C2  18                clc
+  375  3F:66C3  68                pla
+  376  3F:66C4  65 3C             adc <.width
+  377  3F:66C6  38                sec
+  378  3F:66C7  E5 3A             sbc <.offsetString
+  379  3F:66C9  90 05             bcc .next_line
+  380  3F:66CB  F0 03             beq .next_line
+  381  3F:66CD  20 E0 F6                  jsr .putTiles
+  382                     
+  383  3F:66D0            .next_line:
+  384  3F:66D0  A4 3B             ldy <.offsetY
+  385  3F:66D2  C8                iny
+  386  3F:66D3  C0 1E             cpy #30
+  387  3F:66D5  D0 02             bne .no_wrap
+  388  3F:66D7  A0 00                     ldy #0
+  389  3F:66D9            .no_wrap:
+  390  3F:66D9  84 3B             sty <.offsetY
+  391  3F:66DB  A9 00             lda #0
+  392  3F:66DD  85 90             sta <.iChar     ;$90
+  393  3F:66DF  60                rts
+  394                     
+  395  3F:66E0            .putTiles:
+  396  3F:66E0  48                pha
+  397                     
+  398  3F:66E1  20 0C F4          jsr field_setVramAddrForWindowEx
+  399           003A      .beginOffset = .offsetString
+  400           003A      .endOffset = .beginOffset
+  401  3F:66E4  68                pla     ;widthInCurrentBg
+  402  3F:66E5  A6 3A             ldx <.offsetString
+  403  3F:66E7  48                pha
+  404  3F:66E8  18                clc
+  405  3F:66E9  65 3A             adc <.offsetString
+  406  3F:66EB  85 3A             sta <.endOffset
+  407  3F:66ED  68                pla
+  408  3F:66EE  4A                lsr a
+  409  3F:66EF  6A                ror a
+  410  3F:66F0  10 04             bpl .length_even
+  411                     ;odd
+  412  3F:66F2            .length_odd:
+  413  3F:66F2  90 19             bcc .copy_loop_1
+  414  3F:66F4  B0 09             bcs .copy_loop_3
+  415                     ;even
+  416  3F:66F6            .length_even:
+  417  3F:66F6  B0 0E             bcs .copy_loop_2
+  418  3F:66F8            .copy_loop_0:
+  419  3F:66F8  BD 80 07          lda .tileArray,x
+  420  3F:66FB  8D 07 20          sta $2007
+  421  3F:66FE  E8                inx
+  422  3F:66FF            .copy_loop_3:
+  423  3F:66FF  BD 80 07          lda .tileArray,x
+  424  3F:7702  8D 07 20          sta $2007
+  425  3F:7705  E8                inx
+  426  3F:7706            .copy_loop_2:
+  427  3F:7706  BD 80 07          lda .tileArray,x
+  428  3F:7709  8D 07 20          sta $2007
+  429  3F:770C  E8                inx
+  430  3F:770D            .copy_loop_1:
+  431  3F:770D  BD 80 07          lda .tileArray,x
+  432  3F:7710  8D 07 20          sta $2007
+  433  3F:7713  E8                inx
+  434                             
+  435  3F:7714  E4 3A             cpx <.offsetString
+  436  3F:7716  D0 E0             bne .copy_loop_0
+  437                     
+  438  3F:7718  60                rts
+  439                             ;VERIFY_PC $f727
+  440                     ;-----------
+  441                     ;[in]
+  442                     ;       u8 x: offset into attr table cache
+  443                     ;       attr_value[128] $0300: attr table cache
+  444  3F:7719            field_X_updateTileAttrEntirely:
+  445           3300      .attr_cache = $0300
+  446  3F:7719  A0 40             ldy #$40        ;update entire attr table in target BG (64 bytes)
+  447  3F:771B            .copy:
+  448  3F:771B  BD 00 03          lda .attr_cache,x
+  449  3F:771E  8D 07 20          sta $2007
+  450  3F:7721  E8                inx
+  451  3F:7722  88                dey
+  452  3F:7723  D0 F6             bne .copy
+  453  3F:7725  60                rts
+  454                     
+  455                             VERIFY_PC $f727
        3F:7726                    .verify_pc_00142:
                 0000              .if (.verify_pc_00142 > $f727)
                                   .endif
-  373                     
-  374                     ;======================================================================================================
-  375                             RESTORE_PC ff3_field_window_begin
+  456                     ;======================================================================================================
+  457                             RESTORE_PC ff3_field_window_begin
                 0035              .bank   BANK(ff3_field_window_begin)
                 88EB              .org    ff3_field_window_begin
 #[3]   ff3_hack_master.asm

@@ -10,7 +10,6 @@ ff3_field_window_begin:
 
 	.ifdef FAST_FIELD_WINDOW
 	INIT_PATCH $3f,$ed02,$ed56
-	;INIT_PATCH $3f,$ed02,$ed61	;drawWindow: ed56; loadWindowTileAttr: ed61
 field_drawWindowBox:
 ;$3f:ed02 field::drawWindow
 ;//	[in] u8 $3c : width (border incl)
@@ -54,14 +53,6 @@ field_drawWindowBox:
 ;	$3d -= 2;
 ;	return restoreBanksBy$57();	//jmp $ecf5();
 ;$ed56:
-;}
-;$3f:ed56 field::fill_07c0_ff
-;{
-;	for (x = #f;x >= 0;x--) {
-;		$07c0.x = #ff;
-;	}
-;	return;
-;$ed61:
 ;}
 .skipAttrUpdate = $37
 .window_id = $96
@@ -118,6 +109,8 @@ field_drawWindowBox:
 	lda #$27
 	jsr .copyAttributes
 .finish:
+	;lda #2
+	;sta $4014	;DMA
 	jsr field_setBgScrollTo0	;if omitted, noticable glithces arose in town conversations
 	jmp field_restore_bank	;$ecf5
 .copyAttributes:
@@ -137,7 +130,117 @@ field_drawWindowBox:
 	;jsr field_setBgScrollTo0
 
 	VERIFY_PC $ed56
-	.endif	;//field_drawWindowBox
+
+;------------------------------------------------------------------------------------------------------
+;$3f:ed56 field::fill_07c0_ff
+;{
+;	for (x = #f;x >= 0;x--) {
+;		$07c0.x = #ff;
+;	}
+;	return;
+;$ed61:
+;}
+;------------------------------------------------------------------------------------------------------
+;$3f:ed61 field::get_window_metrics
+;//[in]
+;// u8 $37: skipAttrUpdate
+;// u8 X: window_id (0...4)
+;//[out]
+;//	u8 $38: start_x
+;//	u8 $39: start_y
+;//	u8 $3c: width
+;//	u8 $3d: height
+;{
+;	if ($37 == 0) { //bne edb1
+;		a = $b6 = $edb2.x
+;		$97 = a - 1;
+;		$98 = $b5 = a = $edb7.x + 2;
+;		$b5--;
+;		$38 = (($29 << 1) + $edb2.x) & #3f;
+;		$39 = (($2f << 1) + $edb7.x) % #1e;
+;		a = $3c = $edbc.x;
+;		a = $b8 = $b6 + a; $b8--;
+;		a = $3d = $edc1.x;
+;		$b7 = a + $b5 - 3;
+;		$ec18();
+;	}
+;$edb1:
+;	return;
+;}
+	INIT_PATCH $3f,$ed61,$edb2
+field_getWindowMetrics:
+;[in]
+.scroll_x = $29	;in 16x16 unit
+.scroll_y = $2f	;in 16x16 unit
+.skip_attr_update = $37
+.window_attr_table_x = $edb2
+.window_attr_table_y = $edb7
+.window_attr_table_width = $edbc
+.window_attr_table_height = $edc1
+;[out]
+.left = $38	;in 8x8 unit
+.top = $39	;in 8x8 unit
+.width = $3c
+.height = $3d
+.offset_x = $97
+.offset_y = $98
+.internal_top = $b5
+.internal_left = $b6
+.internal_bottom = $b7
+.internal_right = $b8
+
+	lda <.skip_attr_update
+	bne $ed60	;rts
+	;; calculate left coordinates
+	lda .window_attr_table_x,x
+	sta <.internal_left
+	sta <.offset_x
+	dec <.offset_x
+	lda <.scroll_x	;assert(.object_x < 0x80)
+	asl a
+	adc <.internal_left
+	and #$3f
+	sta <.left
+	;; calculate top coordinates
+	lda .window_attr_table_y,x
+	;clc ;here always clear
+	adc #2
+	sta <.offset_y
+	sta <.internal_top
+	dec <.internal_top
+	lda <.scroll_y
+	asl a
+	adc .window_attr_table_y,x
+	cmp #$1e
+	bcc .no_wrap
+	;sec ;here always set
+	sbc #$1e
+.no_wrap:
+	sta <.top
+	
+	;; calculate right coordinates
+	lda .window_attr_table_width,x
+	sta <.width
+	clc
+	adc <.internal_left
+	sta <.internal_right
+	dec <.internal_right
+	;; calculate bottom coordinates
+	lda .window_attr_table_height,x
+	sta <.height
+	clc
+	adc <.internal_top
+	;sec	;here always clear
+	sbc #2
+	sta <.internal_bottom
+	;; done calcs
+	jsr field_hide_sprites_around_window	;$ec18
+	lda #2
+	sta $4014	;DMA
+	rts
+	VERIFY_PC $edb2
+
+	.endif	;//FAST_FIELD_WINDOW
 ;------------------------------------------------------------------------------------------------------
 ;$3f:edc6 field::drawWindowLine
 ;{

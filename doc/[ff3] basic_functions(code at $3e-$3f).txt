@@ -2741,18 +2741,28 @@ $3f:ed56 field::fill_07c0_ff
 $ed61:
 }
 
-$3f:ed61
+$3f:ed61 field::get_window_metrics
+//[in]
+// u8 $29: offsetX (in 16x16 unit)
+// u8 $2f: offsetY (in 16x16 unit)
+// u8 $37: skipAttrUpdate
+// u8 X: window_id (0...4)
+//[out]
+//	u8 $38: start_x
+//	u8 $39: start_y
+//	u8 $3c: width
+//	u8 $3d: height
 {
 	if ($37 == 0) { //bne edb1
 		a = $b6 = $edb2.x
 		$97 = a - 1;
-		$98 = $b5 = a = $edb7.x ; 2;
+		$98 = $b5 = a = $edb7.x + 2;
 		$b5--;
 		$38 = (($29 << 1) + $edb2.x) & #3f;
 		$39 = (($2f << 1) + $edb7.x) % #1e;
 		a = $3c = $edbc.x;
 		a = $b8 = $b6 + a; $b8--;
-		a = $3d = $3dc1.x;
+		a = $3d = $edc1.x;
 		$b7 = a + $b5 - 3;
 		$ec18();
 	}
