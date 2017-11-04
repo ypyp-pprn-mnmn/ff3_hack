@@ -453,13 +453,42 @@ f	----------------------------暗------------忍
 3e	------------------------------------導--賢-- 
 3f	------------------------------幻------界賢-- 
 
---------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------
+//encounter definitions.
+
+struct EncounterParam {
+	u8 party_id;
+	u8 spawn_pattern_id : 6;
+	u8 boss : 1;
+	u8 disable_escape : 1;
+};
+//index := 	//([0 浮遊大陸, 1 地上(下の世界)], encounter_id)
+$2e:8000(5c000) EncounterParam encounter_definitions[2][256] = {};
+
+struct EnemyParty {
+	u8 pallete_id[2];
+	u8 enemy_id[4];
+};
+//index := party_id
+$2e:8400(5c400) EnemyParty party_definitions[256] = {};
+
+struct SpawnPattern {
+	struct {
+		u8 min : 4;
+		u8 max : 4;
+	}[4];
+};
+//index := spawn_pattern_id
+$2e:8a00(5ca00) SpawnPattern spawn_patterns[64] = {};
+//index := enemy_id
+$2e:8b00(5cb00) u8 graphis_id_table[256] = {};
+//--------------------------------------------------------------------------------------
 //monster parameters.
 
 //index := mobparam[0F] &1F
 $10:9b80(file:21b90) u8 dropItemTable[8][32] = {} ;
-//index := mob_id
-$10:9c80(21c80) u8 MonsterExpIndex[256] = {};
+//index := enemy_id
+$10:9c80(21c80) u8 MonsterExpIndices[256] = {};
 //index := exp_index (00...3F)
 $10:9d80(21d80) u16 MonsterExp[64] = {
 	00 00  10 00  14 00  20 00  28 00  30 00  34 00  3C 00
@@ -471,6 +500,9 @@ $10:9d80(21d80) u16 MonsterExp[64] = {
 	10 0E  D8 0E  A0 0F  68 10  30 11  F8 11  C0 12  88 13
 	50 14  18 15  E0 15  A8 16  70 17  58 1B  40 1F  28 23
 };
+
+//index := enemy_id
+$2e:8b00(5cb00) u8 MonsterGraphicsIndices[256] = {}
 
 struct MonsterBaseParam {
 	u8 lv;			//00
@@ -532,9 +564,9 @@ $30:9000(file:61010) MonsterBattleParam[170] = {
 
 $30:9200(file:61210) AttackPatterns[8][?] = {
 };
-//index := mob_id
+//index := enemy_id
 $30:9c58(61c58) u16 DropGils[256] = {};
-//index := mob_id
+//index := enemy_id
 $39:b2ae(7d2ae) u8 DropCapacity[256] = {};
 
 struct JobParam
@@ -587,14 +619,6 @@ $34:9b21(file:69b31) actionId jobActionLists[4][22] = {
 //i = id >> 3; bit = 7 - (id & 7);
 $35:a5fd(file:6a60d) u8 actionFlags[32];
 
-struct EncounterParam {
-	u8 partyId;
-	u8 countId : 6;
-	u8 boss : 1;
-	u8 disableEscape : 1;
-};
-
-$2e:8000(5c010) EncounterParam
 //=========================================================================================
 //names
 $18:8200($30210)
