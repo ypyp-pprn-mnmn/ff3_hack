@@ -11,10 +11,11 @@ $build_files = @(
 	"ff3_hack_DEV.asm"
 );
 $build_files | % {
-	$out = $_ -replace '.asm', '.nes';
+	$infile = $_
+	$out = $infile -replace '.asm', '.nes';
 	write-host -foreground yellow "building $out...";
 	##
-	./nesasm $_;
+	./nesasm $infile;
 	move-item -force $out $release_dir/$out;
 	##
 	write-host -foreground gray "making patch as .bps..."
