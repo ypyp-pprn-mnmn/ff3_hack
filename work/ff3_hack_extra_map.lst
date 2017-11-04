@@ -10921,7 +10921,7 @@
     8                     ;======================================================================================================
     9  35:88EB            ff3_field_window_begin:
    10                     
-   11           0000              .if 0
+   11           0000              .ifdef FAST_FIELD_WINDOW
    88                             .endif  ;//field_drawWindowBox
    89                     ;$3f:edc6 field::drawWindowLine
    90                     ;{
