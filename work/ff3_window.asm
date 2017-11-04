@@ -1,8 +1,16 @@
 ; ff3_window.asm
 ;
 ;	replaces window drawing functions
-;	performs faster than original
+;	performs much faster than original
 ;	"だるまさんがころんだ"
+;		6820 PPU cycles = 341 pixels per scanline * 20 scanlines within V-blank
+;		=> approx. 2273 CPU cycles enough.
+;		まずウインドウ1行分(tile: 8x8 pixel)転送用のコードを
+;		WRAM($6000-7fff; access timing はRAMと同等 = 100% CPU cycle)に生成し
+;		V-blankが開始したらループを開始し、転送用のコードが猶予のある限りVRAMへ転送を行う
+;		転送用のコードは1ループに要するCPUサイクル数(処理を容易にするため8サイクル数単位)をカウントアップしており
+;		256(=2048 CPU cycles; 理論的な上限は279=2272cycles)を超えたら転送を止めて次のNMIを待つ
+;		なお、転送用のコードが要するCPUサイクル数は概算で69+9*1行の幅(8x8のタイル単位)
 ;version:
 ;	0.13 (2006-11-13)
 ;
@@ -283,7 +291,7 @@ genCode_go_next:
 genCode_loop_begin:	;(4+4)*8
 	lda $7200,y
 	sta $2007
-;	unrolled UNROLL_COUNT times
+;	unrolled as many as required to fill a window line
 
 genCode_dex:
 genCode_put_right:

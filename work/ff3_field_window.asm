@@ -83,7 +83,7 @@ field_drawWindowBox:
 	bne .copy
 	jsr field_setBgScrollTo0
 .finish:
-	jmp $ecf5
+	jmp field_restore_bank	;$ecf5
 	VERIFY_PC $ed56
 	.endif	;//field_drawWindowBox
 ;$3f:edc6 field::drawWindowLine

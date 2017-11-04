@@ -260,224 +260,225 @@
    12           7750      field_callSoundDriver           = $c750
    13           998F      field_cacheWindowPalette        = $c98f
    14           99A9      field_setWindowPalette          = $c9a9
-   15           DD56      field_fill_07c0_ff                      = $ed56
-   16           DDE1      field_setBgScrollTo0            = $ede1
-   17           66AA      field_putWindowTiles            = $f6aa
-   18           7727      switchBanksTo3c3d                       = $f727
-   19           88B0      updateDmaPpuScrollSyncNmiEx = $f8b0
-   20           88C5      updateDmaPpuScrollSyncNmi       = $f8c5 ;(y is unchanged)
-   21           88CB      updatePpuScrollNoWait           = $f8cb
-   22           88E0      setVramAddr                                     = $f8e0 ;[in] a:high, x:low
-   23           88EA      mul_8x8_reg                                     = $f8ea ;a,x = a * x
-   24           AA0E      call_2e_9d53                            = $fa0e
-   25           AA26      doBattle                                        = $fa26
-   26           BB80      waitNmi                                         = $fb80 ;wait on $05 clear
-   27           BB87      switchFirst2Banks                       = $fb87 ;[in] a : per16k bank index
-   28           BBAA      getPad1Input                            = $fbaa ;[out] $12 : inputFlags
-   29           BBEF      getBattleRandom                         = $fbef ;[out] a : rand [min:x - max:a] max included
-   30           CC27      initBattleRandom                        = $fc27
-   31           CC92      div_16                                          = $fc92 ;$1c = $18,19 / $1a,1b; $1d = $18,19 % $1a,1b
-   32           CCD6      mul_8x8                                         = $fcd6 ;$1a,1b = a * x
-   33           CCF5      mul_16x16                                       = $fcf5 ;$1c,1d,1e,1f = $18,19 * $1a,1b
-   34           DD20      flagTargetBit                           = $fd20
-   35           DD2C      clearTargetBit                          = $fd2c
-   36           DD38      maskTargetBit                           = $fd38
-   37           DD3C      shiftLeft6                                      = $fd3c
-   38           DD43      shiftRight6                                     = $fd43
-   39           DD4A      loadStringWorker                        = $fd4a
-   40           DD60      get2byteAtBank18                        = $fd60
-   41           DDA6      loadTo7400Ex                            = $fda6
-   42           DDDC      copyTo7400                                      = $fddc
-   43                     ;call_30_9e58                           = $fdf3
-   44           DDF3      invoke_b30_battleFunction       = $fdf3
-   45           FF00      waitNmiBySetHandler                     = $ff00
-   46           FF06      call_switch1stBank                      = $ff06
-   47           FF09      call_switch2ndBank                      = $ff09
-   48                     ;----------------------------------------------------------------------------------------------------------
-   49                     ;well known vars
-   50           1101      pNmiHandler                     = $0101 ;$0100 jmp xxxx
-   51           1104      pIrqHandler                     = $0104 ;$0103 jmp xxxx
-   52           0000      irqFlag                         = $00
-   53           0001      enableScanlineCounter = $01     ;mmc3's irq
-   54           0003      irqCountDown            = $03
-   55           0005      nmiFlag                         = $05
-   56           0006      ppuCtrl1SetOnNmi        = $06
-   57           0008      ppuCtrl1SetOnIrq        = $08
-   58           0009      ppuCtrl2SetOnNmi        = $09
-   59           000C      scrollXSetOnNmi         = $0c
-   60           000D      scrollYSetOnNmi         = $0d
-   61           0010      scrollXSetOnIrq         = $10
-   62           0011      scrollYSetOnIrq         = $11
-   63           0012      inputBits                       = $12
-   64           00B3      selectTarget_behavior           = $b3   ;param of presentSceneFunction10($2e:9d53)
-   65           00B4      selectTarget_selectedBits       = $b4
-   66           00B5      selectTarget_targetFlag         = $b5
-   67           00C0      playerX                         = $c0   ;*4
-   68           00C4      playerY                         = $c4   ;*4
-   69           00C9      playSoundEffect         = $c9   ;1=play
-   70           00CA      soundEffectId           = $ca   ; played on irq if $c9 != 0
-   71           00E0      targetStatusCache       = $e0   ;in process battle phase
-   72           00F0      actorStatusCache        = $f0   ;
-   73           88D5      presentActionParams     = $78d5 ;?,actor,action,targetflag,effectmsg,messages
-   74           88D5      battleProcessType       = $78d5
-   75           88D7      actionName                      = $78d7
-   76           88D8      targetName                      = $78d8
-   77           88D9      effectMessage           = $78d9
-   78           88DA      battleMessages          = $78da
-   79           88EE      battleMessageCount      = $78ee
-   80                     ;pTileArray                     = $7ac0
-   81           AAC7      selectedMagicLv         = $7ac7 ;[4]
-   82           AAD7      stringCache                     = $7ad7
-   83           BBE3      battleRandoms           = $7be3
-   84           CCED      encounterId                     = $7ced
-   85           CCF3      isRendering                     = $7cf3
-   86                     
-   87           DD6B      groupToEnemyIdMap       = $7d6b ;*4
-   88                     ;;indexToGroupMap               = $7da7
-   89           DDD7      enemyPos                        = $7dd7 ;{x,y}*8
-   90                     ;param for playing (magic) effect
-   91           EE1F      play_weaponRight                = $7e1f
-   92           EE20      play_weaponLeft                 = $7e20
-   93           EE4F      play_damages                    = $7e4f
-   94           EE6F      play_damageTarget               = $7e6f ;0=player
-   95           EE98      play_actorBits                  = $7e98
-   96           EE96      play_arrowTarget                = $7e96
-   97           EE99      play_castTargetBits             = $7e99 ;battle
-   98           EE9A      play_effectTargetSide   = $7e9a ;80:actor enemy 40:target enemy
-   99           EE9B      play_effectTargetBits   = $7e9b ;param of presentActionEffect($33:b68d)
-  100           EE9D      play_magicType                  = $7e9d
-  101           EEB8      play_reflectedTargetBits= $7eb8 ;param of presentEffectAtTarget($33:b64f)
-  102                     
-  103           EEC2      effectHandlerIndex      = $7ec2 ;
-  104           EEC3      effectHandlerFlag       = $7ec3
-  105           EEC4      effect_enemyStatus      = $7ec4
-  106           EECD      indexToGroupMap         = $7ecd ;*8
-  107           EED8      battleMode                      = $7ed8 ; 80:boss? 20:fireCannon(invincible) 10:disallowEnlarge 08:? 01:disallowEscape
-  108           EEDF      play_protectionTargetBits = $7edf
-  109           EEE1      play_segmentedGroup = $7ee1
-  110                     
-  111           FF40      soundDriver_playingMusicId = $7f40
-  112           FF41      soundDriver_lastMusicId = $7f41
-  113           FF42      soundDriver_control     = $7f42 ;01:playNew(7f43) 02:playLast(7f41,saved when 01) 04:stop 80:playOn
-  114           FF43      soundDriver_musicId     = $7f43
-  115           FF49      soundDriver_effectId= $7f49     ;msb should be 1
-  116                     ;----------------------------------------------------------------------------------------------------------
-  117                     ;in memory structs
-  118           00C0      backpackItems           = $60c0
-  119           1100      playerBaseParams        = $6100
-  120           2200      playerEquips            = $6200
-  121           5575      playerBattleParams      = $7575 ;$40*4
-  122           6675      enemyBattleParams       = $7675 ;$40*8
-  123                     ;----------------------------------------------------------------------------------------------------------
-  124                     ;in rom structs
-  125           9900      userFlags                       = $00900
-  126           0000      stringPtrTable          = $30000
-  127           0000      monsterBaseParams       = $60000        ;8*256
-  128           0000      monsterBattleParams = $61000
-  129           4400      itemBaseParams          = $61400
-  130           BB88      initialMps                      = $73b88
-  131           DD59      lvupParamPtrTable       = $7ad59
-  132                     ;handler tables
-  133           33F8      commandIdToEffectMap    = $683f8
-  134           443E      commandEffectHandlers   = $6843e
-  135           AA16      commandWindowHandlers   = $69a16
-  136           FFAC      commandHandlers                 = $69fac
-  137                     ;------------------------------------------------------------------------------------------------------
-  138           9900      TEMP_RAM = $7900        ;we cannot use stack regeon due to dugeon's floor save
-  139                     ;------------------------------------------------------------------------------------------------------
-  140                     
-  141                     ;------------------------------------------------------------------------------------------------------
-  142                     ;macros
-  143                     INIT16  .macro  ;addr,val
-  144                             lda #LOW(\2)
-  145                             sta \1
-  146                             lda #HIGH(\2)
-  147                             sta \1+1
-  148                                     .endm
-  149                     
-  150                     INIT16_x        .macro  ;addr,val
-  151                             ldx #LOW(\2)
-  152                             stx \1
-  153                             ldx #HIGH(\2)
-  154                             stx \1+1
-  155                                     .endm
-  156                                             
-  157                     ADD16   .macro  ;addr,val               
-  158                             lda \1
-  159                             clc
-  160                             adc #LOW(\2)
-  161                             sta \1
-  162                             lda \1+1
-  163                             adc #HIGH(\2)
-  164                             sta \1+1
-  165                                     .endm
-  166                     
-  167                     ADD16by8        .macro
-  168                             lda \1
-  169                             clc
-  170                             adc \2
-  171                             sta \1
-  172                             bcc .add16by8_\@
-  173                                     inc \1+1
-  174                             .add16by8_\@:
-  175                             .endm
-  176                     
-  177                     SUB16   .macro  ;addr,val               
-  178                             lda \1
-  179                             sec
-  180                             sbc #LOW(\2)
-  181                             sta \1
-  182                             lda \1+1
-  183                             sbc #HIGH(\2)
-  184                             sta \1+1
-  185                                     .endm
-  186                     
-  187                     SUB16by8        .macro  ;addr,val
-  188                             lda \1
-  189                             sec
-  190                             sbc \2
-  191                             sta \1
-  192                             bcs .sub16by8_\@
-  193                                     dec \1+1
-  194                             .sub16by8_\@:
-  195                             .endm
-  196                     
-  197                     FILEORG .macro
-  198                             .bank   (\1) >> 13
-  199                             .org    ($8000 | ((\1) & $7fff))
-  200                                     .endm
-  201                                     
-  202                     RESTORE_PC      .macro
-  203                             .bank   BANK(\1)
-  204                             .org    \1
-  205                                     .endm
-  206                                     
-  207                     INIT_PATCH      .macro
-  208                             .bank   \1
-  209                             .org    \2
-  210                             .ds             ((\3) - (\2))
-  211                             .org    \2
-  212                                     .endm
-  213                     
-  214           0000              .ifdef RESPECT_ORIGINAL_ADDR
-  218                             .else
-  219                     ORIGINAL_ADDR   .macro
-  220                                     .endm
-  221                             .endif
-  222                             
-  223                     ALIGN_EVEN      .macro  ;value to align
-  224                             .check_align_\@:
-  225                             .if (.check_align_\@ & 1) != 0
-  226                                     nop     ;pad
-  227                             .endif
-  228                             .endm   ;ALIGN_EVEN
-  229                     
-  230                     VERIFY_PC       .macro
-  231                             .verify_pc_\@:
-  232                             .if (.verify_pc_\@ > \1)
-  233                                     .fail
-  234                             .endif
-  235                             .endm   ;VERIFY_PC
+   15           CCF5      field_restore_bank                      = $ecf5 ;[in] $57: bank
+   16           DD56      field_fill_07c0_ff                      = $ed56
+   17           DDE1      field_setBgScrollTo0            = $ede1
+   18           66AA      field_putWindowTiles            = $f6aa
+   19           7727      switchBanksTo3c3d                       = $f727
+   20           88B0      updateDmaPpuScrollSyncNmiEx = $f8b0
+   21           88C5      updateDmaPpuScrollSyncNmi       = $f8c5 ;(y is unchanged)
+   22           88CB      updatePpuScrollNoWait           = $f8cb
+   23           88E0      setVramAddr                                     = $f8e0 ;[in] a:high, x:low
+   24           88EA      mul_8x8_reg                                     = $f8ea ;a,x = a * x
+   25           AA0E      call_2e_9d53                            = $fa0e
+   26           AA26      doBattle                                        = $fa26
+   27           BB80      waitNmi                                         = $fb80 ;wait on $05 clear
+   28           BB87      switchFirst2Banks                       = $fb87 ;[in] a : per16k bank index
+   29           BBAA      getPad1Input                            = $fbaa ;[out] $12 : inputFlags
+   30           BBEF      getBattleRandom                         = $fbef ;[out] a : rand [min:x - max:a] max included
+   31           CC27      initBattleRandom                        = $fc27
+   32           CC92      div_16                                          = $fc92 ;$1c = $18,19 / $1a,1b; $1d = $18,19 % $1a,1b
+   33           CCD6      mul_8x8                                         = $fcd6 ;$1a,1b = a * x
+   34           CCF5      mul_16x16                                       = $fcf5 ;$1c,1d,1e,1f = $18,19 * $1a,1b
+   35           DD20      flagTargetBit                           = $fd20
+   36           DD2C      clearTargetBit                          = $fd2c
+   37           DD38      maskTargetBit                           = $fd38
+   38           DD3C      shiftLeft6                                      = $fd3c
+   39           DD43      shiftRight6                                     = $fd43
+   40           DD4A      loadStringWorker                        = $fd4a
+   41           DD60      get2byteAtBank18                        = $fd60
+   42           DDA6      loadTo7400Ex                            = $fda6
+   43           DDDC      copyTo7400                                      = $fddc
+   44                     ;call_30_9e58                           = $fdf3
+   45           DDF3      invoke_b30_battleFunction       = $fdf3
+   46           FF00      waitNmiBySetHandler                     = $ff00
+   47           FF06      call_switch1stBank                      = $ff06
+   48           FF09      call_switch2ndBank                      = $ff09
+   49                     ;----------------------------------------------------------------------------------------------------------
+   50                     ;well known vars
+   51           1101      pNmiHandler                     = $0101 ;$0100 jmp xxxx
+   52           1104      pIrqHandler                     = $0104 ;$0103 jmp xxxx
+   53           0000      irqFlag                         = $00
+   54           0001      enableScanlineCounter = $01     ;mmc3's irq
+   55           0003      irqCountDown            = $03
+   56           0005      nmiFlag                         = $05
+   57           0006      ppuCtrl1SetOnNmi        = $06
+   58           0008      ppuCtrl1SetOnIrq        = $08
+   59           0009      ppuCtrl2SetOnNmi        = $09
+   60           000C      scrollXSetOnNmi         = $0c
+   61           000D      scrollYSetOnNmi         = $0d
+   62           0010      scrollXSetOnIrq         = $10
+   63           0011      scrollYSetOnIrq         = $11
+   64           0012      inputBits                       = $12
+   65           00B3      selectTarget_behavior           = $b3   ;param of presentSceneFunction10($2e:9d53)
+   66           00B4      selectTarget_selectedBits       = $b4
+   67           00B5      selectTarget_targetFlag         = $b5
+   68           00C0      playerX                         = $c0   ;*4
+   69           00C4      playerY                         = $c4   ;*4
+   70           00C9      playSoundEffect         = $c9   ;1=play
+   71           00CA      soundEffectId           = $ca   ; played on irq if $c9 != 0
+   72           00E0      targetStatusCache       = $e0   ;in process battle phase
+   73           00F0      actorStatusCache        = $f0   ;
+   74           88D5      presentActionParams     = $78d5 ;?,actor,action,targetflag,effectmsg,messages
+   75           88D5      battleProcessType       = $78d5
+   76           88D7      actionName                      = $78d7
+   77           88D8      targetName                      = $78d8
+   78           88D9      effectMessage           = $78d9
+   79           88DA      battleMessages          = $78da
+   80           88EE      battleMessageCount      = $78ee
+   81                     ;pTileArray                     = $7ac0
+   82           AAC7      selectedMagicLv         = $7ac7 ;[4]
+   83           AAD7      stringCache                     = $7ad7
+   84           BBE3      battleRandoms           = $7be3
+   85           CCED      encounterId                     = $7ced
+   86           CCF3      isRendering                     = $7cf3
+   87                     
+   88           DD6B      groupToEnemyIdMap       = $7d6b ;*4
+   89                     ;;indexToGroupMap               = $7da7
+   90           DDD7      enemyPos                        = $7dd7 ;{x,y}*8
+   91                     ;param for playing (magic) effect
+   92           EE1F      play_weaponRight                = $7e1f
+   93           EE20      play_weaponLeft                 = $7e20
+   94           EE4F      play_damages                    = $7e4f
+   95           EE6F      play_damageTarget               = $7e6f ;0=player
+   96           EE98      play_actorBits                  = $7e98
+   97           EE96      play_arrowTarget                = $7e96
+   98           EE99      play_castTargetBits             = $7e99 ;battle
+   99           EE9A      play_effectTargetSide   = $7e9a ;80:actor enemy 40:target enemy
+  100           EE9B      play_effectTargetBits   = $7e9b ;param of presentActionEffect($33:b68d)
+  101           EE9D      play_magicType                  = $7e9d
+  102           EEB8      play_reflectedTargetBits= $7eb8 ;param of presentEffectAtTarget($33:b64f)
+  103                     
+  104           EEC2      effectHandlerIndex      = $7ec2 ;
+  105           EEC3      effectHandlerFlag       = $7ec3
+  106           EEC4      effect_enemyStatus      = $7ec4
+  107           EECD      indexToGroupMap         = $7ecd ;*8
+  108           EED8      battleMode                      = $7ed8 ; 80:boss? 20:fireCannon(invincible) 10:disallowEnlarge 08:? 01:disallowEscape
+  109           EEDF      play_protectionTargetBits = $7edf
+  110           EEE1      play_segmentedGroup = $7ee1
+  111                     
+  112           FF40      soundDriver_playingMusicId = $7f40
+  113           FF41      soundDriver_lastMusicId = $7f41
+  114           FF42      soundDriver_control     = $7f42 ;01:playNew(7f43) 02:playLast(7f41,saved when 01) 04:stop 80:playOn
+  115           FF43      soundDriver_musicId     = $7f43
+  116           FF49      soundDriver_effectId= $7f49     ;msb should be 1
+  117                     ;----------------------------------------------------------------------------------------------------------
+  118                     ;in memory structs
+  119           00C0      backpackItems           = $60c0
+  120           1100      playerBaseParams        = $6100
+  121           2200      playerEquips            = $6200
+  122           5575      playerBattleParams      = $7575 ;$40*4
+  123           6675      enemyBattleParams       = $7675 ;$40*8
+  124                     ;----------------------------------------------------------------------------------------------------------
+  125                     ;in rom structs
+  126           9900      userFlags                       = $00900
+  127           0000      stringPtrTable          = $30000
+  128           0000      monsterBaseParams       = $60000        ;8*256
+  129           0000      monsterBattleParams = $61000
+  130           4400      itemBaseParams          = $61400
+  131           BB88      initialMps                      = $73b88
+  132           DD59      lvupParamPtrTable       = $7ad59
+  133                     ;handler tables
+  134           33F8      commandIdToEffectMap    = $683f8
+  135           443E      commandEffectHandlers   = $6843e
+  136           AA16      commandWindowHandlers   = $69a16
+  137           FFAC      commandHandlers                 = $69fac
+  138                     ;------------------------------------------------------------------------------------------------------
+  139           9900      TEMP_RAM = $7900        ;we cannot use stack regeon due to dugeon's floor save
+  140                     ;------------------------------------------------------------------------------------------------------
+  141                     
+  142                     ;------------------------------------------------------------------------------------------------------
+  143                     ;macros
+  144                     INIT16  .macro  ;addr,val
+  145                             lda #LOW(\2)
+  146                             sta \1
+  147                             lda #HIGH(\2)
+  148                             sta \1+1
+  149                                     .endm
+  150                     
+  151                     INIT16_x        .macro  ;addr,val
+  152                             ldx #LOW(\2)
+  153                             stx \1
+  154                             ldx #HIGH(\2)
+  155                             stx \1+1
+  156                                     .endm
+  157                                             
+  158                     ADD16   .macro  ;addr,val               
+  159                             lda \1
+  160                             clc
+  161                             adc #LOW(\2)
+  162                             sta \1
+  163                             lda \1+1
+  164                             adc #HIGH(\2)
+  165                             sta \1+1
+  166                                     .endm
+  167                     
+  168                     ADD16by8        .macro
+  169                             lda \1
+  170                             clc
+  171                             adc \2
+  172                             sta \1
+  173                             bcc .add16by8_\@
+  174                                     inc \1+1
+  175                             .add16by8_\@:
+  176                             .endm
+  177                     
+  178                     SUB16   .macro  ;addr,val               
+  179                             lda \1
+  180                             sec
+  181                             sbc #LOW(\2)
+  182                             sta \1
+  183                             lda \1+1
+  184                             sbc #HIGH(\2)
+  185                             sta \1+1
+  186                                     .endm
+  187                     
+  188                     SUB16by8        .macro  ;addr,val
+  189                             lda \1
+  190                             sec
+  191                             sbc \2
+  192                             sta \1
+  193                             bcs .sub16by8_\@
+  194                                     dec \1+1
+  195                             .sub16by8_\@:
+  196                             .endm
+  197                     
+  198                     FILEORG .macro
+  199                             .bank   (\1) >> 13
+  200                             .org    ($8000 | ((\1) & $7fff))
+  201                                     .endm
+  202                                     
+  203                     RESTORE_PC      .macro
+  204                             .bank   BANK(\1)
+  205                             .org    \1
+  206                                     .endm
+  207                                     
+  208                     INIT_PATCH      .macro
+  209                             .bank   \1
+  210                             .org    \2
+  211                             .ds             ((\3) - (\2))
+  212                             .org    \2
+  213                                     .endm
+  214                     
+  215           0000              .ifdef RESPECT_ORIGINAL_ADDR
+  219                             .else
+  220                     ORIGINAL_ADDR   .macro
+  221                                     .endm
+  222                             .endif
+  223                             
+  224                     ALIGN_EVEN      .macro  ;value to align
+  225                             .check_align_\@:
+  226                             .if (.check_align_\@ & 1) != 0
+  227                                     nop     ;pad
+  228                             .endif
+  229                             .endm   ;ALIGN_EVEN
+  230                     
+  231                     VERIFY_PC       .macro
+  232                             .verify_pc_\@:
+  233                             .if (.verify_pc_\@ > \1)
+  234                                     .fail
+  235                             .endif
+  236                             .endm   ;VERIFY_PC
 #[3]   ff3_hack_master.asm
    26           0000              .bank   $00
    27           0000              .org    $8000
@@ -7098,525 +7099,533 @@
     1                     ; ff3_window.asm
     2                     ;
     3                     ;       replaces window drawing functions
-    4                     ;       performs faster than original
+    4                     ;       performs much faster than original
     5                     ;       "だるまさんがころんだ"
-    6                     ;version:
-    7                     ;       0.13 (2006-11-13)
-    8                     ;
-    9                     ;       $1b,22,23,24,25,26 used in caller (so should be avoided)
-   10                     ;
-   11                     ;======================================================================================================
-   12                     
-   13  35:5557            ff3_window_begin:
-   14                     
-   15                     ;GENCODE_ENABLE_LOOP
-   16           0005      UNROLL_SHIFT = 5        ;valid range: 1-5
-   17           0020      UNROLL_COUNT = (1 << UNROLL_SHIFT)
-   18           0006      SIZEOF_PUT_CODE = 6     ;lda $xxxx, sta $2007
-   19           000B      LOOP_OVERHEAD = ((69+14) >> 3) + 1
-   20                     ;------------------------------------------------------------------------------------------------------
-   21                     ;shared variables:
-   22           0018      pLeftParts = $18
-   23           001A      pRightParts = $1a
-   24           001A      borderDrawFlags = $1a   ; [in] bit0:draw left, bit1:draw right
-   25           001C      updateCounter = $1c             ;incremented by updateCount;if it overflows then stops drawing and waits for nmi
-   26           001D      clockCount = $1d                ;indicates required cpu cycle count / 8 (approx.) for drawing line
-   27           001E      borderPutFlags = $1e    ; [lrLRxxxx] R:put right border in 2ndBG,l: put left border in 1st BG
-   28           001F      lineLen = $1f                   ;total line width without border
-   29           0020      drawLen = $20                   ;line length for bg currently drawing
-   30           002E      vram = $2e
-   31           AAC0      pTileArray = $7ac0      ;see also initTileArrayStorage
-   32                     ;------------------------------------------------------------------------------------------------------
-   33                             INIT_PATCH $34,$8b38,$8d03
+    6                     ;               6820 PPU cycles = 341 pixels per scanline * 20 scanlines within V-blank
+    7                     ;               => approx. 2273 CPU cycles enough.
+    8                     ;               まずウインドウ1行分(tile: 8x8 pixel)転送用のコードを
+    9                     ;               WRAM($6000-7fff; access timing はRAMと同等 = 100% CPU cycle)に生成し
+   10                     ;               V-blankが開始したらループを開始し、転送用のコードが猶予のある限りVRAMへ転送を行う
+   11                     ;               転送用のコードは1ループに要するCPUサイクル数(処理を容易にするため8サイクル数単位)をカウントアップしており
+   12                     ;               256(=2048 CPU cycles; 理論的な上限は279=2272cycles)を超えたら転送を止めて次のNMIを待つ
+   13                     ;               なお、転送用のコードが要するCPUサイクル数は概算で69+9*1行の幅(8x8のタイル単位)
+   14                     ;version:
+   15                     ;       0.13 (2006-11-13)
+   16                     ;
+   17                     ;       $1b,22,23,24,25,26 used in caller (so should be avoided)
+   18                     ;
+   19                     ;======================================================================================================
+   20                     
+   21  35:5557            ff3_window_begin:
+   22                     
+   23                     ;GENCODE_ENABLE_LOOP
+   24           0005      UNROLL_SHIFT = 5        ;valid range: 1-5
+   25           0020      UNROLL_COUNT = (1 << UNROLL_SHIFT)
+   26           0006      SIZEOF_PUT_CODE = 6     ;lda $xxxx, sta $2007
+   27           000B      LOOP_OVERHEAD = ((69+14) >> 3) + 1
+   28                     ;------------------------------------------------------------------------------------------------------
+   29                     ;shared variables:
+   30           0018      pLeftParts = $18
+   31           001A      pRightParts = $1a
+   32           001A      borderDrawFlags = $1a   ; [in] bit0:draw left, bit1:draw right
+   33           001C      updateCounter = $1c             ;incremented by updateCount;if it overflows then stops drawing and waits for nmi
+   34           001D      clockCount = $1d                ;indicates required cpu cycle count / 8 (approx.) for drawing line
+   35           001E      borderPutFlags = $1e    ; [lrLRxxxx] R:put right border in 2ndBG,l: put left border in 1st BG
+   36           001F      lineLen = $1f                   ;total line width without border
+   37           0020      drawLen = $20                   ;line length for bg currently drawing
+   38           002E      vram = $2e
+   39           AAC0      pTileArray = $7ac0      ;see also initTileArrayStorage
+   40                     ;------------------------------------------------------------------------------------------------------
+   41                             INIT_PATCH $34,$8b38,$8d03
                 0034              .bank   $34
                 BB38              .org    $8b38
        34:BB38                    .ds             (($8d03) - ($8b38))
                 BB38              .org    $8b38
-   34                     
-   35  34:BB38            draw8LineWindow:
-   36                     ;args
-   37           0018      .left = $18                     ; [in] unit = tiles, bit7 = bg select, border incl
-   38           0019      .right = $19            ; [in] unit = tiles, bit7 = bg select, border excl
-   39                     ;locals
-   40           001C      .maskedLeft = $1c               ;temp
-   41           001D      .maskedRight = $1d              ;temp
-   42           001E      .crossFlag = $1e                ;temp
-   43           88B8      .len_1st = $78b8        ;width without border
-   44           88B9      .len_2nd = $78b9        ;width without border
-   45           002A      .vram_1st = $2a
-   46           002C      .vram_2nd = $2c
-   47           0030      .line = $30
-   48                     ;---------------------------------------
-   49  34:BB38  A5 18             lda <.left
-   50                             ;pha
-   51  34:BB3A  29 1F             and #$1f
-   52  34:BB3C  85 1C             sta <.maskedLeft
-   53                             
-   54  34:BB3E  A5 19             lda <.right
-   55                             ;pha
-   56  34:BB40  29 1F             and #$1f
-   57  34:BB42  85 1D             sta <.maskedRight
-   58                             
-   59  34:BB44  A5 18             lda <.left
-   60  34:BB46  45 19             eor <.right
-   61  34:BB48  30 10             bmi .crosses_boundary
-   62                             ;both are in same bg
-   63  34:BB4A  A9 C0                     lda #$c0        ;left1st | right1st
-   64  34:BB4C  85 1E                     sta <borderPutFlags
-   65  34:BB4E  A5 19                     lda <.right
-   66  34:BB50  18                        clc     ;to exclude border      
-   67  34:BB51  E5 18                     sbc <.left
-   68  34:BB53  8D B8 78                  sta .len_1st
-   69                                     
-   70  34:BB56  A9 00                     lda #0
-   71  34:BB58  F0 0E                     beq .store_width
-   72  34:BB5A            .crosses_boundary:
-   73  34:BB5A  A9 90                     lda #$90        ;left1st | right2nd
-   74  34:BB5C  85 1E                     sta <borderPutFlags
-   75  34:BB5E  A9 1F                     lda #$1f
-   76  34:BB60  38                        sec
-   77  34:BB61  E5 1C                     sbc <.maskedLeft
-   78  34:BB63  8D B8 78                  sta .len_1st
-   79  34:BB66  A5 1D                     lda <.maskedRight
-   80  34:BB68            .store_width:           
-   81  34:BB68  8D B9 78          sta .len_2nd
-   82                     ; --- init 1st bg addr
-   83  34:BB6B  18                clc
-   84  34:BB6C  A9 60             lda #$60
-   85  34:BB6E  85 2C             sta <.vram_2nd          ;2nd bg also have $60 at low byte
-   86  34:BB70  65 1C             adc <.maskedLeft
-   87  34:BB72  85 2A             sta <.vram_1st
-   88  34:BB74  A5 18             lda <.left
-   89  34:BB76  30 04             bmi .left_starts_bg1
-   90  34:BB78  A9 22                     lda #$22
-   91  34:BB7A  D0 02                     bne .store_left_high
-   92  34:BB7C            .left_starts_bg1:
-   93  34:BB7C  A9 26                     lda #$26
-   94  34:BB7E            .store_left_high:
-   95  34:BB7E  69 00             adc #0  ;carry still remains
-   96  34:BB80  85 2B             sta <.vram_1st+1
-   97                     ; --- init 2nd bg addr
-   98  34:BB82  A5 19             lda <.right
-   99  34:BB84  30 04             bmi .right_ends_bg1
-  100  34:BB86  A9 22                     lda #$22
-  101  34:BB88  D0 02                     bne .store_right_high
-  102  34:BB8A            .right_ends_bg1:
-  103  34:BB8A  A9 26                     lda #$26
-  104  34:BB8C            .store_right_high:
-  105  34:BB8C  85 2D             sta <.vram_2nd+1
-  106                     
-  107  34:BB8E  20 4A 8C          jsr getBorderParts
-  108                     ;here still required vars:
-  109                     ;       .vram_1st, .vram_2nd, .len_1st, .len_2nd
-  110                     ;       lineLen
-  111  34:BB91  AD B8 78          lda .len_1st
-  112                     
-  113  34:BB94  85 20             sta <drawLen
-  114  34:BB96  18                clc
-  115  34:BB97  6D B9 78          adc .len_2nd
-  116  34:BB9A  85 1F             sta <lineLen
-  117                     
-  118  34:BB9C  20 57 B5          jsr generateCopyLoopCode
-  119  34:BB9F  20 80 FB          jsr waitNmi
-  120                     ; --- begin drawing     
-  121  34:BBA2  A6 2A             ldx <.vram_1st          ;3
-  122  34:BBA4  A5 2B             lda <.vram_1st+1        ;3
-  123  34:BBA6  20 36 8C          jsr drawWindow_setVram          ;6+24
-  124                             
-  125  34:BBA9  AD B8 78          lda .len_1st            ;3
-  126  34:BBAC  38                sec                                     ;2
-  127  34:BBAD  E5 1F             sbc <lineLen            ;3
-  128  34:BBAF  20 D4 8B          jsr .drawOnCurrent      ;6 80
-  129                             
-  130  34:BBB2  AD B9 78          lda .len_2nd
-  131  34:BBB5  D0 01             bne .draw_2nd
-  132  34:BBB7  60                        rts
-  133  34:BBB8            .draw_2nd:      
-  134  34:BBB8  48                        pha     ; len_2nd
-  135  34:BBB9  85 20                     sta <drawLen
-  136  34:BBBB  06 1E                     asl <borderPutFlags
-  137  34:BBBD  06 1E                     asl <borderPutFlags
-  138  34:BBBF  20 57 B5                  jsr generateCopyLoopCode
-  139                     
-  140  34:BBC2  20 80 FB                  jsr waitNmi
-  141  34:BBC5  A6 2C                     ldx <.vram_2nd          ;3
-  142  34:BBC7  A5 2D                     lda <.vram_2nd+1        ;3
-  143  34:BBC9  20 36 8C                  jsr drawWindow_setVram          ;6+52
-  144                                     
-  145  34:BBCC  68                        pla     ; len_2nd               ;4
-  146  34:BBCD  38                        sec                                     ;2
-  147  34:BBCE  E5 1F                     sbc <lineLen            ;3
-  148  34:BBD0  18                        clc                                     ;2
-  149  34:BBD1  6D B8 78                  adc .len_1st            ;4 79
-  150                                     ;jmp .drawOnCurrent
-  151  34:BBD4            .drawOnCurrent:
-  152                     ;[in]   a : initialOffset
-  153                     ;.len = $18
-  154  34:BBD4  48                pha                                     ;2
-  155  34:BBD5  A9 00             lda #0                          ;2      (25>>3)
-  156  34:BBD7  85 1C             sta <updateCounter      ;3
-  157                             
-  158  34:BBD9  A9 F8             lda #$f8        ;topline;2
-  159  34:BBDB  A6 20             ldx <drawLen                    ;3
-  160  34:BBDD  A0 00             ldy #0                          ;2
-  161  34:BBDF  20 F8 8B          jsr putTopBottom        ;6+x
-  162  34:BBE2  A2 08             ldx #8                          ;2
-  163  34:BBE4  86 30             stx <.line                      ;3
-  164                             ;
-  165  34:BBE6  68                pla     ;initialOffset  ;4
-  166  34:BBE7  A8                tay                                     ;2
-  167  34:BBE8            .putLines:
-  168                                     ;1loop:69 + genCode
-  169  34:BBE8  20 01 79                  jsr genCodeBase ;6
-  170                     
-  171  34:BBEB  20 1B 8C                  jsr checkUpdateAndOffsetVram;56 = 6+50
-  172                                     
-  173  34:BBEE  C6 30                     dec <.line              ;4
-  174  34:BBF0  D0 F6                     bne .putLines   ;3
-  175                     ;------
-  176  34:BBF2  A9 FD             lda #$fd        ;bottomline
-  177  34:BBF4  A6 20             ldx <drawLen
-  178  34:BBF6  A0 06             ldy #6
-  179                             ;jmp putTopBottom
-  180                     ;------------------------------------------------------------------------------------------------------
-  181                     ;helpers
-  182  34:BBF8            putTopBottom:
-  183                     ;[in] a : centerPartTile
-  184                     ;[in] x : len_current
-  185                     ;[in] y : top(0) or bottom(6)
-  186  34:BBF8  48                pha
-  187  34:BBF9  24 1E             bit <borderPutFlags
-  188  34:BBFB  10 05             bpl .putCenter  ;bpl: bit7 is clear
-  189  34:BBFD  B1 18                     lda [pLeftParts],y
-  190  34:BBFF  8D 07 20                  sta $2007
-  191  34:CC02            .putCenter:
-  192  34:CC02  68                pla
-  193  34:CC03  CA                dex
-  194  34:CC04  30 06             bmi .put_right
-  195  34:CC06            .putCenter_loop:
-  196  34:CC06  8D 07 20                  sta $2007
-  197  34:CC09  CA                        dex
-  198  34:CC0A  10 FA                     bpl .putCenter_loop
-  199  34:CC0C            .put_right:             
-  200  34:CC0C  24 1E             bit <borderPutFlags
-  201  34:CC0E  50 05             bvc .finish                     ;bvc: bit6 is clear
-  202  34:CC10  B1 1A                     lda [pRightParts],y
-  203  34:CC12  8D 07 20                  sta $2007
-  204  34:CC15            .finish:
-  205  34:CC15  98                tya     ;0(top) or 6(bottom)
-  206  34:CC16  F0 03             beq checkUpdateAndOffsetVram
-  207                                     ;we finished drawing. setup scroll values
-  208  34:CC18  4C CB F8                  jmp updatePpuScrollNoWait
-  209                             ;jmp checkUpdateAndOffsetVram
-  210                     ;-----------------------------------------------------------------------------------------------------
-  211  34:CC1B            checkUpdateAndOffsetVram:       ;50clk = 24 + 26clk(if update skipped)
-  212  34:CC1B  A5 1C             lda <updateCounter      ;3
-  213  34:CC1D  18                clc                                     ;2
-  214  34:CC1E  65 1D             adc <clockCount         ;3
-  215  34:CC20  90 09             bcc .store_counter      ;2+1
-  216  34:CC22  20 CB F8                  jsr updatePpuScrollNoWait       ;$f8cb 6+34
-  217  34:CC25  20 80 FB                  jsr waitNmi             ;
-  218  34:CC28  18                        clc                             ;2
-  219  34:CC29  A9 05                     lda #(40>>3)    ;2
-  220  34:CC2B            .store_counter:
-  221  34:CC2B  85 1C             sta <updateCounter      ;3
-  222                     
-  223  34:CC2D  A5 2E             lda <vram               ;3
-  224                             ;clc                    ;always cleared
-  225  34:CC2F  69 20             adc #$20                ;2
-  226  34:CC31  AA                tax                             ;2
-  227  34:CC32  A5 2F             lda <vram+1             ;3
-  228  34:CC34  69 00             adc #0                  ;2
-  229                             ;fall through
-  230  34:CC36            drawWindow_setVram:             ;24clk = 6+18
-  231  34:CC36  85 2F             sta <vram+1
-  232  34:CC38  86 2E             stx <vram
-  233                             ;fall through
-  234  34:CC3A            drawWindow_setVramAddr: ;18clk
-  235  34:CC3A  2C 02 20          bit $2002       ;reset flip-flop        ;4
-  236  34:CC3D  8D 06 20          sta $2006       ;vram addr high         ;4
-  237  34:CC40  8E 06 20          stx $2006       ;vram addr low          ;4
-  238  34:CC43            drawWindow_doReturn:
-  239  34:CC43  60                rts
-  240                     
-  241  34:CC44            drawWindow_setVramAndInitPpu:
-  242  34:CC44  20 3A 8C          jsr drawWindow_setVramAddr      ;6+12
-  243  34:CC47  4C CB F8          jmp updatePpuScrollNoWait       ;3+28
-  244                     ;------------------------------------------------------------------------------------------------------
-  245  34:CC4A            getBorderParts:
-  246  34:CC4A  A5 1A             lda <borderDrawFlags
-  247  34:CC4C  48                pha
-  248  34:CC4D  A9 68             lda #LOW(.borderParts)
-  249  34:CC4F  85 18             sta <pLeftParts
-  250  34:CC51  18                clc
-  251  34:CC52  69 02             adc #2
-  252  34:CC54  85 1A             sta <pRightParts
-  253  34:CC56  A9 8C             lda #HIGH(.borderParts)
-  254  34:CC58  85 19             sta <pLeftParts+1
-  255  34:CC5A  85 1B             sta <pRightParts+1
-  256                             
-  257  34:CC5C  68                pla
-  258  34:CC5D  4A                lsr a
-  259  34:CC5E  B0 02             bcs .check_right
-  260  34:CC60  E6 18                     inc <pLeftParts ;no border
-  261  34:CC62            .check_right:
-  262  34:CC62  4A                lsr a
-  263  34:CC63  B0 02             bcs .finish
-  264  34:CC65  C6 1A                     dec <pRightParts
-  265  34:CC67            .finish:                
-  266  34:CC67  60                rts
-  267  34:CC68            .borderParts:
-  268  34:CC68  F7 F8 F9          .db $f7,$f8,$f9
-  269  34:CC6B  FA FF FB          .db $fa,$ff,$fb
-  270  34:CC6E  FC FD FE          .db $fc,$fd,$fe 
-  271                     ;------------------------------------------------------------------------------------------------------
-  272  34:CC71            genCode_begin:
-  273  34:CC71            genCode_put_left:
-  274  34:CC71  A9 00             lda #00         ;2
-  275  34:CC73  8D 07 20          sta $2007       ;4
-  276  34:CC76            genCode_copyLoop:       
-  277  34:CC76  98                tya                     ;2
-  278  34:CC77  18                clc                     ;2
-  279  34:CC78            genCode_adc_offset:     
-  280  34:CC78  69 00             adc #0          ;2 alignOffset + (totalWidth - width)
-  281  34:CC7A  A8                tay                     ;2
-  282  34:CC7B            genCode_go_next:
-  283  34:CC7B            genCode_loop_begin:     ;(4+4)*8
-  284  34:CC7B  B9 00 72          lda $7200,y
-  285  34:CC7E  8D 07 20          sta $2007
-  286                     ;       unrolled UNROLL_COUNT times
-  287                     
-  288  34:CC81            genCode_dex:
-  289  34:CC81            genCode_put_right:
-  290  34:CC81  A9 00             lda #00         ;2
-  291  34:CC83  8D 07 20          sta $2007       ;4
-  292  34:CC86            genCode_finish_line:
-  293  34:CC86  60                rts                     ;6
-  294  34:CC87            genCode_end:    ;21(prolog/epilog)+6(left)+6(right)+ 64~72(loop)+5+7(loop overhead)
-  295           DD03      genCode_free_end = $8d03
-  296                     ;------------------------------------------------------------------------------------------------------
-  297                     ;here original:$8d03    
-  298                     ;------------------------------------------------------------------------------------------------------
-  299           0035              .bank BANK(ff3_window_begin)
-  300           5557              .org ff3_window_begin ;$8000 + (ff3_window_begin & $7fff)
-  301                     ;------------------------------------------------------------------------------------------------------
-  302           9901      genCodeBase = TEMP_RAM+1
-  303  35:5557            generateCopyLoopCode:
-  304                     ;       [out] clockCount
-  305           0021      .alignOffset = $21
-  306                     ;genCode_loopOffset = genCodeBase - 1
-  307                     ;-----------------------------------
-  308  35:5557  A5 20             lda <drawLen
-  309                             ; alignOffset = (7 - width)+1 & 7
-  310  35:5559  49 FF             eor #$ff
-  311  35:555B  18                clc
-  312  35:555C  69 01             adc #1
-  313  35:555E  29 1F             and #(UNROLL_COUNT - 1) ;
-  314  35:5560  85 21             sta <.alignOffset
-  315                             ;calc required cpu cycle count
-  316                             ; 
-  317                             ;clock required: 69 + 26 + (9 * drawLen)
-  318                             ; overhead + put cost + loop cost
-  319                             ;countdown value : req.clk / (2266/256) (113.3clock*20scanline)
-  320  35:5562  A5 20             lda <drawLen
-  321  35:5564  4A                lsr a
-  322  35:5565  4A                lsr a
-  323  35:5566  4A                lsr a
-  324  35:5567  18                clc
-  325  35:5568  65 20             adc <drawLen
-  326                     
-  327                             ;sta <clockCount        ;(9 * drawLen) / denom (=8)
-  328                             ;lda <drawLen
-  329                             ;jsr $fd49 - (UNROLL_SHIFT - 4 + 3)
-  330                             ;clc
-  331                             ;adc <clockCount
-  332  35:556A  69 0B             adc #LOOP_OVERHEAD
-  333  35:556C  85 1D             sta <clockCount
+   42                     
+   43  34:BB38            draw8LineWindow:
+   44                     ;args
+   45           0018      .left = $18                     ; [in] unit = tiles, bit7 = bg select, border incl
+   46           0019      .right = $19            ; [in] unit = tiles, bit7 = bg select, border excl
+   47                     ;locals
+   48           001C      .maskedLeft = $1c               ;temp
+   49           001D      .maskedRight = $1d              ;temp
+   50           001E      .crossFlag = $1e                ;temp
+   51           88B8      .len_1st = $78b8        ;width without border
+   52           88B9      .len_2nd = $78b9        ;width without border
+   53           002A      .vram_1st = $2a
+   54           002C      .vram_2nd = $2c
+   55           0030      .line = $30
+   56                     ;---------------------------------------
+   57  34:BB38  A5 18             lda <.left
+   58                             ;pha
+   59  34:BB3A  29 1F             and #$1f
+   60  34:BB3C  85 1C             sta <.maskedLeft
+   61                             
+   62  34:BB3E  A5 19             lda <.right
+   63                             ;pha
+   64  34:BB40  29 1F             and #$1f
+   65  34:BB42  85 1D             sta <.maskedRight
+   66                             
+   67  34:BB44  A5 18             lda <.left
+   68  34:BB46  45 19             eor <.right
+   69  34:BB48  30 10             bmi .crosses_boundary
+   70                             ;both are in same bg
+   71  34:BB4A  A9 C0                     lda #$c0        ;left1st | right1st
+   72  34:BB4C  85 1E                     sta <borderPutFlags
+   73  34:BB4E  A5 19                     lda <.right
+   74  34:BB50  18                        clc     ;to exclude border      
+   75  34:BB51  E5 18                     sbc <.left
+   76  34:BB53  8D B8 78                  sta .len_1st
+   77                                     
+   78  34:BB56  A9 00                     lda #0
+   79  34:BB58  F0 0E                     beq .store_width
+   80  34:BB5A            .crosses_boundary:
+   81  34:BB5A  A9 90                     lda #$90        ;left1st | right2nd
+   82  34:BB5C  85 1E                     sta <borderPutFlags
+   83  34:BB5E  A9 1F                     lda #$1f
+   84  34:BB60  38                        sec
+   85  34:BB61  E5 1C                     sbc <.maskedLeft
+   86  34:BB63  8D B8 78                  sta .len_1st
+   87  34:BB66  A5 1D                     lda <.maskedRight
+   88  34:BB68            .store_width:           
+   89  34:BB68  8D B9 78          sta .len_2nd
+   90                     ; --- init 1st bg addr
+   91  34:BB6B  18                clc
+   92  34:BB6C  A9 60             lda #$60
+   93  34:BB6E  85 2C             sta <.vram_2nd          ;2nd bg also have $60 at low byte
+   94  34:BB70  65 1C             adc <.maskedLeft
+   95  34:BB72  85 2A             sta <.vram_1st
+   96  34:BB74  A5 18             lda <.left
+   97  34:BB76  30 04             bmi .left_starts_bg1
+   98  34:BB78  A9 22                     lda #$22
+   99  34:BB7A  D0 02                     bne .store_left_high
+  100  34:BB7C            .left_starts_bg1:
+  101  34:BB7C  A9 26                     lda #$26
+  102  34:BB7E            .store_left_high:
+  103  34:BB7E  69 00             adc #0  ;carry still remains
+  104  34:BB80  85 2B             sta <.vram_1st+1
+  105                     ; --- init 2nd bg addr
+  106  34:BB82  A5 19             lda <.right
+  107  34:BB84  30 04             bmi .right_ends_bg1
+  108  34:BB86  A9 22                     lda #$22
+  109  34:BB88  D0 02                     bne .store_right_high
+  110  34:BB8A            .right_ends_bg1:
+  111  34:BB8A  A9 26                     lda #$26
+  112  34:BB8C            .store_right_high:
+  113  34:BB8C  85 2D             sta <.vram_2nd+1
+  114                     
+  115  34:BB8E  20 4A 8C          jsr getBorderParts
+  116                     ;here still required vars:
+  117                     ;       .vram_1st, .vram_2nd, .len_1st, .len_2nd
+  118                     ;       lineLen
+  119  34:BB91  AD B8 78          lda .len_1st
+  120                     
+  121  34:BB94  85 20             sta <drawLen
+  122  34:BB96  18                clc
+  123  34:BB97  6D B9 78          adc .len_2nd
+  124  34:BB9A  85 1F             sta <lineLen
+  125                     
+  126  34:BB9C  20 57 B5          jsr generateCopyLoopCode
+  127  34:BB9F  20 80 FB          jsr waitNmi
+  128                     ; --- begin drawing     
+  129  34:BBA2  A6 2A             ldx <.vram_1st          ;3
+  130  34:BBA4  A5 2B             lda <.vram_1st+1        ;3
+  131  34:BBA6  20 36 8C          jsr drawWindow_setVram          ;6+24
+  132                             
+  133  34:BBA9  AD B8 78          lda .len_1st            ;3
+  134  34:BBAC  38                sec                                     ;2
+  135  34:BBAD  E5 1F             sbc <lineLen            ;3
+  136  34:BBAF  20 D4 8B          jsr .drawOnCurrent      ;6 80
+  137                             
+  138  34:BBB2  AD B9 78          lda .len_2nd
+  139  34:BBB5  D0 01             bne .draw_2nd
+  140  34:BBB7  60                        rts
+  141  34:BBB8            .draw_2nd:      
+  142  34:BBB8  48                        pha     ; len_2nd
+  143  34:BBB9  85 20                     sta <drawLen
+  144  34:BBBB  06 1E                     asl <borderPutFlags
+  145  34:BBBD  06 1E                     asl <borderPutFlags
+  146  34:BBBF  20 57 B5                  jsr generateCopyLoopCode
+  147                     
+  148  34:BBC2  20 80 FB                  jsr waitNmi
+  149  34:BBC5  A6 2C                     ldx <.vram_2nd          ;3
+  150  34:BBC7  A5 2D                     lda <.vram_2nd+1        ;3
+  151  34:BBC9  20 36 8C                  jsr drawWindow_setVram          ;6+52
+  152                                     
+  153  34:BBCC  68                        pla     ; len_2nd               ;4
+  154  34:BBCD  38                        sec                                     ;2
+  155  34:BBCE  E5 1F                     sbc <lineLen            ;3
+  156  34:BBD0  18                        clc                                     ;2
+  157  34:BBD1  6D B8 78                  adc .len_1st            ;4 79
+  158                                     ;jmp .drawOnCurrent
+  159  34:BBD4            .drawOnCurrent:
+  160                     ;[in]   a : initialOffset
+  161                     ;.len = $18
+  162  34:BBD4  48                pha                                     ;2
+  163  34:BBD5  A9 00             lda #0                          ;2      (25>>3)
+  164  34:BBD7  85 1C             sta <updateCounter      ;3
+  165                             
+  166  34:BBD9  A9 F8             lda #$f8        ;topline;2
+  167  34:BBDB  A6 20             ldx <drawLen                    ;3
+  168  34:BBDD  A0 00             ldy #0                          ;2
+  169  34:BBDF  20 F8 8B          jsr putTopBottom        ;6+x
+  170  34:BBE2  A2 08             ldx #8                          ;2
+  171  34:BBE4  86 30             stx <.line                      ;3
+  172                             ;
+  173  34:BBE6  68                pla     ;initialOffset  ;4
+  174  34:BBE7  A8                tay                                     ;2
+  175  34:BBE8            .putLines:
+  176                                     ;1loop:69 + genCode
+  177  34:BBE8  20 01 79                  jsr genCodeBase ;6
+  178                     
+  179  34:BBEB  20 1B 8C                  jsr checkUpdateAndOffsetVram;56 = 6+50
+  180                                     
+  181  34:BBEE  C6 30                     dec <.line              ;4
+  182  34:BBF0  D0 F6                     bne .putLines   ;3
+  183                     ;------
+  184  34:BBF2  A9 FD             lda #$fd        ;bottomline
+  185  34:BBF4  A6 20             ldx <drawLen
+  186  34:BBF6  A0 06             ldy #6
+  187                             ;jmp putTopBottom
+  188                     ;------------------------------------------------------------------------------------------------------
+  189                     ;helpers
+  190  34:BBF8            putTopBottom:
+  191                     ;[in] a : centerPartTile
+  192                     ;[in] x : len_current
+  193                     ;[in] y : top(0) or bottom(6)
+  194  34:BBF8  48                pha
+  195  34:BBF9  24 1E             bit <borderPutFlags
+  196  34:BBFB  10 05             bpl .putCenter  ;bpl: bit7 is clear
+  197  34:BBFD  B1 18                     lda [pLeftParts],y
+  198  34:BBFF  8D 07 20                  sta $2007
+  199  34:CC02            .putCenter:
+  200  34:CC02  68                pla
+  201  34:CC03  CA                dex
+  202  34:CC04  30 06             bmi .put_right
+  203  34:CC06            .putCenter_loop:
+  204  34:CC06  8D 07 20                  sta $2007
+  205  34:CC09  CA                        dex
+  206  34:CC0A  10 FA                     bpl .putCenter_loop
+  207  34:CC0C            .put_right:             
+  208  34:CC0C  24 1E             bit <borderPutFlags
+  209  34:CC0E  50 05             bvc .finish                     ;bvc: bit6 is clear
+  210  34:CC10  B1 1A                     lda [pRightParts],y
+  211  34:CC12  8D 07 20                  sta $2007
+  212  34:CC15            .finish:
+  213  34:CC15  98                tya     ;0(top) or 6(bottom)
+  214  34:CC16  F0 03             beq checkUpdateAndOffsetVram
+  215                                     ;we finished drawing. setup scroll values
+  216  34:CC18  4C CB F8                  jmp updatePpuScrollNoWait
+  217                             ;jmp checkUpdateAndOffsetVram
+  218                     ;-----------------------------------------------------------------------------------------------------
+  219  34:CC1B            checkUpdateAndOffsetVram:       ;50clk = 24 + 26clk(if update skipped)
+  220  34:CC1B  A5 1C             lda <updateCounter      ;3
+  221  34:CC1D  18                clc                                     ;2
+  222  34:CC1E  65 1D             adc <clockCount         ;3
+  223  34:CC20  90 09             bcc .store_counter      ;2+1
+  224  34:CC22  20 CB F8                  jsr updatePpuScrollNoWait       ;$f8cb 6+34
+  225  34:CC25  20 80 FB                  jsr waitNmi             ;
+  226  34:CC28  18                        clc                             ;2
+  227  34:CC29  A9 05                     lda #(40>>3)    ;2
+  228  34:CC2B            .store_counter:
+  229  34:CC2B  85 1C             sta <updateCounter      ;3
+  230                     
+  231  34:CC2D  A5 2E             lda <vram               ;3
+  232                             ;clc                    ;always cleared
+  233  34:CC2F  69 20             adc #$20                ;2
+  234  34:CC31  AA                tax                             ;2
+  235  34:CC32  A5 2F             lda <vram+1             ;3
+  236  34:CC34  69 00             adc #0                  ;2
+  237                             ;fall through
+  238  34:CC36            drawWindow_setVram:             ;24clk = 6+18
+  239  34:CC36  85 2F             sta <vram+1
+  240  34:CC38  86 2E             stx <vram
+  241                             ;fall through
+  242  34:CC3A            drawWindow_setVramAddr: ;18clk
+  243  34:CC3A  2C 02 20          bit $2002       ;reset flip-flop        ;4
+  244  34:CC3D  8D 06 20          sta $2006       ;vram addr high         ;4
+  245  34:CC40  8E 06 20          stx $2006       ;vram addr low          ;4
+  246  34:CC43            drawWindow_doReturn:
+  247  34:CC43  60                rts
+  248                     
+  249  34:CC44            drawWindow_setVramAndInitPpu:
+  250  34:CC44  20 3A 8C          jsr drawWindow_setVramAddr      ;6+12
+  251  34:CC47  4C CB F8          jmp updatePpuScrollNoWait       ;3+28
+  252                     ;------------------------------------------------------------------------------------------------------
+  253  34:CC4A            getBorderParts:
+  254  34:CC4A  A5 1A             lda <borderDrawFlags
+  255  34:CC4C  48                pha
+  256  34:CC4D  A9 68             lda #LOW(.borderParts)
+  257  34:CC4F  85 18             sta <pLeftParts
+  258  34:CC51  18                clc
+  259  34:CC52  69 02             adc #2
+  260  34:CC54  85 1A             sta <pRightParts
+  261  34:CC56  A9 8C             lda #HIGH(.borderParts)
+  262  34:CC58  85 19             sta <pLeftParts+1
+  263  34:CC5A  85 1B             sta <pRightParts+1
+  264                             
+  265  34:CC5C  68                pla
+  266  34:CC5D  4A                lsr a
+  267  34:CC5E  B0 02             bcs .check_right
+  268  34:CC60  E6 18                     inc <pLeftParts ;no border
+  269  34:CC62            .check_right:
+  270  34:CC62  4A                lsr a
+  271  34:CC63  B0 02             bcs .finish
+  272  34:CC65  C6 1A                     dec <pRightParts
+  273  34:CC67            .finish:                
+  274  34:CC67  60                rts
+  275  34:CC68            .borderParts:
+  276  34:CC68  F7 F8 F9          .db $f7,$f8,$f9
+  277  34:CC6B  FA FF FB          .db $fa,$ff,$fb
+  278  34:CC6E  FC FD FE          .db $fc,$fd,$fe 
+  279                     ;------------------------------------------------------------------------------------------------------
+  280  34:CC71            genCode_begin:
+  281  34:CC71            genCode_put_left:
+  282  34:CC71  A9 00             lda #00         ;2
+  283  34:CC73  8D 07 20          sta $2007       ;4
+  284  34:CC76            genCode_copyLoop:       
+  285  34:CC76  98                tya                     ;2
+  286  34:CC77  18                clc                     ;2
+  287  34:CC78            genCode_adc_offset:     
+  288  34:CC78  69 00             adc #0          ;2 alignOffset + (totalWidth - width)
+  289  34:CC7A  A8                tay                     ;2
+  290  34:CC7B            genCode_go_next:
+  291  34:CC7B            genCode_loop_begin:     ;(4+4)*8
+  292  34:CC7B  B9 00 72          lda $7200,y
+  293  34:CC7E  8D 07 20          sta $2007
+  294                     ;       unrolled as many as required to fill a window line
+  295                     
+  296  34:CC81            genCode_dex:
+  297  34:CC81            genCode_put_right:
+  298  34:CC81  A9 00             lda #00         ;2
+  299  34:CC83  8D 07 20          sta $2007       ;4
+  300  34:CC86            genCode_finish_line:
+  301  34:CC86  60                rts                     ;6
+  302  34:CC87            genCode_end:    ;21(prolog/epilog)+6(left)+6(right)+ 64~72(loop)+5+7(loop overhead)
+  303           DD03      genCode_free_end = $8d03
+  304                     ;------------------------------------------------------------------------------------------------------
+  305                     ;here original:$8d03    
+  306                     ;------------------------------------------------------------------------------------------------------
+  307           0035              .bank BANK(ff3_window_begin)
+  308           5557              .org ff3_window_begin ;$8000 + (ff3_window_begin & $7fff)
+  309                     ;------------------------------------------------------------------------------------------------------
+  310           9901      genCodeBase = TEMP_RAM+1
+  311  35:5557            generateCopyLoopCode:
+  312                     ;       [out] clockCount
+  313           0021      .alignOffset = $21
+  314                     ;genCode_loopOffset = genCodeBase - 1
+  315                     ;-----------------------------------
+  316  35:5557  A5 20             lda <drawLen
+  317                             ; alignOffset = (7 - width)+1 & 7
+  318  35:5559  49 FF             eor #$ff
+  319  35:555B  18                clc
+  320  35:555C  69 01             adc #1
+  321  35:555E  29 1F             and #(UNROLL_COUNT - 1) ;
+  322  35:5560  85 21             sta <.alignOffset
+  323                             ;calc required cpu cycle count
+  324                             ; 
+  325                             ;clock required: 69 + 26 + (9 * drawLen)
+  326                             ; overhead + put cost + loop cost
+  327                             ;countdown value : req.clk / (2266/256) (113.3clock*20scanline)
+  328  35:5562  A5 20             lda <drawLen
+  329  35:5564  4A                lsr a
+  330  35:5565  4A                lsr a
+  331  35:5566  4A                lsr a
+  332  35:5567  18                clc
+  333  35:5568  65 20             adc <drawLen
   334                     
-  335                             ;-----------------------------
-  336  35:556E  A0 03             ldy #3
-  337  35:5570  B1 1A             lda [pRightParts],y
-  338  35:5572  48                pha
-  339  35:5573  B1 18             lda [pLeftParts],y
-  340  35:5575  48                pha
-  341                             ;-----------------------------
-  342                             ;from here,Y is reserved to 'dest index'
-  343  35:5576  A0 00             ldy #0
-  344  35:5578  24 1E             bit <borderPutFlags
-  345  35:557A  10 0E             bpl .copy_loop_code     ;bpl: bit7 is clear
-  346  35:557C  E6 1D                     inc <clockCount
-  347  35:557E  A9 05                     lda #(genCode_copyLoop - genCode_put_left)
-  348  35:5580  A2 00                     ldx #0
-  349  35:5582  20 F6 B5                  jsr copyCodeBytes
-  350  35:5585  68                        pla
-  351  35:5586  48                        pha
-  352  35:5587  8D 02 79                  sta genCodeBase + 1     ;lda #xx
-  353  35:558A            .copy_loop_code:
-  354  35:558A  68                pla     ;dummy
-  355                     ;       tya
-  356                     ;       sta genCode_loopOffset
-  357                     
-  358  35:558B  A5 20             lda <drawLen
-  359  35:558D  F0 50             beq .no_center_tiles
-  360  35:558F  A9 05                     lda #(genCode_loop_begin - genCode_copyLoop)
-  361  35:5591  A2 05                     ldx #(genCode_copyLoop - genCode_begin)
-  362  35:5593  20 F6 B5                  jsr copyCodeBytes
-  363                     
-  364                                     ;--------------------------------------------------------------
-  365                                     ; offsetIndex =
-  366                                     ; 8+(len-lenCurrent)-align
-  367  35:5596  A9 21                     lda #UNROLL_COUNT+1
-  368  35:5598  18                        clc
-  369  35:5599  65 1F                     adc <lineLen
-  370  35:559B  E5 20                     sbc <drawLen
-  371                                     ;sec    ;always set (above sbc)
-  372  35:559D  E5 21                     sbc <.alignOffset
-  373  35:559F  99 FF 78                  sta genCodeBase - (genCode_loop_begin - genCode_adc_offset) + 1,y
-  374                                     ;----------------------------------------------------------------
-  375  35:55A2  AD C0 7A                  lda pTileArray
-  376  35:55A5  18                        clc
-  377  35:55A6  65 21                     adc <.alignOffset
-  378  35:55A8  90 03                     bcc .sub_offset
-  379  35:55AA  EE C1 7A                          inc pTileArray+1
-  380  35:55AD                    .sub_offset:
-  381  35:55AD  38                        sec
-  382  35:55AE  E9 20                     sbc #UNROLL_COUNT
-  383  35:55B0  8D C0 7A                  sta pTileArray
-  384  35:55B3  B0 03                     bcs .done_offset
-  385  35:55B5  CE C1 7A                          dec pTileArray+1
-  386  35:55B8                    .done_offset:
-  387  35:55B8  A6 20                     ldx <drawLen
-  388  35:55BA                            .unroll_loopBytes:
-  389  35:55BA  8A                                txa
-  390  35:55BB  48                                pha
-  391  35:55BC  A9 06                             lda #SIZEOF_PUT_CODE
-  392  35:55BE  A2 0A                             ldx #(genCode_loop_begin - genCode_begin)
-  393  35:55C0  20 F6 B5                          jsr copyCodeBytes
-  394                                             ; --- init address
-  395  35:55C3  AD C0 7A                          lda pTileArray
-  396  35:55C6  18                                clc
-  397  35:55C7  99 FC 78                          sta genCodeBase + (1 - SIZEOF_PUT_CODE),y
-  398  35:55CA  69 01                             adc #1  ;post increment
-  399  35:55CC  8D C0 7A                          sta pTileArray
-  400                                             
-  401  35:55CF  AD C1 7A                          lda pTileArray+1
-  402  35:55D2  99 FD 78                          sta genCodeBase + (2 - SIZEOF_PUT_CODE),y
-  403  35:55D5  69 00                             adc #0
-  404  35:55D7  8D C1 7A                          sta pTileArray+1
-  405                                             ;-----------------
-  406  35:55DA  68                                pla
-  407  35:55DB  AA                                tax
-  408  35:55DC  CA                                dex
-  409  35:55DD  D0 DB                     bne .unroll_loopBytes
-  410                     
-  411  35:55DF            .no_center_tiles:
-  412  35:55DF            .copy_put_right_code:
-  413                     
-  414  35:55DF  24 1E             bit <borderPutFlags
-  415  35:55E1  50 0E             bvc .copy_last  ;bvc: bit6 is clear
-  416  35:55E3  E6 1D                     inc <clockCount
-  417  35:55E5  A9 05                     lda #(genCode_finish_line - genCode_put_right)
-  418  35:55E7  A2 10                     ldx #(genCode_put_right - genCode_begin)
-  419  35:55E9  20 F6 B5                  jsr copyCodeBytes
-  420  35:55EC  68                        pla
-  421  35:55ED  48                        pha
-  422  35:55EE  99 FD 78                  sta genCodeBase - 4,y   ;lda #xx
-  423  35:55F1            .copy_last:
-  424  35:55F1  68                pla     ;dummy
-  425  35:55F2  A9 01             lda #(genCode_end - genCode_finish_line)
-  426  35:55F4  A2 15             ldx #(genCode_finish_line - genCode_begin)
-  427                             ;jmp .copyCodeBytes
-  428  35:55F6            copyCodeBytes:
-  429                     ;       [in] a : len
-  430                     ;       [in] x : sourceOffset
-  431                     ;       [in] y : destOffset     
-  432           0030      .copyLast = $30
-  433  35:55F6  84 30             sty <.copyLast
-  434  35:55F8  18                clc
-  435  35:55F9  65 30             adc <.copyLast
-  436  35:55FB  85 30             sta <.copyLast
-  437  35:55FD            .copy:
-  438  35:55FD  BD 71 8C          lda genCode_begin,x
-  439  35:6600  99 01 79          sta genCodeBase,y
-  440  35:6603  E8                inx
-  441  35:6604  C8                iny
-  442  35:6605  C4 30             cpy <.copyLast
-  443  35:6607  D0 F4             bne .copy
-  444  35:6609  60                rts
-  445  35:660A            ff3_window_last:        
-  446                     ;------------------------------------------------------------------------------------------------------
-  447                             INIT_PATCH $34,$8eb0,$8f0b
+  335                             ;sta <clockCount        ;(9 * drawLen) / denom (=8)
+  336                             ;lda <drawLen
+  337                             ;jsr $fd49 - (UNROLL_SHIFT - 4 + 3)
+  338                             ;clc
+  339                             ;adc <clockCount
+  340  35:556A  69 0B             adc #LOOP_OVERHEAD
+  341  35:556C  85 1D             sta <clockCount
+  342                     
+  343                             ;-----------------------------
+  344  35:556E  A0 03             ldy #3
+  345  35:5570  B1 1A             lda [pRightParts],y
+  346  35:5572  48                pha
+  347  35:5573  B1 18             lda [pLeftParts],y
+  348  35:5575  48                pha
+  349                             ;-----------------------------
+  350                             ;from here,Y is reserved to 'dest index'
+  351  35:5576  A0 00             ldy #0
+  352  35:5578  24 1E             bit <borderPutFlags
+  353  35:557A  10 0E             bpl .copy_loop_code     ;bpl: bit7 is clear
+  354  35:557C  E6 1D                     inc <clockCount
+  355  35:557E  A9 05                     lda #(genCode_copyLoop - genCode_put_left)
+  356  35:5580  A2 00                     ldx #0
+  357  35:5582  20 F6 B5                  jsr copyCodeBytes
+  358  35:5585  68                        pla
+  359  35:5586  48                        pha
+  360  35:5587  8D 02 79                  sta genCodeBase + 1     ;lda #xx
+  361  35:558A            .copy_loop_code:
+  362  35:558A  68                pla     ;dummy
+  363                     ;       tya
+  364                     ;       sta genCode_loopOffset
+  365                     
+  366  35:558B  A5 20             lda <drawLen
+  367  35:558D  F0 50             beq .no_center_tiles
+  368  35:558F  A9 05                     lda #(genCode_loop_begin - genCode_copyLoop)
+  369  35:5591  A2 05                     ldx #(genCode_copyLoop - genCode_begin)
+  370  35:5593  20 F6 B5                  jsr copyCodeBytes
+  371                     
+  372                                     ;--------------------------------------------------------------
+  373                                     ; offsetIndex =
+  374                                     ; 8+(len-lenCurrent)-align
+  375  35:5596  A9 21                     lda #UNROLL_COUNT+1
+  376  35:5598  18                        clc
+  377  35:5599  65 1F                     adc <lineLen
+  378  35:559B  E5 20                     sbc <drawLen
+  379                                     ;sec    ;always set (above sbc)
+  380  35:559D  E5 21                     sbc <.alignOffset
+  381  35:559F  99 FF 78                  sta genCodeBase - (genCode_loop_begin - genCode_adc_offset) + 1,y
+  382                                     ;----------------------------------------------------------------
+  383  35:55A2  AD C0 7A                  lda pTileArray
+  384  35:55A5  18                        clc
+  385  35:55A6  65 21                     adc <.alignOffset
+  386  35:55A8  90 03                     bcc .sub_offset
+  387  35:55AA  EE C1 7A                          inc pTileArray+1
+  388  35:55AD                    .sub_offset:
+  389  35:55AD  38                        sec
+  390  35:55AE  E9 20                     sbc #UNROLL_COUNT
+  391  35:55B0  8D C0 7A                  sta pTileArray
+  392  35:55B3  B0 03                     bcs .done_offset
+  393  35:55B5  CE C1 7A                          dec pTileArray+1
+  394  35:55B8                    .done_offset:
+  395  35:55B8  A6 20                     ldx <drawLen
+  396  35:55BA                            .unroll_loopBytes:
+  397  35:55BA  8A                                txa
+  398  35:55BB  48                                pha
+  399  35:55BC  A9 06                             lda #SIZEOF_PUT_CODE
+  400  35:55BE  A2 0A                             ldx #(genCode_loop_begin - genCode_begin)
+  401  35:55C0  20 F6 B5                          jsr copyCodeBytes
+  402                                             ; --- init address
+  403  35:55C3  AD C0 7A                          lda pTileArray
+  404  35:55C6  18                                clc
+  405  35:55C7  99 FC 78                          sta genCodeBase + (1 - SIZEOF_PUT_CODE),y
+  406  35:55CA  69 01                             adc #1  ;post increment
+  407  35:55CC  8D C0 7A                          sta pTileArray
+  408                                             
+  409  35:55CF  AD C1 7A                          lda pTileArray+1
+  410  35:55D2  99 FD 78                          sta genCodeBase + (2 - SIZEOF_PUT_CODE),y
+  411  35:55D5  69 00                             adc #0
+  412  35:55D7  8D C1 7A                          sta pTileArray+1
+  413                                             ;-----------------
+  414  35:55DA  68                                pla
+  415  35:55DB  AA                                tax
+  416  35:55DC  CA                                dex
+  417  35:55DD  D0 DB                     bne .unroll_loopBytes
+  418                     
+  419  35:55DF            .no_center_tiles:
+  420  35:55DF            .copy_put_right_code:
+  421                     
+  422  35:55DF  24 1E             bit <borderPutFlags
+  423  35:55E1  50 0E             bvc .copy_last  ;bvc: bit6 is clear
+  424  35:55E3  E6 1D                     inc <clockCount
+  425  35:55E5  A9 05                     lda #(genCode_finish_line - genCode_put_right)
+  426  35:55E7  A2 10                     ldx #(genCode_put_right - genCode_begin)
+  427  35:55E9  20 F6 B5                  jsr copyCodeBytes
+  428  35:55EC  68                        pla
+  429  35:55ED  48                        pha
+  430  35:55EE  99 FD 78                  sta genCodeBase - 4,y   ;lda #xx
+  431  35:55F1            .copy_last:
+  432  35:55F1  68                pla     ;dummy
+  433  35:55F2  A9 01             lda #(genCode_end - genCode_finish_line)
+  434  35:55F4  A2 15             ldx #(genCode_finish_line - genCode_begin)
+  435                             ;jmp .copyCodeBytes
+  436  35:55F6            copyCodeBytes:
+  437                     ;       [in] a : len
+  438                     ;       [in] x : sourceOffset
+  439                     ;       [in] y : destOffset     
+  440           0030      .copyLast = $30
+  441  35:55F6  84 30             sty <.copyLast
+  442  35:55F8  18                clc
+  443  35:55F9  65 30             adc <.copyLast
+  444  35:55FB  85 30             sta <.copyLast
+  445  35:55FD            .copy:
+  446  35:55FD  BD 71 8C          lda genCode_begin,x
+  447  35:6600  99 01 79          sta genCodeBase,y
+  448  35:6603  E8                inx
+  449  35:6604  C8                iny
+  450  35:6605  C4 30             cpy <.copyLast
+  451  35:6607  D0 F4             bne .copy
+  452  35:6609  60                rts
+  453  35:660A            ff3_window_last:        
+  454                     ;------------------------------------------------------------------------------------------------------
+  455                             INIT_PATCH $34,$8eb0,$8f0b
                 0034              .bank   $34
                 EEB0              .org    $8eb0
        34:EEB0                    .ds             (($8f0b) - ($8eb0))
                 EEB0              .org    $8eb0
-  448  34:EEB0            eraseWindow:
-  449           2240      .vram1stBegin = $2240
-  450           33A0      .vram1stEnd = $23a0     ;last line begins $2380
-  451           6640      .vram2ndBegin = $2640
-  452                             ;jsr waitNmi    ;presentCharacterのかわりに使うと画面消去中キャラが動かないが多少描画に使える時間が増える
-  453  34:EEB0  20 85 81          jsr presentCharacter
-  454  34:EEB3  A2 40             ldx #LOW(.vram1stBegin)
-  455  34:EEB5  A9 22             lda #HIGH(.vram1stBegin)
-  456  34:EEB7  20 C1 8E          jsr .erase
-  457                             ;jsr waitNmi
-  458  34:EEBA  20 85 81          jsr presentCharacter
-  459  34:EEBD  A2 40             ldx #LOW(.vram2ndBegin)
-  460  34:EEBF  A9 26             lda #HIGH(.vram2ndBegin)
-  461                             ;fall through
-  462  34:EEC1            .erase:
-  463                             ;jsr drawWindow_setVramAndInitPpu       ;6+49
-  464  34:EEC1  20 3A 8C          jsr drawWindow_setVramAddr      ;6+12
-  465  34:EEC4  A9 00             lda #0
-  466  34:EEC6  A2 20             ldx #$20
-  467  34:EEC8            .erase_loop:    ;fill 32*11 bytes
-  468  34:EEC8  8D 07 20                  sta $2007
-  469  34:EECB  8D 07 20                  sta $2007
-  470  34:EECE  8D 07 20                  sta $2007
-  471  34:EED1  8D 07 20                  sta $2007
-  472  34:EED4  8D 07 20                  sta $2007
-  473  34:EED7  8D 07 20                  sta $2007
-  474  34:EEDA  8D 07 20                  sta $2007
-  475  34:EEDD  8D 07 20                  sta $2007
-  476  34:EEE0  8D 07 20                  sta $2007
-  477  34:EEE3  8D 07 20                  sta $2007
-  478  34:EEE6  8D 07 20                  sta $2007
-  479  34:EEE9  CA                        dex
-  480  34:EEEA  D0 DC                     bne .erase_loop
-  481  34:EEEC  4C CB F8          jmp updatePpuScrollNoWait
-  482                     ;$8f0b
-  483                     ;------------------------------------------------------------------------------------------------------
-  484                             ;.bank  $34
-  485                             ;.org   $8f0b
-  486                             INIT_PATCH $34,$8f0b,$8f43
+  456  34:EEB0            eraseWindow:
+  457           2240      .vram1stBegin = $2240
+  458           33A0      .vram1stEnd = $23a0     ;last line begins $2380
+  459           6640      .vram2ndBegin = $2640
+  460                             ;jsr waitNmi    ;presentCharacterのかわりに使うと画面消去中キャラが動かないが多少描画に使える時間が増える
+  461  34:EEB0  20 85 81          jsr presentCharacter
+  462  34:EEB3  A2 40             ldx #LOW(.vram1stBegin)
+  463  34:EEB5  A9 22             lda #HIGH(.vram1stBegin)
+  464  34:EEB7  20 C1 8E          jsr .erase
+  465                             ;jsr waitNmi
+  466  34:EEBA  20 85 81          jsr presentCharacter
+  467  34:EEBD  A2 40             ldx #LOW(.vram2ndBegin)
+  468  34:EEBF  A9 26             lda #HIGH(.vram2ndBegin)
+  469                             ;fall through
+  470  34:EEC1            .erase:
+  471                             ;jsr drawWindow_setVramAndInitPpu       ;6+49
+  472  34:EEC1  20 3A 8C          jsr drawWindow_setVramAddr      ;6+12
+  473  34:EEC4  A9 00             lda #0
+  474  34:EEC6  A2 20             ldx #$20
+  475  34:EEC8            .erase_loop:    ;fill 32*11 bytes
+  476  34:EEC8  8D 07 20                  sta $2007
+  477  34:EECB  8D 07 20                  sta $2007
+  478  34:EECE  8D 07 20                  sta $2007
+  479  34:EED1  8D 07 20                  sta $2007
+  480  34:EED4  8D 07 20                  sta $2007
+  481  34:EED7  8D 07 20                  sta $2007
+  482  34:EEDA  8D 07 20                  sta $2007
+  483  34:EEDD  8D 07 20                  sta $2007
+  484  34:EEE0  8D 07 20                  sta $2007
+  485  34:EEE3  8D 07 20                  sta $2007
+  486  34:EEE6  8D 07 20                  sta $2007
+  487  34:EEE9  CA                        dex
+  488  34:EEEA  D0 DC                     bne .erase_loop
+  489  34:EEEC  4C CB F8          jmp updatePpuScrollNoWait
+  490                     ;$8f0b
+  491                     ;------------------------------------------------------------------------------------------------------
+  492                             ;.bank  $34
+  493                             ;.org   $8f0b
+  494                             INIT_PATCH $34,$8f0b,$8f43
                 0034              .bank   $34
                 FF0B              .org    $8f0b
        34:FF0B                    .ds             (($8f43) - ($8f0b))
                 FF0B              .org    $8f0b
-  487  34:FF0B            eraseFromLeftBottom0Bx0A:
-  488           0018      .vram = $18
-  489                             INIT16 <.vram,$2380
+  495  34:FF0B            eraseFromLeftBottom0Bx0A:
+  496           0018      .vram = $18
+  497                             INIT16 <.vram,$2380
        34:FF0B  A9 80             lda #LOW($2380)
        34:FF0D  85 18             sta <.vram
        34:FF0F  A9 23             lda #HIGH($2380)
        34:FF11  85 19             sta <.vram+1
-  490  34:FF13  20 80 FB          jsr waitNmi
-  491  34:FF16  A0 0A             ldy #$0a
-  492  34:FF18            .erase_loop:
-  493  34:FF18  A6 18                     ldx <.vram
-  494  34:FF1A  A5 19                     lda <.vram+1
-  495  34:FF1C  20 44 8C                  jsr drawWindow_setVramAndInitPpu        ;6+49
-  496                                     ;jsr drawWindow_setVramAddr
-  497  34:FF1F  A2 05                     ldx #5
-  498  34:FF21  A9 00                     lda #0
-  499  34:FF23                    .erase_line:    
-  500  34:FF23  8D 07 20                          sta $2007
-  501  34:FF26  8D 07 20                          sta $2007
-  502  34:FF29  CA                                dex 
-  503  34:FF2A  D0 F7                             bne .erase_line
-  504  34:FF2C  8D 07 20                  sta $2007
-  505                                     ;SUB16 <.vram,$0020
-  506                                     SUB16by8 <.vram,#$20
+  498  34:FF13  20 80 FB          jsr waitNmi
+  499  34:FF16  A0 0A             ldy #$0a
+  500  34:FF18            .erase_loop:
+  501  34:FF18  A6 18                     ldx <.vram
+  502  34:FF1A  A5 19                     lda <.vram+1
+  503  34:FF1C  20 44 8C                  jsr drawWindow_setVramAndInitPpu        ;6+49
+  504                                     ;jsr drawWindow_setVramAddr
+  505  34:FF1F  A2 05                     ldx #5
+  506  34:FF21  A9 00                     lda #0
+  507  34:FF23                    .erase_line:    
+  508  34:FF23  8D 07 20                          sta $2007
+  509  34:FF26  8D 07 20                          sta $2007
+  510  34:FF29  CA                                dex 
+  511  34:FF2A  D0 F7                             bne .erase_line
+  512  34:FF2C  8D 07 20                  sta $2007
+  513                                     ;SUB16 <.vram,$0020
+  514                                     SUB16by8 <.vram,#$20
        34:FF2F  A5 18             lda <.vram
        34:FF31  38                sec
        34:FF32  E9 20             sbc #$20
@@ -7624,12 +7633,12 @@
        34:FF36  B0 02             bcs .sub16by8_00092
        34:FF38  C6 19                     dec <.vram+1
        34:FF3A                    .sub16by8_00092:
-  507  34:FF3A  88                        dey     
-  508  34:FF3B  D0 DB                     bne .erase_loop
-  509  34:FF3D  60                rts
-  510                             ;jmp updatePpuScrollNoWait
-  511                     ;=======================================================================================================        
-  512                             RESTORE_PC      ff3_window_last
+  515  34:FF3A  88                        dey     
+  516  34:FF3B  D0 DB                     bne .erase_loop
+  517  34:FF3D  60                rts
+  518                             ;jmp updatePpuScrollNoWait
+  519                     ;=======================================================================================================        
+  520                             RESTORE_PC      ff3_window_last
                 0035              .bank   BANK(ff3_window_last)
                 660A              .org    ff3_window_last
 #[3]   ff3_hack_master.asm
@@ -11000,7 +11009,7 @@
    83  3F:DD4E  D0 F6             bne .copy
    84  3F:DD50  20 E1 ED          jsr field_setBgScrollTo0
    85  3F:DD53            .finish:
-   86  3F:DD53  4C F5 EC          jmp $ecf5
+   86  3F:DD53  4C F5 EC          jmp field_restore_bank  ;$ecf5
    87                             VERIFY_PC $ed56
        3F:DD56                    .verify_pc_00138:
                 0000              .if (.verify_pc_00138 > $ed56)
