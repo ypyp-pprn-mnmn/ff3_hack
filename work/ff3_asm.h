@@ -12,6 +12,7 @@
 field_callSoundDriver		= $c750
 field_cacheWindowPalette	= $c98f
 field_setWindowPalette		= $c9a9
+field_restore_bank			= $ecf5	;[in] $57: bank
 field_fill_07c0_ff			= $ed56
 field_setBgScrollTo0		= $ede1
 field_putWindowTiles		= $f6aa
