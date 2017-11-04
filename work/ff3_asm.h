@@ -10,12 +10,16 @@
 	.include "ff3_34-35.h"
 ;$3e-3f
 field_callSoundDriver		= $c750
-field_cacheWindowPalette	= $c98f
-field_setWindowPalette		= $c9a9
+field_updateTileAttrCache	= $c98f
+field_setTileAttrForWindow	= $c9a9
+field_update_vram_by_07d0	= $cb6b	;[in] $07d0[16]: vram address low, $07e0[16]: vram high, $07f0[16]: vram value
 field_restore_bank			= $ecf5	;[in] $57: bank
-field_fill_07c0_ff			= $ed56
+;field_fill_07c0_ff			= $ed56
+field_loadWindowTileAttr	= $ed56
+field_getWindowMetrics		= $ed61	;[in] u8 $96: window_id / [out] $38, $39, $3c, $3d
 field_setBgScrollTo0		= $ede1
-field_putWindowTiles		= $f6aa
+;field_putWindowTiles		= $f6aa
+field_drawWindowContent		= $f6aa
 switchBanksTo3c3d			= $f727
 updateDmaPpuScrollSyncNmiEx = $f8b0
 updateDmaPpuScrollSyncNmi	= $f8c5	;(y is unchanged)

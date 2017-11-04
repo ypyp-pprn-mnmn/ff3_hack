@@ -10,6 +10,7 @@ ff3_field_window_begin:
 
 	.ifdef FAST_FIELD_WINDOW
 	INIT_PATCH $3f,$ed02,$ed56
+	;INIT_PATCH $3f,$ed02,$ed61	;drawWindow: ed56; loadWindowTileAttr: ed61
 field_drawWindowBox:
 ;$3f:ed02 field::drawWindow
 ;//	[in] u8 $3c : width (border incl)
@@ -21,83 +22,6 @@ field_drawWindowBox:
 ;//	$3c:90b1
 ;//	$3d:aaf4 (jmp)
 ;{
-.paletteUpdateRequired = $37
-.beginY = $39
-.line = $3b
-.width = $3c
-.height = $3d
-.paletteCache = $0300
-
-	ldx <$96
-	jsr $ed61	;getWindowSize
-	;jsr $f670
-	;jsr field_fill_07c0_ff	;ed56
-	lda <.beginY
-	sta <.line
-	lda <.height
-	lsr a
-	tax
-.setupPalette:
-		txa
-		pha
-		jsr field_cacheWindowPalette
-		inc <.line
-		inc <.line
-		pla
-		tax
-		dex
-		bne .setupPalette
-
-;	lda <.beginY
-;	sta <.line
-
-;	$38++; $39++;
-;	$3c -= 2;
-;	$3d -= 2;
-;	return restoreBanksBy$57();	//jmp $ecf5();
-	inc <$38
-	inc <$39
-	dec <$3c
-	dec <$3c
-	dec <$3d
-	dec <$3d
-	lda <.paletteUpdateRequired
-	bne .finish
-.updatePalette:
-	jsr waitNmiBySetHandler
-	ldx #0
-	lda #$23
-	jsr .copyPalette
-	lda #$27
-.copyPalette:
-	bit $2002
-	sta $2006
-	lda #$c0
-	sta $2006
-	ldy #$40
-.copy:
-	lda .paletteCache,x
-	sta $2007
-	inx
-	dey
-	bne .copy
-	jsr field_setBgScrollTo0
-.finish:
-	jmp field_restore_bank	;$ecf5
-	VERIFY_PC $ed56
-	.endif	;//field_drawWindowBox
-;$3f:edc6 field::drawWindowLine
-;{
-;	$90 = $3c;
-;	$c98f();	//field::loadWindowPalette?
-;	waitNmiBySetHandler();	//$ff00();
-;	$4014 = 2;
-;	putWindowTiles();	//$f6aa();
-;	field::setWindowPalette();	//$c9a9();
-;	field::setBgScrollTo0();	//$ede1();
-;	return field::callSoundDriver();
-;$ede1:
-;}
 ;	push ( $3d - 2 );
 ;	field::getWindowTilesForTop();	//$edf6();
 ;	field::drawWindowLine();	//$edc6();
@@ -131,24 +55,130 @@ field_drawWindowBox:
 ;	return restoreBanksBy$57();	//jmp $ecf5();
 ;$ed56:
 ;}
-;	$3f:f692 field::drawStringInWindow
+;$3f:ed56 field::fill_07c0_ff
 ;{
-;	push a;
-;	waitNmiBySetHandler();	//$ff00
-;	$f0++;
-;	pop a;
-;	putWindowTiles();	//$f6aa
-;$f69c
-;	field::setBgScrollTo0();	//$ede1();
-;	field::callSoundDriver();
-;	call_switchFirst2Banks(per8kbank:a = $93);	//$ff03
-;	return $f683();	//??? a= ($93+1)
-;$f6aa:
+;	for (x = #f;x >= 0;x--) {
+;		$07c0.x = #ff;
+;	}
+;	return;
+;$ed61:
 ;}
+.attrUpdateRequired = $37
+.window_id = $96
+.currentY = $3b
+.beginX = $38	;loaded by field_getWindowMetrics
+.beginY = $39	;loaded by field_getWindowMetrics
+.width = $3c	;loaded by field_getWindowMetrics
+.height = $3d	;loaded by field_getWindowMetrics
+.attrCache = $0300	;128bytes. 1st 64bytes for 1st BG, 2nd for 2nd.
+.newAttr = $07c0	;16bytes. only for 1 line (2 consecutive window row)
 
-;	INIT_PATCH $3f,$f692,$f69c
-;field_drawStringInWindow:
-;	jmp field_drawStringInWindowEx
+	ldx <.window_id
+	jsr field_getWindowMetrics	;$ed61
+;---
+	;jsr $f670
+	jsr field_loadWindowTileAttr	;ed56
+;	ldx #$0f
+;	lda #$ff
+;.load_window_tile_attr:
+;	sta .newAttr,x
+;	dex
+;	bne .load_window_tile_attr
+;---
+	lda <.beginY
+	clc
+	adc <.height
+	;sta <.currentY
+	;lda <.height
+	;lsr a	;tile attr are specified per 16x16 tile (height is in 8x8)
+	;tax
+	sec
+.setupAttributes:
+		sbc #2	;carry is always set here.3
+		sta <.currentY
+		;txa
+		;pha
+		;[in] $37: require_attr_update, $38: startX?, $3b: offsetY?, $3c: width?
+		;	$07c0: new_attr_values[16]
+		jsr field_updateTileAttrCache
+		;inc <.currentY
+		;inc <.currentY
+		;pla
+		;tax
+		;dex
+		lda <.currentY
+		cmp <.beginY
+		beq .adjust_window_metrics	;currentY == beginY
+		bcs .setupAttributes		;currentY >= beginY
+.adjust_window_metrics:
+;	$38++; $39++;
+;	$3c -= 2;
+;	$3d -= 2;
+;	return restoreBanksBy$57();	//jmp $ecf5();
+; adjust metrics as borders don't need further drawing...
+	inc <.beginX
+	inc <.beginY
+	;dec <.width
+	dec <.width
+	dec <.height
+	dec <.height
+
+	lda <.attrUpdateRequired
+	bne .finish
+
+.updateAttributes:
+	jsr waitNmiBySetHandler
+	ldx #0
+	lda #$23
+	jsr .copyAttributes
+	ldx #$40
+	lda #$27
+.copyAttributes:
+	bit $2002
+	sta $2006
+	lda #$c0
+	sta $2006
+	ldy #$40	;update entire attr table in target BG (64 bytes)
+.copy:
+	lda .attrCache,x
+	sta $2007
+	inx
+	dey
+	bne .copy
+	;jsr field_setBgScrollTo0
+
+.finish:
+	jmp field_restore_bank	;$ecf5
+	VERIFY_PC $ed56
+	.endif	;//field_drawWindowBox
+;------------------------------------------------------------------------------------------------------
+;$3f:edc6 field::drawWindowLine
+;{
+;	$90 = $3c;
+;	$c98f();	//field::loadWindowPalette?
+;	waitNmiBySetHandler();	//$ff00();
+;	$4014 = 2;
+;	putWindowTiles();	//$f6aa();
+;	field::setWindowPalette();	//$c9a9();
+;	field::setBgScrollTo0();	//$ede1();
+;	return field::callSoundDriver();
+;$ede1:
+;}
+	INIT_PATCH $3f,$edc6,$ede1
+field_drawWindowLine:
+.width = $3c
+;.iChar = $90
+	lda <.width
+	sta <$90
+	jsr field_updateTileAttrCache	;$c98f
+	jsr waitNmiBySetHandler	;$ff00
+	lda #02
+	sta $4014
+	jsr field_drawWindowContent	;$f6aa
+	jsr field_setTileAttrForWindow	;$c9a9
+	jsr field_setBgScrollTo0	;$ede1
+	jmp field_callSoundDriver	;$c750
+	VERIFY_PC $ede1
 
 ;------------------------------------------------------------------------------------------------------
 ;$3f:f40a setVramAddrForWindow
@@ -156,7 +186,8 @@ field_drawWindowBox:
 ;//	[in] u8 $3b : y
 	INIT_PATCH $3f,$f40a,$f435
 field_setVramAddrForWindow:
-	ldy <$3a
+.offsetX = $3a
+	ldy <.offsetX
 field_setVramAddrForWindowEx:
 ;[in] a : widthInCurrentBg
 ;[in] y : offsetX
@@ -192,6 +223,26 @@ field_setVramAddrForWindowEx:
 	rts
 
 	VERIFY_PC $f435
+
+;------------------------------------------------------------------------------------------------------
+;	INIT_PATCH $3f,$f692,$f69c
+;field_drawStringInWindow:
+;	jmp field_drawStringInWindowEx
+;
+;$3f:f692 field::drawStringInWindow
+;{
+;	push a;
+;	waitNmiBySetHandler();	//$ff00
+;	$f0++;
+;	pop a;
+;	putWindowTiles();	//$f6aa
+;$f69c
+;	field::setBgScrollTo0();	//$ede1();
+;	field::callSoundDriver();
+;	call_switchFirst2Banks(per8kbank:a = $93);	//$ff03
+;	return $f683();	//??? a= ($93+1)
+;$f6aa:
+;}
 
 ;------------------------------------------------------------------------------------------------------
 ;$3f:f6aa putWindowTiles
@@ -248,7 +299,7 @@ field_drawWindowContent:
 .no_wrap:
 	sty <.offsetY
 	lda #0
-	sta <$90
+	sta <.iChar	;$90
 	rts
 
 .putTiles:
@@ -295,7 +346,26 @@ field_drawWindowContent:
 	bne .copy_loop_0
 
 	rts
-
+	;VERIFY_PC $f727
+;-----------
+;[in] u8 x: number of rows (in 16x16 tiles)
+;
+	.if 0
+field_updateTileAttrCacheForWindow:
+.current_row = $3b
+		txa
+		pha
+		;[in] $37: require_attr_update, $38: startX?, $3b: offsetY?, $3c: width?
+		;	$07c0: new_attr_values[16]
+		jsr field_updateTileAttrCache
+		inc <.current_row
+		inc <.current_row
+		pla
+		tax
+		dex
+		bne field_updateTileAttrCacheForWindow
+		rts
+	.endif
 	VERIFY_PC $f727
 
 ;======================================================================================================
