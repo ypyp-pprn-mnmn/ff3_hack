@@ -78,34 +78,17 @@ field_drawWindowBox:
 ;---
 	;jsr $f670
 	jsr field_loadWindowTileAttr	;ed56
-;	ldx #$0f
-;	lda #$ff
-;.load_window_tile_attr:
-;	sta .newAttr,x
-;	dex
-;	bne .load_window_tile_attr
 ;---
 	lda <.beginY
 	clc
 	adc <.height
-	;sta <.currentY
-	;lda <.height
-	;lsr a	;tile attr are specified per 16x16 tile (height is in 8x8)
-	;tax
 	sec
 .setupAttributes:
 		sbc #2	;carry is always set here.3
 		sta <.currentY
-		;txa
-		;pha
 		;[in] $37: require_attr_update, $38: startX?, $3b: offsetY?, $3c: width?
 		;	$07c0: new_attr_values[16]
 		jsr field_updateTileAttrCache
-		;inc <.currentY
-		;inc <.currentY
-		;pla
-		;tax
-		;dex
 		lda <.currentY
 		cmp <.beginY
 		beq .adjust_window_metrics	;currentY == beginY
