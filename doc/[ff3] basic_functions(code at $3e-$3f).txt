@@ -2810,6 +2810,7 @@ $3f:edf6 field::getWindowTilesForTop
 	$0780.x = #f9;
 	$07a0.x = #fb;
 	return;
+$ee1d:
 }
 
 $3f:ee1d field::getWindowTilesForMiddle
@@ -2842,6 +2843,7 @@ $3f:ee3e field::getWindowTilesForBottom
 	$0780.x = #fb;
 	$07a0.x = #fe;
 	return;
+$ee61:
 }
 
 $3f:ee9a floor::loadAndDrawString

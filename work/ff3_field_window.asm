@@ -108,10 +108,10 @@ field_drawWindowBox:
 	ldx #$40
 	lda #$27
 	jsr .copyAttributes
-.finish:
 	;lda #2
 	;sta $4014	;DMA
 	jsr field_setBgScrollTo0	;if omitted, noticable glithces arose in town conversations
+.finish:
 	jmp field_restore_bank	;$ecf5
 .copyAttributes:
 	bit $2002
@@ -270,6 +270,101 @@ field_drawWindowLine:
 	jmp field_callSoundDriver	;$c750
 	VERIFY_PC $ede1
 
+;------------------------------------------------------------------------------------------------------
+;$3f:edf6 field::getWindowTilesForTop
+;//	[in] u8 $3c : width (border incl)
+;//caller:
+;//	$3f:ecef
+;//	$3f:ed17
+;{
+;	x = 1;
+;	$0780 = #f7;
+;	$07a0 = #fa;
+;	for (x;x < $3c;x++) {
+;		$0780.x = #f8;
+;		$07a0.x = #ff;
+;	}
+;	x--;
+;	$0780.x = #f9;
+;	$07a0.x = #fb;
+;	return;
+;$ee1d:
+;}
+;
+;$3f:ee1d field::getWindowTilesForMiddle
+;//caller: field::drawWindow only
+;{
+;	x = 1;
+;	$07a0 = $0780 = #fa;
+;	a = #ff
+;	for (x;x < $3c;x++) {
+;		$07a0.x = $0780.x = a;
+;	}
+;	x--;
+;	$07a0.x = $0780.x = #fb;
+;	return;
+;$ee3e:
+;}
+;
+;$3f:ee3e field::getWindowTilesForBottom
+;//caller:
+;//	$3f:ed3b
+;{
+;	x = 1;
+;	$0780 = #fa;
+;	$07a0 = #fc;
+;	for (x;x < $3c;x++) {
+;		$0780.x = #ff;
+;		$07a0.x = #fd;
+;	}
+;	x--;
+;	$0780.x = #fb;
+;	$07a0.x = #fe;
+;	return;
+;$ee61:
+;}
+	.ifdef FAST_FIELD_WINDOW
+	INIT_PATCH $3f,$edf6,$ee61
+field_get_window_top_tiles:		;edf6
+	ldy #0
+	beq field_X_get_window_tiles
+field_get_window_middle_tiles:	;ee1d
+	ldy #3
+	bne field_X_get_window_tiles
+field_get_window_bottom_tiles:	;ed3b
+	ldy #6
+	;fall through
+field_X_get_window_tiles:
+.width = $3c
+.tiles_1st = $0780
+.tiles_2nd = $07a0
+	lda .window_parts,y
+	sta .tiles_1st
+	lda .window_parts+3,y
+	sta .tiles_2nd
+	ldx <.width
+	dex
+	lda .window_parts+2,y
+	sta .tiles_1st,x
+	lda .window_parts+5,y
+	sta .tiles_2nd,x
+	dex
+.center_tiles:
+		lda .window_parts+1,y
+		sta .tiles_1st,x
+		lda .window_parts+4,y
+		sta .tiles_2nd,x
+		dex
+		bne .center_tiles
+	rts
+.window_parts:
+	db $f7, $f8, $f9
+	db $fa, $ff, $fb
+	db $fa, $ff, $fb
+	db $fc, $fd, $fe
+
+	VERIFY_PC $ee61
+	.endif	;FAST_FIELD_WINDOW
 ;------------------------------------------------------------------------------------------------------
 ;$3f:f40a setVramAddrForWindow
 ;//	[in] u8 $3a : x offset
