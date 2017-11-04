@@ -480,8 +480,7 @@ struct SpawnPattern {
 };
 //index := spawn_pattern_id
 $2e:8a00(5ca00) SpawnPattern spawn_patterns[64] = {};
-//index := enemy_id
-$2e:8b00(5cb00) u8 graphis_id_table[256] = {};
+
 //--------------------------------------------------------------------------------------
 //monster parameters.
 
@@ -502,7 +501,7 @@ $10:9d80(21d80) u16 MonsterExp[64] = {
 };
 
 //index := enemy_id
-$2e:8b00(5cb00) u8 MonsterGraphicsIndices[256] = {}
+$2e:8b00(5cb00) u8 enemy_graphics_indices[256] = {}
 
 struct MonsterBaseParam {
 	u8 lv;			//00
