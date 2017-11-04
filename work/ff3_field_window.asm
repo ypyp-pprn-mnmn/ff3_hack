@@ -118,7 +118,7 @@ field_drawWindowBox:
 ; adjust metrics as borders don't need further drawing...
 	inc <.beginX
 	inc <.beginY
-	;dec <.width
+	dec <.width
 	dec <.width
 	dec <.height
 	dec <.height
@@ -133,22 +133,26 @@ field_drawWindowBox:
 	jsr .copyAttributes
 	ldx #$40
 	lda #$27
+	jsr .copyAttributes
+.finish:
+	jsr field_setBgScrollTo0	;if omitted, noticable glithces arose in town conversations
+	jmp field_restore_bank	;$ecf5
 .copyAttributes:
 	bit $2002
 	sta $2006
 	lda #$c0
 	sta $2006
-	ldy #$40	;update entire attr table in target BG (64 bytes)
-.copy:
-	lda .attrCache,x
-	sta $2007
-	inx
-	dey
-	bne .copy
+	jmp field_X_updateTileAttrEntirely
+
+;	ldy #$40	;update entire attr table in target BG (64 bytes)
+;.copy:
+;	lda .attrCache,x
+;	sta $2007
+;	inx
+;	dey
+;	bne .copy
 	;jsr field_setBgScrollTo0
 
-.finish:
-	jmp field_restore_bank	;$ecf5
 	VERIFY_PC $ed56
 	.endif	;//field_drawWindowBox
 ;------------------------------------------------------------------------------------------------------
@@ -348,25 +352,20 @@ field_drawWindowContent:
 	rts
 	;VERIFY_PC $f727
 ;-----------
-;[in] u8 x: number of rows (in 16x16 tiles)
-;
-	.if 0
-field_updateTileAttrCacheForWindow:
-.current_row = $3b
-		txa
-		pha
-		;[in] $37: require_attr_update, $38: startX?, $3b: offsetY?, $3c: width?
-		;	$07c0: new_attr_values[16]
-		jsr field_updateTileAttrCache
-		inc <.current_row
-		inc <.current_row
-		pla
-		tax
-		dex
-		bne field_updateTileAttrCacheForWindow
-		rts
-	.endif
-	VERIFY_PC $f727
+;[in]
+;	u8 x: offset into attr table cache
+;	attr_value[128] $0300: attr table cache
+field_X_updateTileAttrEntirely:
+.attr_cache = $0300
+	ldy #$40	;update entire attr table in target BG (64 bytes)
+.copy:
+	lda .attr_cache,x
+	sta $2007
+	inx
+	dey
+	bne .copy
+	rts
 
+	VERIFY_PC $f727
 ;======================================================================================================
 	RESTORE_PC ff3_field_window_begin
