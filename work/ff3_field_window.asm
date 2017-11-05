@@ -103,6 +103,12 @@ field_drawWindowBox:
 .finish:
 	jmp field_restore_bank	;$ecf5
 
+	pla
+	sta $2007
+
+	pla
+	sta $2007
+	rts
 	VERIFY_PC $ed56
 
 ;------------------------------------------------------------------------------------------------------
@@ -143,6 +149,11 @@ field_drawWindowBox:
 ;}
 	INIT_PATCH $3f,$ed61,$edb2
 field_getWindowMetrics:
+;; to reflect changes in screen those made by 'field_hide_sprites_around_window',
+;; which is called within this function,
+;; caller must update sprite attr such as:
+;; lda #2
+;; sta $4014	;DMA
 ;[in]
 .scroll_x = $29	;in 16x16 unit
 .scroll_y = $2f	;in 16x16 unit
@@ -209,8 +220,6 @@ field_getWindowMetrics:
 	sta <.internal_bottom
 	;; done calcs
 	jsr field_hide_sprites_around_window	;$ec18
-	;lda #2
-	;sta $4014	;DMA
 	rts
 	VERIFY_PC $edb2
 	
@@ -246,40 +255,7 @@ field_drawWindowLine:
 
 ;------------------------------------------------------------------------------------------------------
 ;$3f:edf6 field::getWindowTilesForTop
-;//	[in] u8 $3c : width (border incl)
-;//caller:
-;//	$3f:ecef
-;//	$3f:ed17
-;{
-;	x = 1;
-;	$0780 = #f7;
-;	$07a0 = #fa;
-;	for (x;x < $3c;x++) {
-;		$0780.x = #f8;
-;		$07a0.x = #ff;
-;	}
-;	x--;
-;	$0780.x = #f9;
-;	$07a0.x = #fb;
-;	return;
-;$ee1d:
-;}
-;
 ;$3f:ee1d field::getWindowTilesForMiddle
-;//caller: field::drawWindow only
-;{
-;	x = 1;
-;	$07a0 = $0780 = #fa;
-;	a = #ff
-;	for (x;x < $3c;x++) {
-;		$07a0.x = $0780.x = a;
-;	}
-;	x--;
-;	$07a0.x = $0780.x = #fb;
-;	return;
-;$ee3e:
-;}
-;
 ;$3f:ee3e field::getWindowTilesForBottom
 ;//caller:
 ;//	$3f:ed3b
@@ -340,28 +316,28 @@ field_X_get_window_tiles:
 field_X_updateVramAttributes:
 	ldx #0
 	lda #$23
-	jsr field_X_copyAttributes
-	ldx #$40
+	jsr .field_X_copyAttributes
+	;ldx #$40	;on exit from above, X will have #$40
 	lda #$27
 	;fall through
 ;[in]
 ;	u8 a: vram address high
 ;	u8 x: offset into attr table cache
 ;	attr_value[128] $0300: attr table cache
-field_X_copyAttributes:
+.field_X_copyAttributes:
 	bit $2002
 	sta $2006
 	lda #$c0
 	sta $2006
-field_X_updateTileAttrEntirely:
+.field_X_updateTileAttrEntirely:
 .attr_cache = $0300
 	ldy #$40	;update entire attr table in target BG (64 bytes)
 .copy:
-	lda .attr_cache,x
-	sta $2007
-	inx
-	dey
-	bne .copy
+		lda .attr_cache,x
+		sta $2007
+		inx
+		dey
+		bne .copy
 	rts
 ;-----------
 
@@ -410,12 +386,63 @@ field_setVramAddrForWindowEx:
 	rts
 
 	VERIFY_PC $f435
-
 ;------------------------------------------------------------------------------------------------------
-;	INIT_PATCH $3f,$f692,$f69c
-;field_drawStringInWindow:
-;	jmp field_drawStringInWindowEx
-;
+	INIT_PATCH $3f,$f670,$f692
+field_calc_draw_width_and_init_window_tile_buffer:
+;;[in]
+.left = $38
+.width = $3c
+.width_for_current_bg = $91
+;$3f:f670
+;{
+;	$91 = $3c;
+;	if ( ($38 & #1f) ^ #1f + 1 < $3c) {
+;		$91 = a;
+;	}
+;$f683:
+;}
+	lda <.width
+	;; if window across 1st BG boundary (left + width >= 0x20)
+	;; then adjust the width to fit jut enough to 1st BG
+	sta <.width_for_current_bg 
+	clc
+	adc <.left
+	;; here carry is always clear (assuming both left and width < 0x40)
+	sbc #$20
+	bmi field_init_window_tile_buffer
+		;; left + width - 0x20 >= 0.
+		;; adjusted width = 0x20 - result of above.
+		and #$1f	;take mod of 0x20 to wrap around
+		eor #$1f	;negate
+		adc #0		;here carry is always set. effectively take the carry.
+		sta <.width_for_current_bg 
+	;; fall through
+field_init_window_tile_buffer:	;;f683
+;;[in]
+.tiles_1st = $0780
+.tiles_2nd = $07a0
+;$f683
+;	a = #ff
+;	for (y = #1d;y >= 0;y--) {
+;		$0780,y = a;
+;		$07a0,y = a;
+;	}
+;	clc;
+;	return;
+;$f692:
+	lda #$ff
+	ldy #$1d
+.copy_loop:
+		sta .tiles_1st,y
+		sta .tiles_2nd,y
+		dey
+		bne .copy_loop
+	clc
+	rts
+	VERIFY_PC $f692
+;------------------------------------------------------------------------------------------------------
+	INIT_PATCH $3f,$f692,$f6aa
+field_drawStringInWindow:
 ;$3f:f692 field::drawStringInWindow
 ;{
 ;	push a;
@@ -430,7 +457,20 @@ field_setVramAddrForWindowEx:
 ;	return $f683();	//??? a= ($93+1)
 ;$f6aa:
 ;}
-
+;; [in]
+;;	u8 a: ?
+;;	u8 $f0: ?
+;;	u8 $93: per8k bank
+.bank = $93
+	pha
+	jsr waitNmiBySetHandler	;ff00
+	pla
+	jsr field_drawWindowContent	;f6aa
+	jsr field_setBgScrollTo0	;ede1
+	jsr field_callSoundDriver	;c750
+	lda <.bank
+	jsr call_switch_2banks		;ff03
+	jmp field_init_window_tile_buffer	;f683
 ;------------------------------------------------------------------------------------------------------
 ;$3f:f6aa putWindowTiles
 ;//	[in] u8 $38 : offset x
