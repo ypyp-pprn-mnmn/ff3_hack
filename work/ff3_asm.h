@@ -12,6 +12,7 @@
 field_callSoundDriver		= $c750
 field_updateTileAttrCache	= $c98f	;field_update_window_attr_buff = $c98f
 field_setTileAttrForWindow	= $c9a9
+field_merge_bg_attributes_with_buffer = $cab1
 field_update_vram_by_07d0	= $cb6b	;[in] $07d0[16]: vram address low, $07e0[16]: vram high, $07f0[16]: vram value
 field_hide_sprites_around_window = $ec18
 field_restore_bank			= $ecf5	;[in] $57: bank
@@ -54,8 +55,8 @@ call_switch1stBank			= $ff06	; => jmp $ff0c
 call_switch2ndBank			= $ff09	; => jmp $ff1f
 ;----------------------------------------------------------------------------------------------------------
 ;well known vars
-pNmiHandler			= $0101	;$0100 jmp xxxx
-pIrqHandler			= $0104	;$0103 jmp xxxx
+pNmiHandler			= $0101	;$0100 jmp xxxx, sometimes just rti :$0100 rti (0x40)
+pIrqHandler			= $0104	;$0103 jmp xxxx, sometimes just rti :$0103 rti
 irqFlag				= $00
 enableScanlineCounter = $01	;mmc3's irq
 irqCountDown		= $03
@@ -77,6 +78,9 @@ playSoundEffect		= $c9	;1=play
 soundEffectId		= $ca	; played on irq if $c9 != 0
 targetStatusCache	= $e0	;in process battle phase
 actorStatusCache	= $f0	;
+field_frame_counter	= $f0	;
+field_sprite_attr_cache		= $0200
+field_bg_attr_table_cache	= $0300	;128bytes. exactly the same format as what stored in PPU
 presentActionParams	= $78d5	;?,actor,action,targetflag,effectmsg,messages
 battleProcessType	= $78d5
 actionName			= $78d7
