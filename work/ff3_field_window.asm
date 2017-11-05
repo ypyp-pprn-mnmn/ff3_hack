@@ -4,7 +4,7 @@
 ;	replaces field::drawWindow($3f:ed02) related codes
 ;
 ; version:
-;	0.01 (2006-11-09)
+;
 ;======================================================================================================
 ff3_field_window_begin:
 
@@ -62,18 +62,20 @@ field_drawWindowBox:
 .width = $3c	;loaded by field_getWindowMetrics
 .height = $3d	;loaded by field_getWindowMetrics
 .attrCache = $0300	;128bytes. 1st 64bytes for 1st BG, 2nd for 2nd.
-.newAttr = $07c0	;16bytes. only for 1 line (2 consecutive window row)
+.newAttrBuffer = $07c0	;16bytes. only for 1 line (2 consecutive window row)
 
 	ldx <.window_id
 	jsr field_getWindowMetrics	;$ed61
 ;---
 	;jsr $f670
-	jsr field_loadWindowTileAttr	;ed56
 ;---
-	lda <.beginY
-	clc
-	adc <.height
-	sec
+	lda <.skipAttrUpdate
+	bne .adjust_window_metrics
+		jsr field_loadWindowTileAttr	;ed56
+		lda <.beginY
+		clc
+		adc <.height
+		sec
 .setupAttributes:
 		sbc #2	;carry is always set here.3
 		sta <.currentY
@@ -82,8 +84,16 @@ field_drawWindowBox:
 		jsr field_updateTileAttrCache
 		lda <.currentY
 		cmp <.beginY
-		beq .adjust_window_metrics	;currentY == beginY
-		bcs .setupAttributes		;currentY >= beginY
+		beq .update_ppu			;currentY == beginY
+		bcs .setupAttributes	;currentY >= beginY
+.update_ppu:
+
+		lda #2
+		sta $4014	;DMA. if omitted, sprites are shown on top of window
+		jsr waitNmiBySetHandler
+		jsr field_X_updateVramAttributes
+		jsr field_setBgScrollTo0	;if omitted, noticable glithces arose in town conversations
+
 .adjust_window_metrics:
 ; adjust metrics as borders don't need further drawing...
 	inc <.beginX
@@ -92,15 +102,6 @@ field_drawWindowBox:
 	dec <.width
 	dec <.height
 	dec <.height
-
-	lda <.skipAttrUpdate
-	bne .finish
-		lda #2
-		sta $4014	;DMA. if omitted, sprites are shown on top of window
-		jsr waitNmiBySetHandler
-		jsr field_X_updateVramAttributes
-		jsr field_setBgScrollTo0	;if omitted, noticable glithces arose in town conversations
-.finish:
 	jmp field_restore_bank	;$ecf5
 
 	pla
