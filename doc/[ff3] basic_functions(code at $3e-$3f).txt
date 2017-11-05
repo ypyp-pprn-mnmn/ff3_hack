@@ -2681,7 +2681,7 @@ $3f:ecf5 restoreBanksBy$57
 {
 	return call_switchFirst2Banks(per8k:a = $57);
 }
-$3f:ed02 field::drawWindow
+$3f:ed02 field::drawWindowBox
 //	[in] u8 $3c : width (border incl)
 //	[in] u8 $3d : height
 //uses:
@@ -2857,6 +2857,8 @@ $3f:ee9a floor::loadAndDrawString
 	push (a = $94[++y] );
 	$3f = a & #1f | #80;
 	$93 = #18 + (pop a) >> 5;
+$eec0:
+//fall through
 }
 
 $3f:eec0 field::drawEncodedStringInWindow
@@ -2870,7 +2872,7 @@ $eed1:
 	$1d = a;
 	$3a = $38;
 	$3b = $39;
-	$f670();
+	$f670();	//field_calc_draw_width_and_init_window_tile_buffer
 	$1f = $90 = #0;
 	field::decodeStringAndDrawInWindow();	//$eefa();
 	if (!carry) { //eef3
