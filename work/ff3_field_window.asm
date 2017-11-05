@@ -72,22 +72,30 @@ field_drawWindowBox:
 	lda <.skipAttrUpdate
 	bne .adjust_window_metrics
 		jsr field_loadWindowTileAttr	;ed56
-		lda <.beginY
-		clc
-		adc <.height
-		sec
+		lda <.height
+		pha
+		ldy <.beginY
 .setupAttributes:
-		sbc #2	;carry is always set here.3
-		sta <.currentY
-		;[in] $37: require_attr_update, $38: startX?, $3b: offsetY?, $3c: width?
-		;	$07c0: new_attr_values[16]
-		jsr field_updateTileAttrCache
-		lda <.currentY
-		cmp <.beginY
-		beq .update_ppu			;currentY == beginY
-		bcs .setupAttributes	;currentY >= beginY
+		sty <.currentY
+		jsr field_updateTileAttrCache	;$c98f
+		ldy <.currentY
+		iny
+		;; field_updateTileAttrCache() has a bug in cases that window crosses vertical boundary (which is at 0x1e)
+		;; that is, if currentY > 0x1e, updated attributes are placed 1 row above where it should be in.
+		;; so here handles as a wrokaround wrapping vertical coordinates.
+		cpy #$1e	;; wrap around
+		bne .no_wrap
+			ldy #0
+.no_wrap:
+		pla
+		sec
+		sbc #1
+		pha
+		bne .setupAttributes
+		;beq .update_ppu			;currentY == beginY
+		;bcs .setupAttributes	;currentY >= beginY
 .update_ppu:
-
+		pla	;dispose
 		lda #2
 		sta $4014	;DMA. if omitted, sprites are shown on top of window
 		jsr waitNmiBySetHandler
