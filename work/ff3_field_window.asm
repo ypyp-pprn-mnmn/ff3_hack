@@ -387,6 +387,7 @@ field_setVramAddrForWindowEx:
 
 	VERIFY_PC $f435
 ;------------------------------------------------------------------------------------------------------
+	.ifdef FAST_FIELD_WINDOW
 	INIT_PATCH $3f,$f670,$f692
 field_calc_draw_width_and_init_window_tile_buffer:
 ;;[in]
@@ -401,21 +402,19 @@ field_calc_draw_width_and_init_window_tile_buffer:
 ;	}
 ;$f683:
 ;}
-	lda <.width
-	;; if window across 1st BG boundary (left + width >= 0x20)
-	;; then adjust the width to fit jut enough to 1st BG
-	sta <.width_for_current_bg 
-	clc
-	adc <.left
-	;; here carry is always clear (assuming both left and width < 0x40)
-	sbc #$20
-	bmi field_init_window_tile_buffer
-		;; left + width - 0x20 >= 0.
-		;; adjusted width = 0x20 - result of above.
-		and #$1f	;take mod of 0x20 to wrap around
-		eor #$1f	;negate
-		adc #0		;here carry is always set. effectively take the carry.
-		sta <.width_for_current_bg 
+	;; if window across BG boundary (left + width >= 0x20)
+	;; then adjust the width to fit just enough to the BG
+	lda <.left
+	and #$1f	;take mod of 0x20 to wrap around
+	eor #$1f	;negate...
+	clc			;
+	adc #1		;...done. A = (0x20 - left) % 0x20
+	cmp <.width
+	bcc .store_result
+		;; there is enough space to draw entirely
+		lda <.width
+.store_result:
+	sta <.width_for_current_bg
 	;; fall through
 field_init_window_tile_buffer:	;;f683
 ;;[in]
@@ -436,7 +435,7 @@ field_init_window_tile_buffer:	;;f683
 		sta .tiles_1st,y
 		sta .tiles_2nd,y
 		dey
-		bne .copy_loop
+		bpl .copy_loop
 	clc
 	rts
 	VERIFY_PC $f692
@@ -471,13 +470,23 @@ field_drawStringInWindow:
 	lda <.bank
 	jsr call_switch_2banks		;ff03
 	jmp field_init_window_tile_buffer	;f683
+
+	VERIFY_PC $f6aa
+	.endif	;FAST_FIELD_WINDOW
 ;------------------------------------------------------------------------------------------------------
 ;$3f:f6aa putWindowTiles
 ;//	[in] u8 $38 : offset x
 ;//	[in] u8 $39 : offset per 2 line
 ;//	[in,out] u8 $3b : offset y (wrap-around)
 	INIT_PATCH	$3f,$f6aa,$f727
-
+;; call tree:
+;;	$eb43: ?
+;;		$eec0: field::drawEncodedStringInWindow
+;;			$eefa: field::decodeStringAndDrawInWindow
+;;				$f692: field::drawStingInWindow
+;;	
+;;	$ed02: field::drawWindowBox
+;;		$edc6: field::drawWindowLine
 field_drawWindowContent:
 ;[in]
 .left = $38
