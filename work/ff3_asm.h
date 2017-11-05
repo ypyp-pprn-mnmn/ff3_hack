@@ -49,8 +49,9 @@ copyTo7400					= $fddc
 ;call_30_9e58				= $fdf3
 invoke_b30_battleFunction	= $fdf3
 waitNmiBySetHandler			= $ff00
-call_switch1stBank			= $ff06
-call_switch2ndBank			= $ff09
+call_switch_2banks			= $ff03	; => jmp $ff17
+call_switch1stBank			= $ff06	; => jmp $ff0c
+call_switch2ndBank			= $ff09	; => jmp $ff1f
 ;----------------------------------------------------------------------------------------------------------
 ;well known vars
 pNmiHandler			= $0101	;$0100 jmp xxxx
