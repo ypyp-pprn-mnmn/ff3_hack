@@ -280,10 +280,10 @@ field_drawWindowLine:
 ;	$0780.x = #fb;
 ;	$07a0.x = #fe;
 ;	return;
-;$ee61:
+;$ee65:
 ;}
 	.ifdef FAST_FIELD_WINDOW
-	INIT_PATCH $3f,$edf6,$ee61
+	INIT_PATCH $3f,$edf6,$ee65
 field_get_window_top_tiles:		;edf6
 	ldy #0
 	beq field_X_get_window_tiles
@@ -350,7 +350,7 @@ field_X_updateVramAttributes:
 	rts
 ;-----------
 
-	VERIFY_PC $ee61
+	VERIFY_PC $ee65
 	.endif	;FAST_FIELD_WINDOW
 ;------------------------------------------------------------------------------------------------------
 ;$3f:f40a setVramAddrForWindow
