@@ -2781,7 +2781,7 @@ $3f:ed61 field::get_window_metrics
 		a = $b8 = $b6 + a; $b8--;
 		a = $3d = $edc1.x;
 		$b7 = a + $b5 - 3;
-		$ec18();
+		$ec18();	//field_hide_sprites_around_window
 	}
 $edb1:
 	return;
