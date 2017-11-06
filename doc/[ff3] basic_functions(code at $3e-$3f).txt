@@ -2689,6 +2689,16 @@ $3f:eb61 field::drawEncodedStringInWindowAndRestoreBanks
 $eb69:
 }
 
+$3f:ece5 field::draw_window_top
+{
+//1F:ECE5:A5 39     LDA window_top = #$02
+//1F:ECE7:85 3B     STA window_row_in_draw = #$04
+//1F:ECE9:20 70 F6  JSR field::calc_size_and_init_buff
+//1F:ECEC:20 56 ED  JSR field::init_window_attr_buffer
+//1F:ECEF:20 F6 ED  JSR field::get_window_top_tiles
+//1F:ECF2:20 C6 ED  JSR field::draw_window_row
+//fall through.
+}
 $3f:ecf5 restoreBanksBy$57
 {
 	return call_switchFirst2Banks(per8k:a = $57);
@@ -2696,6 +2706,11 @@ $3f:ecf5 restoreBanksBy$57
 
 $3f:ecfa field::draw_choose_dialog
 {
+//1F:ECFA:85 96     STA window_id = #$00
+//1F:ECFC:A9 00     LDA #$00
+//1F:ECFE:85 24     STA $0024 = #$00
+//1F:ED00:85 25     STA $0025 = #$00
+//fall through.
 }
 $3f:ed02 field::drawWindowBox
 //	[in] u8 $3c : width (border incl)
