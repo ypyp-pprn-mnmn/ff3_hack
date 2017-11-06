@@ -30,9 +30,8 @@ field_draw_window_top:
 	VERIFY_PC $ecf5
 ;------------------------------------------------------------------------------------------------------
 	;INIT_PATCH $3f,$ed02,$ed56
-	INIT_PATCH $3f,$ed02,$ede1
-field_draw_window_box:
-;$3f:ed02 field::drawWindow
+	INIT_PATCH $3f,$ed02,$ee65
+field_draw_window_box:	;;$3f:ed02 field::drawWindow
 ;//	[in] u8 $3c : width (border incl)
 ;//	[in] u8 $3d : height
 ;//caller:
@@ -138,7 +137,7 @@ field_draw_window_box:
 ;	return;
 ;$ed61:
 ;}
-field_init_window_attr_buffer:	;;;$3f:ed56 field::fill_07c0_ff
+field_init_window_attr_buffer:	;;$3f:ed56 field::fill_07c0_ff
 .window_attr_buffer = $07c0
 	ldx #$0f
 	lda #$ff
@@ -304,7 +303,7 @@ field_draw_window_row:	;;$3f:edc6 field::drawWindowLine
 ;	return;
 ;$edf6:
 ;}
-	INIT_PATCH $3f,$ede1,$edf6
+	;INIT_PATCH $3f,$ede1,$edf6
 field_setBgScrollTo0:	;;$3f:ede1 field::setBgScrollTo0
 .skip_attr_update = $37
 .ppu_ctrl_cache = $ff
@@ -340,7 +339,7 @@ field_setBgScrollTo0:	;;$3f:ede1 field::setBgScrollTo0
 ;$ee65:
 ;}
 	;.ifdef FAST_FIELD_WINDOW
-	INIT_PATCH $3f,$edf6,$ee65
+	;INIT_PATCH $3f,$edf6,$ee65
 field_get_window_top_tiles:		;edf6
 	ldy #0
 	beq field_X_get_window_tiles
