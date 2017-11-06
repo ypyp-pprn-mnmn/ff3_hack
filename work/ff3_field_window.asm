@@ -119,7 +119,8 @@ field_draw_window_box:	;;$3f:ed02 field::drawWindow
 		jsr waitNmiBySetHandler
 		jsr field_X_updateVramAttributes
 		jsr field_setBgScrollTo0	;if omitted, noticable glithces arose in town conversations
-
+		jsr field_callSoundDriver
+		
 .post_attr_update:
 	;jsr field_X_render_borders
 ; adjust metrics as borders don't need further drawing...
