@@ -29,7 +29,8 @@ field_draw_window_top:
 	;; fall through (into $ecf5: field_restore_bank)
 	VERIFY_PC $ecf5
 ;------------------------------------------------------------------------------------------------------
-	INIT_PATCH $3f,$ed02,$ed56
+	;INIT_PATCH $3f,$ed02,$ed56
+	INIT_PATCH $3f,$ed02,$ede1
 field_draw_window_box:
 ;$3f:ed02 field::drawWindow
 ;//	[in] u8 $3c : width (border incl)
@@ -77,15 +78,15 @@ field_draw_window_box:
 .skipAttrUpdate = $37
 .window_id = $96
 .currentY = $3b
-.beginX = $38	;loaded by field_getWindowMetrics
-.beginY = $39	;loaded by field_getWindowMetrics
-.width = $3c	;loaded by field_getWindowMetrics
-.height = $3d	;loaded by field_getWindowMetrics
+.beginX = $38	;loaded by field_get_window_metrics
+.beginY = $39	;loaded by field_get_window_metrics
+.width = $3c	;loaded by field_get_window_metrics
+.height = $3d	;loaded by field_get_window_metrics
 .attrCache = $0300	;128bytes. 1st 64bytes for 1st BG, 2nd for 2nd.
 .newAttrBuffer = $07c0	;16bytes. only for 1 line (2 consecutive window row)
 
 	ldx <.window_id
-	jsr field_getWindowMetrics	;$ed61
+	jsr field_get_window_metrics	;$ed61
 ;---
 	;jsr field_calc_draw_width_and_init_window_tile_buffer ;	$f670
 ;---
@@ -126,7 +127,7 @@ field_draw_window_box:
 	jsr field_X_shrink_window_metrics
 	jmp field_restore_bank	;$ecf5
 
-	VERIFY_PC $ed56
+	;VERIFY_PC $ed56
 
 ;------------------------------------------------------------------------------------------------------
 ;$3f:ed56 field::fill_07c0_ff
@@ -137,6 +138,18 @@ field_draw_window_box:
 ;	return;
 ;$ed61:
 ;}
+field_init_window_attr_buffer:	;;;$3f:ed56 field::fill_07c0_ff
+.window_attr_buffer = $07c0
+	ldx #$0f
+	lda #$ff
+.fill:
+	sta .window_attr_buffer,x
+	dex
+	bpl .fill
+field_window_rts_1:
+	rts
+
+	;VERIFY_PC $ed61
 ;------------------------------------------------------------------------------------------------------
 ;$3f:ed61 field::get_window_metrics
 ;//[in]
@@ -169,9 +182,8 @@ field_draw_window_box:
 ;$edb1:
 ;	return;
 ;}
-	;INIT_PATCH $3f,$ed61,$edb2
-	INIT_PATCH $3f,$ed61,$edc6
-field_getWindowMetrics:
+	;INIT_PATCH $3f,$ed61,$edc6
+field_get_window_metrics:	;;$3f:ed61 field::get_window_metrics
 ;; to reflect changes in screen those made by 'field_hide_sprites_around_window',
 ;; which is called within this function,
 ;; caller must update sprite attr such as:
@@ -194,7 +206,7 @@ field_getWindowMetrics:
 .internal_right = $b8
 
 	lda <.skip_attr_update
-	bne $ed60	;rts
+	bne field_window_rts_1	;rts (original: bne $ed60)
 	;; calculate left coordinates
 	lda .window_attr_table_x,x
 	sta <.internal_left
@@ -251,7 +263,7 @@ field_getWindowMetrics:
 .window_attr_table_height:	; = $edc1
 	.db $0a, $0a, $0a, $04, $04
 
-	VERIFY_PC $edc6
+	;VERIFY_PC $edc6
 
 ;------------------------------------------------------------------------------------------------------
 ;$3f:edc6 field::drawWindowLine
@@ -266,7 +278,7 @@ field_getWindowMetrics:
 ;	return field::callSoundDriver();
 ;$ede1:
 ;}
-	INIT_PATCH $3f,$edc6,$ede1
+	;INIT_PATCH $3f,$edc6,$ede1
 field_draw_window_row:	;;$3f:edc6 field::drawWindowLine
 .width = $3c
 .iChar = $90
@@ -280,7 +292,7 @@ field_draw_window_row:	;;$3f:edc6 field::drawWindowLine
 	jsr field_setBgScrollTo0	;$ede1
 	jmp field_callSoundDriver	;$c750
 	VERIFY_PC $ede1
-
+;------------------------------------------------------------------------------------------------------
 ;$3f:ede1 field::setBgScrollTo0
 ;{
 ;	if ($37 == 0) { //bne ede8
@@ -293,7 +305,7 @@ field_draw_window_row:	;;$3f:edc6 field::drawWindowLine
 ;$edf6:
 ;}
 	INIT_PATCH $3f,$ede1,$edf6
-field_setBgScrollTo0:
+field_setBgScrollTo0:	;;$3f:ede1 field::setBgScrollTo0
 .skip_attr_update = $37
 .ppu_ctrl_cache = $ff
 	lda <.skip_attr_update
