@@ -18,3 +18,5 @@ $EDF6#field::get_window_top_tiles#
 $EE9A#field::load_and_draw_string#
 $EEC0#floor::draw_encoded_string#
 $EC18#field_hide_sprites_under_wind#
+$F670#field::calc_size_and_init_buff#field_calc_draw_width_and_init_window_tile_buffer 
+$ECE5#field::draw_window_top#
