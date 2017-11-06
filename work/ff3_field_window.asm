@@ -154,7 +154,8 @@ field_X_render_borders:
 ;$edb1:
 ;	return;
 ;}
-	INIT_PATCH $3f,$ed61,$edb2
+	;INIT_PATCH $3f,$ed61,$edb2
+	INIT_PATCH $3f,$ed61,$edc6
 field_getWindowMetrics:
 ;; to reflect changes in screen those made by 'field_hide_sprites_around_window',
 ;; which is called within this function,
@@ -224,8 +225,8 @@ field_getWindowMetrics:
 	;; done calcs
 	jmp field_hide_sprites_around_window	;$ec18
 	;rts
-	VERIFY_PC $edb2
-	.org $edb2
+	;VERIFY_PC $edb2
+	;.org $edb2
 .window_attr_table_x:	; = $edb2
 	.db $02, $02, $02, $12, $02
 .window_attr_table_y:	; = $edb7
@@ -234,6 +235,8 @@ field_getWindowMetrics:
 	.db $1c, $08, $1c, $0c, $1c
 .window_attr_table_height:	; = $edc1
 	.db $0a, $0a, $0a, $04, $04
+
+	VERIFY_PC $edc6
 	.endif	;//FAST_FIELD_WINDOW
 ;------------------------------------------------------------------------------------------------------
 ;$3f:edc6 field::drawWindowLine
@@ -265,6 +268,32 @@ field_drawWindowLine:
 	jmp field_callSoundDriver	;$c750
 	VERIFY_PC $ede1
 
+;$3f:ede1 field::setBgScrollTo0
+;{
+;	if ($37 == 0) { //bne ede8
+;		return $e571();
+;	}
+;$ede8:
+;	$2000 = $ff;
+;	$2005 = 0; $2005 = 0;
+;	return;
+;$edf6:
+;}
+	INIT_PATCH $3f,$ede1,$edf6
+field_setBgScrollTo0:
+.skip_attr_update = $37
+.ppu_ctrl_cache = $ff
+	lda <.skip_attr_update
+	bne .set_ppu_ctrl
+		jmp $e571
+.set_ppu_ctrl:
+	lda <.ppu_ctrl_cache
+	sta $2000
+	lda #00
+	sta $2005
+	sta $2005
+	rts
+	VERIFY_PC $edf6
 ;------------------------------------------------------------------------------------------------------
 ;$3f:edf6 field::getWindowTilesForTop
 ;$3f:ee1d field::getWindowTilesForMiddle
@@ -355,7 +384,7 @@ field_X_updateVramAttributes:
 
 	VERIFY_PC $ee65
 	.endif	;FAST_FIELD_WINDOW
-;------------------------------------------------------------------------------------------------------
+;======================================================================================================
 ;$3f:f40a setVramAddrForWindow
 ;//	[in] u8 $3a : x offset
 ;//	[in] u8 $3b : y
