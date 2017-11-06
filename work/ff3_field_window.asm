@@ -153,7 +153,7 @@ field_window_rts_1:
 ;$3f:ed61 field::get_window_metrics
 ;//[in]
 ;// u8 $37: skipAttrUpdate
-;// u8 X: window_id (0...4)
+;// u8 X: window_type (0...4)
 ;//		0: object's message?
 ;//		1: choose dialog (Yes/No) (can be checked at INN)
 ;//		2: use item to object
