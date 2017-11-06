@@ -16,6 +16,7 @@ field_merge_bg_attributes_with_buffer = $cab1
 field_update_vram_by_07d0	= $cb6b	;[in] $07d0[16]: vram address low, $07e0[16]: vram high, $07f0[16]: vram value
 field_hide_sprites_around_window = $ec18
 field_restore_bank			= $ecf5	;[in] $57: bank
+field_draw_choose_dialog	= $ecfa	;fall through to field_draw_window_box
 ;field_fill_07c0_ff			= $ed56
 ;field_loadWindowTileAttr	= $ed56
 field_init_window_attr_buffer	= $ed56

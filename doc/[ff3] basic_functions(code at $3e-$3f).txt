@@ -2693,6 +2693,10 @@ $3f:ecf5 restoreBanksBy$57
 {
 	return call_switchFirst2Banks(per8k:a = $57);
 }
+
+$3f:ecfa field::draw_choose_dialog
+{
+}
 $3f:ed02 field::drawWindowBox
 //	[in] u8 $3c : width (border incl)
 //	[in] u8 $3d : height
@@ -2856,7 +2860,7 @@ $3f:ee3e field::getWindowTilesForBottom
 	$0780.x = #fb;
 	$07a0.x = #fe;
 	return;
-$ee61:
+$ee65:
 }
 
 $3f:ee9a floor::loadAndDrawString
