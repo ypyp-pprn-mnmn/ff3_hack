@@ -96,8 +96,7 @@ field_drawWindowBox:
 		;bcs .setupAttributes	;currentY >= beginY
 .update_ppu:
 		pla	;dispose
-		lda #2
-		sta $4014	;DMA. if omitted, sprites are shown on top of window
+		jsr do_sprite_dma_from_0200	;if omitted, sprites are shown on top of window
 		jsr waitNmiBySetHandler
 		jsr field_X_updateVramAttributes
 		jsr field_setBgScrollTo0	;if omitted, noticable glithces arose in town conversations
@@ -128,6 +127,11 @@ field_X_render_borders:
 ;//[in]
 ;// u8 $37: skipAttrUpdate
 ;// u8 X: window_id (0...4)
+;//		0: object's message?
+;//		1: choose dialog (Yes/No) (can be checked at INN)
+;//		2: use item to object
+;//		3: Gil (can be checked at INN)
+;//		4: floor name
 ;//[out]
 ;//	u8 $38: start_x
 ;//	u8 $39: start_y
@@ -161,10 +165,6 @@ field_getWindowMetrics:
 .scroll_x = $29	;in 16x16 unit
 .scroll_y = $2f	;in 16x16 unit
 .skip_attr_update = $37
-.window_attr_table_x = $edb2
-.window_attr_table_y = $edb7
-.window_attr_table_width = $edbc
-.window_attr_table_height = $edc1
 ;[out]
 .left = $38	;in 8x8 unit
 .top = $39	;in 8x8 unit
@@ -222,10 +222,18 @@ field_getWindowMetrics:
 	sbc #2
 	sta <.internal_bottom
 	;; done calcs
-	jsr field_hide_sprites_around_window	;$ec18
-	rts
+	jmp field_hide_sprites_around_window	;$ec18
+	;rts
 	VERIFY_PC $edb2
-	
+	.org $edb2
+.window_attr_table_x:	; = $edb2
+	.db $02, $02, $02, $12, $02
+.window_attr_table_y:	; = $edb7
+	.db $02, $12, $12, $0e, $02
+.window_attr_table_width:	; = $edbc
+	.db $1c, $08, $1c, $0c, $1c
+.window_attr_table_height:	; = $edc1
+	.db $0a, $0a, $0a, $04, $04
 	.endif	;//FAST_FIELD_WINDOW
 ;------------------------------------------------------------------------------------------------------
 ;$3f:edc6 field::drawWindowLine
@@ -248,8 +256,9 @@ field_drawWindowLine:
 	sta <.iChar
 	jsr field_updateTileAttrCache	;$c98f
 	jsr waitNmiBySetHandler	;$ff00
-	lda #02
-	sta $4014
+	jsr do_sprite_dma_from_0200
+	;lda #02
+	;sta $4014
 	jsr field_drawWindowContent	;$f6aa
 	jsr field_setTileAttrForWindow	;$c9a9
 	jsr field_setBgScrollTo0	;$ede1
