@@ -2712,7 +2712,7 @@ $3f:ed02 field::drawWindowBox
 	x = $96;
 	$ed61();
 	$3b = $39;
-	$f670();
+	$f670();	//field_calc_draw_width_and_init_window_tile_buffer
 	field::fill_07c0_ff();	//$ed56
 	push ( $3d - 2 );
 	field::getWindowTilesForTop();	//$edf6();
@@ -3252,13 +3252,17 @@ $f668:
 	01 02 04 08 10 20 40 80
 }
 
-$3f:f670
+$3f:f670 field::calc_draw_width_and_init_window_tile_buffer
 {
 	$91 = $3c;
 	if ( ($38 & #1f) ^ #1f + 1 < $3c) {
 		$91 = a;
 	}
 $f683:
+	//fall through
+}
+$3f:f683 field::init_window_tile_buffer
+{
 	a = #ff
 	for (y = #1d;y >= 0;y--) {
 		$0780,y = a;

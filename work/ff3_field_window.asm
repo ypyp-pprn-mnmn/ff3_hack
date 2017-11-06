@@ -67,7 +67,7 @@ field_drawWindowBox:
 	ldx <.window_id
 	jsr field_getWindowMetrics	;$ed61
 ;---
-	;jsr $f670
+	;jsr field_calc_draw_width_and_init_window_tile_buffer ;	$f670
 ;---
 	lda <.skipAttrUpdate
 	bne .post_attr_update
@@ -109,10 +109,6 @@ field_drawWindowBox:
 
 	VERIFY_PC $ed56
 
-	.org floor_treasure_free_begin
-field_X_render_borders:
-
-	VERIFY_PC floor_treasure_free_end
 ;------------------------------------------------------------------------------------------------------
 ;$3f:ed56 field::fill_07c0_ff
 ;{
@@ -237,7 +233,7 @@ field_getWindowMetrics:
 	.db $0a, $0a, $0a, $04, $04
 
 	VERIFY_PC $edc6
-	.endif	;//FAST_FIELD_WINDOW
+
 ;------------------------------------------------------------------------------------------------------
 ;$3f:edc6 field::drawWindowLine
 ;{
@@ -314,7 +310,7 @@ field_setBgScrollTo0:
 ;	return;
 ;$ee65:
 ;}
-	.ifdef FAST_FIELD_WINDOW
+	;.ifdef FAST_FIELD_WINDOW
 	INIT_PATCH $3f,$edf6,$ee65
 field_get_window_top_tiles:		;edf6
 	ldy #0
@@ -431,6 +427,7 @@ field_setVramAddrForWindowEx:
 	.ifdef FAST_FIELD_WINDOW
 	INIT_PATCH $3f,$f670,$f692
 field_calc_draw_width_and_init_window_tile_buffer:
+;field_init_window_tile_buffer:
 ;;[in]
 .left = $38
 .width = $3c
