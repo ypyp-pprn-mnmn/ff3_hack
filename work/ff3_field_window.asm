@@ -9,8 +9,28 @@
 ff3_field_window_begin:
 
 	.ifdef FAST_FIELD_WINDOW
+	INIT_PATCH $3f,$ece5,$ecf5
+;field::draw_window_top:
+;1F:ECE5:A5 39     LDA window_top = #$0B
+;1F:ECE7:85 3B     STA window_row_in_draw = #$0F
+;1F:ECE9:20 70 F6  JSR field::calc_size_and_init_buff
+;1F:ECEC:20 56 ED  JSR field::init_window_attr_buffer
+;1F:ECEF:20 F6 ED  JSR field::get_window_top_tiles
+;1F:ECF2:20 C6 ED  JSR field::draw_window_row
+field_draw_window_top:
+.window_top = $39
+.window_row_in_drawing = $3b
+	lda <.window_top
+	sta <.window_row_in_drawing
+	jsr field_calc_draw_width_and_init_window_tile_buffer
+	jsr field_init_window_attr_buffer
+	jsr field_get_window_top_tiles
+	jsr field_draw_window_row
+	;; fall through (into $ecf5: field_restore_bank)
+	VERIFY_PC $ecf5
+;------------------------------------------------------------------------------------------------------
 	INIT_PATCH $3f,$ed02,$ed56
-field_drawWindowBox:
+field_draw_window_box:
 ;$3f:ed02 field::drawWindow
 ;//	[in] u8 $3c : width (border incl)
 ;//	[in] u8 $3d : height
@@ -248,7 +268,7 @@ field_getWindowMetrics:
 ;$ede1:
 ;}
 	INIT_PATCH $3f,$edc6,$ede1
-field_drawWindowLine:
+field_draw_window_row:	;;$3f:edc6 field::drawWindowLine
 .width = $3c
 .iChar = $90
 	lda <.width
@@ -256,8 +276,6 @@ field_drawWindowLine:
 	jsr field_updateTileAttrCache	;$c98f
 	jsr waitNmiBySetHandler	;$ff00
 	jsr do_sprite_dma_from_0200
-	;lda #02
-	;sta $4014
 	jsr field_drawWindowContent	;$f6aa
 	jsr field_setTileAttrForWindow	;$c9a9
 	jsr field_setBgScrollTo0	;$ede1
@@ -496,11 +514,12 @@ field_drawStringInWindow:
 ;}
 ;; [in]
 ;;	u8 a: ?
-;;	u8 $f0: ?
+;;	u8 $f0: frame_counter
 ;;	u8 $93: per8k bank
 .bank = $93
 	pha
 	jsr waitNmiBySetHandler	;ff00
+	inc <field_frame_counter
 	pla
 	jsr field_drawWindowContent	;f6aa
 	jsr field_setBgScrollTo0	;ede1
