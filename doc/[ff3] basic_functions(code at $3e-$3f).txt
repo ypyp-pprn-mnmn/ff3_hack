@@ -2744,7 +2744,8 @@ $ed41:
 $ed56:
 }
 
-$3f:ed56 field::fill_07c0_ff
+//$3f:ed56 field::fill_07c0_ff
+$3f:ed56 field::init_window_attr_buffer
 {
 	for (x = #f;x >= 0;x--) {
 		$07c0.x = #ff;
@@ -3382,7 +3383,8 @@ $3f:f897 loadPalette
 $f8aa:
 }
 
-$3f:f8aa setDmaSourceAddrTo0200 { 
+//$3f:f8aa setDmaSourceAddrTo0200 { 
+$3f:f8aa do_sprite_dma_from_0200 {
 	$4014 = #02; //sprite DMA source addr
 	return;
 }
