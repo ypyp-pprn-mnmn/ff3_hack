@@ -4,7 +4,7 @@
 ;	replaces field::drawWindow($3f:ed02) related codes
 ;
 ; version:
-;
+;	0.2.0
 ;======================================================================================================
 ff3_field_window_begin:
 
@@ -70,8 +70,8 @@ field_drawWindowBox:
 	;jsr $f670
 ;---
 	lda <.skipAttrUpdate
-	bne .adjust_window_metrics
-		jsr field_loadWindowTileAttr	;ed56
+	bne .post_attr_update
+		jsr field_init_window_attr_buffer	;ed56
 		lda <.height
 		pha
 		ldy <.beginY
@@ -102,24 +102,18 @@ field_drawWindowBox:
 		jsr field_X_updateVramAttributes
 		jsr field_setBgScrollTo0	;if omitted, noticable glithces arose in town conversations
 
-.adjust_window_metrics:
+.post_attr_update:
+	;jsr field_X_render_borders
 ; adjust metrics as borders don't need further drawing...
-	inc <.beginX
-	inc <.beginY
-	dec <.width
-	dec <.width
-	dec <.height
-	dec <.height
+	jsr field_X_shrink_window_metrics
 	jmp field_restore_bank	;$ecf5
 
-	pla
-	sta $2007
-
-	pla
-	sta $2007
-	rts
 	VERIFY_PC $ed56
 
+	.org floor_treasure_free_begin
+field_X_render_borders:
+
+	VERIFY_PC floor_treasure_free_end
 ;------------------------------------------------------------------------------------------------------
 ;$3f:ed56 field::fill_07c0_ff
 ;{
@@ -249,9 +243,9 @@ field_getWindowMetrics:
 	INIT_PATCH $3f,$edc6,$ede1
 field_drawWindowLine:
 .width = $3c
-;.iChar = $90
+.iChar = $90
 	lda <.width
-	sta <$90
+	sta <.iChar
 	jsr field_updateTileAttrCache	;$c98f
 	jsr waitNmiBySetHandler	;$ff00
 	lda #02
@@ -592,7 +586,18 @@ field_drawWindowContent:
 
 	rts
 	;VERIFY_PC $f727
-
+field_X_shrink_window_metrics:
+.left = $38	;loaded by field_getWindowMetrics
+.top = $39	;loaded by field_getWindowMetrics
+.width = $3c	;loaded by field_getWindowMetrics
+.height = $3d	;loaded by field_getWindowMetrics
+	inc <.left
+	inc <.top
+	dec <.width
+	dec <.width
+	dec <.height
+	dec <.height
+	rts
 	VERIFY_PC $f727
 ;======================================================================================================
 	RESTORE_PC ff3_field_window_begin

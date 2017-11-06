@@ -64,11 +64,11 @@
 		.include "ff3_doFight.asm"
 		;v0.7.8:
 		.include "ff3_calcDamage.asm"
-		;v0.7.3:
-		.include "ff3_field_window.asm"
 		;v0.7.9:
-		.include "ff3_floor_treasure.asm"
-
+		.include "ff3_floor_treasure.asm"	;save
+		;v0.7.3:
+		.include "ff3_field_window.asm"	;consume(field_treasure_begin)
+		
 		.ifdef EXPERIMENTAL
 			.include "ff3_experimental.asm"
 		.endif	;EXPERIMENTAL

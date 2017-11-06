@@ -349,9 +349,10 @@ floor_incrementPartyGil:
 	rts
 .maxGil:
 	.db $7f,$96,$98	;9999999
-	
-	VERIFY_PC $f670
 
+	VERIFY_PC $f670
+floor_treasure_free_begin:
+floor_treasure_free_end = $f670
 ;------------------------------------------------------------------------------------------------------
 ;quick fixes
 	.bank	$3d
