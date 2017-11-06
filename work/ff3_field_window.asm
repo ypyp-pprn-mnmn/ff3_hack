@@ -106,15 +106,14 @@ field_draw_window_box:
 		cpy #$1e	;; wrap around
 		bne .no_wrap
 			ldy #0
-.no_wrap:
+	.no_wrap:
 		pla
 		sec
 		sbc #1
 		pha
 		bne .setupAttributes
-		;beq .update_ppu			;currentY == beginY
-		;bcs .setupAttributes	;currentY >= beginY
-.update_ppu:
+
+	.update_ppu:
 		pla	;dispose
 		jsr do_sprite_dma_from_0200	;if omitted, sprites are shown on top of window
 		jsr waitNmiBySetHandler
