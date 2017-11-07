@@ -2712,7 +2712,8 @@ $3f:ecfa field::draw_choose_dialog
 //1F:ED00:85 25     STA $0025 = #$00
 //fall through.
 }
-$3f:ed02 field::drawWindowBox
+//$3f:ed02 field::drawWindowBox
+$3f:ed02 field::draw_window_box
 //	[in] u8 $3c : width (border incl)
 //	[in] u8 $3d : height
 //uses:
