@@ -37,7 +37,7 @@ field_draw_window_top:
 ;;	$3c:8f0e
 ;;	$3c:8fd5
 ;;	$3c:90b1
-;;	$3d:aaf4 (jmp)
+;;	$3d:aaf4 (jmp) in $3d:aaf1 field::drawWindowOf
 field_draw_window_box:
 ;;[in]
 .window_id = $96

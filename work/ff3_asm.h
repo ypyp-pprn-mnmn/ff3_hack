@@ -14,15 +14,18 @@ field_updateTileAttrCache	= $c98f	;field_update_window_attr_buff = $c98f
 field_setTileAttrForWindow	= $c9a9
 field_merge_bg_attr_with_buffer = $cab1
 field_update_vram_by_07d0	= $cb6b	;[in] $07d0[16]: vram address low, $07e0[16]: vram high, $07f0[16]: vram value
+field_get_input				= $d281	;$3e:d281 field::get_input
+;;
 field_hide_sprites_around_window = $ec18
 field_restore_bank			= $ecf5	;[in] $57: bank
 field_draw_choose_dialog	= $ecfa	;fall through to field_draw_window_box
 ;field_init_window_attr_buffer	= $ed56	
-;field_get_window_metrics		= $ed61	;[in] u8 $96: window_id / [out] $38, $39, $3c, $3d
+;field_get_window_metrics	= $ed61	;[in] u8 $96: window_id / [out] $38, $39, $3c, $3d
 ;field_setBgScrollTo0		= $ede1
 ;field_calc_draw_width_and_init_window_tile_buffer = $f670
 ;field_init_window_tile_buffer = $f683 ;fill 0780..79d/07c0..7dd with 0xFF
-;field_drawWindowContent		= $f6aa	;impl replaced but stay at the original addr
+;field_drawWindowContent	= $f6aa	;impl replaced but stay at the original addr
+;;
 switchBanksTo3c3d			= $f727
 do_sprite_dma_from_0200		= $f8aa
 updateDmaPpuScrollSyncNmiEx = $f8b0
@@ -70,7 +73,9 @@ scrollXSetOnNmi		= $0c
 scrollYSetOnNmi		= $0d
 scrollXSetOnIrq		= $10
 scrollYSetOnIrq		= $11
-inputBits			= $12
+inputBits			= $12	;used in battle phase. see also getPad1Input($3f:fbaa)
+;bit7< A B select start up down left right >bit0
+field_pad1_bits		= $20	;order of bits averse to those in battle ($12). see also field::get_input($3e:d281).
 selectTarget_behavior		= $b3	;param of presentSceneFunction10($2e:9d53)
 selectTarget_selectedBits	= $b4
 selectTarget_targetFlag		= $b5
@@ -81,6 +86,7 @@ soundEffectId		= $ca	; played on irq if $c9 != 0
 targetStatusCache	= $e0	;in process battle phase
 actorStatusCache	= $f0	;
 field_frame_counter	= $f0	;
+field_ppu_ctrl_cache= $ff	;
 field_sprite_attr_cache		= $0200
 field_bg_attr_table_cache	= $0300	;128bytes. exactly the same format as what stored in PPU
 presentActionParams	= $78d5	;?,actor,action,targetflag,effectmsg,messages
