@@ -31,54 +31,21 @@ field_draw_window_top:
 ;------------------------------------------------------------------------------------------------------
 	;INIT_PATCH $3f,$ed02,$ed56
 	INIT_PATCH $3f,$ed02,$ee65
-field_draw_window_box:	;;$3f:ed02 field::drawWindow
-;//	[in] u8 $3c : width (border incl)
-;//	[in] u8 $3d : height
-;//caller:
-;//	$3c:8efd
-;//	$3c:8f0e
-;//	$3c:8fd5
-;//	$3c:90b1
-;//	$3d:aaf4 (jmp)
-;{
-;	push ( $3d - 2 );
-;	field::getWindowTilesForTop();	//$edf6();
-;	field::drawWindowLine();	//$edc6();
-;	a = pop - 2;
-;	if (a != 0) { //beq ed3b
-;$ed23:
-;		if (a < 0) { //bcs ed2a
-;$ed25:
-;			$3b--;
-;			//jmp $ed3b
-;		} else {
-;$ed2a:
-;			do {
-;				push a;
-;				field::getWindowTilesForMiddle();	//$ee1d();
-;				field::drawWindowLine();	//$edc6();
-;				a = pop a - 2;
-;				if (a == 0) goto $ed3b
-;			} while (a >= 0); //bcs ed2a
-;$ed39:
-;			$3b--;
-;		}
-;	}
-;$ed3b:
-;	field::getWindowTilesForBottom()//$ee3e();
-;	field::drawWindowLine();	//$edc6();
-;$ed41:
-;	$38++; $39++;
-;	$3c -= 2;
-;	$3d -= 2;
-;	return restoreBanksBy$57();	//jmp $ecf5();
-;$ed56:
-;}
-.skipAttrUpdate = $37
+;;$3f:ed02 field::drawWindow
+;;callers:
+;;	$3c:8efd
+;;	$3c:8f0e
+;;	$3c:8fd5
+;;	$3c:90b1
+;;	$3d:aaf4 (jmp)
+field_draw_window_box:
+;;[in]
 .window_id = $96
-.currentY = $3b
+.skipAttrUpdate = $37
+;;[in,out]
 .beginX = $38	;loaded by field_get_window_metrics
 .beginY = $39	;loaded by field_get_window_metrics
+.currentY = $3b
 .width = $3c	;loaded by field_get_window_metrics
 .height = $3d	;loaded by field_get_window_metrics
 .attrCache = $0300	;128bytes. 1st 64bytes for 1st BG, 2nd for 2nd.
@@ -128,7 +95,60 @@ field_draw_window_box:	;;$3f:ed02 field::drawWindow
 	jmp field_restore_bank	;$ecf5
 
 	;VERIFY_PC $ed56
+	.if 0
+field_X_render_borders:
+.skipAttrUpdate = $37
+.left = $38
+.top = $39
+.offset_x = $3a
+.offset_y = $3b
+.width = $3c
+.height = $3d
+.ppu_ctrl_cache = $ff
+.generated_code_base = $0108
+	;; 1: left-top to right-top, not including rightmost
+	;; 2: right-top to right-bottom, not including bottom most
+	;; 3: left-top to left-bottom, not including
+	;	lda A
+	;	sta $2007;
+	;	bne unroll_offset
+	;put_middle:
+	;	lda B
+	;	(sta $2007) x 8	;8C 07 20
+	;	dex bne put_middle
+UNROLLED_BYTES = $08*3
+	ldy #-UNROLLED_BYTES	;dest
+.wrap_x:
+		ldx #0	;src
+.generate_loop:
+		lda .template_code_base,x
+		sta .generated_code_base-($0100-UNROLLED_BYTES),y
+		inx
+		iny
+		beq .generate_epilog
+		cpx #3
+		bne .generate_loop
+		beq .wrap_x
+.generate_epilog:
+	;x should be 3 here
+	ldy #-(.template_code_end-.template_code_loop)	;dest
+.generate_epilog_copy:
+		lda .template_code_base,x
+		sta .generated_code_base+UNROLLED_BYTES-($0100-(.template_code_end-.template_code_loop)),y
+		inx
+		iny
+		bne .generate_epilog_copy
+	rts
 
+.template_code_base:	
+	sty $2007
+.template_code_loop:
+	dex
+	;bne -27
+	.db $d0,-27
+	rts
+.template_code_end:
+	.endif ;0
 ;------------------------------------------------------------------------------------------------------
 ;$3f:ed56 field::fill_07c0_ff
 ;{
@@ -301,7 +321,7 @@ field_draw_window_row:	;;$3f:edc6 field::drawWindowLine
 	jsr field_setTileAttrForWindow	;$c9a9
 	jsr field_setBgScrollTo0	;$ede1
 	jmp field_callSoundDriver	;$c750
-	VERIFY_PC $ede1
+	;VERIFY_PC $ede1
 ;------------------------------------------------------------------------------------------------------
 ;$3f:ede1 field::setBgScrollTo0
 ;{
@@ -332,24 +352,8 @@ field_setBgScrollTo0:
 	sta $2005
 	sta $2005
 	rts
-	VERIFY_PC $edf6
+	;VERIFY_PC $edf6
 ;------------------------------------------------------------------------------------------------------
-;//caller:
-;//	$3f:ed3b
-;{
-;	x = 1;
-;	$0780 = #fa;
-;	$07a0 = #fc;
-;	for (x;x < $3c;x++) {
-;		$0780.x = #ff;
-;		$07a0.x = #fd;
-;	}
-;	x--;
-;	$0780.x = #fb;
-;	$07a0.x = #fe;
-;	return;
-;$ee65:
-;}
 	;.ifdef FAST_FIELD_WINDOW
 	;INIT_PATCH $3f,$edf6,$ee65
 ;;$3f:edf6 field::getWindowTilesForTop
@@ -375,31 +379,31 @@ field_X_get_window_tiles:
 .width = $3c
 .tiles_1st = $0780
 .tiles_2nd = $07a0
-	lda .window_parts,y
+	lda field_X_window_parts,y
 	sta .tiles_1st
-	lda .window_parts+3,y
+	lda field_X_window_parts+3,y
 	sta .tiles_2nd
 	ldx <.width
 	dex
-	lda .window_parts+2,y
+	lda field_X_window_parts+2,y
 	sta .tiles_1st,x
-	lda .window_parts+5,y
+	lda field_X_window_parts+5,y
 	sta .tiles_2nd,x
 	dex
 .center_tiles:
-		lda .window_parts+1,y
+		lda field_X_window_parts+1,y
 		sta .tiles_1st,x
-		lda .window_parts+4,y
+		lda field_X_window_parts+4,y
 		sta .tiles_2nd,x
 		dex
 		bne .center_tiles
 	rts
-.window_parts:
+field_X_window_parts:
 	db $f7, $f8, $f9
 	db $fa, $ff, $fb
 	db $fa, $ff, $fb
 	db $fc, $fd, $fe
-;-----------
+;======================================================================================================
 field_X_updateVramAttributes:
 	ldx #0
 	lda #$23
@@ -477,7 +481,6 @@ field_setVramAddrForWindowEx:
 	.ifdef FAST_FIELD_WINDOW
 	INIT_PATCH $3f,$f670,$f692
 field_calc_draw_width_and_init_window_tile_buffer:
-;field_init_window_tile_buffer:
 ;;[in]
 .left = $38
 .width = $3c
@@ -504,7 +507,10 @@ field_calc_draw_width_and_init_window_tile_buffer:
 .store_result:
 	sta <.width_for_current_bg
 	;; fall through
-field_init_window_tile_buffer:	;;f683
+;;$3f:f683 field::init_window_tile_buffer:
+;;caller:
+;;	$3f:f692 field::drawStringInWindow
+field_init_window_tile_buffer:
 ;;[in]
 .tiles_1st = $0780
 .tiles_2nd = $07a0

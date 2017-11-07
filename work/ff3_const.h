@@ -75,6 +75,14 @@ TREASURE_WITH_ENCOUNTER_BASE = $e0
 EVENT_FLAG_ENCOUNTER = $20
 
 ;--------------------------------------------------------------------------------
+; window types
+FIELD_WINDOW_MESSAGE = $00
+FIELD_WINDOW_CHOOSE_DIALOG = $01
+FIELD_WINDOW_ITEM_TO_OBJECT = $02
+FIELD_WINDOW_GIL = $03
+FIELD_WINDOW_FLOOR_TITLE = $04
+
+;--------------------------------------------------------------------------------
 ; extention to original
 
 ;EXSTATUS_OFFSET_PARAM	= $1e

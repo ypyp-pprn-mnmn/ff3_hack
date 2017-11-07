@@ -14,3 +14,4 @@ $0101#nmi_handler_low#
 $0100#nmi_handler#
 $0103#irq_handler#
 $07C0#window_attr_buffer#used as buffer of bg attr for window
+$00F0#field_frame_counter#
