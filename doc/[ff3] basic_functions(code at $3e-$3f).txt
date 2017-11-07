@@ -1770,10 +1770,10 @@ $3e:d27a field::getAndMaskInput
 	field::getInput();	//d280
 	field::maskInput();	//d29a
 	return;
-$d280:
+$d281:
 }
 
-$3e:d280 field::getInput
+$3e:d281 field::get_input
 //	[out] u8 $20 : inputBits (bit7< A B select start up down left right >bit0)
 //	note:bitの配置が戦闘中のルーチンと逆
 {
@@ -2726,7 +2726,7 @@ $3f:ed02 field::draw_window_box
 //	$3d:aaf4 (jmp)
 {
 	x = $96;
-	$ed61();
+	$ed61();	//get_window_metrics
 	$3b = $39;
 	$f670();	//field_calc_draw_width_and_init_window_tile_buffer
 	field::fill_07c0_ff();	//$ed56
