@@ -120,7 +120,7 @@ field_draw_window_box:	;;$3f:ed02 field::drawWindow
 		jsr field_X_updateVramAttributes
 		jsr field_setBgScrollTo0	;if omitted, noticable glithces arose in town conversations
 		jsr field_callSoundDriver
-		
+
 .post_attr_update:
 	;jsr field_X_render_borders
 ; adjust metrics as borders don't need further drawing...
@@ -138,7 +138,11 @@ field_draw_window_box:	;;$3f:ed02 field::drawWindow
 ;	return;
 ;$ed61:
 ;}
-field_init_window_attr_buffer:	;;$3f:ed56 field::fill_07c0_ff
+;;$3f:ed56 field::fill_07c0_ff
+;;callers:
+;;	$3f:ece5 field::draw_window_top
+;;	$3f:ed02 field::draw_window_box
+field_init_window_attr_buffer:
 .window_attr_buffer = $07c0
 	ldx #$0f
 	lda #$ff
@@ -183,12 +187,15 @@ field_window_rts_1:
 ;	return;
 ;}
 	;INIT_PATCH $3f,$ed61,$edc6
-field_get_window_metrics:	;;$3f:ed61 field::get_window_metrics
+;;$3f:ed61 field::get_window_metrics
+;;callers:
+;;	$3f:ed02 field::draw_window_box
 ;; to reflect changes in screen those made by 'field_hide_sprites_around_window',
 ;; which is called within this function,
 ;; caller must update sprite attr such as:
 ;; lda #2
 ;; sta $4014	;DMA
+field_get_window_metrics:
 ;[in]
 .scroll_x = $29	;in 16x16 unit
 .scroll_y = $2f	;in 16x16 unit
@@ -280,6 +287,9 @@ field_get_window_metrics:	;;$3f:ed61 field::get_window_metrics
 ;}
 	;INIT_PATCH $3f,$edc6,$ede1
 field_draw_window_row:	;;$3f:edc6 field::drawWindowLine
+;;callers:
+;;	$3f:ece5 field::draw_window_top
+;;	$3f:ed02 field::draw_window_box
 .width = $3c
 .iChar = $90
 	lda <.width
@@ -305,7 +315,11 @@ field_draw_window_row:	;;$3f:edc6 field::drawWindowLine
 ;$edf6:
 ;}
 	;INIT_PATCH $3f,$ede1,$edf6
-field_setBgScrollTo0:	;;$3f:ede1 field::setBgScrollTo0
+;;$3f:ede1 field::setBgScrollTo0
+;;callers:
+;;	$3f:edc6 field::draw_window_row
+;;	$3f:f692 field::draw_string_in_window
+field_setBgScrollTo0:
 .skip_attr_update = $37
 .ppu_ctrl_cache = $ff
 	lda <.skip_attr_update
@@ -320,9 +334,6 @@ field_setBgScrollTo0:	;;$3f:ede1 field::setBgScrollTo0
 	rts
 	VERIFY_PC $edf6
 ;------------------------------------------------------------------------------------------------------
-;$3f:edf6 field::getWindowTilesForTop
-;$3f:ee1d field::getWindowTilesForMiddle
-;$3f:ee3e field::getWindowTilesForBottom
 ;//caller:
 ;//	$3f:ed3b
 ;{
@@ -341,12 +352,22 @@ field_setBgScrollTo0:	;;$3f:ede1 field::setBgScrollTo0
 ;}
 	;.ifdef FAST_FIELD_WINDOW
 	;INIT_PATCH $3f,$edf6,$ee65
-field_get_window_top_tiles:		;edf6
+;;$3f:edf6 field::getWindowTilesForTop
+;;callers:
+;;	$3f:ece5 field::draw_window_top
+;;	$3f:ed02 field::draw_window_box
+field_get_window_top_tiles:		
 	ldy #0
 	beq field_X_get_window_tiles
+;;$3f:ee1d field::getWindowTilesForMiddle
+;;callers:
+;;	$3f:ed02 field::draw_window_box
 field_get_window_middle_tiles:	;ee1d
 	ldy #3
 	bne field_X_get_window_tiles
+;;$3f:ee3e field::getWindowTilesForBottom
+;;callers:
+;;	$3f:ed02 field::draw_window_box
 field_get_window_bottom_tiles:	;ed3b
 	ldy #6
 	;fall through
