@@ -4,7 +4,7 @@ $CAB1#field::merge_bg_attr_with_buff#attr_cache@0300 |= attr_buff@07c0
 $ED61#field::get_window_metrics#
 $ED56#field::init_window_attr_buffer#
 $F8AA#do_sprite_dma_from_0200#
-$FF00#waitNmiBySetHandler#
+$FF00#thunk_waitNmiBySetHandler#
 $EDE1#field::setBgScrollTo0#
 $ECF5#field::restore_bank#
 $ED02#field::draw_window_box#
@@ -23,3 +23,6 @@ $ECE5#field::draw_window_top#
 $F692#field::draw_string_in_window#
 $D281#field::get_input#order of bits averse to those in battle
 $D29A#field::mask_input?#
+$FF36#await_nmi_by_set_handler#
+$FF2A#nmi_handler_01#
+$E571#field::sync_ppu_scroll_w_map#

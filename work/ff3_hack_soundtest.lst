@@ -267,235 +267,242 @@
    14           99A9      field_setTileAttrForWindow      = $c9a9
    15           AAB1      field_merge_bg_attr_with_buffer = $cab1
    16           BB6B      field_update_vram_by_07d0       = $cb6b ;[in] $07d0[16]: vram address low, $07e0[16]: vram high, $07f0[16]: vram value
-   17           CC18      field_hide_sprites_around_window = $ec18
-   18           CCF5      field_restore_bank                      = $ecf5 ;[in] $57: bank
-   19           CCFA      field_draw_choose_dialog        = $ecfa ;fall through to field_draw_window_box
-   20                     ;field_init_window_attr_buffer  = $ed56 
-   21                     ;field_get_window_metrics               = $ed61 ;[in] u8 $96: window_id / [out] $38, $39, $3c, $3d
-   22                     ;field_setBgScrollTo0           = $ede1
-   23                     ;field_calc_draw_width_and_init_window_tile_buffer = $f670
-   24                     ;field_init_window_tile_buffer = $f683 ;fill 0780..79d/07c0..7dd with 0xFF
-   25                     ;field_drawWindowContent                = $f6aa ;impl replaced but stay at the original addr
-   26           7727      switchBanksTo3c3d                       = $f727
-   27           88AA      do_sprite_dma_from_0200         = $f8aa
-   28           88B0      updateDmaPpuScrollSyncNmiEx = $f8b0
-   29           88C5      updateDmaPpuScrollSyncNmi       = $f8c5 ;(y is unchanged)
-   30           88CB      updatePpuScrollNoWait           = $f8cb
-   31           88E0      setVramAddr                                     = $f8e0 ;[in] a:high, x:low
-   32           88EA      mul_8x8_reg                                     = $f8ea ;a,x = a * x
-   33           AA0E      call_2e_9d53                            = $fa0e
-   34           AA26      doBattle                                        = $fa26
-   35           BB80      waitNmi                                         = $fb80 ;wait on $05 clear
-   36           BB87      switchFirst2Banks                       = $fb87 ;[in] a : per16k bank index
-   37           BBAA      getPad1Input                            = $fbaa ;[out] $12 : inputFlags
-   38           BBEF      getBattleRandom                         = $fbef ;[out] a : rand [min:x - max:a] max included
-   39           CC27      initBattleRandom                        = $fc27
-   40           CC92      div_16                                          = $fc92 ;$1c = $18,19 / $1a,1b; $1d = $18,19 % $1a,1b
-   41           CCD6      mul_8x8                                         = $fcd6 ;$1a,1b = a * x
-   42           CCF5      mul_16x16                                       = $fcf5 ;$1c,1d,1e,1f = $18,19 * $1a,1b
-   43           DD20      flagTargetBit                           = $fd20
-   44           DD2C      clearTargetBit                          = $fd2c
-   45           DD38      maskTargetBit                           = $fd38
-   46           DD3C      shiftLeft6                                      = $fd3c
-   47           DD43      shiftRight6                                     = $fd43
-   48           DD4A      loadStringWorker                        = $fd4a
-   49           DD60      get2byteAtBank18                        = $fd60
-   50           DDA6      loadTo7400Ex                            = $fda6
-   51           DDDC      copyTo7400                                      = $fddc
-   52                     ;call_30_9e58                           = $fdf3
-   53           DDF3      invoke_b30_battleFunction       = $fdf3
-   54           FF00      waitNmiBySetHandler                     = $ff00
-   55           FF03      call_switch_2banks                      = $ff03 ; => jmp $ff17
-   56           FF06      call_switch1stBank                      = $ff06 ; => jmp $ff0c
-   57           FF09      call_switch2ndBank                      = $ff09 ; => jmp $ff1f
-   58                     ;----------------------------------------------------------------------------------------------------------
-   59                     ;well known vars
-   60           1101      pNmiHandler                     = $0101 ;$0100 jmp xxxx, sometimes just rti :$0100 rti (0x40)
-   61           1104      pIrqHandler                     = $0104 ;$0103 jmp xxxx, sometimes just rti :$0103 rti
-   62           0000      irqFlag                         = $00
-   63           0001      enableScanlineCounter = $01     ;mmc3's irq
-   64           0003      irqCountDown            = $03
-   65           0005      nmiFlag                         = $05
-   66           0006      ppuCtrl1SetOnNmi        = $06
-   67           0008      ppuCtrl1SetOnIrq        = $08
-   68           0009      ppuCtrl2SetOnNmi        = $09
-   69           000C      scrollXSetOnNmi         = $0c
-   70           000D      scrollYSetOnNmi         = $0d
-   71           0010      scrollXSetOnIrq         = $10
-   72           0011      scrollYSetOnIrq         = $11
-   73           0012      inputBits                       = $12
-   74           00B3      selectTarget_behavior           = $b3   ;param of presentSceneFunction10($2e:9d53)
-   75           00B4      selectTarget_selectedBits       = $b4
-   76           00B5      selectTarget_targetFlag         = $b5
-   77           00C0      playerX                         = $c0   ;*4
-   78           00C4      playerY                         = $c4   ;*4
-   79           00C9      playSoundEffect         = $c9   ;1=play
-   80           00CA      soundEffectId           = $ca   ; played on irq if $c9 != 0
-   81           00E0      targetStatusCache       = $e0   ;in process battle phase
-   82           00F0      actorStatusCache        = $f0   ;
-   83           00F0      field_frame_counter     = $f0   ;
-   84           2200      field_sprite_attr_cache         = $0200
-   85           3300      field_bg_attr_table_cache       = $0300 ;128bytes. exactly the same format as what stored in PPU
-   86           88D5      presentActionParams     = $78d5 ;?,actor,action,targetflag,effectmsg,messages
-   87           88D5      battleProcessType       = $78d5
-   88           88D7      actionName                      = $78d7
-   89           88D8      targetName                      = $78d8
-   90           88D9      effectMessage           = $78d9
-   91           88DA      battleMessages          = $78da
-   92           88EE      battleMessageCount      = $78ee
-   93                     ;pTileArray                     = $7ac0
-   94           AAC7      selectedMagicLv         = $7ac7 ;[4]
-   95           AAD7      stringCache                     = $7ad7
-   96           BBE3      battleRandoms           = $7be3
-   97           CCED      encounterId                     = $7ced
-   98           CCF3      isRendering                     = $7cf3
-   99                     
-  100           DD6B      groupToEnemyIdMap       = $7d6b ;*4
-  101                     ;;indexToGroupMap               = $7da7
-  102           DDD7      enemyPos                        = $7dd7 ;{x,y}*8
-  103                     ;param for playing (magic) effect
-  104           EE1F      play_weaponRight                = $7e1f
-  105           EE20      play_weaponLeft                 = $7e20
-  106           EE4F      play_damages                    = $7e4f
-  107           EE6F      play_damageTarget               = $7e6f ;0=player
-  108           EE98      play_actorBits                  = $7e98
-  109           EE96      play_arrowTarget                = $7e96
-  110           EE99      play_castTargetBits             = $7e99 ;battle
-  111           EE9A      play_effectTargetSide   = $7e9a ;80:actor enemy 40:target enemy
-  112           EE9B      play_effectTargetBits   = $7e9b ;param of presentActionEffect($33:b68d)
-  113           EE9D      play_magicType                  = $7e9d
-  114           EEB8      play_reflectedTargetBits= $7eb8 ;param of presentEffectAtTarget($33:b64f)
-  115                     
-  116           EEC2      effectHandlerIndex      = $7ec2 ;
-  117           EEC3      effectHandlerFlag       = $7ec3
-  118           EEC4      effect_enemyStatus      = $7ec4
-  119           EECD      indexToGroupMap         = $7ecd ;*8
-  120           EED8      battleMode                      = $7ed8 ; 80:boss? 20:fireCannon(invincible) 10:disallowEnlarge 08:? 01:disallowEscape
-  121           EEDF      play_protectionTargetBits = $7edf
-  122           EEE1      play_segmentedGroup = $7ee1
-  123                     
-  124           FF40      soundDriver_playingMusicId = $7f40
-  125           FF41      soundDriver_lastMusicId = $7f41
-  126           FF42      soundDriver_control     = $7f42 ;01:playNew(7f43) 02:playLast(7f41,saved when 01) 04:stop 80:playOn
-  127           FF43      soundDriver_musicId     = $7f43
-  128           FF49      soundDriver_effectId= $7f49     ;msb should be 1
-  129                     ;----------------------------------------------------------------------------------------------------------
-  130                     ;in memory structs
-  131           00C0      backpackItems           = $60c0
-  132           1100      playerBaseParams        = $6100
-  133           2200      playerEquips            = $6200
-  134           5575      playerBattleParams      = $7575 ;$40*4
-  135           6675      enemyBattleParams       = $7675 ;$40*8
+   17           2281      field_get_input                         = $d281 ;$3e:d281 field::get_input
+   18                     ;;
+   19           5571      field_sync_ppu_scroll_with_player       = $e571
+   20           CC18      field_hide_sprites_around_window = $ec18
+   21           CCF5      field_restore_bank                      = $ecf5 ;[in] $57: bank
+   22           CCFA      field_draw_choose_dialog        = $ecfa ;fall through to field_draw_window_box
+   23                     ;field_init_window_attr_buffer  = $ed56 
+   24                     ;field_get_window_metrics       = $ed61 ;[in] u8 $96: window_id / [out] $38, $39, $3c, $3d
+   25                     ;field_setBgScrollTo0           = $ede1
+   26                     ;field_calc_draw_width_and_init_window_tile_buffer = $f670
+   27                     ;field_init_window_tile_buffer = $f683 ;fill 0780..79d/07c0..7dd with 0xFF
+   28                     ;field_drawWindowContent        = $f6aa ;impl replaced but stay at the original addr
+   29                     ;;
+   30           7727      switchBanksTo3c3d                       = $f727
+   31           88AA      do_sprite_dma_from_0200         = $f8aa
+   32           88B0      updateDmaPpuScrollSyncNmiEx = $f8b0
+   33           88C5      updateDmaPpuScrollSyncNmi       = $f8c5 ;(y is unchanged)
+   34           88CB      updatePpuScrollNoWait           = $f8cb
+   35           88E0      setVramAddr                                     = $f8e0 ;[in] a:high, x:low
+   36           88EA      mul_8x8_reg                                     = $f8ea ;a,x = a * x
+   37           AA0E      call_2e_9d53                            = $fa0e
+   38           AA26      doBattle                                        = $fa26
+   39           BB80      waitNmi                                         = $fb80 ;wait on $05 clear
+   40           BB87      switchFirst2Banks                       = $fb87 ;[in] a : per16k bank index
+   41           BBAA      getPad1Input                            = $fbaa ;[out] $12 : inputFlags
+   42           BBEF      getBattleRandom                         = $fbef ;[out] a : rand [min:x - max:a] max included
+   43           CC27      initBattleRandom                        = $fc27
+   44           CC92      div_16                                          = $fc92 ;$1c = $18,19 / $1a,1b; $1d = $18,19 % $1a,1b
+   45           CCD6      mul_8x8                                         = $fcd6 ;$1a,1b = a * x
+   46           CCF5      mul_16x16                                       = $fcf5 ;$1c,1d,1e,1f = $18,19 * $1a,1b
+   47           DD20      flagTargetBit                           = $fd20
+   48           DD2C      clearTargetBit                          = $fd2c
+   49           DD38      maskTargetBit                           = $fd38
+   50           DD3C      shiftLeft6                                      = $fd3c
+   51           DD43      shiftRight6                                     = $fd43
+   52           DD4A      loadStringWorker                        = $fd4a
+   53           DD60      get2byteAtBank18                        = $fd60
+   54           DDA6      loadTo7400Ex                            = $fda6
+   55           DDDC      copyTo7400                                      = $fddc
+   56                     ;call_30_9e58                           = $fdf3
+   57           DDF3      invoke_b30_battleFunction       = $fdf3
+   58           FF00      waitNmiBySetHandler                     = $ff00
+   59           FF03      call_switch_2banks                      = $ff03 ; => jmp $ff17
+   60           FF06      call_switch1stBank                      = $ff06 ; => jmp $ff0c
+   61           FF09      call_switch2ndBank                      = $ff09 ; => jmp $ff1f
+   62                     ;----------------------------------------------------------------------------------------------------------
+   63                     ;well known vars
+   64           1101      pNmiHandler                     = $0101 ;$0100 jmp xxxx, sometimes just rti :$0100 rti (0x40)
+   65           1104      pIrqHandler                     = $0104 ;$0103 jmp xxxx, sometimes just rti :$0103 rti
+   66           0000      irqFlag                         = $00
+   67           0001      enableScanlineCounter = $01     ;mmc3's irq
+   68           0003      irqCountDown            = $03
+   69           0005      nmiFlag                         = $05
+   70           0006      ppuCtrl1SetOnNmi        = $06
+   71           0008      ppuCtrl1SetOnIrq        = $08
+   72           0009      ppuCtrl2SetOnNmi        = $09
+   73           000C      scrollXSetOnNmi         = $0c
+   74           000D      scrollYSetOnNmi         = $0d
+   75           0010      scrollXSetOnIrq         = $10
+   76           0011      scrollYSetOnIrq         = $11
+   77           0012      inputBits                       = $12   ;used in battle phase. see also getPad1Input($3f:fbaa)
+   78                     ;bit7< A B select start up down left right >bit0
+   79           0020      field_pad1_bits         = $20   ;order of bits averse to those in battle ($12). see also field::get_input($3e:d281).
+   80           00B3      selectTarget_behavior           = $b3   ;param of presentSceneFunction10($2e:9d53)
+   81           00B4      selectTarget_selectedBits       = $b4
+   82           00B5      selectTarget_targetFlag         = $b5
+   83           00C0      playerX                         = $c0   ;*4
+   84           00C4      playerY                         = $c4   ;*4
+   85           00C9      playSoundEffect         = $c9   ;1=play
+   86           00CA      soundEffectId           = $ca   ; played on irq if $c9 != 0
+   87           00E0      targetStatusCache       = $e0   ;in process battle phase
+   88           00F0      actorStatusCache        = $f0   ;
+   89           00F0      field_frame_counter     = $f0   ;
+   90           00FF      field_ppu_ctrl_cache= $ff       ;
+   91           2200      field_sprite_attr_cache         = $0200
+   92           3300      field_bg_attr_table_cache       = $0300 ;128bytes. exactly the same format as what stored in PPU
+   93           88D5      presentActionParams     = $78d5 ;?,actor,action,targetflag,effectmsg,messages
+   94           88D5      battleProcessType       = $78d5
+   95           88D7      actionName                      = $78d7
+   96           88D8      targetName                      = $78d8
+   97           88D9      effectMessage           = $78d9
+   98           88DA      battleMessages          = $78da
+   99           88EE      battleMessageCount      = $78ee
+  100                     ;pTileArray                     = $7ac0
+  101           AAC7      selectedMagicLv         = $7ac7 ;[4]
+  102           AAD7      stringCache                     = $7ad7
+  103           BBE3      battleRandoms           = $7be3
+  104           CCED      encounterId                     = $7ced
+  105           CCF3      isRendering                     = $7cf3
+  106                     
+  107           DD6B      groupToEnemyIdMap       = $7d6b ;*4
+  108                     ;;indexToGroupMap               = $7da7
+  109           DDD7      enemyPos                        = $7dd7 ;{x,y}*8
+  110                     ;param for playing (magic) effect
+  111           EE1F      play_weaponRight                = $7e1f
+  112           EE20      play_weaponLeft                 = $7e20
+  113           EE4F      play_damages                    = $7e4f
+  114           EE6F      play_damageTarget               = $7e6f ;0=player
+  115           EE98      play_actorBits                  = $7e98
+  116           EE96      play_arrowTarget                = $7e96
+  117           EE99      play_castTargetBits             = $7e99 ;battle
+  118           EE9A      play_effectTargetSide   = $7e9a ;80:actor enemy 40:target enemy
+  119           EE9B      play_effectTargetBits   = $7e9b ;param of presentActionEffect($33:b68d)
+  120           EE9D      play_magicType                  = $7e9d
+  121           EEB8      play_reflectedTargetBits= $7eb8 ;param of presentEffectAtTarget($33:b64f)
+  122                     
+  123           EEC2      effectHandlerIndex      = $7ec2 ;
+  124           EEC3      effectHandlerFlag       = $7ec3
+  125           EEC4      effect_enemyStatus      = $7ec4
+  126           EECD      indexToGroupMap         = $7ecd ;*8
+  127           EED8      battleMode                      = $7ed8 ; 80:boss? 20:fireCannon(invincible) 10:disallowEnlarge 08:? 01:disallowEscape
+  128           EEDF      play_protectionTargetBits = $7edf
+  129           EEE1      play_segmentedGroup = $7ee1
+  130                     
+  131           FF40      soundDriver_playingMusicId = $7f40
+  132           FF41      soundDriver_lastMusicId = $7f41
+  133           FF42      soundDriver_control     = $7f42 ;01:playNew(7f43) 02:playLast(7f41,saved when 01) 04:stop 80:playOn
+  134           FF43      soundDriver_musicId     = $7f43
+  135           FF49      soundDriver_effectId= $7f49     ;msb should be 1
   136                     ;----------------------------------------------------------------------------------------------------------
-  137                     ;in rom structs
-  138           9900      userFlags                       = $00900
-  139           0000      stringPtrTable          = $30000
-  140           0000      monsterBaseParams       = $60000        ;8*256
-  141           0000      monsterBattleParams = $61000
-  142           4400      itemBaseParams          = $61400
-  143           BB88      initialMps                      = $73b88
-  144           DD59      lvupParamPtrTable       = $7ad59
-  145                     ;handler tables
-  146           33F8      commandIdToEffectMap    = $683f8
-  147           443E      commandEffectHandlers   = $6843e
-  148           AA16      commandWindowHandlers   = $69a16
-  149           FFAC      commandHandlers                 = $69fac
-  150                     ;------------------------------------------------------------------------------------------------------
-  151           9900      TEMP_RAM = $7900        ;we cannot use stack regeon due to dugeon's floor save
-  152                     ;------------------------------------------------------------------------------------------------------
-  153                     
-  154                     ;------------------------------------------------------------------------------------------------------
-  155                     ;macros
-  156                     INIT16  .macro  ;addr,val
-  157                             lda #LOW(\2)
-  158                             sta \1
-  159                             lda #HIGH(\2)
-  160                             sta \1+1
-  161                                     .endm
-  162                     
-  163                     INIT16_x        .macro  ;addr,val
-  164                             ldx #LOW(\2)
-  165                             stx \1
-  166                             ldx #HIGH(\2)
-  167                             stx \1+1
+  137                     ;in memory structs
+  138           00C0      backpackItems           = $60c0
+  139           1100      playerBaseParams        = $6100
+  140           2200      playerEquips            = $6200
+  141           5575      playerBattleParams      = $7575 ;$40*4
+  142           6675      enemyBattleParams       = $7675 ;$40*8
+  143                     ;----------------------------------------------------------------------------------------------------------
+  144                     ;in rom structs
+  145           9900      userFlags                       = $00900
+  146           0000      stringPtrTable          = $30000
+  147           0000      monsterBaseParams       = $60000        ;8*256
+  148           0000      monsterBattleParams = $61000
+  149           4400      itemBaseParams          = $61400
+  150           BB88      initialMps                      = $73b88
+  151           DD59      lvupParamPtrTable       = $7ad59
+  152                     ;handler tables
+  153           33F8      commandIdToEffectMap    = $683f8
+  154           443E      commandEffectHandlers   = $6843e
+  155           AA16      commandWindowHandlers   = $69a16
+  156           FFAC      commandHandlers                 = $69fac
+  157                     ;------------------------------------------------------------------------------------------------------
+  158           9900      TEMP_RAM = $7900        ;we cannot use stack regeon due to dugeon's floor save
+  159                     ;------------------------------------------------------------------------------------------------------
+  160                     
+  161                     ;------------------------------------------------------------------------------------------------------
+  162                     ;macros
+  163                     INIT16  .macro  ;addr,val
+  164                             lda #LOW(\2)
+  165                             sta \1
+  166                             lda #HIGH(\2)
+  167                             sta \1+1
   168                                     .endm
-  169                                             
-  170                     ADD16   .macro  ;addr,val               
-  171                             lda \1
-  172                             clc
-  173                             adc #LOW(\2)
-  174                             sta \1
-  175                             lda \1+1
-  176                             adc #HIGH(\2)
-  177                             sta \1+1
-  178                                     .endm
-  179                     
-  180                     ADD16by8        .macro
-  181                             lda \1
-  182                             clc
-  183                             adc \2
-  184                             sta \1
-  185                             bcc .add16by8_\@
-  186                                     inc \1+1
-  187                             .add16by8_\@:
-  188                             .endm
-  189                     
-  190                     SUB16   .macro  ;addr,val               
-  191                             lda \1
-  192                             sec
-  193                             sbc #LOW(\2)
-  194                             sta \1
-  195                             lda \1+1
-  196                             sbc #HIGH(\2)
-  197                             sta \1+1
-  198                                     .endm
-  199                     
-  200                     SUB16by8        .macro  ;addr,val
-  201                             lda \1
-  202                             sec
-  203                             sbc \2
-  204                             sta \1
-  205                             bcs .sub16by8_\@
-  206                                     dec \1+1
-  207                             .sub16by8_\@:
-  208                             .endm
-  209                     
-  210                     FILEORG .macro
-  211                             .bank   (\1) >> 13
-  212                             .org    ($8000 | ((\1) & $7fff))
-  213                                     .endm
-  214                                     
-  215                     RESTORE_PC      .macro
-  216                             .bank   BANK(\1)
-  217                             .org    \1
-  218                                     .endm
-  219                                     
-  220                     INIT_PATCH      .macro
-  221                             .bank   \1
-  222                             .org    \2
-  223                             .ds             ((\3) - (\2))
-  224                             .org    \2
+  169                     
+  170                     INIT16_x        .macro  ;addr,val
+  171                             ldx #LOW(\2)
+  172                             stx \1
+  173                             ldx #HIGH(\2)
+  174                             stx \1+1
+  175                                     .endm
+  176                                             
+  177                     ADD16   .macro  ;addr,val               
+  178                             lda \1
+  179                             clc
+  180                             adc #LOW(\2)
+  181                             sta \1
+  182                             lda \1+1
+  183                             adc #HIGH(\2)
+  184                             sta \1+1
+  185                                     .endm
+  186                     
+  187                     ADD16by8        .macro
+  188                             lda \1
+  189                             clc
+  190                             adc \2
+  191                             sta \1
+  192                             bcc .add16by8_\@
+  193                                     inc \1+1
+  194                             .add16by8_\@:
+  195                             .endm
+  196                     
+  197                     SUB16   .macro  ;addr,val               
+  198                             lda \1
+  199                             sec
+  200                             sbc #LOW(\2)
+  201                             sta \1
+  202                             lda \1+1
+  203                             sbc #HIGH(\2)
+  204                             sta \1+1
+  205                                     .endm
+  206                     
+  207                     SUB16by8        .macro  ;addr,val
+  208                             lda \1
+  209                             sec
+  210                             sbc \2
+  211                             sta \1
+  212                             bcs .sub16by8_\@
+  213                                     dec \1+1
+  214                             .sub16by8_\@:
+  215                             .endm
+  216                     
+  217                     FILEORG .macro
+  218                             .bank   (\1) >> 13
+  219                             .org    ($8000 | ((\1) & $7fff))
+  220                                     .endm
+  221                                     
+  222                     RESTORE_PC      .macro
+  223                             .bank   BANK(\1)
+  224                             .org    \1
   225                                     .endm
-  226                     
-  227           0000              .ifdef RESPECT_ORIGINAL_ADDR
-  231                             .else
-  232                     ORIGINAL_ADDR   .macro
-  233                                     .endm
-  234                             .endif
-  235                             
-  236                     ALIGN_EVEN      .macro  ;value to align
-  237                             .check_align_\@:
-  238                             .if (.check_align_\@ & 1) != 0
-  239                                     nop     ;pad
-  240                             .endif
-  241                             .endm   ;ALIGN_EVEN
-  242                     
-  243                     VERIFY_PC       .macro
-  244                             .verify_pc_\@:
-  245                             .if (.verify_pc_\@ > \1)
-  246                                     .fail
+  226                                     
+  227                     INIT_PATCH      .macro
+  228                             .bank   \1
+  229                             .org    \2
+  230                             .ds             ((\3) - (\2))
+  231                             .org    \2
+  232                                     .endm
+  233                     
+  234           0000              .ifdef RESPECT_ORIGINAL_ADDR
+  238                             .else
+  239                     ORIGINAL_ADDR   .macro
+  240                                     .endm
+  241                             .endif
+  242                             
+  243                     ALIGN_EVEN      .macro  ;value to align
+  244                             .check_align_\@:
+  245                             .if (.check_align_\@ & 1) != 0
+  246                                     nop     ;pad
   247                             .endif
-  248                             .endm   ;VERIFY_PC
+  248                             .endm   ;ALIGN_EVEN
+  249                     
+  250                     VERIFY_PC       .macro
+  251                             .verify_pc_\@:
+  252                             .if (.verify_pc_\@ > \1)
+  253                                     .fail
+  254                             .endif
+  255                             .endm   ;VERIFY_PC
 #[3]   ff3_hack_master.asm
    26           0000              .bank   $00
    27           0000              .org    $8000
@@ -11554,10 +11561,83 @@
                 0035              .bank   BANK(ff3_field_window_begin)
                 88EB              .org    ff3_field_window_begin
 #[3]   ff3_hack_master.asm
-   71                                     
-   72           0001                      .ifdef EXPERIMENTAL
+   71                                     ;;
+#[4]   ff3_interrupt.asm
+   72                                     .include "ff3_interrupt.asm"
+    1                     ; ff3_interrupt.asm
+    2                     ;
+    3                     ; description:
+    4                     ;       replaces NMI/IQA related codes
+    5                     ;
+    6                     ; version:
+    7                     ;       0.1.0
+    8                     ;======================================================================================================
+    9  35:88EB            ff3_interrupt_begin:
+   10                     ;------------------------------------------------------------------------------------------------------
+   11                             INIT_PATCH $3f,$ff00,$ff03
+                003F              .bank   $3f
+                FF00              .org    $ff00
+       3F:FF00                    .ds             (($ff03) - ($ff00))
+                FF00              .org    $ff00
+   12  3F:FF00            dispatch_await_nmi:
+   13  3F:FF00  4C 36 FF          jmp await_nmi_by_set_handler
+   14                             VERIFY_PC $ff03
+       3F:FF03                    .verify_pc_00149:
+                0000              .if (.verify_pc_00149 > $ff03)
+                                  .endif
+   15                     ;------------------------------------------------------------------------------------------------------
+   16                             INIT_PATCH $3f,$ff2a,$ff36
+                003F              .bank   $3f
+                FF2A              .org    $ff2a
+       3F:FF2A                    .ds             (($ff36) - ($ff2a))
+                FF2A              .org    $ff2a
+   17                     ;;$3f:ff2a nmi_handler_01
+   18  3F:FF2A            disable_handler_and_return_from_nmi:
+   19  3F:FF2A  AD 02 20          lda $2002
+   20  3F:FF2D  A9 40             lda #$40        ;RTI
+   21  3F:FF2F  8D 00 01          sta pNmiHandler-1
+   22  3F:FF32  68                pla
+   23  3F:FF33  68                pla
+   24  3F:FF34  68                pla
+   25  3F:FF35  60                rts
+   26                             VERIFY_PC $ff36
+       3F:FF36                    .verify_pc_00151:
+                0000              .if (.verify_pc_00151 > $ff36)
+                                  .endif
+   27                     ;------------------------------------------------------------------------------------------------------
+   28                             INIT_PATCH $3f,$ff36,$ff48
+                003F              .bank   $3f
+                FF36              .org    $ff36
+       3F:FF36                    .ds             (($ff48) - ($ff36))
+                FF36              .org    $ff36
+   29                     ;;$3f:ff36 setNmiHandlerTo_ff2a_andWaitNmi
+   30                     ;;callers: dispatch_await_nmi ($3f:ff00)
+   31  3F:FF36            await_nmi_by_set_handler:
+   32  3F:FF36            .copy_thunk:
+   33                             ;;to prevent handler from jump in invalid address
+   34                             ;;the code byte should be written after address has completely updated
+   35  3F:FF36  A9 FF             lda #HIGH(disable_handler_and_return_from_nmi)
+   36  3F:FF38  8D 02 01          sta pNmiHandler+1
+   37  3F:FF3B  A9 2A             lda #LOW(disable_handler_and_return_from_nmi)
+   38  3F:FF3D  8D 01 01          sta pNmiHandler
+   39  3F:FF40  A9 4C             lda #$4c        ;JMP
+   40  3F:FF42  8D 00 01          sta pNmiHandler-1
+   41  3F:FF45            .await_nmi:
+   42  3F:FF45  4C 45 FF          jmp .await_nmi
+   43  3F:FF48            .thunk_template:
+   44                             ;jmp disable_handler_and_return_from_nmi
+   45                             VERIFY_PC $ff48
+       3F:FF48                    .verify_pc_00153:
+                0000              .if (.verify_pc_00153 > $ff48)
+                                  .endif
+   46                     ;------------------------------------------------------------------------------------------------------
+   47                             RESTORE_PC ff3_field_window_begin
+                0035              .bank   BANK(ff3_field_window_begin)
+                88EB              .org    ff3_field_window_begin
+#[3]   ff3_hack_master.asm
+   73           0001                      .ifdef EXPERIMENTAL
 #[4]   ff3_experimental.asm
-   73                                             .include "ff3_experimental.asm"
+   74                                             .include "ff3_experimental.asm"
     1                     ; ff3_experimental.asm
     2                     ;
     3                     ;       experimental code
@@ -11695,10 +11775,10 @@
   305           0000              .if EXPERIMENT_IMPL = 5
   409                             .endif
 #[3]   ff3_hack_master.asm
-   74                                     .endif  ;EXPERIMENTAL
-   75                             .endif  ;BETA
-   76                     
-   77                             ;.include "ff3_battle_calc.asm"
-   78                     ;==========================================================================================================
+   75                                     .endif  ;EXPERIMENTAL
+   76                             .endif  ;BETA
+   77                     
+   78                             ;.include "ff3_battle_calc.asm"
+   79                     ;==========================================================================================================
 #[2]   ff3_hack_beta.asm
 #[1]   ff3_hack_soundtest.asm
