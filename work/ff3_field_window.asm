@@ -85,7 +85,7 @@ field_draw_window_box:
 		jsr do_sprite_dma_from_0200	;if omitted, sprites are shown on top of window
 		jsr waitNmiBySetHandler
 		jsr field_X_updateVramAttributes
-		jsr field_setBgScrollTo0	;if omitted, noticable glithces arose in town conversations
+		jsr field_sync_ppu_scroll	;if omitted, noticable glithces arose in town conversations
 		jsr field_callSoundDriver
 
 .post_attr_update:
@@ -301,7 +301,7 @@ field_get_window_metrics:
 ;	$4014 = 2;
 ;	putWindowTiles();	//$f6aa();
 ;	field::setWindowPalette();	//$c9a9();
-;	field::setBgScrollTo0();	//$ede1();
+;	field::sync_ppu_scroll();	//$ede1();
 ;	return field::callSoundDriver();
 ;$ede1:
 ;}
@@ -319,11 +319,11 @@ field_draw_window_row:	;;$3f:edc6 field::drawWindowLine
 	jsr do_sprite_dma_from_0200
 	jsr field_drawWindowContent	;$f6aa
 	jsr field_setTileAttrForWindow	;$c9a9
-	jsr field_setBgScrollTo0	;$ede1
+	jsr field_sync_ppu_scroll	;$ede1
 	jmp field_callSoundDriver	;$c750
 	;VERIFY_PC $ede1
 ;------------------------------------------------------------------------------------------------------
-;$3f:ede1 field::setBgScrollTo0
+;$3f:ede1 field::sync_ppu_scroll
 ;{
 ;	if ($37 == 0) { //bne ede8
 ;		return $e571();
@@ -335,16 +335,16 @@ field_draw_window_row:	;;$3f:edc6 field::drawWindowLine
 ;$edf6:
 ;}
 	;INIT_PATCH $3f,$ede1,$edf6
-;;$3f:ede1 field::setBgScrollTo0
+;;$3f:ede1 field::sync_ppu_scroll
 ;;callers:
 ;;	$3f:edc6 field::draw_window_row
 ;;	$3f:f692 field::draw_string_in_window
-field_setBgScrollTo0:
+field_sync_ppu_scroll:
 .skip_attr_update = $37
 .ppu_ctrl_cache = $ff
 	lda <.skip_attr_update
 	bne .set_ppu_ctrl
-		jmp $e571
+		jmp field_sync_ppu_scroll_with_player	;$e571
 .set_ppu_ctrl:
 	lda <.ppu_ctrl_cache
 	sta $2000
@@ -544,7 +544,7 @@ field_drawStringInWindow:
 ;	pop a;
 ;	putWindowTiles();	//$f6aa
 ;$f69c
-;	field::setBgScrollTo0();	//$ede1();
+;	field::sync_ppu_scroll();	//$ede1();
 ;	field::callSoundDriver();
 ;	call_switchFirst2Banks(per8kbank:a = $93);	//$ff03
 ;	return $f683();	//??? a= ($93+1)
@@ -560,7 +560,7 @@ field_drawStringInWindow:
 	inc <field_frame_counter
 	pla
 	jsr field_drawWindowContent	;f6aa
-	jsr field_setBgScrollTo0	;ede1
+	jsr field_sync_ppu_scroll	;ede1
 	jsr field_callSoundDriver	;c750
 	lda <.bank
 	jsr call_switch_2banks		;ff03

@@ -1872,7 +1872,7 @@ $d4bb:
 		goto $d7ca();
 	} else {
 $d4c7:
-		$e571();
+		$e571();	//field_sync_ppu_scroll_with_player	
 	}
 $d4ca:
 	$2001 = #a;
@@ -2828,7 +2828,7 @@ $ede1:
 $3f:ede1 field::setBgScrollTo0
 {
 	if ($37 == 0) { //bne ede8
-		return $e571();
+		return $e571();	//field_sync_ppu_scroll_with_player	
 	}
 	$2000 = $ff;
 	$2005 = 0; $2005 = 0;
