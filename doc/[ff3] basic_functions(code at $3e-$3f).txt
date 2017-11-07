@@ -1218,7 +1218,7 @@ $c59e:
 }
 
 $3e:c65d
-//	[in] u8 a : inputBits (see $3e:d280 field::getInput)
+//	[in] u8 a : inputBits (see $3e:d281 field::getInput)
 //	[in] u8 $27 : screen left (not character pos)
 //	[in] u8 $28 : screen top ()
 {
@@ -1346,9 +1346,12 @@ $c972:
 		$79 = $600c;
 		$7a = $600d;
 		$44 = $7e = #c0;
-	}
+$c986:
+		return;
+	} else {
 $c987:
-	return $c4ef;	//jmp
+		return $c4ef;	//jmp
+	}
 }
 
 $3e:c98a switchToBank3C
@@ -1375,7 +1378,8 @@ $3e:c98f field::update_window_attr_buff
 $c9a9:
 }
 
-$3e:c9a9 field::setWindowPalette
+//$3e:c9a9 field::setWindowPalette
+$3e:c9a9 field::set_bg_attr_for_window
 //	[in] u8 $37 :
 //	[in] u8 $3c : palette entry count * 2
 {
@@ -1767,7 +1771,7 @@ $d26d:
 
 $3e:d27a field::getAndMaskInput
 {
-	field::getInput();	//d280
+	field::getInput();	//d281
 	field::maskInput();	//d29a
 	return;
 $d281:
