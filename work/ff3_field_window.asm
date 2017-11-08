@@ -99,7 +99,7 @@ field_draw_window_box:
 
 .post_attr_update:
 	;jsr field_X_render_borders
-	jsr field_X_fill_window_buffer
+	;jsr field_X_fill_window_buffer
 ; adjust metrics as borders don't need further drawing...
 	jsr field_X_shrink_window_metrics
 	jmp field_restore_bank	;$ecf5
@@ -108,7 +108,7 @@ field_draw_window_box:
 field_X_fill_window_buffer:
 .window_buffer_base = $0780
 	ldx #$80
-	lda #$00
+	lda #$aa
 .fill:
 	dex
 	sta .window_buffer_base,x
