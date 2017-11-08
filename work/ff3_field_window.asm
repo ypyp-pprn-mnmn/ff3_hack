@@ -38,6 +38,15 @@ field_draw_window_top:
 ;;	$3c:8fd5
 ;;	$3c:90b1
 ;;	$3d:aaf4 (jmp) in $3d:aaf1 field::drawWindowOf
+;;NOTEs:
+;;	in this logic, it is safe to use the address range $0780-$07ff (inclusive) in a destructive way.
+;;	The original code uses this area as temorary buffer for rendering purporses
+;;	and discards its contents on exit.
+;;	more specifically, address are utilized as follows:
+;;		$0780-$07bf: used for PPU name table buffer,
+;;		$07c0-$07cf: used for PPU attr table buffer,
+;;		$07d0-$07ff: used for 3-tuple of array that in each entry defines
+;;			(vram address(high&low), value to tranfer)
 field_draw_window_box:
 ;;[in]
 .window_id = $96
@@ -90,11 +99,37 @@ field_draw_window_box:
 
 .post_attr_update:
 	;jsr field_X_render_borders
+	jsr field_X_fill_window_buffer
 ; adjust metrics as borders don't need further drawing...
 	jsr field_X_shrink_window_metrics
 	jmp field_restore_bank	;$ecf5
 
 	;VERIFY_PC $ed56
+field_X_fill_window_buffer:
+.window_buffer_base = $0780
+	ldx #$80
+	lda #$00
+.fill:
+	dex
+	sta .window_buffer_base,x
+	bpl .fill
+	rts
+
+	.ifdef TEST_BLACKOUT_ON_WINDOW
+field_X_blackout_1frame:
+	lda #%00000110
+	sta $2001
+
+	jsr waitNmiBySetHandler
+	inc <field_frame_counter
+	jsr field_sync_ppu_scroll	;if omitted, noticable glithces arose in town conversations
+	jsr field_callSoundDriver
+	lda #%00011110
+	sta $2001	
+	rts
+	.endif
+
+
 	.if 0
 field_X_render_borders:
 .skipAttrUpdate = $37
