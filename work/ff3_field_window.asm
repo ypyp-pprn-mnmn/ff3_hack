@@ -10,7 +10,10 @@ ff3_field_window_begin:
 
 	.ifdef FAST_FIELD_WINDOW
 	INIT_PATCH $3f,$ece5,$ecf5
-;field::draw_window_top:
+;;$3f:ece5 field::draw_window_top:
+;;NOTEs:
+;;	called when executed an exchange of position in item window from menu
+;;original code:
 ;1F:ECE5:A5 39     LDA window_top = #$0B
 ;1F:ECE7:85 3B     STA window_row_in_draw = #$0F
 ;1F:ECE9:20 70 F6  JSR field::calc_size_and_init_buff
@@ -185,14 +188,6 @@ UNROLLED_BYTES = $08*3
 .template_code_end:
 	.endif ;0
 ;------------------------------------------------------------------------------------------------------
-;$3f:ed56 field::fill_07c0_ff
-;{
-;	for (x = #f;x >= 0;x--) {
-;		$07c0.x = #ff;
-;	}
-;	return;
-;$ed61:
-;}
 ;;$3f:ed56 field::fill_07c0_ff
 ;;callers:
 ;;	$3f:ece5 field::draw_window_top
@@ -396,48 +391,66 @@ field_sync_ppu_scroll:
 ;;	$3f:ece5 field::draw_window_top
 ;;	$3f:ed02 field::draw_window_box
 field_get_window_top_tiles:		
-	ldy #0
-	beq field_X_get_window_tiles
+	lda #$00
+	jsr field_X_get_window_tiles
+	;lda #$23
+	;;fall through
+field_X_get_window_tiles:
+.width = $3c
+.eol = $3c
+.window_tiles_buffer_upper_row = $0780
+;.window_tiles_buffer_lower_row = $07a0
+;;in: A := upper 4bits:  offset into buffer;
+;;	lower 4bits: offset into tile table
+	pha
+	and #$f0
+	tax
+	pla
+	and #$0f
+	tay
+	lda <.width
+	pha	;width
+	lda field_X_window_parts,y
+	sta .window_tiles_buffer_upper_row,x
+	txa
+	clc
+	adc <.width
+	sta <.eol	;width + offset
+	inx
+.center_tiles:
+		lda field_X_window_parts+1,y
+		sta .window_tiles_buffer_upper_row,x
+		inx
+		cpx <.eol
+		bcc .center_tiles
+.right_tile:
+	lda field_X_window_parts+2,y
+	sta .window_tiles_buffer_upper_row-1,x
+	pla	;original width
+	sta <.width
+	tya
+	;here always carry is set
+	adc #$22	;effectively +23
+	rts
+field_X_window_parts:
+	db $f7, $f8, $f9
+	db $fa, $ff, $fb
+	db $fc, $fd, $fe
 ;;$3f:ee1d field::getWindowTilesForMiddle
 ;;callers:
 ;;	$3f:ed02 field::draw_window_box
 field_get_window_middle_tiles:	;ee1d
-	ldy #3
+	lda #$03
+	jsr field_X_get_window_tiles
+	lda #$23
 	bne field_X_get_window_tiles
 ;;$3f:ee3e field::getWindowTilesForBottom
 ;;callers:
 ;;	$3f:ed02 field::draw_window_box
 field_get_window_bottom_tiles:	;ed3b
-	ldy #6
-	;fall through
-field_X_get_window_tiles:
-.width = $3c
-.tiles_1st = $0780
-.tiles_2nd = $07a0
-	lda field_X_window_parts,y
-	sta .tiles_1st
-	lda field_X_window_parts+3,y
-	sta .tiles_2nd
-	ldx <.width
-	dex
-	lda field_X_window_parts+2,y
-	sta .tiles_1st,x
-	lda field_X_window_parts+5,y
-	sta .tiles_2nd,x
-	dex
-.center_tiles:
-		lda field_X_window_parts+1,y
-		sta .tiles_1st,x
-		lda field_X_window_parts+4,y
-		sta .tiles_2nd,x
-		dex
-		bne .center_tiles
-	rts
-field_X_window_parts:
-	db $f7, $f8, $f9
-	db $fa, $ff, $fb
-	db $fa, $ff, $fb
-	db $fc, $fd, $fe
+	lda #$03
+	jsr field_X_get_window_tiles
+	bne field_X_get_window_tiles
 ;======================================================================================================
 field_X_updateVramAttributes:
 	ldx #0
