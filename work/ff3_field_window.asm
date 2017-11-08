@@ -39,8 +39,8 @@ field_draw_window_top:
 ;;	$3c:90b1
 ;;	$3d:aaf4 (jmp) in $3d:aaf1 field::drawWindowOf
 ;;NOTEs:
-;;	in this logic, it is safe to use the address range $0780-$07ff (inclusive) in a destructive way.
-;;	The original code uses this area as temorary buffer for rendering purporses
+;;	in the scope of logic, it is safe to use the address range $0780-$07ff (inclusive) in a destructive way.
+;;	The original code uses this area as temporary buffer for rendering purporses
 ;;	and discards its contents on exit.
 ;;	more specifically, address are utilized as follows:
 ;;		$0780-$07bf: used for PPU name table buffer,
