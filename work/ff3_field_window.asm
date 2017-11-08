@@ -130,7 +130,7 @@ field_X_blackout_1frame:
 	lda #%00011110
 	sta $2001	
 	rts
-	.endif
+	.endif	;TEST_BLACKOUT_ON_WINDOW
 
 
 	.if 0
@@ -393,23 +393,24 @@ field_sync_ppu_scroll:
 field_get_window_top_tiles:		
 	lda #$00
 	jsr field_X_get_window_tiles
-	;lda #$23
+	;lda #$07
 	;;fall through
 field_X_get_window_tiles:
 .width = $3c
 .eol = $3c
 .window_tiles_buffer_upper_row = $0780
 ;.window_tiles_buffer_lower_row = $07a0
-;;in: A := upper 4bits:  offset into buffer;
-;;	lower 4bits: offset into tile table
-	pha
-	and #$f0
-	tax
-	pla
-	and #$0f
+;;in: A := lower 1bits:  0: fill in upper row; 1: fill in lower row
+;;	higher 7bits: offset into tile table
+	lsr A
 	tay
+	ldx #0
+	bcc .save_width
+	ldx #$20
+.save_width:
 	lda <.width
 	pha	;width
+.left_tile:
 	lda field_X_window_parts,y
 	sta .window_tiles_buffer_upper_row,x
 	txa
@@ -430,7 +431,8 @@ field_X_get_window_tiles:
 	sta <.width
 	tya
 	;here always carry is set
-	adc #$22	;effectively +23
+	;adc #$22	;effectively +23
+	adc #$06
 	rts
 field_X_window_parts:
 	db $f7, $f8, $f9
@@ -440,15 +442,15 @@ field_X_window_parts:
 ;;callers:
 ;;	$3f:ed02 field::draw_window_box
 field_get_window_middle_tiles:	;ee1d
-	lda #$03
+	lda #$03<<1
 	jsr field_X_get_window_tiles
-	lda #$23
+	lda #$03<<1|1
 	bne field_X_get_window_tiles
 ;;$3f:ee3e field::getWindowTilesForBottom
 ;;callers:
 ;;	$3f:ed02 field::draw_window_box
 field_get_window_bottom_tiles:	;ed3b
-	lda #$03
+	lda #$03<<1
 	jsr field_X_get_window_tiles
 	bne field_X_get_window_tiles
 ;======================================================================================================
