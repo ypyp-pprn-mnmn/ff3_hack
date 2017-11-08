@@ -2825,7 +2825,8 @@ $3f:edc6 field::drawWindowLine
 $ede1:
 }
 
-$3f:ede1 field::setBgScrollTo0
+//$3f:ede1 field::setBgScrollTo0
+$3f:ede1 field::sync_ppu_scroll
 {
 	if ($37 == 0) { //bne ede8
 		return $e571();	//field_sync_ppu_scroll_with_player	
