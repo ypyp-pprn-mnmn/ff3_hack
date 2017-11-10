@@ -20,13 +20,13 @@ field_sync_ppu_scroll_with_player	= $e571
 field_hide_sprites_around_window = $ec18
 field_advance_frame_with_sound = $ecd8	;[in] $93 : bank, [in,out] $f0: frame_counter
 field_restore_bank			= $ecf5	;[in] $57: bank
-field_draw_choose_dialog	= $ecfa	;fall through to field_draw_window_box
+field_draw_inplace_window	= $ecfa	;fall through to field_draw_window_box
 ;field_init_window_attr_buffer	= $ed56	
 ;field_get_window_metrics	= $ed61	;[in] u8 $96: window_id / [out] $38, $39, $3c, $3d
 ;field_sync_ppu_scroll		= $ede1
 ;field_calc_draw_width_and_init_window_tile_buffer = $f670
 ;field_init_window_tile_buffer = $f683 ;fill 0780..79d/07c0..7dd with 0xFF
-;field_drawWindowContent	= $f6aa	;impl replaced but stay at the original addr
+;field_upload_window_content	= $f6aa	;impl replaced but stay at the original addr
 ;;
 switchBanksTo3c3d			= $f727
 do_sprite_dma_from_0200		= $f8aa

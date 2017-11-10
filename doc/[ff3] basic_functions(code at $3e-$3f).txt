@@ -2693,7 +2693,33 @@ $3f:eb61 field::drawEncodedStringInWindowAndRestoreBanks
 $eb69:
 }
 
-$3f:ec18 field_hide_sprites_under_wind
+$3f:eba9 field::seek_to_next_line
+{
+/*
+	1F:EBA9:A0 00     LDY #$00
+	1F:EBAB:B1 1C     LDA ($1C),Y @ $9ECC = #$8B
+	1F:EBAD:E6 1C     INC $001C = #$D7
+	1F:EBAF:D0 02     BNE $EBB3
+	1F:EBB1:E6 1D     INC $001D = #$9D
+	1F:EBB3:C9 01     CMP #$01	;0x01 == \n
+	1F:EBB5:F0 11     BEQ $EBC8
+	1F:EBB7:C9 28     CMP #$28	;0x28 >= printable char
+	1F:EBB9:B0 F0     BCS $EBAB
+	1F:EBBB:C9 10     CMP #$10	;0x10 < ctrl char
+	1F:EBBD:90 EC     BCC $EBAB
+	1F:EBBF:E6 1C     INC $001C = #$D7
+	1F:EBC1:D0 E8     BNE $EBAB
+	1F:EBC3:E6 1D     INC $001D = #$9D
+	1F:EBC5:4C AB EB  JMP $EBAB
+	1F:EBC8:A5 1C     LDA $001C = #$D7
+	1F:EBCA:85 3E     STA $003E = #$FD
+	1F:EBCC:A5 1D     LDA $001D = #$9D
+	1F:EBCE:85 3F     STA $003F = #$9D
+	1F:EBD0:60        RTS
+*/
+}
+
+$3f:ec18 field::hide_sprites_under_wind
 //in:
 //	u8 X: window_type
 //callers:
@@ -2778,7 +2804,9 @@ $3f:ecf5 restoreBanksBy$57
 	return call_switchFirst2Banks(per8k:a = $57);
 }
 
-$3f:ecfa field::draw_choose_dialog
+$3f:ecfa field::draw_in_place_window
+//in
+//	u8 A: window_type
 {
 //1F:ECFA:85 96     STA window_id = #$00
 //1F:ECFC:A9 00     LDA #$00
@@ -2888,9 +2916,9 @@ $3f:edc6 field::drawWindowLine
 	$c98f();	//field::cacheWindowPalette
 	waitNmiBySetHandler();	//$ff00();
 	$4014 = 2;
-	putWindowTiles();	//$f6aa();
+	field::upload_window_content();	//putWindowTiles();	//$f6aa();
 	field::setWindowPalette();	//$c9a9();
-	field::setBgScrollTo0();	//$ede1();
+	field::sync_ppu_scroll();	//$ede1();
 	return field::callSoundDriver();
 $ede1:
 }
@@ -2969,14 +2997,15 @@ $3f:ee65 field::load_string_and_fill_in_window:
 {
  1F:EE65:20 9A EE  JSR field::load_and_draw_string
  1F:EE68:90 2F     BCC $EE99
-	 1F:EE6A:20 AB EC  JSR $ECAB
+	$ee6a:
+	 1F:EE6A:20 AB EC  JSR field::await_and_get_new_input
 	 1F:EE6D:A5 3D     LDA window_height = #$08
 	$ee6f:
 	 1F:EE6F:48        PHA
 	 1F:EE70:A9 00     LDA #$00
 	 1F:EE72:85 F0     STA field_frame_counter = #$13
 	$ee74:
-		 1F:EE74:20 D8 EC  JSR $ECD8
+		 1F:EE74:20 D8 EC  JSR field::seek_to_next_line
 		 1F:EE77:A5 F0     LDA field_frame_counter = #$13
 		 1F:EE79:29 01     AND #$01
 		 1F:EE7B:D0 F7     BNE $EE74
@@ -3002,6 +3031,8 @@ $ee99:
 }
 
 $3f:ee9a floor::loadAndDrawString
+//out:
+//	bool carry: more_to_draw	//could be tested at サロニアの図書館(オーエンのほん1)
 {
 	call_switch1stBank(per8k:a = #18); //ff06
 	y = $92 << 1;
@@ -3019,6 +3050,7 @@ $eec0:
 $3f:eec0 field::drawEncodedStringInWindow
 //	[in] ptr $3e : string offset
 //	[in] u8 $93 : string bank
+//	[out] bool carry: more_to_draw
 {
 	call_switchFirst2Banks(per8k:a = $93);
 	$1e = 0;
@@ -3031,7 +3063,7 @@ $eed1:
 	$1f = $90 = #0;
 	field::decodeStringAndDrawInWindow();	//$eefa();
 	if (!carry) { //eef3
-		field::drawStringInWindow();	//$f692();
+		field::draw_window_content();	//$f692();
 		call_switchFirst2Banks(per8k:a = $57);
 $eef1:
 		clc;
@@ -3044,7 +3076,9 @@ $eef3:
 }
 
 $3f:eefa field::decodeStringAndDrawInWindow
-//	u8 $90 : destOffset
+//	[in, out] string* $3e : ptr to string
+//	[out] u8 $90 : destOffset
+//	[out] bool carry: more_to_draw
 {
 	for (;;) {
 		y = 0;
@@ -3073,8 +3107,8 @@ $ef1a:
 			} else {
 $ef27:				//#28 <= a < #5c
 				x = a - #28;
-				$0780.y = $f515.x;
-				$07a0.y = $f4e1.x;
+				$0780.y = $f515.x;	//char code to tile index (upper row)
+				$07a0.y = $f4e1.x;	//char code to tile index (lower row)
 				$90++;
 			}
 		} else {
@@ -3092,7 +3126,7 @@ $ef45:
 					return;
 				}
 $ef58:
-				goto field::decodeString;
+				goto field::decodeString;	//eefa
 			}
 $ef5b:
 			if (a == 2) { //bne ef6a
@@ -3417,15 +3451,16 @@ $3f:f692 field::drawStringInWindow
 	waitNmiBySetHandler();	//$ff00
 	$f0++;
 	pop a;
-	putWindowTiles();	//$f6aa
-	field::setBgScrollTo0();	//$ede1();
+	field::upload_window_content();	//putWindowTiles();	//$f6aa
+	field::sync_ppu_scroll();	//$ede1();
 	field::callSoundDriver();
 	call_switchFirst2Banks(per8kbank:a = $93);	//$ff03
 	return $f683();	//??? a= ($93+1)
 $f6aa:
 }
 
-$3f:f6aa putWindowTiles
+//$3f:f6aa putWindowTiles
+$3f:f6aa field::upload_window_content
 //	[in] u8 $38 : offset x
 //	[in] u8 $39 : offset per 2 line
 //	[in,out] u8 $3b : offset y (wrap-around)
