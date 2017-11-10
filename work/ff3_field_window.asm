@@ -41,6 +41,17 @@ field_draw_window_top:
 ;;	$3c:8fd5
 ;;	$3c:90b1
 ;;	$3d:aaf4 (jmp) in $3d:aaf1 field::drawWindowOf
+;;
+;;	This logic plays key role in drawing window, both for menu windows and in-place windows.
+;;	Usually window drawing is performed as follows:
+;;	1)	Call this logic to fill in background with window parts
+;;		and setup BG attributes if necessary (the in-palce window case).
+;;		In cases of the menu window, BG attributes have alreday been setup in another logic
+;;		and should not be changed.
+;;	2)	Subsequently call other drawing logics which overwrites background with
+;;		content (aka string) in the window, 2 window rows per 1 frame.
+;;		These logics rely on window metrics variables, which is initially setup on this logic,
+;;		and don't change BG attributes anyway.
 ;;NOTEs:
 ;;	in the scope of logic, it is safe to use the address range $0780-$07ff (inclusive) in a destructive way.
 ;;	The original code uses this area as temporary buffer for rendering purporses
@@ -53,7 +64,7 @@ field_draw_window_top:
 field_draw_window_box:
 ;;[in]
 .window_id = $96
-.skipAttrUpdate = $37
+.skipAttrUpdate = $37	;;or in more conceptual, 'is in menu window'
 ;;[in,out]
 .beginX = $38	;loaded by field_get_window_metrics
 .beginY = $39	;loaded by field_get_window_metrics
