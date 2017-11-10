@@ -347,7 +347,7 @@ field_draw_window_row:	;;$3f:edc6 field::drawWindowLine
 ;;$3f:ede1 field::sync_ppu_scroll
 ;;callers:
 ;;	$3f:edc6 field::draw_window_row
-;;	$3f:f692 field::draw_string_in_window
+;;	$3f:f692 field::draw_window_content
 field_sync_ppu_scroll:
 .skip_attr_update = $37
 .ppu_ctrl_cache = $ff
