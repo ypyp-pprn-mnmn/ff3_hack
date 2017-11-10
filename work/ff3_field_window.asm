@@ -282,6 +282,7 @@ field_get_window_metrics:
 	sbc #2	;effectively -3
 	sta <.internal_bottom
 	;; done calcs
+	;; here X must have window_type (field_hide_sprites_around_window expects it)
 	jmp field_hide_sprites_around_window	;$ec18
 	;rts
 	;VERIFY_PC $edb2
