@@ -338,7 +338,8 @@ $3d:aaa6
 	return;
 }
 
-$3d:aabc field::getWindowParam
+//$3d:aabc field::getWindowParam
+$3d:aabc field::get_menu_window_metrics
 {
 	a = $38 = $b6 = $aaf7.x;
 	$97 = a - 1;
@@ -358,6 +359,13 @@ $3d:aaf1 field::drawWindowOf
 	return field::drawWindow();	//$ed02();
 $aaf7:
 }
+
+$3d:aaf7 field::menu_window_metrics
+//0x26 entries each for left, top, width, and height.
+{
+$3d:ab8f:
+}
+
 
 $3d:ad85 jobMenu::getCosts
 //	[out] u8 $7200[0x17] : costs
