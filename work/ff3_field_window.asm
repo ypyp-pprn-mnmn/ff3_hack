@@ -157,6 +157,8 @@ field_X_render_borders:
 .ppu_ctrl_cache = $ff
 
 field_X_generate_renderer_code:
+;.template_code_start = field_X_updateVramAttributes_end - 8	
+;.template_code_end = field_X_updateVramAttributes_end - 5
 .generated_code_base = $0780
 .SIZE_OF_CODE = 3
 .UNROLLED_BYTES = $1f*.SIZE_OF_CODE
@@ -164,7 +166,8 @@ field_X_generate_renderer_code:
 .wrap_x:
 		ldx #-.SIZE_OF_CODE	;src
 .generate_loop:
-		lda .template_code_start-$0100+.SIZE_OF_CODE,x
+		;lda .template_code_start-$0100+.SIZE_OF_CODE,x
+		lda (field_X_updateVramAttributes_end - 8)-$0100+.SIZE_OF_CODE,x
 		sta .generated_code_base-($0100-.UNROLLED_BYTES),y
 		iny
 		beq .generate_epilog
@@ -175,9 +178,9 @@ field_X_generate_renderer_code:
 	lda #$60	;rts
 	sta .generated_code_base+.UNROLLED_BYTES
 	rts
-.template_code_start:	
-	sta $2007
-.template_code_end:
+;.template_code_start:
+	;sta $2007
+;.template_code_end:
 	.endif ;0
 ;------------------------------------------------------------------------------------------------------
 ;;$3f:ed56 field::fill_07c0_ff
@@ -323,7 +326,7 @@ field_draw_window_row:	;;$3f:edc6 field::drawWindowLine
 	jsr field_updateTileAttrCache	;$c98f
 	jsr waitNmiBySetHandler	;$ff00
 	jsr do_sprite_dma_from_0200
-	jsr field_drawWindowContent	;$f6aa
+	jsr field_upload_window_content	;$f6aa
 	jsr field_setTileAttrForWindow	;$c9a9
 	jsr field_sync_ppu_scroll	;$ede1
 	jmp field_callSoundDriver	;$c750
@@ -458,6 +461,7 @@ field_X_updateVramAttributes:
 		dey
 		bne .copy
 	rts
+field_X_updateVramAttributes_end:
 ;-----------
 
 	VERIFY_PC $ee65
@@ -537,7 +541,7 @@ field_calc_draw_width_and_init_window_tile_buffer:
 	;; fall through
 ;;$3f:f683 field::init_window_tile_buffer:
 ;;caller:
-;;	$3f:f692 field::drawStringInWindow
+;;	$3f:f692 field::draw_window_content
 field_init_window_tile_buffer:
 ;;[in]
 .tiles_1st = $0780
@@ -563,8 +567,8 @@ field_init_window_tile_buffer:
 	VERIFY_PC $f692
 ;------------------------------------------------------------------------------------------------------
 	INIT_PATCH $3f,$f692,$f6aa
-field_drawStringInWindow:
-;$3f:f692 field::drawStringInWindow
+field_draw_window_content:
+;$3f:f692 field::draw_window_content
 ;{
 ;	push a;
 ;	waitNmiBySetHandler();	//$ff00
@@ -587,7 +591,7 @@ field_drawStringInWindow:
 	jsr waitNmiBySetHandler	;ff00
 	inc <field_frame_counter
 	pla
-	jsr field_drawWindowContent	;f6aa
+	jsr field_upload_window_content	;f6aa
 	jsr field_sync_ppu_scroll	;ede1
 	jsr field_callSoundDriver	;c750
 	lda <.bank
@@ -597,7 +601,7 @@ field_drawStringInWindow:
 	VERIFY_PC $f6aa
 	.endif	;FAST_FIELD_WINDOW
 ;------------------------------------------------------------------------------------------------------
-;$3f:f6aa putWindowTiles
+;$3f:f6aa field::upload_window_content
 ;//	[in] u8 $38 : offset x
 ;//	[in] u8 $39 : offset per 2 line
 ;//	[in,out] u8 $3b : offset y (wrap-around)
@@ -610,7 +614,7 @@ field_drawStringInWindow:
 ;;	
 ;;	$ed02: field::drawWindowBox
 ;;		$edc6: field::drawWindowLine
-field_drawWindowContent:
+field_upload_window_content:
 ;[in]
 .left = $38
 .width = $3c
