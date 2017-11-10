@@ -18,6 +18,7 @@ field_get_input				= $d281	;$3e:d281 field::get_input
 ;;
 field_sync_ppu_scroll_with_player	= $e571
 field_hide_sprites_around_window = $ec18
+field_advance_frame_with_sound = $ecd8	;[in] $93 : bank, [in,out] $f0: frame_counter
 field_restore_bank			= $ecf5	;[in] $57: bank
 field_draw_choose_dialog	= $ecfa	;fall through to field_draw_window_box
 ;field_init_window_attr_buffer	= $ed56	
