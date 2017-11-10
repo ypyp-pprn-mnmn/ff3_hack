@@ -1,7 +1,7 @@
 ; ff3_field_window.asm
 ;
 ; description:
-;	replaces field::drawWindow($3f:ed02) related codes
+;	replaces field::draw_window_box($3f:ed02) related codes
 ;
 ; version:
 ;	0.2.0
@@ -34,7 +34,7 @@ field_draw_window_top:
 ;------------------------------------------------------------------------------------------------------
 	;INIT_PATCH $3f,$ed02,$ed56
 	INIT_PATCH $3f,$ed02,$ee65
-;;$3f:ed02 field::drawWindow
+;;$3f:ed02 field::draw_window_box
 ;;callers:
 ;;	$3c:8efd
 ;;	$3c:8f0e
@@ -49,7 +49,7 @@ field_draw_window_top:
 ;;		In cases of the menu window, BG attributes have alreday been setup in another logic
 ;;		and should not be changed.
 ;;	2)	Subsequently call other drawing logics which overwrites background with
-;;		content (aka string) in the window, 2 window rows per 1 frame.
+;;		content (aka string) in the window, 2 consecutive window rows per 1 frame.
 ;;		These logics rely on window metrics variables, which is initially setup on this logic,
 ;;		and don't change BG attributes anyway.
 ;;NOTEs:
