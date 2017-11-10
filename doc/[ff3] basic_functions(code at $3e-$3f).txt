@@ -3097,15 +3097,16 @@ $ef0e:
 				if ( ((x = $37) == 0) //bne ef1a
 					&& (a < #70)) //bcs ef1a
 				{
+				//a := [5c,70) C,G,L,V,‘•”õƒAƒCƒRƒ“
 $ef18:
-					a = #ff;
+					a = #ff;	
 				}
 $ef1a:
 				$07a0.y = a;
 				$0780.y = #ff;
 				$90++;
 			} else {
-$ef27:				//#28 <= a < #5c
+$ef27:				//#28 <= a < #5c : ‘÷‰¹ or ”¼‘÷‰¹
 				x = a - #28;
 				$0780.y = $f515.x;	//char code to tile index (upper row)
 				$07a0.y = $f4e1.x;	//char code to tile index (lower row)
@@ -3119,10 +3120,11 @@ $ef3e:			//a < #28 (control code)
 $ef45:
 			if (a == 1) {//bne ef5b
 			//01=\n
-				field::drawStingInWindow();	//$f692();
+				field::draw_window_content();	//$f692();
+				
 				$1f += 2;
 				if ($1f >= $3d) { //bcc ef58
-					sec;
+					sec;	//reached window bottom with remaining string
 					return;
 				}
 $ef58:
@@ -3135,6 +3137,7 @@ $ef5b:
 }
 
 $3f:f02a field::decodeString::OnCode10_28
+//[10...28) defined as opcodes, given that the codes have followed by additional one bytes for parmeter
 //	[in] a : charcode
 //	[in] y : current dest offset
 //	[in] string * $3e

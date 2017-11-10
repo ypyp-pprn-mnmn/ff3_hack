@@ -214,6 +214,7 @@ $a646:
 
 $3d:a666
 {
+	//fall through
 }
 
 $3d:a66b
@@ -352,7 +353,7 @@ $3d:aabc field::get_menu_window_metrics
 	return;
 }
 
-$3d:aaf1 field::drawWindowOf
+$3d:aaf1 field::draw_menu_window
 //	[in] x : window id
 {
 	field::getWindowParam();	//$aabc();
