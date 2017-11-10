@@ -137,6 +137,16 @@ field_X_blackout_1frame:
 
 	.if 1
 field_X_render_borders:
+	;; 1: left-top to right-top, not including rightmost
+	;; 2: right-top to right-bottom, not including bottom most
+	;; 3: left-top to left-bottom, not including
+	;	lda A
+	;	sta $2007;
+	;	bne unroll_offset
+	;put_middle:
+	;	lda B
+	;	(sta $2007) x 8	;8C 07 20
+	;	dex bne put_middle
 .skipAttrUpdate = $37
 .left = $38
 .top = $39
@@ -148,16 +158,6 @@ field_X_render_borders:
 
 field_X_generate_renderer_code:
 .generated_code_base = $0780
-	;; 1: left-top to right-top, not including rightmost
-	;; 2: right-top to right-bottom, not including bottom most
-	;; 3: left-top to left-bottom, not including
-	;	lda A
-	;	sta $2007;
-	;	bne unroll_offset
-	;put_middle:
-	;	lda B
-	;	(sta $2007) x 8	;8C 07 20
-	;	dex bne put_middle
 .SIZE_OF_CODE = 3
 .UNROLLED_BYTES = $1f*.SIZE_OF_CODE
 	ldy #-.UNROLLED_BYTES	;dest
@@ -206,28 +206,6 @@ field_window_rts_1:
 ;//		2: use item to object
 ;//		3: Gil (can be checked at INN)
 ;//		4: floor name
-;//[out]
-;//	u8 $38: start_x
-;//	u8 $39: start_y
-;//	u8 $3c: width
-;//	u8 $3d: height
-;{
-;	if ($37 == 0) { //bne edb1
-;		a = $b6 = $edb2.x
-;		$97 = a - 1;
-;		$98 = $b5 = a = $edb7.x + 2;
-;		$b5--;
-;		$38 = (($29 << 1) + $edb2.x) & #3f;
-;		$39 = (($2f << 1) + $edb7.x) % #1e;
-;		a = $3c = $edbc.x;
-;		a = $b8 = $b6 + a; $b8--;
-;		a = $3d = $edc1.x;
-;		$b7 = a + $b5 - 3;
-;		$ec18();
-;	}
-;$edb1:
-;	return;
-;}
 	;INIT_PATCH $3f,$ed61,$edc6
 ;;$3f:ed61 field::get_window_metrics
 ;;callers:
@@ -244,8 +222,8 @@ field_window_rts_1:
 ;;		B) target window and the address of table where the corresponding metrics defined at
 field_get_window_metrics:
 ;[in]
-.scroll_x = $29	;in 16x16 unit
-.scroll_y = $2f	;in 16x16 unit
+.viewport_left = $29	;in 16x16 unit
+.viewport_top = $2f	;in 16x16 unit
 .skip_attr_update = $37
 ;[out]
 .left = $38	;in 8x8 unit
@@ -266,7 +244,7 @@ field_get_window_metrics:
 	sta <.internal_left
 	sta <.offset_x
 	dec <.offset_x
-	lda <.scroll_x	;assert(.object_x < 0x80)
+	lda <.viewport_left	;assert(.object_x < 0x80)
 	asl a
 	adc <.internal_left
 	and #$3f
@@ -278,7 +256,7 @@ field_get_window_metrics:
 	sta <.offset_y
 	sta <.internal_top
 	dec <.internal_top
-	lda <.scroll_y
+	lda <.viewport_top
 	asl a
 	adc .window_attr_table_y,x
 	cmp #$1e
