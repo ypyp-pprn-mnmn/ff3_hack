@@ -2987,7 +2987,7 @@ $3f:ee3e field::getWindowTilesForBottom
 $ee65:
 }
 
-$3f:ee65 field::load_string_and_fill_in_window:
+$3f:ee65 field::stream_string_in_window:
 //callers:
 //	$3c:90ff	? 1E:9109:4C 65 EE  JMP $EE65
 //	$3d:a666	? 1E:A675:4C 65 EE  JMP $EE65

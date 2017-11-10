@@ -315,7 +315,7 @@ field_get_window_metrics:
 ;$ede1:
 ;}
 	;INIT_PATCH $3f,$edc6,$ede1
-field_draw_window_row:	;;$3f:edc6 field::drawWindowLine
+field_draw_window_row:	;;$3f:edc6 field::draw_window_row
 ;;callers:
 ;;	$3f:ece5 field::draw_window_top
 ;;	$3f:ed02 field::draw_window_box
