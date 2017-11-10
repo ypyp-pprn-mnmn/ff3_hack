@@ -101,22 +101,13 @@ field_draw_window_box:
 		jsr field_callSoundDriver
 
 .post_attr_update:
-	;jsr field_X_render_borders
-	;jsr field_X_fill_window_buffer
+	jsr field_X_render_borders
 ; adjust metrics as borders don't need further drawing...
 	jsr field_X_shrink_window_metrics
 	jmp field_restore_bank	;$ecf5
 
 	;VERIFY_PC $ed56
-field_X_fill_window_buffer:
-.window_buffer_base = $0780
-	ldx #$80
-	lda #$aa
-.fill:
-	dex
-	sta .window_buffer_base,x
-	bpl .fill
-	rts
+
 
 	.ifdef TEST_BLACKOUT_ON_WINDOW
 field_X_blackout_1frame:
@@ -133,7 +124,7 @@ field_X_blackout_1frame:
 	.endif	;TEST_BLACKOUT_ON_WINDOW
 
 
-	.if 0
+	.if 1
 field_X_render_borders:
 .skipAttrUpdate = $37
 .left = $38
@@ -143,7 +134,9 @@ field_X_render_borders:
 .width = $3c
 .height = $3d
 .ppu_ctrl_cache = $ff
-.generated_code_base = $0108
+
+field_X_generate_renderer_code:
+.generated_code_base = $0780
 	;; 1: left-top to right-top, not including rightmost
 	;; 2: right-top to right-bottom, not including bottom most
 	;; 3: left-top to left-bottom, not including
@@ -154,37 +147,25 @@ field_X_render_borders:
 	;	lda B
 	;	(sta $2007) x 8	;8C 07 20
 	;	dex bne put_middle
-UNROLLED_BYTES = $08*3
-	ldy #-UNROLLED_BYTES	;dest
+.SIZE_OF_CODE = 3
+.UNROLLED_BYTES = $1f*.SIZE_OF_CODE
+	ldy #-.UNROLLED_BYTES	;dest
 .wrap_x:
-		ldx #0	;src
+		ldx #-.SIZE_OF_CODE	;src
 .generate_loop:
-		lda .template_code_base,x
-		sta .generated_code_base-($0100-UNROLLED_BYTES),y
-		inx
+		lda .template_code_start-$0100+.SIZE_OF_CODE,x
+		sta .generated_code_base-($0100-.UNROLLED_BYTES),y
 		iny
 		beq .generate_epilog
-		cpx #3
-		bne .generate_loop
-		beq .wrap_x
-.generate_epilog:
-	;x should be 3 here
-	ldy #-(.template_code_end-.template_code_loop)	;dest
-.generate_epilog_copy:
-		lda .template_code_base,x
-		sta .generated_code_base+UNROLLED_BYTES-($0100-(.template_code_end-.template_code_loop)),y
 		inx
-		iny
-		bne .generate_epilog_copy
+		beq .wrap_x
+		bne .generate_loop
+.generate_epilog:
+	lda #$60	;rts
+	sta .generated_code_base+.UNROLLED_BYTES
 	rts
-
-.template_code_base:	
-	sty $2007
-.template_code_loop:
-	dex
-	;bne -27
-	.db $d0,-27
-	rts
+.template_code_start:	
+	sta $2007
 .template_code_end:
 	.endif ;0
 ;------------------------------------------------------------------------------------------------------
@@ -240,11 +221,16 @@ field_window_rts_1:
 ;;$3f:ed61 field::get_window_metrics
 ;;callers:
 ;;	$3f:ed02 field::draw_window_box
-;; to reflect changes in screen those made by 'field_hide_sprites_around_window',
-;; which is called within this function,
-;; caller must update sprite attr such as:
-;; lda #2
-;; sta $4014	;DMA
+;;NOTEs:
+;; 1) to reflect changes in screen those made by 'field_hide_sprites_around_window',
+;;	which is called within this function,
+;;	caller must update sprite attr such as:
+;;	lda #2
+;;	sta $4014	;DMA
+;; 2) this logic is very simlar to $3d:aabc field::get_menu_window_metrics.
+;;	the difference is:
+;;		A) this logic takes care of wrap-around unlike the other one, which does not.
+;;		B) target window and the address of table where the corresponding metrics defined at
 field_get_window_metrics:
 ;[in]
 .scroll_x = $29	;in 16x16 unit
@@ -304,7 +290,7 @@ field_get_window_metrics:
 	clc
 	adc <.internal_top
 	;sec	;here always clear
-	sbc #2
+	sbc #2	;effectively -3
 	sta <.internal_bottom
 	;; done calcs
 	jmp field_hide_sprites_around_window	;$ec18
@@ -438,6 +424,7 @@ field_X_window_parts:
 	db $f7, $f8, $f9
 	db $fa, $ff, $fb
 	db $fc, $fd, $fe
+	.ifdef IMPL_BORDER_LOADER
 ;;$3f:ee1d field::getWindowTilesForMiddle
 ;;callers:
 ;;	$3f:ed02 field::draw_window_box
@@ -453,6 +440,7 @@ field_get_window_bottom_tiles:	;ed3b
 	lda #$03<<1
 	jsr field_X_get_window_tiles
 	bne field_X_get_window_tiles
+	.endif	;.ifdef IMPL_BORDER_LOADER
 ;======================================================================================================
 field_X_updateVramAttributes:
 	ldx #0
@@ -495,7 +483,7 @@ field_setVramAddrForWindow:
 field_setVramAddrForWindowEx:
 ;[in] a : widthInCurrentBg
 ;[in] y : offsetX
-;[out] y : offsetX & #20 ^ #20
+;[out] y : (offsetX & #$20) ^ #$20
 ;[in]
 .offsetX = $3a
 .offsetY = $3b
