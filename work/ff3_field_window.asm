@@ -7,6 +7,8 @@
 ;	0.2.0
 ;======================================================================================================
 ff3_field_window_begin:
+;;# of frames waited before text lines scolled up
+FIELD_WINDOW_SCROLL_FRAMES = $01
 
 	.ifdef FAST_FIELD_WINDOW
 	INIT_PATCH $3f,$ec83,$ece5
@@ -96,9 +98,8 @@ field_advance_frame_and_set_bank:
 	jmp field_X_set_bank_for_window_content_string
 
 field_X_advance_frame:
-.field_frame_counter = $f0
 	jsr waitNmiBySetHandler
-	inc <.field_frame_counter
+	inc <field_frame_counter
 	jmp field_callSoundDriver
 
 field_X_get_input_with_result:
@@ -114,6 +115,8 @@ field_X_get_input_with_result:
 ;;$3f:ece5 field::draw_window_top:
 ;;NOTEs:
 ;;	called when executed an exchange of position in item window from menu
+;;callers:
+;;	 1E:AAA3:4C E5 EC  JMP field::draw_window_top
 ;;original code:
 ;1F:ECE5:A5 39     LDA window_top = #$0B
 ;1F:ECE7:85 3B     STA window_row_in_draw = #$0F
@@ -314,7 +317,7 @@ field_X_render_borders:
 .offset_y = $3b
 .width = $3c
 .height = $3d
-.ppu_ctrl_cache = $ff
+;.ppu_ctrl_cache = $ff
 
 field_X_generate_uploader_code:
 ;.template_code_start = field_X_update_ppu_attr_table_end - 8	
@@ -619,7 +622,6 @@ field_stream_string_in_window:
 .window_height = $3d
 .offset_x = $97
 .offset_y = $98
-.field_frame_counter = $f0
 	jsr field_load_and_draw_string	;$ee9a.
 	;; on exit from above, carry has a boolean value.
 	;; 1: more to draw, 0: completed drawing.
@@ -635,11 +637,11 @@ field_stream_string_in_window:
 		sbc #1
 		pha	;# of text lines available to draw
 		lda #0
-		sta <.field_frame_counter
+		sta <field_frame_counter
 		.delay_loop:
 			jsr field_advance_frame_and_set_bank	;$ecd8
-			lda <.field_frame_counter
-			and #$01
+			lda <field_frame_counter
+			and #FIELD_WINDOW_SCROLL_FRAMES	;;originally 1
 			bne .delay_loop
 		jsr field_seek_string_to_next_line	;$eba9
 		jsr field_draw_string_in_window		;$eec0

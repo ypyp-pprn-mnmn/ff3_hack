@@ -11379,197 +11379,199 @@
     7                     ;       0.2.0
     8                     ;======================================================================================================
     9  35:88EB            ff3_field_window_begin:
-   10                     
-   11           0000              .ifdef FAST_FIELD_WINDOW
-  602                             .endif  ;FAST_FIELD_WINDOW
-  603                     ;======================================================================================================
-  604           0000              .ifdef FAST_FIELD_WINDOW
-  656                             .endif  ;FAST_FIELD_WINDOW
-  657                     ;======================================================================================================
-  658                     ;$3f:f40a setVramAddrForWindow
-  659                     ;//     [in] u8 $3a : x offset
-  660                     ;//     [in] u8 $3b : y
-  661                             INIT_PATCH $3f,$f40a,$f435
+   10                     ;;# of frames waited before text lines scolled up
+   11           0001      FIELD_WINDOW_SCROLL_FRAMES = $01
+   12                     
+   13           0000              .ifdef FAST_FIELD_WINDOW
+  605                             .endif  ;FAST_FIELD_WINDOW
+  606                     ;======================================================================================================
+  607           0000              .ifdef FAST_FIELD_WINDOW
+  658                             .endif  ;FAST_FIELD_WINDOW
+  659                     ;======================================================================================================
+  660                     ;$3f:f40a setVramAddrForWindow
+  661                     ;//     [in] u8 $3a : x offset
+  662                     ;//     [in] u8 $3b : y
+  663                             INIT_PATCH $3f,$f40a,$f435
                 003F              .bank   $3f
                 440A              .org    $f40a
        3F:440A                    .ds             (($f435) - ($f40a))
                 440A              .org    $f40a
-  662  3F:440A            field_setVramAddrForWindow:
-  663           003A      .offsetX = $3a
-  664  3F:440A  A4 3A             ldy <.offsetX
-  665  3F:440C            field_setVramAddrForWindowEx:
-  666                     ;[in] a : widthInCurrentBg
-  667                     ;[in] y : offsetX
-  668                     ;[out] y : (offsetX & #$20) ^ #$20
-  669                     ;[in]
-  670           003A      .offsetX = $3a
-  671           003B      .offsetY = $3b
-  672                     ;[ref]
-  673           44A1      .vramAddrLow = $f4a1
-  674           44C1      .vramAddrHigh = $f4c1
-  675                     ;--------------------------------------
-  676  3F:440C  98                tya
-  677  3F:440D  48                pha
-  678  3F:440E  A4 3B             ldy <.offsetY
-  679  3F:4410  29 20             and #$20
-  680  3F:4412  AA                tax
-  681  3F:4413  F0 02             beq .left_on_1st_bg
-  682  3F:4415  A9 04                     lda #$04
-  683  3F:4417            .left_on_1st_bg:
-  684  3F:4417  19 C1 F4          ora .vramAddrHigh,y
-  685  3F:441A  8D 06 20          sta $2006
-  686                     
-  687  3F:441D  68                pla
-  688  3F:441E  29 1F             and #$1f
-  689  3F:4420  19 A1 F4          ora .vramAddrLow,y
-  690  3F:4423  8D 06 20          sta $2006
-  691                     
-  692                     ;x = left & #20
-  693  3F:4426  8A                txa
-  694  3F:4427  49 20             eor #$20
-  695  3F:4429  A8                tay
-  696                     
-  697  3F:442A  60                rts
+  664  3F:440A            field_setVramAddrForWindow:
+  665           003A      .offsetX = $3a
+  666  3F:440A  A4 3A             ldy <.offsetX
+  667  3F:440C            field_setVramAddrForWindowEx:
+  668                     ;[in] a : widthInCurrentBg
+  669                     ;[in] y : offsetX
+  670                     ;[out] y : (offsetX & #$20) ^ #$20
+  671                     ;[in]
+  672           003A      .offsetX = $3a
+  673           003B      .offsetY = $3b
+  674                     ;[ref]
+  675           44A1      .vramAddrLow = $f4a1
+  676           44C1      .vramAddrHigh = $f4c1
+  677                     ;--------------------------------------
+  678  3F:440C  98                tya
+  679  3F:440D  48                pha
+  680  3F:440E  A4 3B             ldy <.offsetY
+  681  3F:4410  29 20             and #$20
+  682  3F:4412  AA                tax
+  683  3F:4413  F0 02             beq .left_on_1st_bg
+  684  3F:4415  A9 04                     lda #$04
+  685  3F:4417            .left_on_1st_bg:
+  686  3F:4417  19 C1 F4          ora .vramAddrHigh,y
+  687  3F:441A  8D 06 20          sta $2006
+  688                     
+  689  3F:441D  68                pla
+  690  3F:441E  29 1F             and #$1f
+  691  3F:4420  19 A1 F4          ora .vramAddrLow,y
+  692  3F:4423  8D 06 20          sta $2006
+  693                     
+  694                     ;x = left & #20
+  695  3F:4426  8A                txa
+  696  3F:4427  49 20             eor #$20
+  697  3F:4429  A8                tay
   698                     
-  699                             VERIFY_PC $f435
+  699  3F:442A  60                rts
+  700                     
+  701                             VERIFY_PC $f435
        3F:442B                    .verify_pc_00144:
                 0000              .if (.verify_pc_00144 > $f435)
                                   .endif
-  700                     ;------------------------------------------------------------------------------------------------------
-  701           0000              .ifdef FAST_FIELD_WINDOW
-  793                             .endif  ;FAST_FIELD_WINDOW
-  794                     ;------------------------------------------------------------------------------------------------------
-  795                     ;$3f:f6aa field::upload_window_content
-  796                     ;//     [in] u8 $38 : offset x
-  797                     ;//     [in] u8 $39 : offset per 2 line
-  798                     ;//     [in,out] u8 $3b : offset y (wrap-around)
-  799                             INIT_PATCH      $3f,$f6aa,$f727
+  702                     ;------------------------------------------------------------------------------------------------------
+  703           0000              .ifdef FAST_FIELD_WINDOW
+  795                             .endif  ;FAST_FIELD_WINDOW
+  796                     ;------------------------------------------------------------------------------------------------------
+  797                     ;$3f:f6aa field::upload_window_content
+  798                     ;//     [in] u8 $38 : offset x
+  799                     ;//     [in] u8 $39 : offset per 2 line
+  800                     ;//     [in,out] u8 $3b : offset y (wrap-around)
+  801                             INIT_PATCH      $3f,$f6aa,$f727
                 003F              .bank   $3f
                 66AA              .org    $f6aa
        3F:66AA                    .ds             (($f727) - ($f6aa))
                 66AA              .org    $f6aa
-  800                     ;; call tree:
-  801                     ;;      $eb43: ?
-  802                     ;;              $eec0: field::drawEncodedStringInWindow
-  803                     ;;                      $eefa: field::decodeStringAndDrawInWindow
-  804                     ;;                              $f692: field::drawStingInWindow
-  805                     ;;      
-  806                     ;;      $ed02: field::drawWindowBox
-  807                     ;;              $edc6: field::drawWindowLine
-  808  3F:66AA            field_upload_window_content:
-  809                     ;[in]
-  810           0038      .left = $38
-  811           003C      .width = $3c
-  812           003A      .offsetX = $3a
-  813           003A      .offsetString = $3a
-  814           003B      .offsetY = $3b
-  815           0090      .iChar = $90
-  816           0091      .widthIn1stBg = $91
-  817           7780      .tileArray = $0780
-  818           7780      .upperLineString = $0780
-  819           77A0      .lowerLineString = $07a0
-  820                     
-  821                     ;-----------------------------------------
-  822  3F:66AA  C9 09             cmp #9
-  823  3F:66AC  F0 05             beq .draw_lower_line
-  824  3F:66AE  A9 00                     lda #0
-  825  3F:66B0  20 B5 F6                  jsr .draw_line
-  826  3F:66B3            .draw_lower_line:
-  827  3F:66B3  A9 20             lda #$20
-  828  3F:66B5            .draw_line:
-  829                     ;[in] a  = index offset
-  830  3F:66B5  48                pha
-  831  3F:66B6  85 3A             sta <.offsetString
-  832                     
-  833  3F:66B8  2C 02 20          bit $2002
-  834  3F:66BB  A5 91             lda <.widthIn1stBg
-  835  3F:66BD  A4 38             ldy <.left
-  836  3F:66BF  20 E0 F6          jsr .putTiles   ;[out] y = offsetX & #20 ^ #20, $3a = offsetString
-  837                     
-  838  3F:66C2  18                clc
-  839  3F:66C3  68                pla
-  840  3F:66C4  65 3C             adc <.width
-  841  3F:66C6  38                sec
-  842  3F:66C7  E5 3A             sbc <.offsetString
-  843  3F:66C9  90 05             bcc .next_line
-  844  3F:66CB  F0 03             beq .next_line
-  845  3F:66CD  20 E0 F6                  jsr .putTiles
-  846                     
-  847  3F:66D0            .next_line:
-  848  3F:66D0  A4 3B             ldy <.offsetY
-  849  3F:66D2  C8                iny
-  850  3F:66D3  C0 1E             cpy #30
-  851  3F:66D5  D0 02             bne .no_wrap
-  852  3F:66D7  A0 00                     ldy #0
-  853  3F:66D9            .no_wrap:
-  854  3F:66D9  84 3B             sty <.offsetY
-  855  3F:66DB  A9 00             lda #0
-  856  3F:66DD  85 90             sta <.iChar     ;$90
-  857  3F:66DF  60                rts
-  858                     
-  859  3F:66E0            .putTiles:
-  860  3F:66E0  48                pha
-  861                     
-  862  3F:66E1  20 0C F4          jsr field_setVramAddrForWindowEx
-  863           003A      .beginOffset = .offsetString
-  864           003A      .endOffset = .beginOffset
-  865  3F:66E4  68                pla     ;widthInCurrentBg
-  866  3F:66E5  A6 3A             ldx <.offsetString
-  867  3F:66E7  48                pha
-  868  3F:66E8  18                clc
-  869  3F:66E9  65 3A             adc <.offsetString
-  870  3F:66EB  85 3A             sta <.endOffset
-  871  3F:66ED  68                pla
-  872  3F:66EE  4A                lsr a
-  873  3F:66EF  6A                ror a
-  874  3F:66F0  10 04             bpl .length_even
-  875                     ;odd
-  876  3F:66F2            .length_odd:
-  877  3F:66F2  90 19             bcc .copy_loop_1
-  878  3F:66F4  B0 09             bcs .copy_loop_3
-  879                     ;even
-  880  3F:66F6            .length_even:
-  881  3F:66F6  B0 0E             bcs .copy_loop_2
-  882  3F:66F8            .copy_loop_0:
-  883  3F:66F8  BD 80 07          lda .tileArray,x
-  884  3F:66FB  8D 07 20          sta $2007
-  885  3F:66FE  E8                inx
-  886  3F:66FF            .copy_loop_3:
-  887  3F:66FF  BD 80 07          lda .tileArray,x
-  888  3F:7702  8D 07 20          sta $2007
-  889  3F:7705  E8                inx
-  890  3F:7706            .copy_loop_2:
-  891  3F:7706  BD 80 07          lda .tileArray,x
-  892  3F:7709  8D 07 20          sta $2007
-  893  3F:770C  E8                inx
-  894  3F:770D            .copy_loop_1:
-  895  3F:770D  BD 80 07          lda .tileArray,x
-  896  3F:7710  8D 07 20          sta $2007
-  897  3F:7713  E8                inx
-  898                             
-  899  3F:7714  E4 3A             cpx <.offsetString
-  900  3F:7716  D0 E0             bne .copy_loop_0
-  901                     
-  902  3F:7718  60                rts
-  903                             ;VERIFY_PC $f727
-  904  3F:7719            field_X_shrink_window_metrics:
-  905           0038      .left = $38     ;loaded by field_getWindowMetrics
-  906           0039      .top = $39      ;loaded by field_getWindowMetrics
-  907           003C      .width = $3c    ;loaded by field_getWindowMetrics
-  908           003D      .height = $3d   ;loaded by field_getWindowMetrics
-  909  3F:7719  E6 38             inc <.left
-  910  3F:771B  E6 39             inc <.top
-  911  3F:771D  C6 3C             dec <.width
-  912  3F:771F  C6 3C             dec <.width
-  913  3F:7721  C6 3D             dec <.height
-  914  3F:7723  C6 3D             dec <.height
-  915  3F:7725  60                rts
-  916                             VERIFY_PC $f727
+  802                     ;; call tree:
+  803                     ;;      $eb43: ?
+  804                     ;;              $eec0: field::drawEncodedStringInWindow
+  805                     ;;                      $eefa: field::decodeStringAndDrawInWindow
+  806                     ;;                              $f692: field::drawStingInWindow
+  807                     ;;      
+  808                     ;;      $ed02: field::drawWindowBox
+  809                     ;;              $edc6: field::drawWindowLine
+  810  3F:66AA            field_upload_window_content:
+  811                     ;[in]
+  812           0038      .left = $38
+  813           003C      .width = $3c
+  814           003A      .offsetX = $3a
+  815           003A      .offsetString = $3a
+  816           003B      .offsetY = $3b
+  817           0090      .iChar = $90
+  818           0091      .widthIn1stBg = $91
+  819           7780      .tileArray = $0780
+  820           7780      .upperLineString = $0780
+  821           77A0      .lowerLineString = $07a0
+  822                     
+  823                     ;-----------------------------------------
+  824  3F:66AA  C9 09             cmp #9
+  825  3F:66AC  F0 05             beq .draw_lower_line
+  826  3F:66AE  A9 00                     lda #0
+  827  3F:66B0  20 B5 F6                  jsr .draw_line
+  828  3F:66B3            .draw_lower_line:
+  829  3F:66B3  A9 20             lda #$20
+  830  3F:66B5            .draw_line:
+  831                     ;[in] a  = index offset
+  832  3F:66B5  48                pha
+  833  3F:66B6  85 3A             sta <.offsetString
+  834                     
+  835  3F:66B8  2C 02 20          bit $2002
+  836  3F:66BB  A5 91             lda <.widthIn1stBg
+  837  3F:66BD  A4 38             ldy <.left
+  838  3F:66BF  20 E0 F6          jsr .putTiles   ;[out] y = offsetX & #20 ^ #20, $3a = offsetString
+  839                     
+  840  3F:66C2  18                clc
+  841  3F:66C3  68                pla
+  842  3F:66C4  65 3C             adc <.width
+  843  3F:66C6  38                sec
+  844  3F:66C7  E5 3A             sbc <.offsetString
+  845  3F:66C9  90 05             bcc .next_line
+  846  3F:66CB  F0 03             beq .next_line
+  847  3F:66CD  20 E0 F6                  jsr .putTiles
+  848                     
+  849  3F:66D0            .next_line:
+  850  3F:66D0  A4 3B             ldy <.offsetY
+  851  3F:66D2  C8                iny
+  852  3F:66D3  C0 1E             cpy #30
+  853  3F:66D5  D0 02             bne .no_wrap
+  854  3F:66D7  A0 00                     ldy #0
+  855  3F:66D9            .no_wrap:
+  856  3F:66D9  84 3B             sty <.offsetY
+  857  3F:66DB  A9 00             lda #0
+  858  3F:66DD  85 90             sta <.iChar     ;$90
+  859  3F:66DF  60                rts
+  860                     
+  861  3F:66E0            .putTiles:
+  862  3F:66E0  48                pha
+  863                     
+  864  3F:66E1  20 0C F4          jsr field_setVramAddrForWindowEx
+  865           003A      .beginOffset = .offsetString
+  866           003A      .endOffset = .beginOffset
+  867  3F:66E4  68                pla     ;widthInCurrentBg
+  868  3F:66E5  A6 3A             ldx <.offsetString
+  869  3F:66E7  48                pha
+  870  3F:66E8  18                clc
+  871  3F:66E9  65 3A             adc <.offsetString
+  872  3F:66EB  85 3A             sta <.endOffset
+  873  3F:66ED  68                pla
+  874  3F:66EE  4A                lsr a
+  875  3F:66EF  6A                ror a
+  876  3F:66F0  10 04             bpl .length_even
+  877                     ;odd
+  878  3F:66F2            .length_odd:
+  879  3F:66F2  90 19             bcc .copy_loop_1
+  880  3F:66F4  B0 09             bcs .copy_loop_3
+  881                     ;even
+  882  3F:66F6            .length_even:
+  883  3F:66F6  B0 0E             bcs .copy_loop_2
+  884  3F:66F8            .copy_loop_0:
+  885  3F:66F8  BD 80 07          lda .tileArray,x
+  886  3F:66FB  8D 07 20          sta $2007
+  887  3F:66FE  E8                inx
+  888  3F:66FF            .copy_loop_3:
+  889  3F:66FF  BD 80 07          lda .tileArray,x
+  890  3F:7702  8D 07 20          sta $2007
+  891  3F:7705  E8                inx
+  892  3F:7706            .copy_loop_2:
+  893  3F:7706  BD 80 07          lda .tileArray,x
+  894  3F:7709  8D 07 20          sta $2007
+  895  3F:770C  E8                inx
+  896  3F:770D            .copy_loop_1:
+  897  3F:770D  BD 80 07          lda .tileArray,x
+  898  3F:7710  8D 07 20          sta $2007
+  899  3F:7713  E8                inx
+  900                             
+  901  3F:7714  E4 3A             cpx <.offsetString
+  902  3F:7716  D0 E0             bne .copy_loop_0
+  903                     
+  904  3F:7718  60                rts
+  905                             ;VERIFY_PC $f727
+  906  3F:7719            field_X_shrink_window_metrics:
+  907           0038      .left = $38     ;loaded by field_getWindowMetrics
+  908           0039      .top = $39      ;loaded by field_getWindowMetrics
+  909           003C      .width = $3c    ;loaded by field_getWindowMetrics
+  910           003D      .height = $3d   ;loaded by field_getWindowMetrics
+  911  3F:7719  E6 38             inc <.left
+  912  3F:771B  E6 39             inc <.top
+  913  3F:771D  C6 3C             dec <.width
+  914  3F:771F  C6 3C             dec <.width
+  915  3F:7721  C6 3D             dec <.height
+  916  3F:7723  C6 3D             dec <.height
+  917  3F:7725  60                rts
+  918                             VERIFY_PC $f727
        3F:7726                    .verify_pc_00146:
                 0000              .if (.verify_pc_00146 > $f727)
                                   .endif
-  917                     ;======================================================================================================
-  918                             RESTORE_PC ff3_field_window_begin
+  919                     ;======================================================================================================
+  920                             RESTORE_PC ff3_field_window_begin
                 0035              .bank   BANK(ff3_field_window_begin)
                 88EB              .org    ff3_field_window_begin
 #[3]   ff3_hack_master.asm
