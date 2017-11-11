@@ -11,7 +11,7 @@ ff3_field_window_begin:
 FIELD_WINDOW_SCROLL_FRAMES = $01
 
 	.ifdef FAST_FIELD_WINDOW
-	INIT_PATCH $3f,$ec83,$ecf5
+	INIT_PATCH $3f,$ec83,$ed02
 
 ;;$3f:ec83 field::show_message_UNKNOWN:
 ;; 1F:EC83:A9 00     LDA #$00
@@ -31,7 +31,7 @@ field_show_message_window:
 	;jsr field_show_off_message_window
 	lda #0
 ;------------------------------------------------------------------------------------------------------
-;;$ef:ec8d field::show_window:
+;;$3f:ec8d field::show_window:
 ;;callers:
 ;;	 1F:E264:20 8D EC  JSR $EC8D
 ;;in:
@@ -146,8 +146,49 @@ field_draw_window_top:
 	jsr field_get_window_top_tiles
 	jsr field_draw_window_row
 	;; fall through (into $ecf5: field_restore_bank)
-	jmp field_restore_bank	;$ecf5
-	VERIFY_PC $ecf5
+	;jmp field_restore_bank	;$ecf5
+
+
+	;VERIFY_PC $ecf5
+;------------------------------------------------------------------------------------------------------
+;;$3f:ecf5 restoreBanksBy$57
+;;callers:
+;;	 1F:EB64:20 F5 EC  JSR field::restore_bank (in $3f:eb61 field::drawEncodedStringInWindowAndRestoreBanks)
+;;	 1F:F49E:4C F5 EC  JMP field::restore_bank
+;;	field::draw_window_top (by falling thourgh)
+;;	field::draw_window_box
+field_restore_bank:
+;; patch out external callers {
+	.bank $3f
+	.org $eb64
+	jsr field_restore_bank
+	.bank $3f
+	.org $f49e
+	jmp field_restore_bank
+	RESTORE_PC field_restore_bank
+;;}
+.program_bank = $57
+	lda <.program_bank
+	jmp call_switch_2banks
+	;VERIFY_PC $ecfa
+;------------------------------------------------------------------------------------------------------
+;;$3f:ecfa field::draw_in_place_window
+;;	typically called when object's message is to be shown
+;;callers:
+;;	$3f:ec8d field::show_window (original implementation only)
+;;	$3f:ec83 field::show_message_UNKNOWN
+field_draw_inplace_window:
+;; patch out external callers {
+;;}
+.window_id = $96
+	sta <.window_id
+	lda #0
+	sta <$24
+	sta <$25
+	;;originally fall through to $3f:ed02 field::draw_window_box
+	jmp field_draw_window_box
+
+	VERIFY_PC $ed02
 ;------------------------------------------------------------------------------------------------------
 	;INIT_PATCH $3f,$ed02,$ed56
 	INIT_PATCH $3f,$ed02,$ee9a
@@ -164,7 +205,7 @@ field_draw_window_top:
 ;;		These logics rely on window metrics variables, which is initially setup on this logic,
 ;;		and they don't change BG attributes anyway.
 ;;NOTEs:
-;;	in the scope of logic, it is safe to use the address range $0780-$07ff (inclusive) in a destructive way.
+;;	in the scope of this logic, it is safe to use the address range $0780-$07ff (inclusive) in a destructive way.
 ;;	The original code uses this area as temporary buffer for rendering purporses
 ;;	and discards its contents on exit.
 ;;	more specifically, address are utilized as follows:
@@ -177,7 +218,7 @@ field_draw_window_top:
 ;;	$3c:8f0e
 ;;	$3c:8fd5
 ;;	$3c:90b1
-;;	$3d:aaf4 (jmp) in $3d:aaf1 field::drawWindowOf
+;;	$3d:aaf4 (jmp) in $3d:aaf1 field::draw_menu_window
 field_draw_window_box:
 ;;[in]
 .window_id = $96
