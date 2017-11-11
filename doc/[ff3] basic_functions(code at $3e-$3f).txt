@@ -3099,9 +3099,10 @@ $ee99:
  1F:EE99:60        RTS
 }
 
-$3f:ee9a floor::loadAndDrawString
+//$3f:ee9a floor::loadAndDrawString
+$3f:ee9a field::load_and_draw_string:
 //out:
-//	bool carry: more_to_draw	//could be tested at サロニアの図書館(オーエンのほん1)
+//	bool carry: more_to_draw	//flagged cases could be tested at サロニアの図書館(オーエンのほん1)
 {
 	call_switch1stBank(per8k:a = #18); //ff06
 	y = $92 << 1;
@@ -3116,7 +3117,8 @@ $eec0:
 //fall through
 }
 
-$3f:eec0 field::drawEncodedStringInWindow
+//$3f:eec0 field::drawEncodedStringInWindow
+$3f:eec0 field::draw_string_in_window
 //	[in] ptr $3e : string offset
 //	[in] u8 $93 : string bank
 //	[out] bool carry: more_to_draw
