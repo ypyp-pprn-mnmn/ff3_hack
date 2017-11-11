@@ -29,7 +29,9 @@ field_X_show_off_window:
 ;;	1F:E237:20 8B EC  JSR field::show_message_window
 ;;
 field_show_message_window:
-	;jsr field_show_off_message_window
+;;patch out callers
+	PATCH_JSR_ON_CALLER $3f,$e237
+;;
 	lda #0
 ;------------------------------------------------------------------------------------------------------
 ;;$3f:ec8d field::show_window:
