@@ -629,7 +629,7 @@ field_stream_string_in_window:
 		pla	;# of text lines available to draw
 		bne .streaming	;there is more space to fill in
 		bcs .paging	;there is more text to draw
-		;;content space is filled with end of text 
+		;;content space is filled with reaching end of text 
 .do_return:
 	rts
 
