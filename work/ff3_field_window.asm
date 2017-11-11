@@ -37,6 +37,12 @@ field_show_message_window:
 ;;in:
 ;;	u8 A : window_type
 field_show_window:
+;;patch out external callers {
+	.bank $3e
+	.org $e264
+	jsr field_show_window
+	RESTORE_PC field_show_window
+;;}
 .field_pad1_inputs = $20
 	;jsr field_draw_inplace_window		;$ecfa
 	;jsr field_stream_string_in_window	;$ee65
@@ -146,13 +152,6 @@ field_draw_window_top:
 	;INIT_PATCH $3f,$ed02,$ed56
 	INIT_PATCH $3f,$ed02,$ee9a
 ;;$3f:ed02 field::draw_window_box
-;;callers:
-;;	$3c:8efd
-;;	$3c:8f0e
-;;	$3c:8fd5
-;;	$3c:90b1
-;;	$3d:aaf4 (jmp) in $3d:aaf1 field::drawWindowOf
-;;
 ;;	This logic plays key role in drawing window, both for menu windows and in-place windows.
 ;;	Usually window drawing is performed as follows:
 ;;	1)	Call this logic to fill in background with window parts
@@ -160,9 +159,10 @@ field_draw_window_top:
 ;;		In cases of the menu window, BG attributes have alreday been setup in another logic
 ;;		and should not be changed.
 ;;	2)	Subsequently call other drawing logics which overwrites background with
-;;		content (aka string) in the window, 2 consecutive window rows per 1 frame.
+;;		content (aka string) in the window, 2 consecutive window rows,
+;;		which is equivalent to 1 text line, per 1 frame.
 ;;		These logics rely on window metrics variables, which is initially setup on this logic,
-;;		and don't change BG attributes anyway.
+;;		and they don't change BG attributes anyway.
 ;;NOTEs:
 ;;	in the scope of logic, it is safe to use the address range $0780-$07ff (inclusive) in a destructive way.
 ;;	The original code uses this area as temporary buffer for rendering purporses
@@ -172,6 +172,12 @@ field_draw_window_top:
 ;;		$07c0-$07cf: used for PPU attr table buffer,
 ;;		$07d0-$07ff: used for 3-tuple of array that in each entry defines
 ;;			(vram address(high&low), value to tranfer)
+;;callers:
+;;	$3c:8efd
+;;	$3c:8f0e
+;;	$3c:8fd5
+;;	$3c:90b1
+;;	$3d:aaf4 (jmp) in $3d:aaf1 field::drawWindowOf
 field_draw_window_box:
 ;;[in]
 .window_id = $96
