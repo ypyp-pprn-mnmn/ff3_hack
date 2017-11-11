@@ -34,3 +34,5 @@ $ECC4#field::get_next_input#
 $EBA9#field::seek_to_next_line#string pointer at $1c; on exit $3e have the same
 $EEFA#field::decode_and_draw_string#
 $F02A#field::map_opcodes_into_tiles#opcodes := [0x10, 0x28)
+$EC83#field::show_message_UNK#
+$EC8B#field::show_message_window#
