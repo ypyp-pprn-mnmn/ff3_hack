@@ -3,8 +3,8 @@ $003C#window_width#
 $0091#window_width_to_draw#
 $003B#window_row_in_draw#
 $0039#window_top#
-$0037#skip_window_attr_update#
-$003D#window_height#
+$0037#field::in_menu_mode#
+$003D#field::window_height#
 $0096#window_id#
 $0031#left_in_tiles#
 $0030#target_row_in_tiles#
@@ -25,3 +25,5 @@ $0036#field_scroll_y#
 $0202#sprite_buffer.attr#
 $0200#sprite_buffer.y#
 $0203#sprite_buffer.x#
+$003A#window_left_in_draw#
+$0093#field::bank_of_loaded_string#
