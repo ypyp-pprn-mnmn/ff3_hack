@@ -468,13 +468,12 @@ field_X_update_ppu_attr_table:
 .field_X_upload_attributes:
 	lda <.offset_x
 .loop:
-		;pha
+	;A = offset into attr table
 		cpy #$23
 		beq .on_1st_bg
-		ora #$40
+		ora #$40	;on 2nd bg, offset into cache started at .attr_cache + $40
 .on_1st_bg:
 		tax
-		;bit $2002
 		sty $2006
 		ora #$c0
 		sta $2006
@@ -485,42 +484,11 @@ field_X_update_ppu_attr_table:
 			txa
 			and #$07
 			bne .upload_loop
-		;pla
-		;adc #$08
 		txa
-		and #$38
+		and #$38	;wraps if crosses bg boundary ($40)
 		cmp <.offset_y
 		bne .loop
 	rts
-
-	.if 0
-	ldx #0
-	lda #$23
-	jsr .field_X_copyAttributes
-	;ldx #$40	;on exit from above, X will have #$40
-	lda #$27
-	;fall through
-;[in]
-;	u8 a: vram address high
-;	u8 x: offset into attr table cache
-;	attr_value[128] $0300: attr table cache
-.field_X_copyAttributes:
-	bit $2002
-	sta $2006
-	lda #$c0
-	sta $2006
-.field_X_updateTileAttrEntirely:
-.attr_cache = $0300
-	ldy #$40	;update entire attr table in target BG (64 bytes)
-.copy:
-		lda .attr_cache,x
-		sta $2007
-		inx
-		dey
-		bne .copy
-	rts
-	.endif 	;0
-field_X_update_ppu_attr_table_end:
 ;-----------
 
 	VERIFY_PC $ee65
