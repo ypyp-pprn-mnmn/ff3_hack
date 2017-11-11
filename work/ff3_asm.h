@@ -260,18 +260,10 @@ VERIFY_PC	.macro
 	.endif
 	.endm	;VERIFY_PC
 
-PATCH_JSR_ON_CALLER	.macro
+FIX_ADDR_ON_CALLER	.macro
 	__patch_addr_\@:
 	.bank \1
 	.org \2
-	jsr __patch_addr_\@
-	RESTORE_PC __patch_addr_\@
-	.endm
-
-PATCH_JMP_ON_CALLER .macro
-	__patch_addr_\@:
-	.bank \1
-	.org \2
-	jmp __patch_addr_\@
+	.dw __patch_addr_\@
 	RESTORE_PC __patch_addr_\@
 	.endm

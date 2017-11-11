@@ -30,7 +30,7 @@ field_X_show_off_window:
 ;;
 field_show_message_window:
 ;;patch out callers
-	PATCH_JSR_ON_CALLER $3f,$e237
+	FIX_ADDR_ON_CALLER $3f,$e237+1
 ;;
 	lda #0
 ;------------------------------------------------------------------------------------------------------
@@ -41,7 +41,7 @@ field_show_message_window:
 ;;	u8 A : window_type
 field_show_window:
 ;;patch out external callers {
-	PATCH_JSR_ON_CALLER $3e,$e264
+	FIX_ADDR_ON_CALLER $3e,$e264+1
 ;;}
 .field_pad1_inputs = $20
 	;jsr field_draw_inplace_window		;$ecfa
@@ -89,19 +89,20 @@ field_get_next_input_in_this_frame:
 	beq field_get_next_input
 ;;$eccf
 	sta <.field_input_cache
-	;;fall through
-;------------------------------------------------------------------------------------------------------
-field_X_set_bank_for_window_content_string:
-.content_string_bank = $93
-	lda <.content_string_bank
-	jmp call_switch_2banks
+	bne field_X_set_bank_for_window_content_string
 ;------------------------------------------------------------------------------------------------------
 ;;$3f:ecd8 field::advance_frame_with_sound
 ;;callers:
 ;;	 1F:EE74:20 D8 EC  JSR field::advance_frame_w_sound ($3f:ee65 field::stream_string_in_window)
 field_advance_frame_and_set_bank:
 	jsr field_X_advance_frame
-	jmp field_X_set_bank_for_window_content_string
+	;;jmp field_X_set_bank_for_window_content_string
+	;;fall thorugh
+;------------------------------------------------------------------------------------------------------
+field_X_set_bank_for_window_content_string:
+.content_string_bank = $93
+	lda <.content_string_bank
+	jmp call_switch_2banks
 
 field_X_advance_frame:
 	jsr waitNmiBySetHandler
@@ -134,7 +135,7 @@ field_X_get_input_with_result:
 ;1F:ECF2:20 C6 ED  JSR field::draw_window_row
 field_draw_window_top:
 ;; patch out callers external to current implementation {
-	PATCH_JMP_ON_CALLER $3d,$aaa3
+	FIX_ADDR_ON_CALLER $3d,$aaa3+1
 ;;}
 .window_top = $39
 .window_row_in_drawing = $3b
@@ -158,8 +159,8 @@ field_draw_window_top:
 ;;	field::draw_window_box
 field_restore_bank:
 ;; patch out external callers {
-	PATCH_JSR_ON_CALLER $3f,$eb64
-	PATCH_JMP_ON_CALLER $3f,$f49e
+	FIX_ADDR_ON_CALLER $3f,$eb64+1
+	FIX_ADDR_ON_CALLER $3f,$f49e+1
 ;;}
 .program_bank = $57
 	lda <.program_bank
@@ -216,11 +217,11 @@ field_draw_inplace_window:
 ;;	(by falling through) @$3f:ecfa field::draw_in_place_window
 field_draw_window_box:	;;$ed02
 ;; patch out external callers {
-	PATCH_JSR_ON_CALLER $3c,$8efd
-	PATCH_JSR_ON_CALLER $3c,$8f0e
-	PATCH_JSR_ON_CALLER $3c,$8fd5
-	PATCH_JSR_ON_CALLER $3c,$90b1
-	PATCH_JMP_ON_CALLER $3d,$aaf4
+	FIX_ADDR_ON_CALLER $3c,$8efd+1
+	FIX_ADDR_ON_CALLER $3c,$8f0e+1
+	FIX_ADDR_ON_CALLER $3c,$8fd5+1
+	FIX_ADDR_ON_CALLER $3c,$90b1+1
+	FIX_ADDR_ON_CALLER $3d,$aaf4+1
 ;;}
 ;;[in]
 .window_id = $96
@@ -667,8 +668,8 @@ field_get_window_bottom_tiles:	;ed3b
 ;;	1F:EC90:20 65 EE  JSR $EE65 @ $3f:ec8b field::show_message_window
 field_stream_string_in_window:
 ;; patch out callers external to this implementation {
-	PATCH_JMP_ON_CALLER $3c,$9109
-	PATCH_JMP_ON_CALLER $3d,$a675
+	FIX_ADDR_ON_CALLER $3c,$9109+1
+	FIX_ADDR_ON_CALLER $3d,$a675+1
 ;; }
 .viewport_left = $29	;in 16x16 unit
 .viewport_top = $2f	;in 16x16 unit
