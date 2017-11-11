@@ -13,7 +13,7 @@ $FF03#call_switch_2banks#
 $EDC6#field::draw_window_row#
 $C750#field::call_sound_driver#
 $C9A9#field::set_bg_attr_for_window#
-$F6AA#field::draw_window_contents#
+$F6AA#field::upload_window_content#
 $EDF6#field::get_window_top_tiles#
 $EE9A#field::load_and_draw_string#
 $EEC0#field::draw_string_in_window#
