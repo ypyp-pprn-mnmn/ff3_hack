@@ -11,7 +11,7 @@ ff3_field_window_begin:
 FIELD_WINDOW_SCROLL_FRAMES = $01
 
 	.ifdef FAST_FIELD_WINDOW
-	INIT_PATCH $3f,$ec83,$ece5
+	INIT_PATCH $3f,$ec83,$ecf5
 
 ;;$3f:ec83 field::show_message_UNKNOWN:
 ;; 1F:EC83:A9 00     LDA #$00
@@ -108,10 +108,10 @@ field_X_get_input_with_result:
 	lda <.field_pad1_inputs
 	rts
 
-	VERIFY_PC $ece5
+	;VERIFY_PC $ece5
 
 ;------------------------------------------------------------------------------------------------------
-	INIT_PATCH $3f,$ece5,$ecf5
+	;INIT_PATCH $3f,$ece5,$ecf5
 ;;$3f:ece5 field::draw_window_top:
 ;;NOTEs:
 ;;	called when executed an exchange of position in item window from menu
@@ -125,18 +125,22 @@ field_X_get_input_with_result:
 ;1F:ECEF:20 F6 ED  JSR field::get_window_top_tiles
 ;1F:ECF2:20 C6 ED  JSR field::draw_window_row
 field_draw_window_top:
+;; patch out callers external to current implementation {
+	.bank	$3d
+	.org	$aaa3
+	jmp field_draw_window_top
+	RESTORE_PC field_draw_window_top
+;;}
 .window_top = $39
 .window_row_in_drawing = $3b
 	lda <.window_top
 	sta <.window_row_in_drawing
 	jsr field_calc_draw_width_and_init_window_tile_buffer
 	;jsr field_init_window_attr_buffer
-	nop
-	nop
-	nop
 	jsr field_get_window_top_tiles
 	jsr field_draw_window_row
 	;; fall through (into $ecf5: field_restore_bank)
+	jmp field_restore_bank	;$ecf5
 	VERIFY_PC $ecf5
 ;------------------------------------------------------------------------------------------------------
 	;INIT_PATCH $3f,$ed02,$ed56
@@ -610,8 +614,8 @@ field_get_window_bottom_tiles:	;ed3b
 ;;callers:
 ;;	$3c:90ff	? 1E:9109:4C 65 EE  JMP $EE65
 ;;	$3d:a666	? 1E:A675:4C 65 EE  JMP $EE65	(load menu)
-;;	$3f:ec83	? 1F:EC88:4C 65 EE  JMP $EE65
-;;	$3f:ec8b	? 1F:EC90:20 65 EE  JSR $EE65
+;;	1F:EC88:4C 65 EE  JMP $EE65 @ $3f:ec83 field::show_off_message_window
+;;	1F:EC90:20 65 EE  JSR $EE65 @ $3f:ec8b field::show_message_window
 field_stream_string_in_window:
 ;; patch out callers external to this implementation {
 	.bank $3c
