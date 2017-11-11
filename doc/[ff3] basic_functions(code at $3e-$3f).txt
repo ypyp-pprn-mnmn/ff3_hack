@@ -2780,11 +2780,19 @@ $3f:ec83 field::show_message_UNKNOWN:
  1F:EC85:20 FA EC  JSR field::draw_inplace_window
  1F:EC88:4C 65 EE  JMP field::stream_string_in_window
 
-$3f:ec8b field::show_message_window:
+$3f:ec8b field::show_message_window {
 //callers:
 //	1F:E237:20 8B EC  JSR field::show_message_window
 //
  1F:EC8B:A9 00     LDA #$00
+ //fall through.
+}
+//
+//$ef:ec8d field::show_window:
+//callers:
+//	 1F:E264:20 8D EC  JSR $EC8D
+//in:
+//	u8 A : window_type
  1F:EC8D:20 FA EC  JSR field::draw_inplace_window
  1F:EC90:20 65 EE  JSR field::stream_string_in_window
  1F:EC93:20 AB EC  JSR field::await_and_get_new_input

@@ -140,7 +140,7 @@ field_draw_window_top:
 	VERIFY_PC $ecf5
 ;------------------------------------------------------------------------------------------------------
 	;INIT_PATCH $3f,$ed02,$ed56
-	INIT_PATCH $3f,$ed02,$ee65
+	INIT_PATCH $3f,$ed02,$ee9a
 ;;$3f:ed02 field::draw_window_box
 ;;callers:
 ;;	$3c:8efd
@@ -601,11 +601,11 @@ field_get_window_bottom_tiles:	;ed3b
 	bne field_X_get_window_tiles
 	.endif	;.ifdef IMPL_BORDER_LOADER
 ;======================================================================================================
-	VERIFY_PC $ee65
+	;VERIFY_PC $ee65
 	.endif	;FAST_FIELD_WINDOW
 ;======================================================================================================
 	.ifdef FAST_FIELD_WINDOW
-	INIT_PATCH $3f,$ee65,$ee9a
+	;INIT_PATCH $3f,$ee65,$ee9a
 ;;$3f:ee65 field::stream_string_in_window
 ;;callers:
 ;;	$3c:90ff	? 1E:9109:4C 65 EE  JMP $EE65
@@ -613,6 +613,15 @@ field_get_window_bottom_tiles:	;ed3b
 ;;	$3f:ec83	? 1F:EC88:4C 65 EE  JMP $EE65
 ;;	$3f:ec8b	? 1F:EC90:20 65 EE  JSR $EE65
 field_stream_string_in_window:
+;; patch out callers external to this implementation {
+	.bank $3c
+	.org $9109
+	jmp field_stream_string_in_window
+	.bank $3d
+	.org $a675
+	jmp field_stream_string_in_window
+	RESTORE_PC field_stream_string_in_window
+;; }
 .viewport_left = $29	;in 16x16 unit
 .viewport_top = $2f	;in 16x16 unit
 .in_menu_mode = $37
@@ -656,6 +665,7 @@ field_stream_string_in_window:
 
 	VERIFY_PC $ee9a
 	.endif	;FAST_FIELD_WINDOW
+
 ;======================================================================================================
 ;$3f:f40a setVramAddrForWindow
 ;//	[in] u8 $3a : x offset
