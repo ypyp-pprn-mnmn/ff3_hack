@@ -251,7 +251,7 @@ field_draw_window_box:	;;$ed02
 		jsr field_updateTileAttrCache	;$c98f
 		ldy <.currentY
 		iny
-		;; field_updateTileAttrCache() has a bug in cases that window crosses vertical boundary (which is at 0x1e)
+		;; field_updateTileAttrCache() isn't prepared for cases that window crosses vertical boundary (which is at 0x1e)
 		;; that is, if currentY > 0x1e, updated attributes are placed 1 row above where it should be in.
 		;; so here handles as a wrokaround wrapping vertical coordinates.
 		cpy #$1e	;; wrap around
@@ -337,21 +337,6 @@ field_X_update_ppu_attr_table:
 field_X_render_borders:
 	rts
 
-
-	.ifdef TEST_BLACKOUT_ON_WINDOW
-field_X_blackout_1frame:
-	lda #%00000110
-	sta $2001
-
-	jsr waitNmiBySetHandler
-	inc <field_frame_counter
-	jsr field_sync_ppu_scroll	;if omitted, noticable glithces arose in town conversations
-	jsr field_callSoundDriver
-	lda #%00011110
-	sta $2001	
-	rts
-	.endif	;TEST_BLACKOUT_ON_WINDOW
-
 	.if 0
 field_X_render_borders:
 	;; 1: left-top to right-top, not including rightmost
@@ -400,6 +385,20 @@ field_X_store_PPUDATA = $f7b0
 	;sta $2007
 ;.template_code_end:
 	.endif ;0
+
+	.ifdef TEST_BLACKOUT_ON_WINDOW
+field_X_blackout_1frame:
+	lda #%00000110
+	sta $2001
+
+	jsr waitNmiBySetHandler
+	inc <field_frame_counter
+	jsr field_sync_ppu_scroll	;if omitted, noticable glithces arose in town conversations
+	jsr field_callSoundDriver
+	lda #%00011110
+	sta $2001	
+	rts
+	.endif	;TEST_BLACKOUT_ON_WINDOW
 ;------------------------------------------------------------------------------------------------------
 ;;$3f:ed56 field::fill_07c0_ff
 ;;callers:
@@ -654,11 +653,9 @@ field_get_window_bottom_tiles:	;ed3b
 	jsr field_X_get_window_tiles
 	bne field_X_get_window_tiles
 	.endif	;.ifdef IMPL_BORDER_LOADER
-;======================================================================================================
+
 	;VERIFY_PC $ee65
-	.endif	;FAST_FIELD_WINDOW
-;======================================================================================================
-	.ifdef FAST_FIELD_WINDOW
+;------------------------------------------------------------------------------------------------------
 	;INIT_PATCH $3f,$ee65,$ee9a
 ;;$3f:ee65 field::stream_string_in_window
 ;;callers:
