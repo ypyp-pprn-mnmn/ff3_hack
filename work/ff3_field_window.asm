@@ -9,16 +9,36 @@
 ff3_field_window_begin:
 
 	.ifdef FAST_FIELD_WINDOW
-	INIT_PATCH $3f,$ec8b,$ece5
+	INIT_PATCH $3f,$ec83,$ece5
+
+;;$3f:ec83 field::show_message_UNKNOWN:
+;; 1F:EC83:A9 00     LDA #$00
+;; 1F:EC85:20 FA EC  JSR field::draw_inplace_window
+;; 1F:EC88:4C 65 EE  JMP field::stream_string_in_window
+field_show_off_message_window:
+	lda #0
+field_X_show_off_window:
+	jsr field_draw_inplace_window		;$ecfa
+	jmp field_stream_string_in_window	;$ee65
+;------------------------------------------------------------------------------------------------------
 ;;$3f:ec8b field::show_message_window:
 ;;callers:
 ;;	1F:E237:20 8B EC  JSR field::show_message_window
 ;;
 field_show_message_window:
-.field_pad1_inputs = $20
+	;jsr field_show_off_message_window
 	lda #0
-	jsr field_draw_inplace_window		;$ecfa
-	jsr field_stream_string_in_window	;$ee65
+;------------------------------------------------------------------------------------------------------
+;;$ef:ec8d field::show_window:
+;;callers:
+;;	 1F:E264:20 8D EC  JSR $EC8D
+;;in:
+;;	u8 A : window_type
+field_show_window:
+.field_pad1_inputs = $20
+	;jsr field_draw_inplace_window		;$ecfa
+	;jsr field_stream_string_in_window	;$ee65
+	jsr field_X_show_off_window
 	jsr field_await_and_get_next_input	;$ecab
 	lda <$7d
 	;beq .leave	;$eca8
@@ -33,8 +53,7 @@ field_show_message_window:
 .on_a_button_down:	;$eca4
 	lda #0
 	sta <$7d
-	beq .leave
-
+	beq .leave	;always met
 ;------------------------------------------------------------------------------------------------------
 ;;$3f:ECAB field::await_and_get_new_input:
 ;;callers:

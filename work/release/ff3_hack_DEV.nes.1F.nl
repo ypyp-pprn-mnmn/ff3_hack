@@ -36,3 +36,4 @@ $EEFA#field::decode_and_draw_string#
 $F02A#field::map_opcodes_into_tiles#opcodes := [0x10, 0x28)
 $EC83#field::show_message_UNK#
 $EC8B#field::show_message_window#
+$EC8D#field::show_window#
