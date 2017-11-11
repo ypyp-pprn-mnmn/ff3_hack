@@ -9,6 +9,9 @@
 ff3_field_window_begin:
 
 	.ifdef FAST_FIELD_WINDOW
+	
+
+;------------------------------------------------------------------------------------------------------
 	INIT_PATCH $3f,$ece5,$ecf5
 ;;$3f:ece5 field::draw_window_top:
 ;;NOTEs:
@@ -26,7 +29,10 @@ field_draw_window_top:
 	lda <.window_top
 	sta <.window_row_in_drawing
 	jsr field_calc_draw_width_and_init_window_tile_buffer
-	jsr field_init_window_attr_buffer
+	;jsr field_init_window_attr_buffer
+	nop
+	nop
+	nop
 	jsr field_get_window_top_tiles
 	jsr field_draw_window_row
 	;; fall through (into $ecf5: field_restore_bank)
@@ -108,8 +114,9 @@ field_draw_window_box:
 		jsr waitNmiBySetHandler
 		jsr do_sprite_dma_from_0200	;if omitted, sprites are shown on top of window
 		jsr field_X_update_ppu_attr_table
-		jsr field_sync_ppu_scroll	;if omitted, noticable glithces arose in town conversations
-		jsr field_callSoundDriver
+		;jsr field_sync_ppu_scroll	;if omitted, noticable glithces arose in town conversations
+		;jsr field_callSoundDriver
+		jsr field_X_end_ppu_update
 
 .post_attr_update:
 	jsr field_X_render_borders
@@ -118,6 +125,62 @@ field_draw_window_box:
 	jmp field_restore_bank	;$ecf5
 
 	;VERIFY_PC $ed56
+
+field_X_update_ppu_attr_table:
+.left = $38
+.top = $39	;in 8x8
+.offset_x = $3a
+.offset_y = $3b
+.width = $3c
+.height = $3d
+.attr_cache = $0300
+	lda <.top
+	and #$1c	;capping valid height (0x1e) and mask off lower bits to align 32x32 boundary
+	asl A	; (top >> 2) << 3 : 8 bytes per row
+	sta <.offset_x
+
+	lda <.height
+	adc <.top
+	cmp #30
+	bcc .no_wrap
+		adc #1	;effectively +2. to fill gap between screen boundary and attr boundary
+.no_wrap:
+	adc #3	;round up to next attr boundary (4n)
+	and #$1c
+	asl A
+	sta <.offset_y
+
+	ldy #$23
+	jsr .field_X_upload_attributes
+	ldy #$27
+.field_X_upload_attributes:
+	lda <.offset_x
+.loop:
+	;A = offset into attr table
+	;X = index of attr table (taken target bg in account)
+		cpy #$23
+		beq .on_1st_bg
+		ora #$40	;on 2nd bg, offset into cache started at .attr_cache + $40
+.on_1st_bg:
+		tax
+		sty $2006
+		ora #$c0
+		sta $2006
+	.upload_loop:
+			lda .attr_cache,x
+			sta $2007
+			inx
+			txa
+			and #$07
+			bne .upload_loop
+		txa
+		and #$38	;wraps if crosses bg boundary ($40)
+		cmp <.offset_y
+		bne .loop
+	rts
+
+field_X_render_borders:
+	rts
 
 
 	.ifdef TEST_BLACKOUT_ON_WINDOW
@@ -133,9 +196,6 @@ field_X_blackout_1frame:
 	sta $2001	
 	rts
 	.endif	;TEST_BLACKOUT_ON_WINDOW
-
-field_X_render_borders:
-	rts
 
 	.if 0
 field_X_render_borders:
@@ -321,16 +381,18 @@ field_get_window_metrics:
 field_draw_window_row:	;;$3f:edc6 field::draw_window_row
 ;;callers:
 ;;	$3f:ece5 field::draw_window_top
-;;	$3f:ed02 field::draw_window_box
+;;	$3f:ed02 field::draw_window_box (only the original implementation)
 .width = $3c
 .iChar = $90
 	lda <.width
 	sta <.iChar
-	jsr field_updateTileAttrCache	;$c98f
+	;jsr field_updateTileAttrCache	;$c98f
 	jsr waitNmiBySetHandler	;$ff00
 	jsr do_sprite_dma_from_0200
 	jsr field_upload_window_content	;$f6aa
-	jsr field_setTileAttrForWindow	;$c9a9
+	;jsr field_setTileAttrForWindow	;$c9a9
+	;;fall through.
+field_X_end_ppu_update:
 	jsr field_sync_ppu_scroll	;$ede1
 	jmp field_callSoundDriver	;$c750
 	;VERIFY_PC $ede1
@@ -438,57 +500,7 @@ field_get_window_bottom_tiles:	;ed3b
 	bne field_X_get_window_tiles
 	.endif	;.ifdef IMPL_BORDER_LOADER
 ;======================================================================================================
-field_X_update_ppu_attr_table:
-.left = $38
-.top = $39	;in 8x8
-.offset_x = $3a
-.offset_y = $3b
-.width = $3c
-.height = $3d
-.attr_cache = $0300
-	lda <.top
-	and #$1c	;capping valid height (0x1e) and mask off lower bits to align 32x32 boundary
-	asl A	; (top >> 2) << 3 : 8 bytes per row
-	sta <.offset_x
 
-	lda <.height
-	adc <.top
-	cmp #30
-	bcc .no_wrap
-		adc #1	;round up to 32
-.no_wrap:
-	adc #3	;round up to next attr boundary (4n)
-	and #$1c
-	asl A
-	sta <.offset_y
-
-	ldy #$23
-	jsr .field_X_upload_attributes
-	ldy #$27
-.field_X_upload_attributes:
-	lda <.offset_x
-.loop:
-	;A = offset into attr table
-		cpy #$23
-		beq .on_1st_bg
-		ora #$40	;on 2nd bg, offset into cache started at .attr_cache + $40
-.on_1st_bg:
-		tax
-		sty $2006
-		ora #$c0
-		sta $2006
-	.upload_loop:
-			lda .attr_cache,x
-			sta $2007
-			inx
-			txa
-			and #$07
-			bne .upload_loop
-		txa
-		and #$38	;wraps if crosses bg boundary ($40)
-		cmp <.offset_y
-		bne .loop
-	rts
 ;-----------
 
 	VERIFY_PC $ee65
@@ -583,10 +595,11 @@ field_init_window_tile_buffer:
 ;	return;
 ;$f692:
 	lda #$ff
-	ldy #$1d
+	;ldy #$1d
+	ldy #$3d
 .copy_loop:
 		sta .tiles_1st,y
-		sta .tiles_2nd,y
+		;sta .tiles_2nd,y
 		dey
 		bpl .copy_loop
 	clc
@@ -619,8 +632,9 @@ field_draw_window_content:
 	inc <field_frame_counter
 	pla
 	jsr field_upload_window_content	;f6aa
-	jsr field_sync_ppu_scroll	;ede1
-	jsr field_callSoundDriver	;c750
+	;jsr field_sync_ppu_scroll	;ede1
+	;jsr field_callSoundDriver	;c750
+	jsr field_X_end_ppu_update	;sync_ppu_scroll+call_sound_driver
 	lda <.bank
 	jsr call_switch_2banks		;ff03
 	jmp field_init_window_tile_buffer	;f683

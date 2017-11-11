@@ -11380,730 +11380,737 @@
     9  35:88EB            ff3_field_window_begin:
    10                     
    11           0001              .ifdef FAST_FIELD_WINDOW
-   12                             INIT_PATCH $3f,$ece5,$ecf5
+   12                             
+   13                     
+   14                     ;------------------------------------------------------------------------------------------------------
+   15                             INIT_PATCH $3f,$ece5,$ecf5
                 003F              .bank   $3f
                 CCE5              .org    $ece5
        3F:CCE5                    .ds             (($ecf5) - ($ece5))
                 CCE5              .org    $ece5
-   13                     ;;$3f:ece5 field::draw_window_top:
-   14                     ;;NOTEs:
-   15                     ;;      called when executed an exchange of position in item window from menu
-   16                     ;;original code:
-   17                     ;1F:ECE5:A5 39     LDA window_top = #$0B
-   18                     ;1F:ECE7:85 3B     STA window_row_in_draw = #$0F
-   19                     ;1F:ECE9:20 70 F6  JSR field::calc_size_and_init_buff
-   20                     ;1F:ECEC:20 56 ED  JSR field::init_window_attr_buffer
-   21                     ;1F:ECEF:20 F6 ED  JSR field::get_window_top_tiles
-   22                     ;1F:ECF2:20 C6 ED  JSR field::draw_window_row
-   23  3F:CCE5            field_draw_window_top:
-   24           0039      .window_top = $39
-   25           003B      .window_row_in_drawing = $3b
-   26  3F:CCE5  A5 39             lda <.window_top
-   27  3F:CCE7  85 3B             sta <.window_row_in_drawing
-   28  3F:CCE9  20 70 F6          jsr field_calc_draw_width_and_init_window_tile_buffer
-   29  3F:CCEC  20 42 ED          jsr field_init_window_attr_buffer
-   30  3F:CCEF  20 D9 ED          jsr field_get_window_top_tiles
-   31  3F:CCF2  20 AB ED          jsr field_draw_window_row
-   32                             ;; fall through (into $ecf5: field_restore_bank)
-   33                             VERIFY_PC $ecf5
+   16                     ;;$3f:ece5 field::draw_window_top:
+   17                     ;;NOTEs:
+   18                     ;;      called when executed an exchange of position in item window from menu
+   19                     ;;original code:
+   20                     ;1F:ECE5:A5 39     LDA window_top = #$0B
+   21                     ;1F:ECE7:85 3B     STA window_row_in_draw = #$0F
+   22                     ;1F:ECE9:20 70 F6  JSR field::calc_size_and_init_buff
+   23                     ;1F:ECEC:20 56 ED  JSR field::init_window_attr_buffer
+   24                     ;1F:ECEF:20 F6 ED  JSR field::get_window_top_tiles
+   25                     ;1F:ECF2:20 C6 ED  JSR field::draw_window_row
+   26  3F:CCE5            field_draw_window_top:
+   27           0039      .window_top = $39
+   28           003B      .window_row_in_drawing = $3b
+   29  3F:CCE5  A5 39             lda <.window_top
+   30  3F:CCE7  85 3B             sta <.window_row_in_drawing
+   31  3F:CCE9  20 70 F6          jsr field_calc_draw_width_and_init_window_tile_buffer
+   32                             ;jsr field_init_window_attr_buffer
+   33  3F:CCEC  EA                nop
+   34  3F:CCED  EA                nop
+   35  3F:CCEE  EA                nop
+   36  3F:CCEF  20 14 EE          jsr field_get_window_top_tiles
+   37  3F:CCF2  20 EC ED          jsr field_draw_window_row
+   38                             ;; fall through (into $ecf5: field_restore_bank)
+   39                             VERIFY_PC $ecf5
        3F:CCF5                    .verify_pc_00144:
                 0000              .if (.verify_pc_00144 > $ecf5)
                                   .endif
-   34                     ;------------------------------------------------------------------------------------------------------
-   35                             ;INIT_PATCH $3f,$ed02,$ed56
-   36                             INIT_PATCH $3f,$ed02,$ee65
+   40                     ;------------------------------------------------------------------------------------------------------
+   41                             ;INIT_PATCH $3f,$ed02,$ed56
+   42                             INIT_PATCH $3f,$ed02,$ee65
                 003F              .bank   $3f
                 DD02              .org    $ed02
        3F:DD02                    .ds             (($ee65) - ($ed02))
                 DD02              .org    $ed02
-   37                     ;;$3f:ed02 field::draw_window_box
-   38                     ;;callers:
-   39                     ;;      $3c:8efd
-   40                     ;;      $3c:8f0e
-   41                     ;;      $3c:8fd5
-   42                     ;;      $3c:90b1
-   43                     ;;      $3d:aaf4 (jmp) in $3d:aaf1 field::drawWindowOf
-   44                     ;;
-   45                     ;;      This logic plays key role in drawing window, both for menu windows and in-place windows.
-   46                     ;;      Usually window drawing is performed as follows:
-   47                     ;;      1)      Call this logic to fill in background with window parts
-   48                     ;;              and setup BG attributes if necessary (the in-palce window case).
-   49                     ;;              In cases of the menu window, BG attributes have alreday been setup in another logic
-   50                     ;;              and should not be changed.
-   51                     ;;      2)      Subsequently call other drawing logics which overwrites background with
-   52                     ;;              content (aka string) in the window, 2 consecutive window rows per 1 frame.
-   53                     ;;              These logics rely on window metrics variables, which is initially setup on this logic,
-   54                     ;;              and don't change BG attributes anyway.
-   55                     ;;NOTEs:
-   56                     ;;      in the scope of logic, it is safe to use the address range $0780-$07ff (inclusive) in a destructive way.
-   57                     ;;      The original code uses this area as temporary buffer for rendering purporses
-   58                     ;;      and discards its contents on exit.
-   59                     ;;      more specifically, address are utilized as follows:
-   60                     ;;              $0780-$07bf: used for PPU name table buffer,
-   61                     ;;              $07c0-$07cf: used for PPU attr table buffer,
-   62                     ;;              $07d0-$07ff: used for 3-tuple of array that in each entry defines
-   63                     ;;                      (vram address(high&low), value to tranfer)
-   64  3F:DD02            field_draw_window_box:
-   65                     ;;[in]
-   66           0096      .window_id = $96
-   67           0037      .skipAttrUpdate = $37   ;;or in more conceptual, 'is in menu window'
-   68                     ;;[in,out]
-   69           0038      .beginX = $38   ;loaded by field_get_window_metrics
-   70           0039      .beginY = $39   ;loaded by field_get_window_metrics
-   71           003B      .currentY = $3b
-   72           003C      .width = $3c    ;loaded by field_get_window_metrics
-   73           003D      .height = $3d   ;loaded by field_get_window_metrics
-   74           3300      .attrCache = $0300      ;128bytes. 1st 64bytes for 1st BG, 2nd for 2nd.
-   75           77C0      .newAttrBuffer = $07c0  ;16bytes. only for 1 line (2 consecutive window row)
-   76                     
-   77  3F:DD02  A6 96             ldx <.window_id
-   78  3F:DD04  20 4D ED          jsr field_get_window_metrics    ;$ed61
-   79                     ;---
-   80                             ;jsr field_calc_draw_width_and_init_window_tile_buffer ;        $f670
-   81                     ;---
-   82  3F:DD07  A5 37             lda <.skipAttrUpdate
-   83  3F:DD09  D0 2D             bne .post_attr_update
-   84  3F:DD0B  20 42 ED                  jsr field_init_window_attr_buffer       ;ed56
-   85  3F:DD0E  A5 3D                     lda <.height
-   86  3F:DD10  48                        pha
-   87  3F:DD11  A4 39                     ldy <.beginY
-   88  3F:DD13            .setupAttributes:
-   89  3F:DD13  84 3B                     sty <.currentY
-   90  3F:DD15  20 8F C9                  jsr field_updateTileAttrCache   ;$c98f
-   91  3F:DD18  A4 3B                     ldy <.currentY
-   92  3F:DD1A  C8                        iny
-   93                                     ;; field_updateTileAttrCache() has a bug in cases that window crosses vertical boundary (which is at 0x1e)
-   94                                     ;; that is, if currentY > 0x1e, updated attributes are placed 1 row above where it should be in.
-   95                                     ;; so here handles as a wrokaround wrapping vertical coordinates.
-   96  3F:DD1B  C0 1E                     cpy #$1e        ;; wrap around
-   97  3F:DD1D  D0 02                     bne .no_wrap
-   98  3F:DD1F  A0 00                             ldy #0
-   99  3F:DD21                    .no_wrap:
-  100  3F:DD21  68                        pla
-  101  3F:DD22  38                        sec
-  102  3F:DD23  E9 01                     sbc #1
-  103  3F:DD25  48                        pha
-  104  3F:DD26  D0 EB                     bne .setupAttributes
-  105                     
-  106  3F:DD28                    .update_ppu:
-  107  3F:DD28  68                        pla     ;dispose
-  108  3F:DD29  20 00 FF                  jsr waitNmiBySetHandler
-  109  3F:DD2C  20 AA F8                  jsr do_sprite_dma_from_0200     ;if omitted, sprites are shown on top of window
-  110  3F:DD2F  20 17 EE                  jsr field_X_update_ppu_attr_table
-  111  3F:DD32  20 C4 ED                  jsr field_sync_ppu_scroll       ;if omitted, noticable glithces arose in town conversations
-  112  3F:DD35  20 50 C7                  jsr field_callSoundDriver
-  113                     
-  114  3F:DD38            .post_attr_update:
-  115  3F:DD38  20 41 ED          jsr field_X_render_borders
-  116                     ; adjust metrics as borders don't need further drawing...
-  117  3F:DD3B  20 19 F7          jsr field_X_shrink_window_metrics
-  118  3F:DD3E  4C F5 EC          jmp field_restore_bank  ;$ecf5
-  119                     
-  120                             ;VERIFY_PC $ed56
-  121                     
-  122                     
-  123           0000              .ifdef TEST_BLACKOUT_ON_WINDOW
-  135                             .endif  ;TEST_BLACKOUT_ON_WINDOW
-  136                     
-  137  3F:DD41            field_X_render_borders:
-  138  3F:DD41  60                rts
-  139                     
-  140           0000              .if 0
-  187                             .endif ;0
-  188                     ;------------------------------------------------------------------------------------------------------
-  189                     ;;$3f:ed56 field::fill_07c0_ff
-  190                     ;;callers:
-  191                     ;;      $3f:ece5 field::draw_window_top
-  192                     ;;      $3f:ed02 field::draw_window_box
-  193  3F:DD42            field_init_window_attr_buffer:
-  194           77C0      .window_attr_buffer = $07c0
-  195  3F:DD42  A2 0F             ldx #$0f
-  196  3F:DD44  A9 FF             lda #$ff
-  197  3F:DD46            .fill:
-  198  3F:DD46  9D C0 07          sta .window_attr_buffer,x
-  199  3F:DD49  CA                dex
-  200  3F:DD4A  10 FA             bpl .fill
-  201  3F:DD4C            field_window_rts_1:
-  202  3F:DD4C  60                rts
-  203                     
-  204                             ;VERIFY_PC $ed61
-  205                     ;------------------------------------------------------------------------------------------------------
-  206                     ;$3f:ed61 field::get_window_metrics
-  207                     ;//[in]
-  208                     ;// u8 $37: skipAttrUpdate
-  209                     ;// u8 X: window_type (0...4)
-  210                     ;//             0: object's message?
-  211                     ;//             1: choose dialog (Yes/No) (can be checked at INN)
-  212                     ;//             2: use item to object
-  213                     ;//             3: Gil (can be checked at INN)
-  214                     ;//             4: floor name
-  215                             ;INIT_PATCH $3f,$ed61,$edc6
-  216                     ;;$3f:ed61 field::get_window_metrics
-  217                     ;;callers:
-  218                     ;;      $3f:ed02 field::draw_window_box
-  219                     ;;NOTEs:
-  220                     ;; 1) to reflect changes in screen those made by 'field_hide_sprites_around_window',
-  221                     ;;      which is called within this function,
-  222                     ;;      caller must update sprite attr such as:
-  223                     ;;      lda #2
-  224                     ;;      sta $4014       ;DMA
-  225                     ;; 2) this logic is very simlar to $3d:aabc field::get_menu_window_metrics.
-  226                     ;;      the difference is:
-  227                     ;;              A) this logic takes care of wrap-around unlike the other one, which does not.
-  228                     ;;              B) target window and the address of table where the corresponding metrics defined at
-  229  3F:DD4D            field_get_window_metrics:
-  230                     ;[in]
-  231           0029      .viewport_left = $29    ;in 16x16 unit
-  232           002F      .viewport_top = $2f     ;in 16x16 unit
-  233           0037      .skip_attr_update = $37
-  234                     ;[out]
-  235           0038      .left = $38     ;in 8x8 unit
-  236           0039      .top = $39      ;in 8x8 unit
-  237           003C      .width = $3c
-  238           003D      .height = $3d
-  239           0097      .offset_x = $97
-  240           0098      .offset_y = $98
-  241           00B5      .internal_top = $b5
-  242           00B6      .internal_left = $b6
-  243           00B7      .internal_bottom = $b7
-  244           00B8      .internal_right = $b8
-  245                     
-  246  3F:DD4D  A5 37             lda <.skip_attr_update
-  247  3F:DD4F  D0 FB             bne field_window_rts_1  ;rts (original: bne $ed60)
-  248                             ;; calculate left coordinates
-  249  3F:DD51  BD 97 ED          lda .window_attr_table_x,x
-  250  3F:DD54  85 B6             sta <.internal_left
-  251  3F:DD56  85 97             sta <.offset_x
-  252  3F:DD58  C6 97             dec <.offset_x
-  253  3F:DD5A  A5 29             lda <.viewport_left     ;assert(.object_x < 0x80)
-  254  3F:DD5C  0A                asl a
-  255  3F:DD5D  65 B6             adc <.internal_left
-  256  3F:DD5F  29 3F             and #$3f
-  257  3F:DD61  85 38             sta <.left
-  258                             ;; calculate top coordinates
-  259  3F:DD63  BD 9C ED          lda .window_attr_table_y,x
-  260                             ;clc ;here always clear
-  261  3F:DD66  69 02             adc #2
-  262  3F:DD68  85 98             sta <.offset_y
-  263  3F:DD6A  85 B5             sta <.internal_top
-  264  3F:DD6C  C6 B5             dec <.internal_top
-  265  3F:DD6E  A5 2F             lda <.viewport_top
-  266  3F:DD70  0A                asl a
-  267  3F:DD71  7D 9C ED          adc .window_attr_table_y,x
-  268  3F:DD74  C9 1E             cmp #$1e
-  269  3F:DD76  90 02             bcc .no_wrap
-  270                             ;sec ;here always set
-  271  3F:DD78  E9 1E             sbc #$1e
-  272  3F:DD7A            .no_wrap:
-  273  3F:DD7A  85 39             sta <.top
-  274                             
-  275                             ;; calculate right coordinates
-  276  3F:DD7C  BD A1 ED          lda .window_attr_table_width,x
-  277  3F:DD7F  85 3C             sta <.width
-  278  3F:DD81  18                clc
-  279  3F:DD82  65 B6             adc <.internal_left
-  280  3F:DD84  85 B8             sta <.internal_right
-  281  3F:DD86  C6 B8             dec <.internal_right
-  282                             ;; calculate bottom coordinates
-  283  3F:DD88  BD A6 ED          lda .window_attr_table_height,x
-  284  3F:DD8B  85 3D             sta <.height
-  285  3F:DD8D  18                clc
-  286  3F:DD8E  65 B5             adc <.internal_top
-  287                             ;sec    ;here always clear
-  288  3F:DD90  E9 02             sbc #2  ;effectively -3
-  289  3F:DD92  85 B7             sta <.internal_bottom
-  290                             ;; done calcs
-  291                             ;; here X must have window_type (field_hide_sprites_around_window expects it)
-  292  3F:DD94  4C 18 EC          jmp field_hide_sprites_around_window    ;$ec18
-  293                             ;rts
-  294                             ;VERIFY_PC $edb2
-  295                             ;.org $edb2
-  296  3F:DD97            .window_attr_table_x:   ; = $edb2
-  297  3F:DD97  02 02 02          .db $02, $02, $02, $12, $02
-       3F:DD9A  12 02     
-  298  3F:DD9C            .window_attr_table_y:   ; = $edb7
-  299  3F:DD9C  02 12 12          .db $02, $12, $12, $0e, $02
-       3F:DD9F  0E 02     
-  300  3F:DDA1            .window_attr_table_width:       ; = $edbc
-  301  3F:DDA1  1C 08 1C          .db $1c, $08, $1c, $0c, $1c
-       3F:DDA4  0C 1C     
-  302  3F:DDA6            .window_attr_table_height:      ; = $edc1
-  303  3F:DDA6  0A 0A 0A          .db $0a, $0a, $0a, $04, $04
-       3F:DDA9  04 04     
-  304                     
-  305                             ;VERIFY_PC $edc6
-  306                     
-  307                     ;------------------------------------------------------------------------------------------------------
-  308                     ;$3f:edc6 field::drawWindowLine
-  309                     ;{
-  310                     ;       $90 = $3c;
-  311                     ;       $c98f();        //field::loadWindowPalette?
-  312                     ;       waitNmiBySetHandler();  //$ff00();
-  313                     ;       $4014 = 2;
-  314                     ;       putWindowTiles();       //$f6aa();
-  315                     ;       field::setWindowPalette();      //$c9a9();
-  316                     ;       field::sync_ppu_scroll();       //$ede1();
-  317                     ;       return field::callSoundDriver();
-  318                     ;$ede1:
-  319                     ;}
-  320                             ;INIT_PATCH $3f,$edc6,$ede1
-  321  3F:DDAB            field_draw_window_row:  ;;$3f:edc6 field::draw_window_row
-  322                     ;;callers:
-  323                     ;;      $3f:ece5 field::draw_window_top
-  324                     ;;      $3f:ed02 field::draw_window_box
-  325           003C      .width = $3c
-  326           0090      .iChar = $90
-  327  3F:DDAB  A5 3C             lda <.width
-  328  3F:DDAD  85 90             sta <.iChar
-  329  3F:DDAF  20 8F C9          jsr field_updateTileAttrCache   ;$c98f
-  330  3F:DDB2  20 00 FF          jsr waitNmiBySetHandler ;$ff00
-  331  3F:DDB5  20 AA F8          jsr do_sprite_dma_from_0200
-  332  3F:DDB8  20 AA F6          jsr field_upload_window_content ;$f6aa
-  333  3F:DDBB  20 A9 C9          jsr field_setTileAttrForWindow  ;$c9a9
-  334  3F:DDBE  20 C4 ED          jsr field_sync_ppu_scroll       ;$ede1
-  335  3F:DDC1  4C 50 C7          jmp field_callSoundDriver       ;$c750
-  336                             ;VERIFY_PC $ede1
-  337                     ;------------------------------------------------------------------------------------------------------
-  338                     ;$3f:ede1 field::sync_ppu_scroll
-  339                     ;{
-  340                     ;       if ($37 == 0) { //bne ede8
-  341                     ;               return $e571();
-  342                     ;       }
-  343                     ;$ede8:
-  344                     ;       $2000 = $ff;
-  345                     ;       $2005 = 0; $2005 = 0;
-  346                     ;       return;
-  347                     ;$edf6:
-  348                     ;}
-  349                             ;INIT_PATCH $3f,$ede1,$edf6
-  350                     ;;$3f:ede1 field::sync_ppu_scroll
-  351                     ;;callers:
-  352                     ;;      $3f:edc6 field::draw_window_row
-  353                     ;;      $3f:f692 field::draw_window_content
-  354  3F:DDC4            field_sync_ppu_scroll:
-  355           0037      .skip_attr_update = $37
-  356           00FF      .ppu_ctrl_cache = $ff
-  357  3F:DDC4  A5 37             lda <.skip_attr_update
-  358  3F:DDC6  D0 03             bne .set_ppu_ctrl
-  359  3F:DDC8  4C 71 E5                  jmp field_sync_ppu_scroll_with_player   ;$e571
-  360  3F:DDCB            .set_ppu_ctrl:
-  361  3F:DDCB  A5 FF             lda <.ppu_ctrl_cache
-  362  3F:DDCD  8D 00 20          sta $2000
-  363  3F:DDD0  A9 00             lda #00
-  364  3F:DDD2  8D 05 20          sta $2005
-  365  3F:DDD5  8D 05 20          sta $2005
-  366  3F:DDD8  60                rts
-  367                             ;VERIFY_PC $edf6
-  368                     ;------------------------------------------------------------------------------------------------------
-  369                             ;.ifdef FAST_FIELD_WINDOW
-  370                             ;INIT_PATCH $3f,$edf6,$ee65
-  371                     ;;$3f:edf6 field::getWindowTilesForTop
-  372                     ;;callers:
-  373                     ;;      $3f:ece5 field::draw_window_top
-  374                     ;;      $3f:ed02 field::draw_window_box
-  375  3F:DDD9            field_get_window_top_tiles:             
-  376  3F:DDD9  A9 00             lda #$00
-  377  3F:DDDB  20 DE ED          jsr field_X_get_window_tiles
-  378                             ;lda #$07
-  379                             ;;fall through
-  380  3F:DDDE            field_X_get_window_tiles:
-  381           003C      .width = $3c
-  382           003C      .eol = $3c
-  383           7780      .window_tiles_buffer_upper_row = $0780
-  384                     ;.window_tiles_buffer_lower_row = $07a0
-  385                     ;;in: A := lower 1bits:  0: fill in upper row; 1: fill in lower row
-  386                     ;;      higher 7bits: offset into tile table
-  387  3F:DDDE  4A                lsr A
-  388  3F:DDDF  A8                tay
-  389  3F:DDE0  A2 00             ldx #0
-  390  3F:DDE2  90 02             bcc .save_width
-  391  3F:DDE4  A2 20             ldx #$20
-  392  3F:DDE6            .save_width:
-  393  3F:DDE6  A5 3C             lda <.width
-  394  3F:DDE8  48                pha     ;width
-  395  3F:DDE9            .left_tile:
-  396  3F:DDE9  B9 0E EE          lda field_X_window_parts,y
-  397  3F:DDEC  9D 80 07          sta .window_tiles_buffer_upper_row,x
-  398  3F:DDEF  8A                txa
-  399  3F:DDF0  18                clc
-  400  3F:DDF1  65 3C             adc <.width
-  401  3F:DDF3  85 3C             sta <.eol       ;width + offset
-  402  3F:DDF5  E8                inx
-  403  3F:DDF6            .center_tiles:
-  404  3F:DDF6  B9 0F EE                  lda field_X_window_parts+1,y
-  405  3F:DDF9  9D 80 07                  sta .window_tiles_buffer_upper_row,x
-  406  3F:DDFC  E8                        inx
-  407  3F:DDFD  E4 3C                     cpx <.eol
-  408  3F:DDFF  90 F5                     bcc .center_tiles
-  409  3F:EE01            .right_tile:
-  410  3F:EE01  B9 10 EE          lda field_X_window_parts+2,y
-  411  3F:EE04  9D 7F 07          sta .window_tiles_buffer_upper_row-1,x
-  412  3F:EE07  68                pla     ;original width
-  413  3F:EE08  85 3C             sta <.width
-  414  3F:EE0A  98                tya
-  415                             ;here always carry is set
-  416                             ;adc #$22       ;effectively +23
-  417  3F:EE0B  69 06             adc #$06
-  418  3F:EE0D  60                rts
-  419  3F:EE0E            field_X_window_parts:
-  420  3F:EE0E  F7 F8 F9          db $f7, $f8, $f9
-  421  3F:EE11  FA FF FB          db $fa, $ff, $fb
-  422  3F:EE14  FC FD FE          db $fc, $fd, $fe
-  423           0000              .ifdef IMPL_BORDER_LOADER
-  439                             .endif  ;.ifdef IMPL_BORDER_LOADER
-  440                     ;======================================================================================================
-  441  3F:EE17            field_X_update_ppu_attr_table:
-  442           0038      .left = $38
-  443           0039      .top = $39      ;in 8x8
-  444           003A      .offset_x = $3a
-  445           003B      .offset_y = $3b
-  446           003C      .width = $3c
-  447           003D      .height = $3d
-  448           3300      .attr_cache = $0300
-  449  3F:EE17  A5 39             lda <.top
-  450  3F:EE19  29 1C             and #$1c        ;capping valid height (0x1e) and mask off lower bits to align 32x32 boundary
-  451  3F:EE1B  0A                asl A   ; (top >> 2) << 3 : 8 bytes per row
-  452  3F:EE1C  85 3A             sta <.offset_x
-  453                     
-  454  3F:EE1E  A5 3D             lda <.height
-  455  3F:EE20  65 39             adc <.top
-  456  3F:EE22  C9 1E             cmp #30
-  457  3F:EE24  90 02             bcc .no_wrap
-  458  3F:EE26  69 01                     adc #1  ;round up to 32
-  459  3F:EE28            .no_wrap:
-  460  3F:EE28  69 03             adc #3  ;round up to next attr boundary (4n)
-  461  3F:EE2A  29 1C             and #$1c
-  462  3F:EE2C  0A                asl A
-  463  3F:EE2D  85 3B             sta <.offset_y
-  464                     
-  465  3F:EE2F  A0 23             ldy #$23
-  466  3F:EE31  20 36 EE          jsr .field_X_upload_attributes
-  467  3F:EE34  A0 27             ldy #$27
-  468  3F:EE36            .field_X_upload_attributes:
-  469  3F:EE36  A5 3A             lda <.offset_x
-  470  3F:EE38            .loop:
-  471                                     ;pha
-  472  3F:EE38  C0 23                     cpy #$23
-  473  3F:EE3A  F0 02                     beq .on_1st_bg
-  474  3F:EE3C  09 40                     ora #$40
-  475  3F:EE3E            .on_1st_bg:
-  476  3F:EE3E  AA                        tax
-  477                                     ;bit $2002
-  478  3F:EE3F  8C 06 20                  sty $2006
-  479  3F:EE42  09 C0                     ora #$c0
-  480  3F:EE44  8D 06 20                  sta $2006
-  481  3F:EE47                    .upload_loop:
-  482  3F:EE47  BD 00 03                          lda .attr_cache,x
-  483  3F:EE4A  8D 07 20                          sta $2007
-  484  3F:EE4D  E8                                inx
-  485  3F:EE4E  8A                                txa
-  486  3F:EE4F  29 07                             and #$07
-  487  3F:EE51  D0 F4                             bne .upload_loop
-  488                                     ;pla
-  489                                     ;adc #$08
-  490  3F:EE53  8A                        txa
-  491  3F:EE54  29 38                     and #$38
-  492  3F:EE56  C5 3B                     cmp <.offset_y
-  493  3F:EE58  D0 DE                     bne .loop
-  494  3F:EE5A  60                rts
-  495                     
-  496           0000              .if 0
-  522                             .endif  ;0
-  523  3F:EE5B            field_X_update_ppu_attr_table_end:
-  524                     ;-----------
-  525                     
-  526                             VERIFY_PC $ee65
-       3F:EE5B                    .verify_pc_00146:
+   43                     ;;$3f:ed02 field::draw_window_box
+   44                     ;;callers:
+   45                     ;;      $3c:8efd
+   46                     ;;      $3c:8f0e
+   47                     ;;      $3c:8fd5
+   48                     ;;      $3c:90b1
+   49                     ;;      $3d:aaf4 (jmp) in $3d:aaf1 field::drawWindowOf
+   50                     ;;
+   51                     ;;      This logic plays key role in drawing window, both for menu windows and in-place windows.
+   52                     ;;      Usually window drawing is performed as follows:
+   53                     ;;      1)      Call this logic to fill in background with window parts
+   54                     ;;              and setup BG attributes if necessary (the in-palce window case).
+   55                     ;;              In cases of the menu window, BG attributes have alreday been setup in another logic
+   56                     ;;              and should not be changed.
+   57                     ;;      2)      Subsequently call other drawing logics which overwrites background with
+   58                     ;;              content (aka string) in the window, 2 consecutive window rows per 1 frame.
+   59                     ;;              These logics rely on window metrics variables, which is initially setup on this logic,
+   60                     ;;              and don't change BG attributes anyway.
+   61                     ;;NOTEs:
+   62                     ;;      in the scope of logic, it is safe to use the address range $0780-$07ff (inclusive) in a destructive way.
+   63                     ;;      The original code uses this area as temporary buffer for rendering purporses
+   64                     ;;      and discards its contents on exit.
+   65                     ;;      more specifically, address are utilized as follows:
+   66                     ;;              $0780-$07bf: used for PPU name table buffer,
+   67                     ;;              $07c0-$07cf: used for PPU attr table buffer,
+   68                     ;;              $07d0-$07ff: used for 3-tuple of array that in each entry defines
+   69                     ;;                      (vram address(high&low), value to tranfer)
+   70  3F:DD02            field_draw_window_box:
+   71                     ;;[in]
+   72           0096      .window_id = $96
+   73           0037      .skipAttrUpdate = $37   ;;or in more conceptual, 'is in menu window'
+   74                     ;;[in,out]
+   75           0038      .beginX = $38   ;loaded by field_get_window_metrics
+   76           0039      .beginY = $39   ;loaded by field_get_window_metrics
+   77           003B      .currentY = $3b
+   78           003C      .width = $3c    ;loaded by field_get_window_metrics
+   79           003D      .height = $3d   ;loaded by field_get_window_metrics
+   80           3300      .attrCache = $0300      ;128bytes. 1st 64bytes for 1st BG, 2nd for 2nd.
+   81           77C0      .newAttrBuffer = $07c0  ;16bytes. only for 1 line (2 consecutive window row)
+   82                     
+   83  3F:DD02  A6 96             ldx <.window_id
+   84  3F:DD04  20 8E ED          jsr field_get_window_metrics    ;$ed61
+   85                     ;---
+   86                             ;jsr field_calc_draw_width_and_init_window_tile_buffer ;        $f670
+   87                     ;---
+   88  3F:DD07  A5 37             lda <.skipAttrUpdate
+   89  3F:DD09  D0 2A             bne .post_attr_update
+   90  3F:DD0B  20 83 ED                  jsr field_init_window_attr_buffer       ;ed56
+   91  3F:DD0E  A5 3D                     lda <.height
+   92  3F:DD10  48                        pha
+   93  3F:DD11  A4 39                     ldy <.beginY
+   94  3F:DD13            .setupAttributes:
+   95  3F:DD13  84 3B                     sty <.currentY
+   96  3F:DD15  20 8F C9                  jsr field_updateTileAttrCache   ;$c98f
+   97  3F:DD18  A4 3B                     ldy <.currentY
+   98  3F:DD1A  C8                        iny
+   99                                     ;; field_updateTileAttrCache() has a bug in cases that window crosses vertical boundary (which is at 0x1e)
+  100                                     ;; that is, if currentY > 0x1e, updated attributes are placed 1 row above where it should be in.
+  101                                     ;; so here handles as a wrokaround wrapping vertical coordinates.
+  102  3F:DD1B  C0 1E                     cpy #$1e        ;; wrap around
+  103  3F:DD1D  D0 02                     bne .no_wrap
+  104  3F:DD1F  A0 00                             ldy #0
+  105  3F:DD21                    .no_wrap:
+  106  3F:DD21  68                        pla
+  107  3F:DD22  38                        sec
+  108  3F:DD23  E9 01                     sbc #1
+  109  3F:DD25  48                        pha
+  110  3F:DD26  D0 EB                     bne .setupAttributes
+  111                     
+  112  3F:DD28                    .update_ppu:
+  113  3F:DD28  68                        pla     ;dispose
+  114  3F:DD29  20 00 FF                  jsr waitNmiBySetHandler
+  115  3F:DD2C  20 AA F8                  jsr do_sprite_dma_from_0200     ;if omitted, sprites are shown on top of window
+  116  3F:DD2F  20 3E ED                  jsr field_X_update_ppu_attr_table
+  117                                     ;jsr field_sync_ppu_scroll      ;if omitted, noticable glithces arose in town conversations
+  118                                     ;jsr field_callSoundDriver
+  119  3F:DD32  20 F9 ED                  jsr field_X_end_ppu_update
+  120                     
+  121  3F:DD35            .post_attr_update:
+  122  3F:DD35  20 82 ED          jsr field_X_render_borders
+  123                     ; adjust metrics as borders don't need further drawing...
+  124  3F:DD38  20 19 F7          jsr field_X_shrink_window_metrics
+  125  3F:DD3B  4C F5 EC          jmp field_restore_bank  ;$ecf5
+  126                     
+  127                             ;VERIFY_PC $ed56
+  128                     
+  129  3F:DD3E            field_X_update_ppu_attr_table:
+  130           0038      .left = $38
+  131           0039      .top = $39      ;in 8x8
+  132           003A      .offset_x = $3a
+  133           003B      .offset_y = $3b
+  134           003C      .width = $3c
+  135           003D      .height = $3d
+  136           3300      .attr_cache = $0300
+  137  3F:DD3E  A5 39             lda <.top
+  138  3F:DD40  29 1C             and #$1c        ;capping valid height (0x1e) and mask off lower bits to align 32x32 boundary
+  139  3F:DD42  0A                asl A   ; (top >> 2) << 3 : 8 bytes per row
+  140  3F:DD43  85 3A             sta <.offset_x
+  141                     
+  142  3F:DD45  A5 3D             lda <.height
+  143  3F:DD47  65 39             adc <.top
+  144  3F:DD49  C9 1E             cmp #30
+  145  3F:DD4B  90 02             bcc .no_wrap
+  146  3F:DD4D  69 01                     adc #1  ;effectively +2. to fill gap between screen boundary and attr boundary
+  147  3F:DD4F            .no_wrap:
+  148  3F:DD4F  69 03             adc #3  ;round up to next attr boundary (4n)
+  149  3F:DD51  29 1C             and #$1c
+  150  3F:DD53  0A                asl A
+  151  3F:DD54  85 3B             sta <.offset_y
+  152                     
+  153  3F:DD56  A0 23             ldy #$23
+  154  3F:DD58  20 5D ED          jsr .field_X_upload_attributes
+  155  3F:DD5B  A0 27             ldy #$27
+  156  3F:DD5D            .field_X_upload_attributes:
+  157  3F:DD5D  A5 3A             lda <.offset_x
+  158  3F:DD5F            .loop:
+  159                             ;A = offset into attr table
+  160                             ;X = index of attr table (taken target bg in account)
+  161  3F:DD5F  C0 23                     cpy #$23
+  162  3F:DD61  F0 02                     beq .on_1st_bg
+  163  3F:DD63  09 40                     ora #$40        ;on 2nd bg, offset into cache started at .attr_cache + $40
+  164  3F:DD65            .on_1st_bg:
+  165  3F:DD65  AA                        tax
+  166  3F:DD66  8C 06 20                  sty $2006
+  167  3F:DD69  09 C0                     ora #$c0
+  168  3F:DD6B  8D 06 20                  sta $2006
+  169  3F:DD6E                    .upload_loop:
+  170  3F:DD6E  BD 00 03                          lda .attr_cache,x
+  171  3F:DD71  8D 07 20                          sta $2007
+  172  3F:DD74  E8                                inx
+  173  3F:DD75  8A                                txa
+  174  3F:DD76  29 07                             and #$07
+  175  3F:DD78  D0 F4                             bne .upload_loop
+  176  3F:DD7A  8A                        txa
+  177  3F:DD7B  29 38                     and #$38        ;wraps if crosses bg boundary ($40)
+  178  3F:DD7D  C5 3B                     cmp <.offset_y
+  179  3F:DD7F  D0 DE                     bne .loop
+  180  3F:DD81  60                rts
+  181                     
+  182  3F:DD82            field_X_render_borders:
+  183  3F:DD82  60                rts
+  184                     
+  185                     
+  186           0000              .ifdef TEST_BLACKOUT_ON_WINDOW
+  198                             .endif  ;TEST_BLACKOUT_ON_WINDOW
+  199                     
+  200           0000              .if 0
+  247                             .endif ;0
+  248                     ;------------------------------------------------------------------------------------------------------
+  249                     ;;$3f:ed56 field::fill_07c0_ff
+  250                     ;;callers:
+  251                     ;;      $3f:ece5 field::draw_window_top
+  252                     ;;      $3f:ed02 field::draw_window_box
+  253  3F:DD83            field_init_window_attr_buffer:
+  254           77C0      .window_attr_buffer = $07c0
+  255  3F:DD83  A2 0F             ldx #$0f
+  256  3F:DD85  A9 FF             lda #$ff
+  257  3F:DD87            .fill:
+  258  3F:DD87  9D C0 07          sta .window_attr_buffer,x
+  259  3F:DD8A  CA                dex
+  260  3F:DD8B  10 FA             bpl .fill
+  261  3F:DD8D            field_window_rts_1:
+  262  3F:DD8D  60                rts
+  263                     
+  264                             ;VERIFY_PC $ed61
+  265                     ;------------------------------------------------------------------------------------------------------
+  266                     ;$3f:ed61 field::get_window_metrics
+  267                     ;//[in]
+  268                     ;// u8 $37: skipAttrUpdate
+  269                     ;// u8 X: window_type (0...4)
+  270                     ;//             0: object's message?
+  271                     ;//             1: choose dialog (Yes/No) (can be checked at INN)
+  272                     ;//             2: use item to object
+  273                     ;//             3: Gil (can be checked at INN)
+  274                     ;//             4: floor name
+  275                             ;INIT_PATCH $3f,$ed61,$edc6
+  276                     ;;$3f:ed61 field::get_window_metrics
+  277                     ;;callers:
+  278                     ;;      $3f:ed02 field::draw_window_box
+  279                     ;;NOTEs:
+  280                     ;; 1) to reflect changes in screen those made by 'field_hide_sprites_around_window',
+  281                     ;;      which is called within this function,
+  282                     ;;      caller must update sprite attr such as:
+  283                     ;;      lda #2
+  284                     ;;      sta $4014       ;DMA
+  285                     ;; 2) this logic is very simlar to $3d:aabc field::get_menu_window_metrics.
+  286                     ;;      the difference is:
+  287                     ;;              A) this logic takes care of wrap-around unlike the other one, which does not.
+  288                     ;;              B) target window and the address of table where the corresponding metrics defined at
+  289  3F:DD8E            field_get_window_metrics:
+  290                     ;[in]
+  291           0029      .viewport_left = $29    ;in 16x16 unit
+  292           002F      .viewport_top = $2f     ;in 16x16 unit
+  293           0037      .skip_attr_update = $37
+  294                     ;[out]
+  295           0038      .left = $38     ;in 8x8 unit
+  296           0039      .top = $39      ;in 8x8 unit
+  297           003C      .width = $3c
+  298           003D      .height = $3d
+  299           0097      .offset_x = $97
+  300           0098      .offset_y = $98
+  301           00B5      .internal_top = $b5
+  302           00B6      .internal_left = $b6
+  303           00B7      .internal_bottom = $b7
+  304           00B8      .internal_right = $b8
+  305                     
+  306  3F:DD8E  A5 37             lda <.skip_attr_update
+  307  3F:DD90  D0 FB             bne field_window_rts_1  ;rts (original: bne $ed60)
+  308                             ;; calculate left coordinates
+  309  3F:DD92  BD D8 ED          lda .window_attr_table_x,x
+  310  3F:DD95  85 B6             sta <.internal_left
+  311  3F:DD97  85 97             sta <.offset_x
+  312  3F:DD99  C6 97             dec <.offset_x
+  313  3F:DD9B  A5 29             lda <.viewport_left     ;assert(.object_x < 0x80)
+  314  3F:DD9D  0A                asl a
+  315  3F:DD9E  65 B6             adc <.internal_left
+  316  3F:DDA0  29 3F             and #$3f
+  317  3F:DDA2  85 38             sta <.left
+  318                             ;; calculate top coordinates
+  319  3F:DDA4  BD DD ED          lda .window_attr_table_y,x
+  320                             ;clc ;here always clear
+  321  3F:DDA7  69 02             adc #2
+  322  3F:DDA9  85 98             sta <.offset_y
+  323  3F:DDAB  85 B5             sta <.internal_top
+  324  3F:DDAD  C6 B5             dec <.internal_top
+  325  3F:DDAF  A5 2F             lda <.viewport_top
+  326  3F:DDB1  0A                asl a
+  327  3F:DDB2  7D DD ED          adc .window_attr_table_y,x
+  328  3F:DDB5  C9 1E             cmp #$1e
+  329  3F:DDB7  90 02             bcc .no_wrap
+  330                             ;sec ;here always set
+  331  3F:DDB9  E9 1E             sbc #$1e
+  332  3F:DDBB            .no_wrap:
+  333  3F:DDBB  85 39             sta <.top
+  334                             
+  335                             ;; calculate right coordinates
+  336  3F:DDBD  BD E2 ED          lda .window_attr_table_width,x
+  337  3F:DDC0  85 3C             sta <.width
+  338  3F:DDC2  18                clc
+  339  3F:DDC3  65 B6             adc <.internal_left
+  340  3F:DDC5  85 B8             sta <.internal_right
+  341  3F:DDC7  C6 B8             dec <.internal_right
+  342                             ;; calculate bottom coordinates
+  343  3F:DDC9  BD E7 ED          lda .window_attr_table_height,x
+  344  3F:DDCC  85 3D             sta <.height
+  345  3F:DDCE  18                clc
+  346  3F:DDCF  65 B5             adc <.internal_top
+  347                             ;sec    ;here always clear
+  348  3F:DDD1  E9 02             sbc #2  ;effectively -3
+  349  3F:DDD3  85 B7             sta <.internal_bottom
+  350                             ;; done calcs
+  351                             ;; here X must have window_type (field_hide_sprites_around_window expects it)
+  352  3F:DDD5  4C 18 EC          jmp field_hide_sprites_around_window    ;$ec18
+  353                             ;rts
+  354                             ;VERIFY_PC $edb2
+  355                             ;.org $edb2
+  356  3F:DDD8            .window_attr_table_x:   ; = $edb2
+  357  3F:DDD8  02 02 02          .db $02, $02, $02, $12, $02
+       3F:DDDB  12 02     
+  358  3F:DDDD            .window_attr_table_y:   ; = $edb7
+  359  3F:DDDD  02 12 12          .db $02, $12, $12, $0e, $02
+       3F:DDE0  0E 02     
+  360  3F:DDE2            .window_attr_table_width:       ; = $edbc
+  361  3F:DDE2  1C 08 1C          .db $1c, $08, $1c, $0c, $1c
+       3F:DDE5  0C 1C     
+  362  3F:DDE7            .window_attr_table_height:      ; = $edc1
+  363  3F:DDE7  0A 0A 0A          .db $0a, $0a, $0a, $04, $04
+       3F:DDEA  04 04     
+  364                     
+  365                             ;VERIFY_PC $edc6
+  366                     
+  367                     ;------------------------------------------------------------------------------------------------------
+  368                     ;$3f:edc6 field::drawWindowLine
+  369                     ;{
+  370                     ;       $90 = $3c;
+  371                     ;       $c98f();        //field::loadWindowPalette?
+  372                     ;       waitNmiBySetHandler();  //$ff00();
+  373                     ;       $4014 = 2;
+  374                     ;       putWindowTiles();       //$f6aa();
+  375                     ;       field::setWindowPalette();      //$c9a9();
+  376                     ;       field::sync_ppu_scroll();       //$ede1();
+  377                     ;       return field::callSoundDriver();
+  378                     ;$ede1:
+  379                     ;}
+  380                             ;INIT_PATCH $3f,$edc6,$ede1
+  381  3F:DDEC            field_draw_window_row:  ;;$3f:edc6 field::draw_window_row
+  382                     ;;callers:
+  383                     ;;      $3f:ece5 field::draw_window_top
+  384                     ;;      $3f:ed02 field::draw_window_box (only the original implementation)
+  385           003C      .width = $3c
+  386           0090      .iChar = $90
+  387  3F:DDEC  A5 3C             lda <.width
+  388  3F:DDEE  85 90             sta <.iChar
+  389                             ;jsr field_updateTileAttrCache  ;$c98f
+  390  3F:DDF0  20 00 FF          jsr waitNmiBySetHandler ;$ff00
+  391  3F:DDF3  20 AA F8          jsr do_sprite_dma_from_0200
+  392  3F:DDF6  20 AA F6          jsr field_upload_window_content ;$f6aa
+  393                             ;jsr field_setTileAttrForWindow ;$c9a9
+  394                             ;;fall through.
+  395  3F:DDF9            field_X_end_ppu_update:
+  396  3F:DDF9  20 FF ED          jsr field_sync_ppu_scroll       ;$ede1
+  397  3F:DDFC  4C 50 C7          jmp field_callSoundDriver       ;$c750
+  398                             ;VERIFY_PC $ede1
+  399                     ;------------------------------------------------------------------------------------------------------
+  400                     ;$3f:ede1 field::sync_ppu_scroll
+  401                     ;{
+  402                     ;       if ($37 == 0) { //bne ede8
+  403                     ;               return $e571();
+  404                     ;       }
+  405                     ;$ede8:
+  406                     ;       $2000 = $ff;
+  407                     ;       $2005 = 0; $2005 = 0;
+  408                     ;       return;
+  409                     ;$edf6:
+  410                     ;}
+  411                             ;INIT_PATCH $3f,$ede1,$edf6
+  412                     ;;$3f:ede1 field::sync_ppu_scroll
+  413                     ;;callers:
+  414                     ;;      $3f:edc6 field::draw_window_row
+  415                     ;;      $3f:f692 field::draw_window_content
+  416  3F:DDFF            field_sync_ppu_scroll:
+  417           0037      .skip_attr_update = $37
+  418           00FF      .ppu_ctrl_cache = $ff
+  419  3F:DDFF  A5 37             lda <.skip_attr_update
+  420  3F:EE01  D0 03             bne .set_ppu_ctrl
+  421  3F:EE03  4C 71 E5                  jmp field_sync_ppu_scroll_with_player   ;$e571
+  422  3F:EE06            .set_ppu_ctrl:
+  423  3F:EE06  A5 FF             lda <.ppu_ctrl_cache
+  424  3F:EE08  8D 00 20          sta $2000
+  425  3F:EE0B  A9 00             lda #00
+  426  3F:EE0D  8D 05 20          sta $2005
+  427  3F:EE10  8D 05 20          sta $2005
+  428  3F:EE13  60                rts
+  429                             ;VERIFY_PC $edf6
+  430                     ;------------------------------------------------------------------------------------------------------
+  431                             ;.ifdef FAST_FIELD_WINDOW
+  432                             ;INIT_PATCH $3f,$edf6,$ee65
+  433                     ;;$3f:edf6 field::getWindowTilesForTop
+  434                     ;;callers:
+  435                     ;;      $3f:ece5 field::draw_window_top
+  436                     ;;      $3f:ed02 field::draw_window_box
+  437  3F:EE14            field_get_window_top_tiles:             
+  438  3F:EE14  A9 00             lda #$00
+  439  3F:EE16  20 19 EE          jsr field_X_get_window_tiles
+  440                             ;lda #$07
+  441                             ;;fall through
+  442  3F:EE19            field_X_get_window_tiles:
+  443           003C      .width = $3c
+  444           003C      .eol = $3c
+  445           7780      .window_tiles_buffer_upper_row = $0780
+  446                     ;.window_tiles_buffer_lower_row = $07a0
+  447                     ;;in: A := lower 1bits:  0: fill in upper row; 1: fill in lower row
+  448                     ;;      higher 7bits: offset into tile table
+  449  3F:EE19  4A                lsr A
+  450  3F:EE1A  A8                tay
+  451  3F:EE1B  A2 00             ldx #0
+  452  3F:EE1D  90 02             bcc .save_width
+  453  3F:EE1F  A2 20             ldx #$20
+  454  3F:EE21            .save_width:
+  455  3F:EE21  A5 3C             lda <.width
+  456  3F:EE23  48                pha     ;width
+  457  3F:EE24            .left_tile:
+  458  3F:EE24  B9 49 EE          lda field_X_window_parts,y
+  459  3F:EE27  9D 80 07          sta .window_tiles_buffer_upper_row,x
+  460  3F:EE2A  8A                txa
+  461  3F:EE2B  18                clc
+  462  3F:EE2C  65 3C             adc <.width
+  463  3F:EE2E  85 3C             sta <.eol       ;width + offset
+  464  3F:EE30  E8                inx
+  465  3F:EE31            .center_tiles:
+  466  3F:EE31  B9 4A EE                  lda field_X_window_parts+1,y
+  467  3F:EE34  9D 80 07                  sta .window_tiles_buffer_upper_row,x
+  468  3F:EE37  E8                        inx
+  469  3F:EE38  E4 3C                     cpx <.eol
+  470  3F:EE3A  90 F5                     bcc .center_tiles
+  471  3F:EE3C            .right_tile:
+  472  3F:EE3C  B9 4B EE          lda field_X_window_parts+2,y
+  473  3F:EE3F  9D 7F 07          sta .window_tiles_buffer_upper_row-1,x
+  474  3F:EE42  68                pla     ;original width
+  475  3F:EE43  85 3C             sta <.width
+  476  3F:EE45  98                tya
+  477                             ;here always carry is set
+  478                             ;adc #$22       ;effectively +23
+  479  3F:EE46  69 06             adc #$06
+  480  3F:EE48  60                rts
+  481  3F:EE49            field_X_window_parts:
+  482  3F:EE49  F7 F8 F9          db $f7, $f8, $f9
+  483  3F:EE4C  FA FF FB          db $fa, $ff, $fb
+  484  3F:EE4F  FC FD FE          db $fc, $fd, $fe
+  485           0000              .ifdef IMPL_BORDER_LOADER
+  501                             .endif  ;.ifdef IMPL_BORDER_LOADER
+  502                     ;======================================================================================================
+  503                     
+  504                     ;-----------
+  505                     
+  506                             VERIFY_PC $ee65
+       3F:EE52                    .verify_pc_00146:
                 0000              .if (.verify_pc_00146 > $ee65)
                                   .endif
-  527                             .endif  ;FAST_FIELD_WINDOW
-  528                     ;======================================================================================================
-  529                     ;$3f:f40a setVramAddrForWindow
-  530                     ;//     [in] u8 $3a : x offset
-  531                     ;//     [in] u8 $3b : y
-  532                             INIT_PATCH $3f,$f40a,$f435
+  507                             .endif  ;FAST_FIELD_WINDOW
+  508                     ;======================================================================================================
+  509                     ;$3f:f40a setVramAddrForWindow
+  510                     ;//     [in] u8 $3a : x offset
+  511                     ;//     [in] u8 $3b : y
+  512                             INIT_PATCH $3f,$f40a,$f435
                 003F              .bank   $3f
                 440A              .org    $f40a
        3F:440A                    .ds             (($f435) - ($f40a))
                 440A              .org    $f40a
-  533  3F:440A            field_setVramAddrForWindow:
-  534           003A      .offsetX = $3a
-  535  3F:440A  A4 3A             ldy <.offsetX
-  536  3F:440C            field_setVramAddrForWindowEx:
-  537                     ;[in] a : widthInCurrentBg
-  538                     ;[in] y : offsetX
-  539                     ;[out] y : (offsetX & #$20) ^ #$20
-  540                     ;[in]
-  541           003A      .offsetX = $3a
-  542           003B      .offsetY = $3b
-  543                     ;[ref]
-  544           44A1      .vramAddrLow = $f4a1
-  545           44C1      .vramAddrHigh = $f4c1
-  546                     ;--------------------------------------
-  547  3F:440C  98                tya
-  548  3F:440D  48                pha
-  549  3F:440E  A4 3B             ldy <.offsetY
-  550  3F:4410  29 20             and #$20
-  551  3F:4412  AA                tax
-  552  3F:4413  F0 02             beq .left_on_1st_bg
-  553  3F:4415  A9 04                     lda #$04
-  554  3F:4417            .left_on_1st_bg:
-  555  3F:4417  19 C1 F4          ora .vramAddrHigh,y
-  556  3F:441A  8D 06 20          sta $2006
-  557                     
-  558  3F:441D  68                pla
-  559  3F:441E  29 1F             and #$1f
-  560  3F:4420  19 A1 F4          ora .vramAddrLow,y
-  561  3F:4423  8D 06 20          sta $2006
-  562                     
-  563                     ;x = left & #20
-  564  3F:4426  8A                txa
-  565  3F:4427  49 20             eor #$20
-  566  3F:4429  A8                tay
-  567                     
-  568  3F:442A  60                rts
-  569                     
-  570                             VERIFY_PC $f435
+  513  3F:440A            field_setVramAddrForWindow:
+  514           003A      .offsetX = $3a
+  515  3F:440A  A4 3A             ldy <.offsetX
+  516  3F:440C            field_setVramAddrForWindowEx:
+  517                     ;[in] a : widthInCurrentBg
+  518                     ;[in] y : offsetX
+  519                     ;[out] y : (offsetX & #$20) ^ #$20
+  520                     ;[in]
+  521           003A      .offsetX = $3a
+  522           003B      .offsetY = $3b
+  523                     ;[ref]
+  524           44A1      .vramAddrLow = $f4a1
+  525           44C1      .vramAddrHigh = $f4c1
+  526                     ;--------------------------------------
+  527  3F:440C  98                tya
+  528  3F:440D  48                pha
+  529  3F:440E  A4 3B             ldy <.offsetY
+  530  3F:4410  29 20             and #$20
+  531  3F:4412  AA                tax
+  532  3F:4413  F0 02             beq .left_on_1st_bg
+  533  3F:4415  A9 04                     lda #$04
+  534  3F:4417            .left_on_1st_bg:
+  535  3F:4417  19 C1 F4          ora .vramAddrHigh,y
+  536  3F:441A  8D 06 20          sta $2006
+  537                     
+  538  3F:441D  68                pla
+  539  3F:441E  29 1F             and #$1f
+  540  3F:4420  19 A1 F4          ora .vramAddrLow,y
+  541  3F:4423  8D 06 20          sta $2006
+  542                     
+  543                     ;x = left & #20
+  544  3F:4426  8A                txa
+  545  3F:4427  49 20             eor #$20
+  546  3F:4429  A8                tay
+  547                     
+  548  3F:442A  60                rts
+  549                     
+  550                             VERIFY_PC $f435
        3F:442B                    .verify_pc_00148:
                 0000              .if (.verify_pc_00148 > $f435)
                                   .endif
-  571                     ;------------------------------------------------------------------------------------------------------
-  572           0001              .ifdef FAST_FIELD_WINDOW
-  573                             INIT_PATCH $3f,$f670,$f692
+  551                     ;------------------------------------------------------------------------------------------------------
+  552           0001              .ifdef FAST_FIELD_WINDOW
+  553                             INIT_PATCH $3f,$f670,$f692
                 003F              .bank   $3f
                 6670              .org    $f670
        3F:6670                    .ds             (($f692) - ($f670))
                 6670              .org    $f670
-  574  3F:6670            field_calc_draw_width_and_init_window_tile_buffer:
-  575                     ;;[in]
-  576           0038      .left = $38
-  577           003C      .width = $3c
-  578           0091      .width_for_current_bg = $91
-  579                     ;$3f:f670
-  580                     ;{
-  581                     ;       $91 = $3c;
-  582                     ;       if ( ($38 & #1f) ^ #1f + 1 < $3c) {
-  583                     ;               $91 = a;
-  584                     ;       }
-  585                     ;$f683:
-  586                     ;}
-  587                             ;; if window across BG boundary (left + width >= 0x20)
-  588                             ;; then adjust the width to fit just enough to the BG
-  589  3F:6670  A5 38             lda <.left
-  590  3F:6672  29 1F             and #$1f        ;take mod of 0x20 to wrap around
-  591  3F:6674  49 1F             eor #$1f        ;negate...
-  592  3F:6676  18                clc                     ;
-  593  3F:6677  69 01             adc #1          ;...done. A = (0x20 - left) % 0x20
-  594  3F:6679  C5 3C             cmp <.width
-  595  3F:667B  90 02             bcc .store_result
-  596                                     ;; there is enough space to draw entirely
-  597  3F:667D  A5 3C                     lda <.width
-  598  3F:667F            .store_result:
-  599  3F:667F  85 91             sta <.width_for_current_bg
-  600                             ;; fall through
-  601                     ;;$3f:f683 field::init_window_tile_buffer:
-  602                     ;;caller:
-  603                     ;;      $3f:f692 field::draw_window_content
-  604  3F:6681            field_init_window_tile_buffer:
-  605                     ;;[in]
-  606           7780      .tiles_1st = $0780
-  607           77A0      .tiles_2nd = $07a0
-  608                     ;$f683
-  609                     ;       a = #ff
-  610                     ;       for (y = #1d;y >= 0;y--) {
-  611                     ;               $0780,y = a;
-  612                     ;               $07a0,y = a;
-  613                     ;       }
-  614                     ;       clc;
-  615                     ;       return;
-  616                     ;$f692:
-  617  3F:6681  A9 FF             lda #$ff
-  618  3F:6683  A0 1D             ldy #$1d
-  619  3F:6685            .copy_loop:
-  620  3F:6685  99 80 07                  sta .tiles_1st,y
-  621  3F:6688  99 A0 07                  sta .tiles_2nd,y
-  622  3F:668B  88                        dey
-  623  3F:668C  10 F7                     bpl .copy_loop
-  624  3F:668E  18                clc
-  625  3F:668F  60                rts
-  626                             VERIFY_PC $f692
-       3F:6690                    .verify_pc_00150:
+  554  3F:6670            field_calc_draw_width_and_init_window_tile_buffer:
+  555                     ;;[in]
+  556           0038      .left = $38
+  557           003C      .width = $3c
+  558           0091      .width_for_current_bg = $91
+  559                     ;$3f:f670
+  560                     ;{
+  561                     ;       $91 = $3c;
+  562                     ;       if ( ($38 & #1f) ^ #1f + 1 < $3c) {
+  563                     ;               $91 = a;
+  564                     ;       }
+  565                     ;$f683:
+  566                     ;}
+  567                             ;; if window across BG boundary (left + width >= 0x20)
+  568                             ;; then adjust the width to fit just enough to the BG
+  569  3F:6670  A5 38             lda <.left
+  570  3F:6672  29 1F             and #$1f        ;take mod of 0x20 to wrap around
+  571  3F:6674  49 1F             eor #$1f        ;negate...
+  572  3F:6676  18                clc                     ;
+  573  3F:6677  69 01             adc #1          ;...done. A = (0x20 - left) % 0x20
+  574  3F:6679  C5 3C             cmp <.width
+  575  3F:667B  90 02             bcc .store_result
+  576                                     ;; there is enough space to draw entirely
+  577  3F:667D  A5 3C                     lda <.width
+  578  3F:667F            .store_result:
+  579  3F:667F  85 91             sta <.width_for_current_bg
+  580                             ;; fall through
+  581                     ;;$3f:f683 field::init_window_tile_buffer:
+  582                     ;;caller:
+  583                     ;;      $3f:f692 field::draw_window_content
+  584  3F:6681            field_init_window_tile_buffer:
+  585                     ;;[in]
+  586           7780      .tiles_1st = $0780
+  587           77A0      .tiles_2nd = $07a0
+  588                     ;$f683
+  589                     ;       a = #ff
+  590                     ;       for (y = #1d;y >= 0;y--) {
+  591                     ;               $0780,y = a;
+  592                     ;               $07a0,y = a;
+  593                     ;       }
+  594                     ;       clc;
+  595                     ;       return;
+  596                     ;$f692:
+  597  3F:6681  A9 FF             lda #$ff
+  598                             ;ldy #$1d
+  599  3F:6683  A0 3D             ldy #$3d
+  600  3F:6685            .copy_loop:
+  601  3F:6685  99 80 07                  sta .tiles_1st,y
+  602                                     ;sta .tiles_2nd,y
+  603  3F:6688  88                        dey
+  604  3F:6689  10 FA                     bpl .copy_loop
+  605  3F:668B  18                clc
+  606  3F:668C  60                rts
+  607                             VERIFY_PC $f692
+       3F:668D                    .verify_pc_00150:
                 0000              .if (.verify_pc_00150 > $f692)
                                   .endif
-  627                     ;------------------------------------------------------------------------------------------------------
-  628                             INIT_PATCH $3f,$f692,$f6aa
+  608                     ;------------------------------------------------------------------------------------------------------
+  609                             INIT_PATCH $3f,$f692,$f6aa
                 003F              .bank   $3f
                 6692              .org    $f692
        3F:6692                    .ds             (($f6aa) - ($f692))
                 6692              .org    $f692
-  629  3F:6692            field_draw_window_content:
-  630                     ;$3f:f692 field::draw_window_content
-  631                     ;{
-  632                     ;       push a;
-  633                     ;       waitNmiBySetHandler();  //$ff00
-  634                     ;       $f0++;
-  635                     ;       pop a;
-  636                     ;       putWindowTiles();       //$f6aa
-  637                     ;$f69c
-  638                     ;       field::sync_ppu_scroll();       //$ede1();
-  639                     ;       field::callSoundDriver();
-  640                     ;       call_switchFirst2Banks(per8kbank:a = $93);      //$ff03
-  641                     ;       return $f683(); //??? a= ($93+1)
-  642                     ;$f6aa:
-  643                     ;}
-  644                     ;; [in]
-  645                     ;;      u8 a: ?
-  646                     ;;      u8 $f0: frame_counter
-  647                     ;;      u8 $93: per8k bank
-  648           0093      .bank = $93
-  649  3F:6692  48                pha
-  650  3F:6693  20 00 FF          jsr waitNmiBySetHandler ;ff00
-  651  3F:6696  E6 F0             inc <field_frame_counter
-  652  3F:6698  68                pla
-  653  3F:6699  20 AA F6          jsr field_upload_window_content ;f6aa
-  654  3F:669C  20 C4 ED          jsr field_sync_ppu_scroll       ;ede1
-  655  3F:669F  20 50 C7          jsr field_callSoundDriver       ;c750
-  656  3F:66A2  A5 93             lda <.bank
-  657  3F:66A4  20 03 FF          jsr call_switch_2banks          ;ff03
-  658  3F:66A7  4C 81 F6          jmp field_init_window_tile_buffer       ;f683
-  659                     
-  660                             VERIFY_PC $f6aa
-       3F:66AA                    .verify_pc_00152:
+  610  3F:6692            field_draw_window_content:
+  611                     ;$3f:f692 field::draw_window_content
+  612                     ;{
+  613                     ;       push a;
+  614                     ;       waitNmiBySetHandler();  //$ff00
+  615                     ;       $f0++;
+  616                     ;       pop a;
+  617                     ;       putWindowTiles();       //$f6aa
+  618                     ;$f69c
+  619                     ;       field::sync_ppu_scroll();       //$ede1();
+  620                     ;       field::callSoundDriver();
+  621                     ;       call_switchFirst2Banks(per8kbank:a = $93);      //$ff03
+  622                     ;       return $f683(); //??? a= ($93+1)
+  623                     ;$f6aa:
+  624                     ;}
+  625                     ;; [in]
+  626                     ;;      u8 a: ?
+  627                     ;;      u8 $f0: frame_counter
+  628                     ;;      u8 $93: per8k bank
+  629           0093      .bank = $93
+  630  3F:6692  48                pha
+  631  3F:6693  20 00 FF          jsr waitNmiBySetHandler ;ff00
+  632  3F:6696  E6 F0             inc <field_frame_counter
+  633  3F:6698  68                pla
+  634  3F:6699  20 AA F6          jsr field_upload_window_content ;f6aa
+  635                             ;jsr field_sync_ppu_scroll      ;ede1
+  636                             ;jsr field_callSoundDriver      ;c750
+  637  3F:669C  20 F9 ED          jsr field_X_end_ppu_update      ;sync_ppu_scroll+call_sound_driver
+  638  3F:669F  A5 93             lda <.bank
+  639  3F:66A1  20 03 FF          jsr call_switch_2banks          ;ff03
+  640  3F:66A4  4C 81 F6          jmp field_init_window_tile_buffer       ;f683
+  641                     
+  642                             VERIFY_PC $f6aa
+       3F:66A7                    .verify_pc_00152:
                 0000              .if (.verify_pc_00152 > $f6aa)
                                   .endif
-  661                             .endif  ;FAST_FIELD_WINDOW
-  662                     ;------------------------------------------------------------------------------------------------------
-  663                     ;$3f:f6aa field::upload_window_content
-  664                     ;//     [in] u8 $38 : offset x
-  665                     ;//     [in] u8 $39 : offset per 2 line
-  666                     ;//     [in,out] u8 $3b : offset y (wrap-around)
-  667                             INIT_PATCH      $3f,$f6aa,$f727
+  643                             .endif  ;FAST_FIELD_WINDOW
+  644                     ;------------------------------------------------------------------------------------------------------
+  645                     ;$3f:f6aa field::upload_window_content
+  646                     ;//     [in] u8 $38 : offset x
+  647                     ;//     [in] u8 $39 : offset per 2 line
+  648                     ;//     [in,out] u8 $3b : offset y (wrap-around)
+  649                             INIT_PATCH      $3f,$f6aa,$f727
                 003F              .bank   $3f
                 66AA              .org    $f6aa
        3F:66AA                    .ds             (($f727) - ($f6aa))
                 66AA              .org    $f6aa
-  668                     ;; call tree:
-  669                     ;;      $eb43: ?
-  670                     ;;              $eec0: field::drawEncodedStringInWindow
-  671                     ;;                      $eefa: field::decodeStringAndDrawInWindow
-  672                     ;;                              $f692: field::drawStingInWindow
-  673                     ;;      
-  674                     ;;      $ed02: field::drawWindowBox
-  675                     ;;              $edc6: field::drawWindowLine
-  676  3F:66AA            field_upload_window_content:
-  677                     ;[in]
-  678           0038      .left = $38
-  679           003C      .width = $3c
-  680           003A      .offsetX = $3a
-  681           003A      .offsetString = $3a
-  682           003B      .offsetY = $3b
-  683           0090      .iChar = $90
-  684           0091      .widthIn1stBg = $91
-  685           7780      .tileArray = $0780
-  686           7780      .upperLineString = $0780
-  687           77A0      .lowerLineString = $07a0
-  688                     
-  689                     ;-----------------------------------------
-  690  3F:66AA  C9 09             cmp #9
-  691  3F:66AC  F0 05             beq .draw_lower_line
-  692  3F:66AE  A9 00                     lda #0
-  693  3F:66B0  20 B5 F6                  jsr .draw_line
-  694  3F:66B3            .draw_lower_line:
-  695  3F:66B3  A9 20             lda #$20
-  696  3F:66B5            .draw_line:
-  697                     ;[in] a  = index offset
-  698  3F:66B5  48                pha
-  699  3F:66B6  85 3A             sta <.offsetString
-  700                     
-  701  3F:66B8  2C 02 20          bit $2002
-  702  3F:66BB  A5 91             lda <.widthIn1stBg
-  703  3F:66BD  A4 38             ldy <.left
-  704  3F:66BF  20 E0 F6          jsr .putTiles   ;[out] y = offsetX & #20 ^ #20, $3a = offsetString
-  705                     
-  706  3F:66C2  18                clc
-  707  3F:66C3  68                pla
-  708  3F:66C4  65 3C             adc <.width
-  709  3F:66C6  38                sec
-  710  3F:66C7  E5 3A             sbc <.offsetString
-  711  3F:66C9  90 05             bcc .next_line
-  712  3F:66CB  F0 03             beq .next_line
-  713  3F:66CD  20 E0 F6                  jsr .putTiles
-  714                     
-  715  3F:66D0            .next_line:
-  716  3F:66D0  A4 3B             ldy <.offsetY
-  717  3F:66D2  C8                iny
-  718  3F:66D3  C0 1E             cpy #30
-  719  3F:66D5  D0 02             bne .no_wrap
-  720  3F:66D7  A0 00                     ldy #0
-  721  3F:66D9            .no_wrap:
-  722  3F:66D9  84 3B             sty <.offsetY
-  723  3F:66DB  A9 00             lda #0
-  724  3F:66DD  85 90             sta <.iChar     ;$90
-  725  3F:66DF  60                rts
-  726                     
-  727  3F:66E0            .putTiles:
-  728  3F:66E0  48                pha
-  729                     
-  730  3F:66E1  20 0C F4          jsr field_setVramAddrForWindowEx
-  731           003A      .beginOffset = .offsetString
-  732           003A      .endOffset = .beginOffset
-  733  3F:66E4  68                pla     ;widthInCurrentBg
-  734  3F:66E5  A6 3A             ldx <.offsetString
-  735  3F:66E7  48                pha
-  736  3F:66E8  18                clc
-  737  3F:66E9  65 3A             adc <.offsetString
-  738  3F:66EB  85 3A             sta <.endOffset
-  739  3F:66ED  68                pla
-  740  3F:66EE  4A                lsr a
-  741  3F:66EF  6A                ror a
-  742  3F:66F0  10 04             bpl .length_even
-  743                     ;odd
-  744  3F:66F2            .length_odd:
-  745  3F:66F2  90 19             bcc .copy_loop_1
-  746  3F:66F4  B0 09             bcs .copy_loop_3
-  747                     ;even
-  748  3F:66F6            .length_even:
-  749  3F:66F6  B0 0E             bcs .copy_loop_2
-  750  3F:66F8            .copy_loop_0:
-  751  3F:66F8  BD 80 07          lda .tileArray,x
-  752  3F:66FB  8D 07 20          sta $2007
-  753  3F:66FE  E8                inx
-  754  3F:66FF            .copy_loop_3:
-  755  3F:66FF  BD 80 07          lda .tileArray,x
-  756  3F:7702  8D 07 20          sta $2007
-  757  3F:7705  E8                inx
-  758  3F:7706            .copy_loop_2:
-  759  3F:7706  BD 80 07          lda .tileArray,x
-  760  3F:7709  8D 07 20          sta $2007
-  761  3F:770C  E8                inx
-  762  3F:770D            .copy_loop_1:
-  763  3F:770D  BD 80 07          lda .tileArray,x
-  764  3F:7710  8D 07 20          sta $2007
-  765  3F:7713  E8                inx
-  766                             
-  767  3F:7714  E4 3A             cpx <.offsetString
-  768  3F:7716  D0 E0             bne .copy_loop_0
-  769                     
-  770  3F:7718  60                rts
-  771                             ;VERIFY_PC $f727
-  772  3F:7719            field_X_shrink_window_metrics:
-  773           0038      .left = $38     ;loaded by field_getWindowMetrics
-  774           0039      .top = $39      ;loaded by field_getWindowMetrics
-  775           003C      .width = $3c    ;loaded by field_getWindowMetrics
-  776           003D      .height = $3d   ;loaded by field_getWindowMetrics
-  777  3F:7719  E6 38             inc <.left
-  778  3F:771B  E6 39             inc <.top
-  779  3F:771D  C6 3C             dec <.width
-  780  3F:771F  C6 3C             dec <.width
-  781  3F:7721  C6 3D             dec <.height
-  782  3F:7723  C6 3D             dec <.height
-  783  3F:7725  60                rts
-  784                             VERIFY_PC $f727
+  650                     ;; call tree:
+  651                     ;;      $eb43: ?
+  652                     ;;              $eec0: field::drawEncodedStringInWindow
+  653                     ;;                      $eefa: field::decodeStringAndDrawInWindow
+  654                     ;;                              $f692: field::drawStingInWindow
+  655                     ;;      
+  656                     ;;      $ed02: field::drawWindowBox
+  657                     ;;              $edc6: field::drawWindowLine
+  658  3F:66AA            field_upload_window_content:
+  659                     ;[in]
+  660           0038      .left = $38
+  661           003C      .width = $3c
+  662           003A      .offsetX = $3a
+  663           003A      .offsetString = $3a
+  664           003B      .offsetY = $3b
+  665           0090      .iChar = $90
+  666           0091      .widthIn1stBg = $91
+  667           7780      .tileArray = $0780
+  668           7780      .upperLineString = $0780
+  669           77A0      .lowerLineString = $07a0
+  670                     
+  671                     ;-----------------------------------------
+  672  3F:66AA  C9 09             cmp #9
+  673  3F:66AC  F0 05             beq .draw_lower_line
+  674  3F:66AE  A9 00                     lda #0
+  675  3F:66B0  20 B5 F6                  jsr .draw_line
+  676  3F:66B3            .draw_lower_line:
+  677  3F:66B3  A9 20             lda #$20
+  678  3F:66B5            .draw_line:
+  679                     ;[in] a  = index offset
+  680  3F:66B5  48                pha
+  681  3F:66B6  85 3A             sta <.offsetString
+  682                     
+  683  3F:66B8  2C 02 20          bit $2002
+  684  3F:66BB  A5 91             lda <.widthIn1stBg
+  685  3F:66BD  A4 38             ldy <.left
+  686  3F:66BF  20 E0 F6          jsr .putTiles   ;[out] y = offsetX & #20 ^ #20, $3a = offsetString
+  687                     
+  688  3F:66C2  18                clc
+  689  3F:66C3  68                pla
+  690  3F:66C4  65 3C             adc <.width
+  691  3F:66C6  38                sec
+  692  3F:66C7  E5 3A             sbc <.offsetString
+  693  3F:66C9  90 05             bcc .next_line
+  694  3F:66CB  F0 03             beq .next_line
+  695  3F:66CD  20 E0 F6                  jsr .putTiles
+  696                     
+  697  3F:66D0            .next_line:
+  698  3F:66D0  A4 3B             ldy <.offsetY
+  699  3F:66D2  C8                iny
+  700  3F:66D3  C0 1E             cpy #30
+  701  3F:66D5  D0 02             bne .no_wrap
+  702  3F:66D7  A0 00                     ldy #0
+  703  3F:66D9            .no_wrap:
+  704  3F:66D9  84 3B             sty <.offsetY
+  705  3F:66DB  A9 00             lda #0
+  706  3F:66DD  85 90             sta <.iChar     ;$90
+  707  3F:66DF  60                rts
+  708                     
+  709  3F:66E0            .putTiles:
+  710  3F:66E0  48                pha
+  711                     
+  712  3F:66E1  20 0C F4          jsr field_setVramAddrForWindowEx
+  713           003A      .beginOffset = .offsetString
+  714           003A      .endOffset = .beginOffset
+  715  3F:66E4  68                pla     ;widthInCurrentBg
+  716  3F:66E5  A6 3A             ldx <.offsetString
+  717  3F:66E7  48                pha
+  718  3F:66E8  18                clc
+  719  3F:66E9  65 3A             adc <.offsetString
+  720  3F:66EB  85 3A             sta <.endOffset
+  721  3F:66ED  68                pla
+  722  3F:66EE  4A                lsr a
+  723  3F:66EF  6A                ror a
+  724  3F:66F0  10 04             bpl .length_even
+  725                     ;odd
+  726  3F:66F2            .length_odd:
+  727  3F:66F2  90 19             bcc .copy_loop_1
+  728  3F:66F4  B0 09             bcs .copy_loop_3
+  729                     ;even
+  730  3F:66F6            .length_even:
+  731  3F:66F6  B0 0E             bcs .copy_loop_2
+  732  3F:66F8            .copy_loop_0:
+  733  3F:66F8  BD 80 07          lda .tileArray,x
+  734  3F:66FB  8D 07 20          sta $2007
+  735  3F:66FE  E8                inx
+  736  3F:66FF            .copy_loop_3:
+  737  3F:66FF  BD 80 07          lda .tileArray,x
+  738  3F:7702  8D 07 20          sta $2007
+  739  3F:7705  E8                inx
+  740  3F:7706            .copy_loop_2:
+  741  3F:7706  BD 80 07          lda .tileArray,x
+  742  3F:7709  8D 07 20          sta $2007
+  743  3F:770C  E8                inx
+  744  3F:770D            .copy_loop_1:
+  745  3F:770D  BD 80 07          lda .tileArray,x
+  746  3F:7710  8D 07 20          sta $2007
+  747  3F:7713  E8                inx
+  748                             
+  749  3F:7714  E4 3A             cpx <.offsetString
+  750  3F:7716  D0 E0             bne .copy_loop_0
+  751                     
+  752  3F:7718  60                rts
+  753                             ;VERIFY_PC $f727
+  754  3F:7719            field_X_shrink_window_metrics:
+  755           0038      .left = $38     ;loaded by field_getWindowMetrics
+  756           0039      .top = $39      ;loaded by field_getWindowMetrics
+  757           003C      .width = $3c    ;loaded by field_getWindowMetrics
+  758           003D      .height = $3d   ;loaded by field_getWindowMetrics
+  759  3F:7719  E6 38             inc <.left
+  760  3F:771B  E6 39             inc <.top
+  761  3F:771D  C6 3C             dec <.width
+  762  3F:771F  C6 3C             dec <.width
+  763  3F:7721  C6 3D             dec <.height
+  764  3F:7723  C6 3D             dec <.height
+  765  3F:7725  60                rts
+  766                             VERIFY_PC $f727
        3F:7726                    .verify_pc_00154:
                 0000              .if (.verify_pc_00154 > $f727)
                                   .endif
-  785                     ;======================================================================================================
-  786                             RESTORE_PC ff3_field_window_begin
+  767                     ;======================================================================================================
+  768                             RESTORE_PC ff3_field_window_begin
                 0035              .bank   BANK(ff3_field_window_begin)
                 88EB              .org    ff3_field_window_begin
 #[3]   ff3_hack_master.asm
