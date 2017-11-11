@@ -2811,18 +2811,20 @@ $3f:ECAB field::await_and_get_new_input:
  1F:ECB5:E6 F0     INC field_frame_counter = #$EF
  1F:ECB7:20 50 C7  JSR field::call_sound_driver
  1F:ECBA:4C AB EC  JMP field::await_and_get_new_input
+
+$3f:ECbd field::get_next_input: 
  1F:ECBD:20 81 D2  JSR field::get_pad_input
  1F:ECC0:A5 20     LDA field::pad1_bits = #$00
  1F:ECC2:D0 0B     BNE $ECCF
- 
 
 $3f:ECC4 field::get_next_input:
-//callers:
-//	 1F:ECBD:20 81 D2  JSR field::get_pad_input ($3f:ECAB field::await_and_get_new_input)
+;;callers:
+;;	1F:EC9E:20 C4 EC  JSR field::get_next_input
  1F:ECC4:20 00 FF  JSR thunk_waitNmiBySetHandler
  1F:ECC7:E6 F0     INC field_frame_counter = #$EF
  1F:ECC9:20 50 C7  JSR field::call_sound_driver
  1F:ECCC:4C BD EC  JMP $ECBD
+ 
  1F:ECCF:A5 20     LDA field::pad1_bits = #$00
  1F:ECD1:85 21     STA $0021 = #$06
  1F:ECD3:A5 93     LDA field::bank_of_loaded_string = #$1B
@@ -3059,12 +3061,12 @@ $3f:ee65 field::stream_string_in_window:
 	 1F:EE70:A9 00     LDA #$00
 	 1F:EE72:85 F0     STA field_frame_counter = #$13
 	$ee74:
-		 1F:EE74:20 D8 EC  JSR field::seek_to_next_line
+		 1F:EE74:20 D8 EC  JSR field::advance_frame
 		 1F:EE77:A5 F0     LDA field_frame_counter = #$13
 		 1F:EE79:29 01     AND #$01
 		 1F:EE7B:D0 F7     BNE $EE74
 
-	 1F:EE7D:20 A9 EB  JSR $EBA9
+	 1F:EE7D:20 A9 EB  JSR field::seek_to_next_line
 	 1F:EE80:20 C0 EE  JSR floor::draw_encoded_string
 	 1F:EE83:B0 0A     BCS $EE8F
 		 1F:EE85:68        PLA

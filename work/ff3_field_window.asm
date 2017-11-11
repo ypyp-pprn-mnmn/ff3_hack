@@ -9,7 +9,86 @@
 ff3_field_window_begin:
 
 	.ifdef FAST_FIELD_WINDOW
-	
+	INIT_PATCH $3f,$ec8b,$ece5
+;;$3f:ec8b field::show_message_window:
+;;callers:
+;;	1F:E237:20 8B EC  JSR field::show_message_window
+;;
+field_show_message_window:
+.field_pad1_inputs = $20
+	lda #0
+	jsr field_draw_inplace_window		;$ecfa
+	jsr field_stream_string_in_window	;$ee65
+	jsr field_await_and_get_next_input	;$ecab
+	lda <$7d
+	;beq .leave	;$eca8
+	bne .enter_input_loop
+.leave:	;$eca8
+		jmp $c9b6
+.input_loop:	;$ec9e
+	jsr field_get_next_input	
+.enter_input_loop:	;$ec9a
+	lda <.field_pad1_inputs
+	bpl .input_loop
+.on_a_button_down:	;$eca4
+	lda #0
+	sta <$7d
+	beq .leave
+
+;------------------------------------------------------------------------------------------------------
+;;$3f:ECAB field::await_and_get_new_input:
+;;callers:
+;;	 1F:EC93:20 AB EC  JSR field::await_and_get_new_input ($3f:ec8b field::show_message_window)
+;;	 1F:ECBA:4C AB EC  JMP field::await_and_get_new_input (tail recursion)
+;;	 1F:EE6A:20 AB EC  JSR field::await_and_get_new_input ($3f:ee65 field::stream_string_in_window)
+field_await_and_get_next_input:
+	jsr field_X_get_input_with_result	;on exit, A have the value from $20
+	beq field_get_next_input_in_this_frame
+	jsr field_X_advance_frame
+	jmp field_await_and_get_next_input
+;------------------------------------------------------------------------------------------------------
+;;$3f:ECc4 field::get_next_input:
+;;callers:
+;;	1F:EC9E:20 C4 EC  JSR field::get_next_input
+field_get_next_input:
+;.field_pad1_inputs = $20	;bit7 <- A ...  -> bit0
+;;$ecc4:
+	jsr field_X_advance_frame
+	;;fall through
+field_get_next_input_in_this_frame:
+.field_input_cache = $21
+;;$ecbd:
+	jsr field_X_get_input_with_result	;on exit, A have the value from $20
+	beq field_get_next_input
+;;$eccf
+	sta <.field_input_cache
+	;;fall through
+;------------------------------------------------------------------------------------------------------
+field_X_set_bank_for_window_content_string:
+.content_string_bank = $93
+	lda <.content_string_bank
+	jmp call_switch_2banks
+;------------------------------------------------------------------------------------------------------
+;;$3f:ecd8 field::advance_frame_with_sound
+;;callers:
+;;	 1F:EE74:20 D8 EC  JSR field::advance_frame_w_sound ($3f:ee65 field::stream_string_in_window)
+field_advance_frame_and_set_bank:
+	jsr field_X_advance_frame
+	jmp field_X_set_bank_for_window_content_string
+
+field_X_advance_frame:
+.field_frame_counter = $f0
+	jsr waitNmiBySetHandler
+	inc <.field_frame_counter
+	jmp field_callSoundDriver
+
+field_X_get_input_with_result:
+.field_pad1_inputs = $20	;bit7 <- A ...  -> bit0
+	jsr field_get_input
+	lda <.field_pad1_inputs
+	rts
+
+	VERIFY_PC $ece5
 
 ;------------------------------------------------------------------------------------------------------
 	INIT_PATCH $3f,$ece5,$ecf5
@@ -500,10 +579,61 @@ field_get_window_bottom_tiles:	;ed3b
 	bne field_X_get_window_tiles
 	.endif	;.ifdef IMPL_BORDER_LOADER
 ;======================================================================================================
-
-;-----------
-
 	VERIFY_PC $ee65
+	.endif	;FAST_FIELD_WINDOW
+;======================================================================================================
+	.ifdef FAST_FIELD_WINDOW
+	INIT_PATCH $3f,$ee65,$ee9a
+;;$3f:ee65 field::stream_string_in_window
+;;callers:
+;;	$3c:90ff	? 1E:9109:4C 65 EE  JMP $EE65
+;;	$3d:a666	? 1E:A675:4C 65 EE  JMP $EE65	(load menu)
+;;	$3f:ec83	? 1F:EC88:4C 65 EE  JMP $EE65
+;;	$3f:ec8b	? 1F:EC90:20 65 EE  JSR $EE65
+field_stream_string_in_window:
+.viewport_left = $29	;in 16x16 unit
+.viewport_top = $2f	;in 16x16 unit
+.in_menu_mode = $37
+.window_left = $38	;in 8x8 unit
+.window_top = $39	;in 8x8 unit
+.window_width = $3c
+.window_height = $3d
+.offset_x = $97
+.offset_y = $98
+.field_frame_counter = $f0
+	jsr field_load_and_draw_string	;$ee9a.
+	;; on exit from above, carry has a boolean value.
+	;; 1: more to draw, 0: completed drawing.
+	bcc .do_return	
+	.paging:
+		jsr field_await_and_get_next_input
+		lda <.window_height
+		clc
+		adc #1	;round up to next mod 2
+		lsr A
+	.streaming:
+		sec
+		sbc #1
+		pha	;# of text lines available to draw
+		lda #0
+		sta <.field_frame_counter
+		.delay_loop:
+			jsr field_advance_frame_and_set_bank	;$ecd8
+			lda <.field_frame_counter
+			and #$01
+			bne .delay_loop
+		jsr field_seek_string_to_next_line	;$eba9
+		jsr field_draw_string_in_window		;$eec0
+		;; on exit from above, carry has a boolean value.
+		;; 1: more to draw, 0: completed drawing.
+		pla	;# of text lines available to draw
+		bne .streaming	;there is more space to fill in
+		bcs .paging	;there is more text to draw
+		;;content space is filled with end of text 
+.do_return:
+	rts
+
+	VERIFY_PC $ee9a
 	.endif	;FAST_FIELD_WINDOW
 ;======================================================================================================
 ;$3f:f40a setVramAddrForWindow
@@ -626,7 +756,7 @@ field_draw_window_content:
 ;;	u8 a: ?
 ;;	u8 $f0: frame_counter
 ;;	u8 $93: per8k bank
-.bank = $93
+;.string_bank = $93
 	pha
 	jsr waitNmiBySetHandler	;ff00
 	inc <field_frame_counter
@@ -635,8 +765,9 @@ field_draw_window_content:
 	;jsr field_sync_ppu_scroll	;ede1
 	;jsr field_callSoundDriver	;c750
 	jsr field_X_end_ppu_update	;sync_ppu_scroll+call_sound_driver
-	lda <.bank
-	jsr call_switch_2banks		;ff03
+	;lda <.string_bank
+	;jsr call_switch_2banks		;ff03
+	jsr field_X_set_bank_for_window_content_string
 	jmp field_init_window_tile_buffer	;f683
 
 	VERIFY_PC $f6aa
