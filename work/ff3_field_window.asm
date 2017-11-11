@@ -11,7 +11,8 @@ ff3_field_window_begin:
 FIELD_WINDOW_SCROLL_FRAMES = $01
 
 	.ifdef FAST_FIELD_WINDOW
-	INIT_PATCH $3f,$ec83,$ed02
+	;INIT_PATCH $3f,$ec83,$ed02
+	INIT_PATCH $3f,$ec83,$ee9a
 
 ;;$3f:ec83 field::show_message_UNKNOWN:
 ;; 1F:EC83:A9 00     LDA #$00
@@ -38,10 +39,7 @@ field_show_message_window:
 ;;	u8 A : window_type
 field_show_window:
 ;;patch out external callers {
-	.bank $3e
-	.org $e264
-	jsr field_show_window
-	RESTORE_PC field_show_window
+	PATCH_JSR_ON_CALLER $3e,$e264
 ;;}
 .field_pad1_inputs = $20
 	;jsr field_draw_inplace_window		;$ecfa
@@ -120,7 +118,9 @@ field_X_get_input_with_result:
 	;INIT_PATCH $3f,$ece5,$ecf5
 ;;$3f:ece5 field::draw_window_top:
 ;;NOTEs:
-;;	called when executed an exchange of position in item window from menu
+;;	called when executed actions the below in item window from menu
+;;	1) exchange of position
+;;	2) use of item
 ;;callers:
 ;;	 1E:AAA3:4C E5 EC  JMP field::draw_window_top
 ;;original code:
@@ -132,10 +132,7 @@ field_X_get_input_with_result:
 ;1F:ECF2:20 C6 ED  JSR field::draw_window_row
 field_draw_window_top:
 ;; patch out callers external to current implementation {
-	.bank	$3d
-	.org	$aaa3
-	jmp field_draw_window_top
-	RESTORE_PC field_draw_window_top
+	PATCH_JMP_ON_CALLER $3d,$aaa3
 ;;}
 .window_top = $39
 .window_row_in_drawing = $3b
@@ -159,13 +156,8 @@ field_draw_window_top:
 ;;	field::draw_window_box
 field_restore_bank:
 ;; patch out external callers {
-	.bank $3f
-	.org $eb64
-	jsr field_restore_bank
-	.bank $3f
-	.org $f49e
-	jmp field_restore_bank
-	RESTORE_PC field_restore_bank
+	PATCH_JSR_ON_CALLER $3f,$eb64
+	PATCH_JMP_ON_CALLER $3f,$f49e
 ;;}
 .program_bank = $57
 	lda <.program_bank
@@ -186,12 +178,12 @@ field_draw_inplace_window:
 	sta <$24
 	sta <$25
 	;;originally fall through to $3f:ed02 field::draw_window_box
-	jmp field_draw_window_box
+	;;jmp field_draw_window_box
 
 	VERIFY_PC $ed02
 ;------------------------------------------------------------------------------------------------------
 	;INIT_PATCH $3f,$ed02,$ed56
-	INIT_PATCH $3f,$ed02,$ee9a
+	;INIT_PATCH $3f,$ed02,$ee9a
 ;;$3f:ed02 field::draw_window_box
 ;;	This logic plays key role in drawing window, both for menu windows and in-place windows.
 ;;	Usually window drawing is performed as follows:
@@ -214,12 +206,20 @@ field_draw_inplace_window:
 ;;		$07d0-$07ff: used for 3-tuple of array that in each entry defines
 ;;			(vram address(high&low), value to tranfer)
 ;;callers:
-;;	$3c:8efd
-;;	$3c:8f0e
-;;	$3c:8fd5
-;;	$3c:90b1
-;;	$3d:aaf4 (jmp) in $3d:aaf1 field::draw_menu_window
-field_draw_window_box:
+;;	1E:8EFD:20 02 ED  JSR field::draw_window_box	@ $3c:8ef5 ?; window_type = 0
+;;	1E:8F0E:20 02 ED  JSR field::draw_window_box	@ $3c:8f04 ?; window_type = 1
+;;	1E:8FD5:20 02 ED  JSR field::draw_window_box	@ $3c:8fd1 ?; window_type = 3
+;;	1E:90B1:20 02 ED  JSR field::draw_window_box	@ $3c:90ad ?; window_type = 2
+;;	1E:AAF4:4C 02 ED  JMP field::draw_window_box	@ $3d:aaf1 field::draw_menu_window
+;;	(by falling through) @$3f:ecfa field::draw_in_place_window
+field_draw_window_box:	;;$ed02
+;; patch out external callers {
+	PATCH_JSR_ON_CALLER $3c,$8efd
+	PATCH_JSR_ON_CALLER $3c,$8f0e
+	PATCH_JSR_ON_CALLER $3c,$8fd5
+	PATCH_JSR_ON_CALLER $3c,$90b1
+	PATCH_JMP_ON_CALLER $3d,$aaf4
+;;}
 ;;[in]
 .window_id = $96
 .skipAttrUpdate = $37	;;or in more conceptual, 'is in menu window'
@@ -659,19 +659,14 @@ field_get_window_bottom_tiles:	;ed3b
 	;INIT_PATCH $3f,$ee65,$ee9a
 ;;$3f:ee65 field::stream_string_in_window
 ;;callers:
-;;	$3c:90ff	? 1E:9109:4C 65 EE  JMP $EE65
-;;	$3d:a666	? 1E:A675:4C 65 EE  JMP $EE65	(load menu)
+;;	1E:9109:4C 65 EE  JMP $EE65 @ $3c:90ff	? 
+;;	1E:A675:4C 65 EE  JMP $EE65	@ $3d:a666	? (load menu)
 ;;	1F:EC88:4C 65 EE  JMP $EE65 @ $3f:ec83 field::show_off_message_window
 ;;	1F:EC90:20 65 EE  JSR $EE65 @ $3f:ec8b field::show_message_window
 field_stream_string_in_window:
 ;; patch out callers external to this implementation {
-	.bank $3c
-	.org $9109
-	jmp field_stream_string_in_window
-	.bank $3d
-	.org $a675
-	jmp field_stream_string_in_window
-	RESTORE_PC field_stream_string_in_window
+	PATCH_JMP_ON_CALLER $3c,$9109
+	PATCH_JMP_ON_CALLER $3d,$a675
 ;; }
 .viewport_left = $29	;in 16x16 unit
 .viewport_top = $2f	;in 16x16 unit

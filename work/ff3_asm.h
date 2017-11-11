@@ -19,7 +19,7 @@ field_get_input				= $d281	;$3e:d281 field::get_input
 field_sync_ppu_scroll_with_player	= $e571
 field_seek_string_to_next_line = $eba9
 field_hide_sprites_around_window = $ec18
-field_await_and_get_new_input	= $ecab
+;field_await_and_get_next_input	= $ecab
 ;field_advance_frame_with_sound	= $ecd8	;[in] $93 : bank, [in,out] $f0: frame_counter
 ;field_restore_bank			= $ecf5	;[in] $57: bank
 ;field_draw_inplace_window	= $ecfa	;fall through to field_draw_window_box
@@ -259,3 +259,19 @@ VERIFY_PC	.macro
 		.fail
 	.endif
 	.endm	;VERIFY_PC
+
+PATCH_JSR_ON_CALLER	.macro
+	__patch_addr_\@:
+	.bank \1
+	.org \2
+	jsr __patch_addr_\@
+	RESTORE_PC __patch_addr_\@
+	.endm
+
+PATCH_JMP_ON_CALLER .macro
+	__patch_addr_\@:
+	.bank \1
+	.org \2
+	jmp __patch_addr_\@
+	RESTORE_PC __patch_addr_\@
+	.endm
