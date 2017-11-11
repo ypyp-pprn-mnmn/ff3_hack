@@ -105,9 +105,9 @@ field_draw_window_box:
 
 	.update_ppu:
 		pla	;dispose
-		jsr do_sprite_dma_from_0200	;if omitted, sprites are shown on top of window
 		jsr waitNmiBySetHandler
-		jsr field_X_updateVramAttributes
+		jsr do_sprite_dma_from_0200	;if omitted, sprites are shown on top of window
+		jsr field_X_update_ppu_attr_table
 		jsr field_sync_ppu_scroll	;if omitted, noticable glithces arose in town conversations
 		jsr field_callSoundDriver
 
@@ -134,8 +134,10 @@ field_X_blackout_1frame:
 	rts
 	.endif	;TEST_BLACKOUT_ON_WINDOW
 
+field_X_render_borders:
+	rts
 
-	.if 1
+	.if 0
 field_X_render_borders:
 	;; 1: left-top to right-top, not including rightmost
 	;; 2: right-top to right-bottom, not including bottom most
@@ -156,9 +158,10 @@ field_X_render_borders:
 .height = $3d
 .ppu_ctrl_cache = $ff
 
-field_X_generate_renderer_code:
-;.template_code_start = field_X_updateVramAttributes_end - 8	
-;.template_code_end = field_X_updateVramAttributes_end - 5
+field_X_generate_uploader_code:
+;.template_code_start = field_X_update_ppu_attr_table_end - 8	
+;.template_code_end = field_X_update_ppu_attr_table_end - 5
+field_X_store_PPUDATA = $f7b0
 .generated_code_base = $0780
 .SIZE_OF_CODE = 3
 .UNROLLED_BYTES = $1f*.SIZE_OF_CODE
@@ -167,7 +170,7 @@ field_X_generate_renderer_code:
 		ldx #-.SIZE_OF_CODE	;src
 .generate_loop:
 		;lda .template_code_start-$0100+.SIZE_OF_CODE,x
-		lda (field_X_updateVramAttributes_end - 8)-$0100+.SIZE_OF_CODE,x
+		lda (field_X_store_PPUDATA)-$0100+.SIZE_OF_CODE,x
 		sta .generated_code_base-($0100-.UNROLLED_BYTES),y
 		iny
 		beq .generate_epilog
@@ -435,7 +438,62 @@ field_get_window_bottom_tiles:	;ed3b
 	bne field_X_get_window_tiles
 	.endif	;.ifdef IMPL_BORDER_LOADER
 ;======================================================================================================
-field_X_updateVramAttributes:
+field_X_update_ppu_attr_table:
+.left = $38
+.top = $39	;in 8x8
+.offset_x = $3a
+.offset_y = $3b
+.width = $3c
+.height = $3d
+.attr_cache = $0300
+	lda <.top
+	and #$1c	;capping valid height (0x1e) and mask off lower bits to align 32x32 boundary
+	asl A	; (top >> 2) << 3 : 8 bytes per row
+	sta <.offset_x
+
+	lda <.height
+	adc <.top
+	cmp #30
+	bcc .no_wrap
+		adc #1	;round up to 32
+.no_wrap:
+	adc #3	;round up to next attr boundary (4n)
+	and #$1c
+	asl A
+	sta <.offset_y
+
+	ldy #$23
+	jsr .field_X_upload_attributes
+	ldy #$27
+.field_X_upload_attributes:
+	lda <.offset_x
+.loop:
+		;pha
+		cpy #$23
+		beq .on_1st_bg
+		ora #$40
+.on_1st_bg:
+		tax
+		;bit $2002
+		sty $2006
+		ora #$c0
+		sta $2006
+	.upload_loop:
+			lda .attr_cache,x
+			sta $2007
+			inx
+			txa
+			and #$07
+			bne .upload_loop
+		;pla
+		;adc #$08
+		txa
+		and #$38
+		cmp <.offset_y
+		bne .loop
+	rts
+
+	.if 0
 	ldx #0
 	lda #$23
 	jsr .field_X_copyAttributes
@@ -461,7 +519,8 @@ field_X_updateVramAttributes:
 		dey
 		bne .copy
 	rts
-field_X_updateVramAttributes_end:
+	.endif 	;0
+field_X_update_ppu_attr_table_end:
 ;-----------
 
 	VERIFY_PC $ee65
