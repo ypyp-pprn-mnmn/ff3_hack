@@ -2864,6 +2864,11 @@ $3f:ece5 field::draw_window_top
 //fall through.
 }
 $3f:ecf5 restoreBanksBy$57
+;;callers:
+;;	 1F:EB64:20 F5 EC  JSR field::restore_bank (in $3f:eb61 field::drawEncodedStringInWindowAndRestoreBanks)
+;;	 1F:F49E:4C F5 EC  JMP field::restore_bank
+;;	field::draw_window_top (by falling thourgh)
+;;	field::draw_window_box
 {
 	return call_switchFirst2Banks(per8k:a = $57);
 }
