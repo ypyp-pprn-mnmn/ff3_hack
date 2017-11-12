@@ -101,6 +101,7 @@ prize_doLevelUp:
 		.bank	$34
 		.org	$827c
 	battle_check_command_index:
+		;;@see http://966-yyff.cocolog-nifty.com/blog/2013/06/ff3-d544.html
 		;;here A contains the executed command's 0-based position in command window
 		cmp #4	;;in addition to FF(:no action), 4(:step forward) and 5(:step back) should not be counted either.
 		bcs $828c	;skip increment
