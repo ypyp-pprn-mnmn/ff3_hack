@@ -309,6 +309,7 @@ executeAction_free_begin:
 ;$34:9fa8 handleCommand00_0a //do nothing
 ;======================================================================================================
 	;INIT_PATCH $34,$9fa6,$a000
+	;;the bug report can be found here: http://966-yyff.cocolog-nifty.com/blog/2014/09/ds-3981.html
 	INIT_PATCH $34,$9fa8,$a000
 ;------------------------------------------------------------------------------------------------------
 setXtoTargetIndex:
