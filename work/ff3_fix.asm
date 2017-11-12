@@ -1,10 +1,11 @@
+;/* encoding: utf-8 */
 ; ff3_fix.asm
 ;
 ;description:
 ;	small fixes
 ;
 ;version:
-;	0.06 (2006-11-07)
+;	0.07 (2017-11-13)
 ;
 ;======================================================================================================
 ff3_fix_begin:
@@ -94,5 +95,15 @@ prize_doLevelUp:
 		tsx
 		cpx #$4b	;original:$20
 	.endif ;FIX_DUNGEON_FLOOR_SAVE
+
+;------------------------------------------------------------------------------------------------------
+	.ifdef FIX_COMMAND_COUNT_UPDATE
+		.bank	$34
+		.org	$827c
+	battle_check_command_index:
+		;;here A contains the executed command's 0-based position in command window
+		cmp #4	;;in addition to FF(:no action), 4(:step forward) and 5(:step back) should not be counted either.
+		bcs $828c	;skip increment
+	.endif ;FIX_COMMAND_COUNT_UPDATE
 ;======================================================================================================
 	RESTORE_PC ff3_fix_begin

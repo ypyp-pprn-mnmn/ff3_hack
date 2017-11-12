@@ -19,6 +19,7 @@ BETA
 
 ;;here after, listed feature flags are considered more 'stable' than those listed above
 
+FIX_COMMAND_COUNT_UPDATE	;0.8.0	@see http://966-yyff.cocolog-nifty.com/blog/2013/06/ff3-d544.html
 FIX_DUNGEON_FLOOR_SAVE
 FIX_ATTR_BOOST
 FIX_HP_GROW
