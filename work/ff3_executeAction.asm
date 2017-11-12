@@ -1,10 +1,10 @@
 ; ff3_executeAction.asm
-;
+; encoding: utf-8
 ;description:
 ;	replaces executeAction()
 ;
 ;version:
-;	0.02 (2017-11-12)
+;	0.02 (2017-11-13)
 ;		special thanks to the owner of FF3C (aka "966") for reporting $9fa6 bug
 ;
 ;======================================================================================================
