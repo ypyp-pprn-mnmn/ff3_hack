@@ -1,0 +1,24 @@
+ 1A:9F87:20 2E A4  JSR $A42E
+ 1A:9F8A:48        PHA
+ 1A:9F8B:29 07     AND #$07
+ 1A:9F8D:AA        TAX
+ 1A:9F8E:A9 00     LDA #$00
+ 1A:9F90:20 20 FD  JSR $FD20
+ 1A:9F93:A0 2F     LDY #$2F
+ 1A:9F95:91 6E     STA ($6E),Y @ $75B5 = #$31
+ 1A:9F97:8D 99 7E  STA $7E99 = #$80
+ 1A:9F9A:8D 9B 7E  STA $7E9B = #$80
+ 1A:9F9D:68        PLA
+ 1A:9F9E:29 80     AND #$80
+ 1A:9FA0:C8        INY
+ 1A:9FA1:91 6E     STA ($6E),Y @ $75B5 = #$31
+ 1A:9FA3:A0 2F     LDY #$2F
+ 1A:9FA5:B1 6E     LDA ($6E),Y @ $75B5 = #$31
+ 1A:9FA7:60        RTS -----------------------------------------
+ 1A:9FA8:A0 2C     LDY #$2C
+ 1A:9FAA:B1 70     LDA ($70),Y @ $7675 = #$55
+ 1A:9FAC:4C B2 9F  JMP $9FB2
+ 1A:9FAF:20 2E A4  JSR $A42E
+ 1A:9FB2:29 07     AND #$07
+ 1A:9FB4:AA        TAX
+ 1A:9FB5:60        RTS

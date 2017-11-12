@@ -12,7 +12,7 @@
 ;		256(=2048 CPU cycles; 理論的な上限は279=2272cycles)を超えたら転送を止めて次のNMIを待つ
 ;		なお、転送用のコードが要するCPUサイクル数は概算で69+9*1行の幅(8x8のタイル単位)
 ;version:
-;	0.13 (2006-11-13)
+;	0.14 (2017-11-13)
 ;
 ;	$1b,22,23,24,25,26 used in caller (so should be avoided)
 ;
@@ -457,7 +457,7 @@ eraseWindow:
 .vram1stBegin = $2240
 .vram1stEnd = $23a0	;last line begins $2380
 .vram2ndBegin = $2640
-	;jsr waitNmi	;presentCharacterのかわりに使うと画面消去中キャラが動かないが多少描画に使える時間が増える
+	;jsr waitNmi	;presentCharacterのかわりに使うと画面消去中キャラが動かないが多少(7scanline分) 描画に使える時間が増える
 	jsr presentCharacter
 	ldx #LOW(.vram1stBegin)
 	lda #HIGH(.vram1stBegin)
@@ -471,14 +471,23 @@ eraseWindow:
 	;jsr drawWindow_setVramAndInitPpu	;6+49
 	jsr drawWindow_setVramAddr	;6+12
 	lda #0
-	ldx #$20
-.erase_loop:	;fill 32*11 bytes
+	;ldx #$20
+	ldx #$16
+.erase_loop:
+	;fill 32*11 bytes. 1loop = 49cycles = (4*11)+5. 32x49=1568 cycles.
+	;fill 22*16 bytes. 1loop = 69cycles. 22x69 = 1518 cycles.
 		sta $2007
 		sta $2007
 		sta $2007
 		sta $2007
 		sta $2007
 		sta $2007
+		sta $2007
+		sta $2007
+		sta $2007
+		sta $2007
+		sta $2007	;11
+
 		sta $2007
 		sta $2007
 		sta $2007

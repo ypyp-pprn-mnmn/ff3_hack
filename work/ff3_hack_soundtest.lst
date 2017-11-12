@@ -2959,7 +2959,7 @@
     5                     ;
     6                     ;version:
     7                     ;       0.02 (2017-11-12)
-    8                     ;               special thanks to the owner of FF3C (aka 966)
+    8                     ;               special thanks to the owner of FF3C (aka "966") for reporting $9fa6 bug
     9                     ;
    10                     ;======================================================================================================
    11  00:0000            ff3_executeAction_begin:
@@ -7603,7 +7603,7 @@
   457           2240      .vram1stBegin = $2240
   458           33A0      .vram1stEnd = $23a0     ;last line begins $2380
   459           6640      .vram2ndBegin = $2640
-  460                             ;jsr waitNmi    ;presentCharacterのかわりに使うと画面消去中キャラが動かないが多少描画に使える時間が増える
+  460                             ;jsr waitNmi    ;presentCharacterのかわりに使うと画面消去中キャラが動かないが多少(7scanline分) 描画に使える時間が増える
   461  34:EEB0  20 85 81          jsr presentCharacter
   462  34:EEB3  A2 40             ldx #LOW(.vram1stBegin)
   463  34:EEB5  A9 22             lda #HIGH(.vram1stBegin)
@@ -7617,55 +7617,62 @@
   471                             ;jsr drawWindow_setVramAndInitPpu       ;6+49
   472  34:EEC1  20 3A 8C          jsr drawWindow_setVramAddr      ;6+12
   473  34:EEC4  A9 00             lda #0
-  474  34:EEC6  A2 20             ldx #$20
-  475  34:EEC8            .erase_loop:    ;fill 32*11 bytes
-  476  34:EEC8  8D 07 20                  sta $2007
-  477  34:EECB  8D 07 20                  sta $2007
-  478  34:EECE  8D 07 20                  sta $2007
-  479  34:EED1  8D 07 20                  sta $2007
-  480  34:EED4  8D 07 20                  sta $2007
-  481  34:EED7  8D 07 20                  sta $2007
-  482  34:EEDA  8D 07 20                  sta $2007
-  483  34:EEDD  8D 07 20                  sta $2007
-  484  34:EEE0  8D 07 20                  sta $2007
-  485  34:EEE3  8D 07 20                  sta $2007
-  486  34:EEE6  8D 07 20                  sta $2007
-  487  34:EEE9  CA                        dex
-  488  34:EEEA  D0 DC                     bne .erase_loop
-  489  34:EEEC  4C CB F8          jmp updatePpuScrollNoWait
-  490                     ;$8f0b
-  491                     ;------------------------------------------------------------------------------------------------------
-  492                             ;.bank  $34
-  493                             ;.org   $8f0b
-  494                             INIT_PATCH $34,$8f0b,$8f43
+  474                             ;ldx #$20
+  475  34:EEC6  A2 16             ldx #$16
+  476  34:EEC8            .erase_loop:    ;fill 32*11 bytes. 1loop = 49cycles = (4*11)+5. 32x49=1568 cycles.
+  477  34:EEC8  8D 07 20                  sta $2007
+  478  34:EECB  8D 07 20                  sta $2007
+  479  34:EECE  8D 07 20                  sta $2007
+  480  34:EED1  8D 07 20                  sta $2007
+  481  34:EED4  8D 07 20                  sta $2007
+  482  34:EED7  8D 07 20                  sta $2007
+  483  34:EEDA  8D 07 20                  sta $2007
+  484  34:EEDD  8D 07 20                  sta $2007
+  485  34:EEE0  8D 07 20                  sta $2007
+  486  34:EEE3  8D 07 20                  sta $2007
+  487  34:EEE6  8D 07 20                  sta $2007       ;11
+  488                     
+  489  34:EEE9  8D 07 20                  sta $2007
+  490  34:EEEC  8D 07 20                  sta $2007
+  491  34:EEEF  8D 07 20                  sta $2007
+  492  34:EEF2  8D 07 20                  sta $2007
+  493  34:EEF5  8D 07 20                  sta $2007
+  494  34:EEF8  CA                        dex
+  495  34:EEF9  D0 CD                     bne .erase_loop
+  496  34:EEFB  4C CB F8          jmp updatePpuScrollNoWait
+  497                     ;$8f0b
+  498                     ;------------------------------------------------------------------------------------------------------
+  499                             ;.bank  $34
+  500                             ;.org   $8f0b
+  501                             INIT_PATCH $34,$8f0b,$8f43
                 0034              .bank   $34
                 FF0B              .org    $8f0b
        34:FF0B                    .ds             (($8f43) - ($8f0b))
                 FF0B              .org    $8f0b
-  495  34:FF0B            eraseFromLeftBottom0Bx0A:
-  496           0018      .vram = $18
-  497                             INIT16 <.vram,$2380
+  502  34:FF0B            eraseFromLeftBottom0Bx0A:
+  503           0018      .vram = $18
+  504                             INIT16 <.vram,$2380
        34:FF0B  A9 80             lda #LOW($2380)
        34:FF0D  85 18             sta <.vram
        34:FF0F  A9 23             lda #HIGH($2380)
        34:FF11  85 19             sta <.vram+1
-  498  34:FF13  20 80 FB          jsr waitNmi
-  499  34:FF16  A0 0A             ldy #$0a
-  500  34:FF18            .erase_loop:
-  501  34:FF18  A6 18                     ldx <.vram
-  502  34:FF1A  A5 19                     lda <.vram+1
-  503  34:FF1C  20 44 8C                  jsr drawWindow_setVramAndInitPpu        ;6+49
-  504                                     ;jsr drawWindow_setVramAddr
-  505  34:FF1F  A2 05                     ldx #5
-  506  34:FF21  A9 00                     lda #0
-  507  34:FF23                    .erase_line:    
-  508  34:FF23  8D 07 20                          sta $2007
-  509  34:FF26  8D 07 20                          sta $2007
-  510  34:FF29  CA                                dex 
-  511  34:FF2A  D0 F7                             bne .erase_line
-  512  34:FF2C  8D 07 20                  sta $2007
-  513                                     ;SUB16 <.vram,$0020
-  514                                     SUB16by8 <.vram,#$20
+  505  34:FF13  20 80 FB          jsr waitNmi
+  506  34:FF16  A0 0A             ldy #$0a
+  507  34:FF18            .erase_loop:
+  508  34:FF18  A6 18                     ldx <.vram
+  509  34:FF1A  A5 19                     lda <.vram+1
+  510  34:FF1C  20 44 8C                  jsr drawWindow_setVramAndInitPpu        ;6+49
+  511                                     ;jsr drawWindow_setVramAddr
+  512  34:FF1F  A2 05                     ldx #5
+  513  34:FF21  A9 00                     lda #0
+  514  34:FF23                    .erase_line:    
+  515  34:FF23  8D 07 20                          sta $2007
+  516  34:FF26  8D 07 20                          sta $2007
+  517  34:FF29  CA                                dex 
+  518  34:FF2A  D0 F7                             bne .erase_line
+  519  34:FF2C  8D 07 20                  sta $2007
+  520                                     ;SUB16 <.vram,$0020
+  521                                     SUB16by8 <.vram,#$20
        34:FF2F  A5 18             lda <.vram
        34:FF31  38                sec
        34:FF32  E9 20             sbc #$20
@@ -7673,12 +7680,12 @@
        34:FF36  B0 02             bcs .sub16by8_00092
        34:FF38  C6 19                     dec <.vram+1
        34:FF3A                    .sub16by8_00092:
-  515  34:FF3A  88                        dey     
-  516  34:FF3B  D0 DB                     bne .erase_loop
-  517  34:FF3D  60                rts
-  518                             ;jmp updatePpuScrollNoWait
-  519                     ;=======================================================================================================        
-  520                             RESTORE_PC      ff3_window_last
+  522  34:FF3A  88                        dey     
+  523  34:FF3B  D0 DB                     bne .erase_loop
+  524  34:FF3D  60                rts
+  525                             ;jmp updatePpuScrollNoWait
+  526                     ;=======================================================================================================        
+  527                             RESTORE_PC      ff3_window_last
                 0035              .bank   BANK(ff3_window_last)
                 660A              .org    ff3_window_last
 #[3]   ff3_hack_master.asm
