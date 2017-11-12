@@ -4,7 +4,8 @@
 ;	replaces command 13 (useItem)
 ;
 ; version:
-;	0.05 (2006-10-28)
+;	0.06 (2017-11-13)
+;		special thanks to owner of FF3c aka '966' for reporting bug
 ;======================================================================================================
 ff3_command_13_begin:
 	INIT_PATCH $31,$a65e,$a732
@@ -126,8 +127,14 @@ setupItemCalculation:	;$31:a65e useItem //dispid:04 [battleFunction04]
 .castCount = $30
 	.ifdef ENABLE_EXTRA_ABILITY_TAG
 		tax
-		lda #EXTRA_ABILITY_OFFSET
-		jsr b31_setYtoOffsetOf
+		;lda #EXTRA_ABILITY_OFFSET
+		;jsr b31_setYtoOffsetOf
+		;; FIXED:
+		;;	checks for possesion of the ability should always be made against executor itself
+		;;	and here pActor points to that exexcutor.
+		;;	so it is fine to use the offset directly
+		;;	see: http://966-yyff.cocolog-nifty.com/blog/2012/10/post-9708.html
+		ldy #EXTRA_ABILITY_OFFSET	
 		lda [.pActor],y
 		and #PASSIVE_DOUBLE_ITEM_EFFECT
 		beq .effect_normal
