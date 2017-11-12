@@ -2961,596 +2961,598 @@
     4                     ;       replaces executeAction()
     5                     ;
     6                     ;version:
-    7                     ;       0.01 (2006-10-26)
-    8                     ;
-    9                     ;======================================================================================================
-   10  00:0000            ff3_executeAction_begin:
-   11                     
-   12                             ;INIT_PATCH $34,$9de4,$9fac
-   13           0034              .bank   $34
-   14           DDE4              .org    $9de4
-   15  34:DDE4            executeAction:
-   16                     ;[in]
-   17           AAC2      .currentActor = $7ac2
-   18           AACB      .ordinalToIndex = $7acb
-   19                     ;[local]
-   20           006E      .pActor = $6e
-   21           0070      .pTarget = $70
-   22                     
-   23  34:DDE4  AE C2 7A          ldx .currentActor
-   24  34:DDE7  BD CB 7A          lda .ordinalToIndex,x
-   25  34:DDEA  48                pha
-   26                             
-   27  34:DDEB  10 05             bpl .actor_is_player_char
-   28  34:DDED  18                        clc
-   29  34:DDEE  29 7F                     and #$7f
-   30  34:DDF0  69 04                     adc #4
-   31  34:DDF2            .actor_is_player_char:
-   32                     ;$9df3:
-   33  34:DDF2  85 18             sta <$18
-   34  34:DDF4  85 26             sta <$26
-   35                             
-   36  34:DDF6  A9 40             lda #$40
-   37  34:DDF8  85 1A             sta <$1a
-   38                             INIT16 <$20,$7575
+    7                     ;       0.02 (2017-11-12)
+    8                     ;               special thanks to the owner of FF3C (aka 966)
+    9                     ;
+   10                     ;======================================================================================================
+   11  00:0000            ff3_executeAction_begin:
+   12                     
+   13                             ;INIT_PATCH $34,$9de4,$9fac
+   14           0034              .bank   $34
+   15           DDE4              .org    $9de4
+   16  34:DDE4            executeAction:
+   17                     ;[in]
+   18           AAC2      .currentActor = $7ac2
+   19           AACB      .ordinalToIndex = $7acb
+   20                     ;[local]
+   21           006E      .pActor = $6e
+   22           0070      .pTarget = $70
+   23                     
+   24  34:DDE4  AE C2 7A          ldx .currentActor
+   25  34:DDE7  BD CB 7A          lda .ordinalToIndex,x
+   26  34:DDEA  48                pha
+   27                             
+   28  34:DDEB  10 05             bpl .actor_is_player_char
+   29  34:DDED  18                        clc
+   30  34:DDEE  29 7F                     and #$7f
+   31  34:DDF0  69 04                     adc #4
+   32  34:DDF2            .actor_is_player_char:
+   33                     ;$9df3:
+   34  34:DDF2  85 18             sta <$18
+   35  34:DDF4  85 26             sta <$26
+   36                             
+   37  34:DDF6  A9 40             lda #$40
+   38  34:DDF8  85 1A             sta <$1a
+   39                             INIT16 <$20,$7575
        34:DDFA  A9 75             lda #LOW($7575)
        34:DDFC  85 20             sta <$20
        34:DDFE  A9 75             lda #HIGH($7575)
        34:EE00  85 21             sta <$20+1
-   39                             
-   40  34:EE02  20 2E 80          jsr dispatchBattleFunction_07   ;802e => calcDataAddress
-   41                     
-   42  34:EE05  A5 1C             lda <$1c
-   43  34:EE07  85 6E             sta <.pActor
-   44  34:EE09  A5 1D             lda <$1d
-   45  34:EE0B  85 6F             sta <.pActor+1
-   46                     
-   47  34:EE0D  A5 26             lda <$26
-   48  34:EE0F  C9 0C             cmp #$0c
-   49  34:EE11  90 03             bcc .actor_valid
-   50                                     ;?
-   51  34:EE13  68                        pla
-   52  34:EE14  D0 39                     bne .check_status       ;$9e5f
-   53  34:EE16            .actor_valid:
-   54  34:EE16  68                pla
-   55  34:EE17  A8                tay
-   56  34:EE18  29 87             and #$87
-   57  34:EE1A  8D D6 78          sta $78d6       ;actor name
-   58  34:EE1D  29 7F             and #$7f
-   59  34:EE1F  AA                tax
-   60                             ;lda #0
-   61                             ;jsr flagTargetBit
-   62  34:EE20  20 BA 9F          jsr flagSingleTarget
-   63  34:EE23  8D 98 7E          sta $7e98
-   64  34:EE26  98                tya     ;actor index|flag
-   65                     
-   66  34:EE27  10 26             bpl .check_status
-   67                                     ;actor enemy
-   68  34:EE29  AD 9A 7E                  lda $7e9a
-   69  34:EE2C  09 80                     ora #$80
-   70  34:EE2E  8D 9A 7E                  sta $7e9a
-   71                                     
-   72                                     ;a = $7ced;
-   73                                     ;if( ((#55 == $7ced) && ($7cee == 0))
-   74                                     ;       || ( ((#79 == $7ced) || (#90 == $7ced)) && ($7cee != 0) ) )
-   75  34:EE31  AD ED 7C                  lda $7ced
-   76  34:EE34  AE EE 7C                  ldx $7cee
-   77  34:EE37  D0 06                     bne ._7cee_not_0
-   78  34:EE39  C9 55                             cmp #$55
-   79  34:EE3B  D0 12                             bne .check_status
-   80  34:EE3D  F0 08                             beq .heal_hp
-   81  34:EE3F                    ._7cee_not_0:
-   82  34:EE3F  C9 79                             cmp #$79
-   83  34:EE41  F0 04                             beq .heal_hp
-   84  34:EE43  C9 90                             cmp #$90
-   85  34:EE45  D0 08                             bne .check_status
-   86  34:EE47                    .heal_hp:
-   87  34:EE47  A0 06                             ldy #6
-   88  34:EE49  B1 6E                             lda [.pActor],y
-   89  34:EE4B  A0 04                             ldy #4
-   90  34:EE4D  91 6E                             sta [.pActor],y
-   91  34:EE4F            .check_status:  ;$9e5f:
-   92  34:EE4F  A0 01             ldy #1
-   93  34:EE51  B1 6E             lda [.pActor],y
-   94  34:EE53  29 C0             and #$c0        ;dead|stone
-   95  34:EE55  D0 68             bne .actor_status_bad
-   96                                     ;check more
-   97  34:EE57  C8                        iny
-   98  34:EE58  B1 6E                     lda [.pActor],y
-   99  34:EE5A  29 C0                     and #$c0        ;paralyzed | sleeping
-  100  34:EE5C  F0 0B                     beq .actor_status_ok
-  101  34:EE5E  A9 01                             lda #1
-  102  34:EE60  20 7B 9F                          jsr setActorActionAndClearMode  ;$9f7b
-  103  34:EE63  20 CE 91                          jsr setNoTargetMessage  ;$91ce
-  104  34:EE66  20 87 9F                          jsr setActionTargetToSelf       ;$9f87
-  105                     ;$9e93:
-  106  34:EE69                    .actor_status_ok:
-  107  34:EE69  A0 2F                     ldy #$2f
-  108  34:EE6B  B1 6E                     lda [.pActor],y
-  109  34:EE6D  8D 99 7E                  sta $7e99
-  110  34:EE70  8D 9B 7E                  sta $7e9b
-  111  34:EE73  D0 03                     bne .target_valid
-  112  34:EE75  20 87 9F                          jsr setActionTargetToSelf
-  113  34:EE78                    .target_valid:
-  114  34:EE78  A2 00                     ldx #0
-  115  34:EE7A                    .target_bit_to_index:
-  116  34:EE7A  0A                                asl a
-  117  34:EE7B  B0 03                             bcs .got_index
-  118  34:EE7D  E8                                inx
-  119  34:EE7E  D0 FA                             bne .target_bit_to_index
-  120  34:EE80                    .got_index:
-  121  34:EE80  8A                        txa
-  122  34:EE81  48                        pha
-  123                                     
-  124  34:EE82  C8                        iny
-  125  34:EE83  B1 6E                     lda [.pActor],y ;+30
-  126  34:EE85  A8                        tay
-  127                                     
-  128  34:EE86  10 11                     bpl .target_player
-  129  34:EE88  AD 9A 7E                          lda play_effectTargetSide       ;$7e9a
-  130  34:EE8B  09 40                             ora #$40
-  131  34:EE8D  8D 9A 7E                          sta play_effectTargetSide       ;$7e9a
-  132                                             
-  133  34:EE90  68                                pla
-  134  34:EE91  09 80                             ora #$80
-  135  34:EE93  48                                pha     ;sta $78d8
-  136                     
-  137  34:EE94  18                                clc
-  138  34:EE95  8A                                txa
-  139  34:EE96  69 04                             adc #4
-  140  34:EE98  AA                                tax
-  141                                             ;bne .set_target_name
-  142  34:EE99                    .target_player:
-  143  34:EE99                    .set_target_name:
-  144  34:EE99  86 18                     stx <$18        ;actor ordinal
-  145  34:EE9B  68                        pla     ;target index
-  146  34:EE9C  AA                        tax
-  147                                     
-  148  34:EE9D  98                        tya     ;target flag
-  149  34:EE9E  0A                        asl a
-  150  34:EE9F  10 02                     bpl .target_single
-  151  34:EEA1  A2 88                             ldx #$88
-  152  34:EEA3                    .target_single:
-  153  34:EEA3  8E D8 78                  stx $78d8
-  154                     
-  155  34:EEA6  A9 40                     lda #$40
-  156  34:EEA8  85 1A                     sta <$1a
-  157                                     INIT16 <$20,$7575
+   40                             
+   41  34:EE02  20 2E 80          jsr dispatchBattleFunction_07   ;802e => calcDataAddress
+   42                     
+   43  34:EE05  A5 1C             lda <$1c
+   44  34:EE07  85 6E             sta <.pActor
+   45  34:EE09  A5 1D             lda <$1d
+   46  34:EE0B  85 6F             sta <.pActor+1
+   47                     
+   48  34:EE0D  A5 26             lda <$26
+   49  34:EE0F  C9 0C             cmp #$0c
+   50  34:EE11  90 03             bcc .actor_valid
+   51                                     ;?
+   52  34:EE13  68                        pla
+   53  34:EE14  D0 39                     bne .check_status       ;$9e5f
+   54  34:EE16            .actor_valid:
+   55  34:EE16  68                pla
+   56  34:EE17  A8                tay
+   57  34:EE18  29 87             and #$87
+   58  34:EE1A  8D D6 78          sta $78d6       ;actor name
+   59  34:EE1D  29 7F             and #$7f
+   60  34:EE1F  AA                tax
+   61                             ;lda #0
+   62                             ;jsr flagTargetBit
+   63  34:EE20  20 BC 9F          jsr flagSingleTarget
+   64  34:EE23  8D 98 7E          sta $7e98
+   65  34:EE26  98                tya     ;actor index|flag
+   66                     
+   67  34:EE27  10 26             bpl .check_status
+   68                                     ;actor enemy
+   69  34:EE29  AD 9A 7E                  lda $7e9a
+   70  34:EE2C  09 80                     ora #$80
+   71  34:EE2E  8D 9A 7E                  sta $7e9a
+   72                                     
+   73                                     ;a = $7ced;
+   74                                     ;if( ((#55 == $7ced) && ($7cee == 0))
+   75                                     ;       || ( ((#79 == $7ced) || (#90 == $7ced)) && ($7cee != 0) ) )
+   76  34:EE31  AD ED 7C                  lda $7ced
+   77  34:EE34  AE EE 7C                  ldx $7cee
+   78  34:EE37  D0 06                     bne ._7cee_not_0
+   79  34:EE39  C9 55                             cmp #$55
+   80  34:EE3B  D0 12                             bne .check_status
+   81  34:EE3D  F0 08                             beq .heal_hp
+   82  34:EE3F                    ._7cee_not_0:
+   83  34:EE3F  C9 79                             cmp #$79
+   84  34:EE41  F0 04                             beq .heal_hp
+   85  34:EE43  C9 90                             cmp #$90
+   86  34:EE45  D0 08                             bne .check_status
+   87  34:EE47                    .heal_hp:
+   88  34:EE47  A0 06                             ldy #6
+   89  34:EE49  B1 6E                             lda [.pActor],y
+   90  34:EE4B  A0 04                             ldy #4
+   91  34:EE4D  91 6E                             sta [.pActor],y
+   92  34:EE4F            .check_status:  ;$9e5f:
+   93  34:EE4F  A0 01             ldy #1
+   94  34:EE51  B1 6E             lda [.pActor],y
+   95  34:EE53  29 C0             and #$c0        ;dead|stone
+   96  34:EE55  D0 68             bne .actor_status_bad
+   97                                     ;check more
+   98  34:EE57  C8                        iny
+   99  34:EE58  B1 6E                     lda [.pActor],y
+  100  34:EE5A  29 C0                     and #$c0        ;paralyzed | sleeping
+  101  34:EE5C  F0 0B                     beq .actor_status_ok
+  102  34:EE5E  A9 01                             lda #1
+  103  34:EE60  20 7B 9F                          jsr setActorActionAndClearMode  ;$9f7b
+  104  34:EE63  20 CE 91                          jsr setNoTargetMessage  ;$91ce
+  105  34:EE66  20 87 9F                          jsr setActionTargetToSelf       ;$9f87
+  106                     ;$9e93:
+  107  34:EE69                    .actor_status_ok:
+  108  34:EE69  A0 2F                     ldy #$2f
+  109  34:EE6B  B1 6E                     lda [.pActor],y
+  110  34:EE6D  8D 99 7E                  sta $7e99
+  111  34:EE70  8D 9B 7E                  sta $7e9b
+  112  34:EE73  D0 03                     bne .target_valid
+  113  34:EE75  20 87 9F                          jsr setActionTargetToSelf
+  114  34:EE78                    .target_valid:
+  115  34:EE78  A2 00                     ldx #0
+  116  34:EE7A                    .target_bit_to_index:
+  117  34:EE7A  0A                                asl a
+  118  34:EE7B  B0 03                             bcs .got_index
+  119  34:EE7D  E8                                inx
+  120  34:EE7E  D0 FA                             bne .target_bit_to_index
+  121  34:EE80                    .got_index:
+  122  34:EE80  8A                        txa
+  123  34:EE81  48                        pha
+  124                                     
+  125  34:EE82  C8                        iny
+  126  34:EE83  B1 6E                     lda [.pActor],y ;+30
+  127  34:EE85  A8                        tay
+  128                                     
+  129  34:EE86  10 11                     bpl .target_player
+  130  34:EE88  AD 9A 7E                          lda play_effectTargetSide       ;$7e9a
+  131  34:EE8B  09 40                             ora #$40
+  132  34:EE8D  8D 9A 7E                          sta play_effectTargetSide       ;$7e9a
+  133                                             
+  134  34:EE90  68                                pla
+  135  34:EE91  09 80                             ora #$80
+  136  34:EE93  48                                pha     ;sta $78d8
+  137                     
+  138  34:EE94  18                                clc
+  139  34:EE95  8A                                txa
+  140  34:EE96  69 04                             adc #4
+  141  34:EE98  AA                                tax
+  142                                             ;bne .set_target_name
+  143  34:EE99                    .target_player:
+  144  34:EE99                    .set_target_name:
+  145  34:EE99  86 18                     stx <$18        ;actor ordinal
+  146  34:EE9B  68                        pla     ;target index
+  147  34:EE9C  AA                        tax
+  148                                     
+  149  34:EE9D  98                        tya     ;target flag
+  150  34:EE9E  0A                        asl a
+  151  34:EE9F  10 02                     bpl .target_single
+  152  34:EEA1  A2 88                             ldx #$88
+  153  34:EEA3                    .target_single:
+  154  34:EEA3  8E D8 78                  stx $78d8
+  155                     
+  156  34:EEA6  A9 40                     lda #$40
+  157  34:EEA8  85 1A                     sta <$1a
+  158                                     INIT16 <$20,$7575
        34:EEAA  A9 75             lda #LOW($7575)
        34:EEAC  85 20             sta <$20
        34:EEAE  A9 75             lda #HIGH($7575)
        34:EEB0  85 21             sta <$20+1
-  158  34:EEB2  20 2E 80                  jsr dispatchBattleFunction_07   ;$802e
-  159                                     
-  160  34:EEB5  A5 1C                     lda <$1c
-  161  34:EEB7  85 70                     sta <.pTarget
-  162  34:EEB9  A5 1D                     lda <$1d
-  163  34:EEBB  85 71                     sta <.pTarget+1
-  164  34:EEBD  D0 15                     bne .check_action_mode  ;target address should be $75xx-$77xx
-  165                                     ;bne
-  166  34:EEBF            .actor_status_bad
-  167  34:EEBF  88                        dey
-  168  34:EEC0  98                        tya
-  169  34:EEC1  8C C2 7E                  sty effectHandlerIndex  ;$7ec2
-  170  34:EEC4  8C 98 7E                  sty $7e98
-  171  34:EEC7  88                        dey
-  172  34:EEC8  8C EB 7C                  sty $7ceb
-  173  34:EECB  8C D8 78                  sty $78d8
-  174  34:EECE  8C D6 78                  sty $78d6
-  175  34:EED1  20 7B 9F                  jsr setActorActionAndClearMode  ;$9f7b
-  176                     ;$9eec:
-  177                     ;-----------------------------
-  178  34:EED4            .check_action_mode:
-  179           001A      .actionId = $1a
-  180  34:EED4  A0 2E             ldy #$2e
-  181  34:EED6  B1 6E             lda [.pActor],y
-  182  34:EED8  85 1A             sta <.actionId  ;actionid
-  183                             
-  184  34:EEDA  20 2E A4          jsr getActor2C
-  185  34:EEDD  AA                tax
-  186  34:EEDE  29 10             and #$10        ;special
-  187  34:EEE0  D0 36             bne .special_attack     ;$9f5a
-  188  34:EEE2  8A                txa
-  189  34:EEE3  29 08             and #$08
-  190  34:EEE5  D0 0A             bne .use_item   ;$9f19
-  191                     ;$9f0b:
-  192  34:EEE7  A5 1A             lda <.actionId
-  193           0001              .ifdef ENABLE_EXTRA_ABILITY
-  194  34:EEE9  C9 1A                     cmp #CMDX_ID_END
-  195                             .else
-  197                             .endif
-  198  34:EEEB  90 2D             bcc .dispatch
-  199  34:EEED  C9 46             cmp #$46
-  200  34:EEEF  B0 04             bcs .check_caster
-  201                             ;invalid action id
-  202  34:EEF1            .use_item:
-  203  34:EEF1  A9 13             lda #$13
-  204  34:EEF3  D0 25             bne .dispatch
-  205  34:EEF5            .check_caster:
-  206                             ;jsr getActor2C
-  207  34:EEF5  8A                txa
-  208  34:EEF6  30 20             bmi .special_attack
-  209                     ;decrement mp
-  210           0052      .iPlayer = $52
-  211  34:EEF8  29 07                     and #7
-  212  34:EEFA  AA                        tax
-  213  34:EEFB  BD C7 7A                  lda selectedMagicLv,x
-  214  34:EEFE  18                        clc
-  215  34:EEFF  69 07                     adc #7
-  216  34:FF01  A8                        tay
-  217  34:FF02  38                        sec
-  218  34:FF03  B1 6E                     lda [.pActor],y ;mp
-  219  34:FF05  E9 01                     sbc #1
-  220  34:FF07  91 6E                     sta [.pActor],y
-  221                                     
-  222  34:FF09  A5 1A                     lda <.actionId
-  223  34:FF0B  A2 07                     ldx #7
-  224  34:FF0D                    .check_summon_id:
-  225  34:FF0D  DD 2C 9F                          cmp .summonMagicIds,x
-  226  34:FF10  D0 03                             bne .check_summon_next
-  227  34:FF12  4C 00 A0                                  jmp executeAction_summon
-  228  34:FF15                            .check_summon_next:
-  229  34:FF15  CA                                dex
-  230  34:FF16  10 F5                             bpl .check_summon_id
-  231  34:FF18            .special_attack:        ;$9f5a
-  232  34:FF18  A9 14             lda #$14
-  233  34:FF1A            .dispatch:      ;$9f5c
-  234  34:FF1A  8D C2 7E          sta effectHandlerIndex  ;$7ec2
-  235                     
-  236  34:FF1D  0A                asl a
-  237  34:FF1E  AA                tax
-  238  34:FF1F  BD 34 9F          lda executeAction_handlers,x
-  239  34:FF22  85 18             sta <$18
-  240  34:FF24  BD 35 9F          lda executeAction_handlers+1,x
-  241  34:FF27  85 19             sta <$19
-  242  34:FF29  6C 18 00          jmp [$0018]
-  243  34:FF2C            .summonMagicIds:
-  244  34:FF2C  CE D5 DC          .db $ce,$d5,$dc,$e3,$ea,$f1,$f8,$ff
+  159  34:EEB2  20 2E 80                  jsr dispatchBattleFunction_07   ;$802e
+  160                                     
+  161  34:EEB5  A5 1C                     lda <$1c
+  162  34:EEB7  85 70                     sta <.pTarget
+  163  34:EEB9  A5 1D                     lda <$1d
+  164  34:EEBB  85 71                     sta <.pTarget+1
+  165  34:EEBD  D0 15                     bne .check_action_mode  ;target address should be $75xx-$77xx
+  166                                     ;bne
+  167  34:EEBF            .actor_status_bad
+  168  34:EEBF  88                        dey
+  169  34:EEC0  98                        tya
+  170  34:EEC1  8C C2 7E                  sty effectHandlerIndex  ;$7ec2
+  171  34:EEC4  8C 98 7E                  sty $7e98
+  172  34:EEC7  88                        dey
+  173  34:EEC8  8C EB 7C                  sty $7ceb
+  174  34:EECB  8C D8 78                  sty $78d8
+  175  34:EECE  8C D6 78                  sty $78d6
+  176  34:EED1  20 7B 9F                  jsr setActorActionAndClearMode  ;$9f7b
+  177                     ;$9eec:
+  178                     ;-----------------------------
+  179  34:EED4            .check_action_mode:
+  180           001A      .actionId = $1a
+  181  34:EED4  A0 2E             ldy #$2e
+  182  34:EED6  B1 6E             lda [.pActor],y
+  183  34:EED8  85 1A             sta <.actionId  ;actionid
+  184                             
+  185  34:EEDA  20 2E A4          jsr getActor2C
+  186  34:EEDD  AA                tax
+  187  34:EEDE  29 10             and #$10        ;special
+  188  34:EEE0  D0 36             bne .special_attack     ;$9f5a
+  189  34:EEE2  8A                txa
+  190  34:EEE3  29 08             and #$08
+  191  34:EEE5  D0 0A             bne .use_item   ;$9f19
+  192                     ;$9f0b:
+  193  34:EEE7  A5 1A             lda <.actionId
+  194           0001              .ifdef ENABLE_EXTRA_ABILITY
+  195  34:EEE9  C9 1A                     cmp #CMDX_ID_END
+  196                             .else
+  198                             .endif
+  199  34:EEEB  90 2D             bcc .dispatch
+  200  34:EEED  C9 46             cmp #$46
+  201  34:EEEF  B0 04             bcs .check_caster
+  202                             ;invalid action id
+  203  34:EEF1            .use_item:
+  204  34:EEF1  A9 13             lda #$13
+  205  34:EEF3  D0 25             bne .dispatch
+  206  34:EEF5            .check_caster:
+  207                             ;jsr getActor2C
+  208  34:EEF5  8A                txa
+  209  34:EEF6  30 20             bmi .special_attack
+  210                     ;decrement mp
+  211           0052      .iPlayer = $52
+  212  34:EEF8  29 07                     and #7
+  213  34:EEFA  AA                        tax
+  214  34:EEFB  BD C7 7A                  lda selectedMagicLv,x
+  215  34:EEFE  18                        clc
+  216  34:EEFF  69 07                     adc #7
+  217  34:FF01  A8                        tay
+  218  34:FF02  38                        sec
+  219  34:FF03  B1 6E                     lda [.pActor],y ;mp
+  220  34:FF05  E9 01                     sbc #1
+  221  34:FF07  91 6E                     sta [.pActor],y
+  222                                     
+  223  34:FF09  A5 1A                     lda <.actionId
+  224  34:FF0B  A2 07                     ldx #7
+  225  34:FF0D                    .check_summon_id:
+  226  34:FF0D  DD 2C 9F                          cmp .summonMagicIds,x
+  227  34:FF10  D0 03                             bne .check_summon_next
+  228  34:FF12  4C 00 A0                                  jmp executeAction_summon
+  229  34:FF15                            .check_summon_next:
+  230  34:FF15  CA                                dex
+  231  34:FF16  10 F5                             bpl .check_summon_id
+  232  34:FF18            .special_attack:        ;$9f5a
+  233  34:FF18  A9 14             lda #$14
+  234  34:FF1A            .dispatch:      ;$9f5c
+  235  34:FF1A  8D C2 7E          sta effectHandlerIndex  ;$7ec2
+  236                     
+  237  34:FF1D  0A                asl a
+  238  34:FF1E  AA                tax
+  239  34:FF1F  BD 34 9F          lda executeAction_handlers,x
+  240  34:FF22  85 18             sta <$18
+  241  34:FF24  BD 35 9F          lda executeAction_handlers+1,x
+  242  34:FF27  85 19             sta <$19
+  243  34:FF29  6C 18 00          jmp [$0018]
+  244  34:FF2C            .summonMagicIds:
+  245  34:FF2C  CE D5 DC          .db $ce,$d5,$dc,$e3,$ea,$f1,$f8,$ff
        34:FF2F  E3 EA F1  
        34:FF32  F8 FF     
-  245  34:FF34            executeAction_end:
-  246                     ;======================================================================================================
-  247           FFA8      command_none            = $9fa8
-  248           668A      command_01                      = $a68a
-  249                     ;command_forward        = $a7df
-  250                     ;command_back           = $a7ea
-  251                     ;command_fight          = $a104
-  252                     ;command_guard          = $a881
-  253                     ;command_escape         = $a8bf
-  254                     ;command_sneakAway      = $a93b
-  255                     ;command_jump           = $a9d8
-  256                     ;command_land           = $aa11
-  257                     ;command_0A                     = $a89f
-  258                     ;command_geomance       = $aa5d
-  259                     ;command_inspect        = $ab73
-  260                     ;command_detect         = $ab0c
-  261                     ;command_steal          = $aba4
-  262                     ;command_charge         = $ac6f
-  263                     ;command_sing           = $acd5
-  264                     ;command_intimidate     = $ad16
-  265                     ;command_cheer          = $ad75
-  266           33BB      command_item            = $a3bb
-  267           3367      command_magic           = $a367
-  268                     ;------------------------------------------------------------------------------------------------------
-  269                     ;       .org    $9fac
-  270                             INIT_PATCH $34,$9fac,$9fac+($02*$15)
+  246  34:FF34            executeAction_end:
+  247                     ;======================================================================================================
+  248           FFA8      command_none            = $9fa8
+  249           668A      command_01                      = $a68a
+  250                     ;command_forward        = $a7df
+  251                     ;command_back           = $a7ea
+  252                     ;command_fight          = $a104
+  253                     ;command_guard          = $a881
+  254                     ;command_escape         = $a8bf
+  255                     ;command_sneakAway      = $a93b
+  256                     ;command_jump           = $a9d8
+  257                     ;command_land           = $aa11
+  258                     ;command_0A                     = $a89f
+  259                     ;command_geomance       = $aa5d
+  260                     ;command_inspect        = $ab73
+  261                     ;command_detect         = $ab0c
+  262                     ;command_steal          = $aba4
+  263                     ;command_charge         = $ac6f
+  264                     ;command_sing           = $acd5
+  265                     ;command_intimidate     = $ad16
+  266                     ;command_cheer          = $ad75
+  267           33BB      command_item            = $a3bb
+  268           3367      command_magic           = $a367
+  269                     ;------------------------------------------------------------------------------------------------------
+  270                     ;       .org    $9fac
+  271                             INIT_PATCH $34,$9fac,$9fac+($02*$15)
                 0034              .bank   $34
                 FFAC              .org    $9fac
        34:FFAC                    .ds             (($9fac+($02*$15)) - ($9fac))
                 FFAC              .org    $9fac
-  271                             RESTORE_PC executeAction_end
+  272                             RESTORE_PC executeAction_end
                 0034              .bank   BANK(executeAction_end)
                 FF34              .org    executeAction_end
-  272                     
-  273  34:FF34            executeAction_handlers: ;$9fac: //function table
-  274  34:FF34  A8 9F             .dw     command_none            ;$9fa8
-  275  34:FF36  8A A6             .dw command_01                  ;$a68a
-  276  34:FF38  3D A8             .dw command_forward             ;$a7df
-  277  34:FF3A  3D A8             .dw command_back                ;$a7ea
-  278  34:FF3C  04 A1             .dw command_fight               ;$a104
-  279  34:FF3E  6F A8             .dw command_guard               ;$a881
-  280  34:FF40  86 A8             .dw command_escape              ;$a8bf
-  281  34:FF42  10 A9             .dw command_sneakAway   ;$a93b
-  282  34:FF44  3B A9             .dw command_jump                ;$a9d8
-  283  34:FF46  5F A9             .dw command_land                ;$aa11
-  284  34:FF48  A8 9F             .dw command_none                ;$9fa8
-  285  34:FF4A  70 A9             .dw command_geomance    ;$aa5d
-  286  34:FF4C  51 AA             .dw command_inspect             ;$ab73
-  287  34:FF4E  1F AA             .dw command_detect              ;$ab0c
-  288  34:FF50  78 AA             .dw command_steal               ;$aba4
-  289  34:FF52  0B AB             .dw command_charge              ;$ac6f
-  290  34:FF54  55 AB             .dw command_sing                ;$acd5
-  291  34:FF56  73 AB             .dw command_intimidate  ;$ad16
-  292  34:FF58  B0 AB             .dw command_cheer               ;$ad75
-  293  34:FF5A  BB A3             .dw command_item                ;$a3bb
-  294  34:FF5C  67 A3             .dw command_magic               ;$a367
-  295                             ;extension to original
-  296  34:FF5E  00 00             .dw 0   ;dummy
-  297  34:FF60  18 B6             .dw cmdx_provoke
-  298  34:FF62  E8 B6             .dw cmdx_disorderedShot
-  299  34:FF64  B6 B8             .dw cmdx_abyss
-  300  34:FF66  EB B8             .dw cmdx_raid
-  301  34:FF68            executeAction_free_begin:
-  302                     ;$9f7b
-  303                     ;======================================================================================================
-  304                     ;$34:9f7b setActorCommandIdAndClearMode
-  305                     
-  306                     ;$34:9f87 setActionTargetToSelf //setActionTargetBitAndFlags
-  307                     
-  308                     ;$34:9fa8 handleCommand00_0a //do nothing
-  309                     ;======================================================================================================
-  310                             INIT_PATCH $34,$9fa6,$a000
+  273                     
+  274  34:FF34            executeAction_handlers: ;$9fac: //function table
+  275  34:FF34  A8 9F             .dw     command_none            ;$9fa8
+  276  34:FF36  8A A6             .dw command_01                  ;$a68a
+  277  34:FF38  3D A8             .dw command_forward             ;$a7df
+  278  34:FF3A  3D A8             .dw command_back                ;$a7ea
+  279  34:FF3C  04 A1             .dw command_fight               ;$a104
+  280  34:FF3E  6F A8             .dw command_guard               ;$a881
+  281  34:FF40  86 A8             .dw command_escape              ;$a8bf
+  282  34:FF42  10 A9             .dw command_sneakAway   ;$a93b
+  283  34:FF44  3B A9             .dw command_jump                ;$a9d8
+  284  34:FF46  5F A9             .dw command_land                ;$aa11
+  285  34:FF48  A8 9F             .dw command_none                ;$9fa8
+  286  34:FF4A  70 A9             .dw command_geomance    ;$aa5d
+  287  34:FF4C  51 AA             .dw command_inspect             ;$ab73
+  288  34:FF4E  1F AA             .dw command_detect              ;$ab0c
+  289  34:FF50  78 AA             .dw command_steal               ;$aba4
+  290  34:FF52  0B AB             .dw command_charge              ;$ac6f
+  291  34:FF54  55 AB             .dw command_sing                ;$acd5
+  292  34:FF56  73 AB             .dw command_intimidate  ;$ad16
+  293  34:FF58  B0 AB             .dw command_cheer               ;$ad75
+  294  34:FF5A  BB A3             .dw command_item                ;$a3bb
+  295  34:FF5C  67 A3             .dw command_magic               ;$a367
+  296                             ;extension to original
+  297  34:FF5E  00 00             .dw 0   ;dummy
+  298  34:FF60  18 B6             .dw cmdx_provoke
+  299  34:FF62  E8 B6             .dw cmdx_disorderedShot
+  300  34:FF64  B6 B8             .dw cmdx_abyss
+  301  34:FF66  EB B8             .dw cmdx_raid
+  302  34:FF68            executeAction_free_begin:
+  303                     ;$9f7b
+  304                     ;======================================================================================================
+  305                     ;$34:9f7b setActorCommandIdAndClearMode
+  306                     
+  307                     ;$34:9f87 setActionTargetToSelf //setActionTargetBitAndFlags
+  308                     
+  309                     ;$34:9fa8 handleCommand00_0a //do nothing
+  310                     ;======================================================================================================
+  311                             ;INIT_PATCH $34,$9fa6,$a000
+  312                             INIT_PATCH $34,$9fa8,$a000
                 0034              .bank   $34
-                FFA6              .org    $9fa6
-       34:FFA6                    .ds             (($a000) - ($9fa6))
-                FFA6              .org    $9fa6
-  311                     ;------------------------------------------------------------------------------------------------------
-  312  34:FFA6            setXtoTargetIndex:
-  313           0070      .pTarget = $70
-  314  34:FFA6  A0 2C             ldy #$2c
-  315  34:FFA8  B1 70             lda [.pTarget],y
-  316  34:FFAA  4C B0 9F          jmp maskToIndex
-  317                     ;       and #$07
-  318                     ;       tax
-  319                     ;       rts
-  320                     
-  321  34:FFAD            setXtoActorIndex:
-  322  34:FFAD  20 2E A4          jsr getActor2C
-  323  34:FFB0            maskToIndex:
-  324  34:FFB0  29 07             and #7
-  325  34:FFB2  AA                tax
-  326  34:FFB3  60                rts
-  327                     
-  328  34:FFB4            setXtoActorIndex16:
-  329  34:FFB4  20 AD 9F          jsr setXtoActorIndex
-  330  34:FFB7  0A                asl a
-  331  34:FFB8  AA                tax
-  332  34:FFB9  60                rts
-  333                     
-  334  34:FFBA            flagSingleTarget:
-  335                     ;[in] x = targetIndex
-  336  34:FFBA  A9 00             lda #0
-  337  34:FFBC  4C 20 FD          jmp flagTargetBit
-  338                     
-  339  34:FFBF            addBattleMessage:
-  340                     ;[in] a : msg
-  341                     ;[in,out] x : count
-  342  34:FFBF  AE EE 78          ldx battleMessageCount
-  343  34:FFC2  9D DA 78          sta battleMessages,x
-  344  34:FFC5  E8                inx
-  345  34:FFC6  8E EE 78          stx battleMessageCount
-  346                             ;inc battleMessageCount
-  347  34:FFC9  60                rts
-  348                     
-  349  34:FFCA            swapDamages:
-  350  34:FFCA  A2 0F             ldx #$0f
-  351  34:FFCC            .swap:
-  352  34:FFCC  BD 4F 7E                  lda play_damages,x
-  353  34:FFCF  48                        pha
-  354  34:FFD0  BD 5F 7E                  lda play_damages+$10,x
-  355  34:FFD3  9D 4F 7E                  sta play_damages,x
-  356  34:FFD6  68                        pla
-  357  34:FFD7  9D 5F 7E                  sta play_damages+$10,x
-  358  34:FFDA  CA                        dex
-  359  34:FFDB  10 EF                     bpl .swap
-  360  34:FFDD  60                rts
-  361                     
-  362  34:FFDE            swapHitCounts:
-  363           00BB      .hitCount = $bb
-  364           9900      .temp = TEMP_RAM
-  365  34:FFDE  A2 01             ldx #1
-  366  34:FFE0            .save:
-  367  34:FFE0  B4 BB                     ldy <.hitCount,x
-  368  34:FFE2  BD 00 79                  lda .temp,x
-  369  34:FFE5  95 BB                     sta <.hitCount,x
-  370  34:FFE7  98                        tya
-  371  34:FFE8  9D 00 79                  sta .temp,x
-  372  34:FFEB  CA                        dex
-  373  34:FFEC  10 F2                     bpl .save
-  374  34:FFEE  60                rts
-  375                     
-  376                     ;workaround for doFight behavior
-  377  34:FFEF            initAllDamages:
-  378  34:FFEF  A2 E0             ldx #$e0
-  379  34:FFF1  D0 02             bne initDamage
-  380  34:FFF3            initActorDamages:
-  381  34:FFF3  A2 F0             ldx #$f0
-  382                             ;fall through
-  383  34:FFF5            initDamage:
-  384  34:FFF5  A9 FF             lda #$ff
-  385  34:FFF7            .fill:
-  386  34:FFF7  9D 6F 7D                  sta play_damages+$10-$f0,x
-  387  34:FFFA  E8                        inx
-  388  34:FFFB  D0 FA                     bne .fill
-  389  34:FFFD  60                rts
-  390                     ;------------------------------------------------------------------------------------------------------
-  391                             INIT_PATCH $35,$a000,$a104
+                FFA8              .org    $9fa8
+       34:FFA8                    .ds             (($a000) - ($9fa8))
+                FFA8              .org    $9fa8
+  313                     ;------------------------------------------------------------------------------------------------------
+  314  34:FFA8            setXtoTargetIndex:
+  315           0070      .pTarget = $70
+  316  34:FFA8  A0 2C             ldy #$2c
+  317  34:FFAA  B1 70             lda [.pTarget],y
+  318  34:FFAC  4C B2 9F          jmp maskToIndex
+  319                     ;       and #$07
+  320                     ;       tax
+  321                     ;       rts
+  322                     
+  323  34:FFAF            setXtoActorIndex:
+  324  34:FFAF  20 2E A4          jsr getActor2C
+  325  34:FFB2            maskToIndex:
+  326  34:FFB2  29 07             and #7
+  327  34:FFB4  AA                tax
+  328  34:FFB5  60                rts
+  329                     
+  330  34:FFB6            setXtoActorIndex16:
+  331  34:FFB6  20 AF 9F          jsr setXtoActorIndex
+  332  34:FFB9  0A                asl a
+  333  34:FFBA  AA                tax
+  334  34:FFBB  60                rts
+  335                     
+  336  34:FFBC            flagSingleTarget:
+  337                     ;[in] x = targetIndex
+  338  34:FFBC  A9 00             lda #0
+  339  34:FFBE  4C 20 FD          jmp flagTargetBit
+  340                     
+  341  34:FFC1            addBattleMessage:
+  342                     ;[in] a : msg
+  343                     ;[in,out] x : count
+  344  34:FFC1  AE EE 78          ldx battleMessageCount
+  345  34:FFC4  9D DA 78          sta battleMessages,x
+  346  34:FFC7  E8                inx
+  347  34:FFC8  8E EE 78          stx battleMessageCount
+  348                             ;inc battleMessageCount
+  349  34:FFCB  60                rts
+  350                     
+  351  34:FFCC            swapDamages:
+  352  34:FFCC  A2 0F             ldx #$0f
+  353  34:FFCE            .swap:
+  354  34:FFCE  BD 4F 7E                  lda play_damages,x
+  355  34:FFD1  48                        pha
+  356  34:FFD2  BD 5F 7E                  lda play_damages+$10,x
+  357  34:FFD5  9D 4F 7E                  sta play_damages,x
+  358  34:FFD8  68                        pla
+  359  34:FFD9  9D 5F 7E                  sta play_damages+$10,x
+  360  34:FFDC  CA                        dex
+  361  34:FFDD  10 EF                     bpl .swap
+  362  34:FFDF  60                rts
+  363                     
+  364  34:FFE0            swapHitCounts:
+  365           00BB      .hitCount = $bb
+  366           9900      .temp = TEMP_RAM
+  367  34:FFE0  A2 01             ldx #1
+  368  34:FFE2            .save:
+  369  34:FFE2  B4 BB                     ldy <.hitCount,x
+  370  34:FFE4  BD 00 79                  lda .temp,x
+  371  34:FFE7  95 BB                     sta <.hitCount,x
+  372  34:FFE9  98                        tya
+  373  34:FFEA  9D 00 79                  sta .temp,x
+  374  34:FFED  CA                        dex
+  375  34:FFEE  10 F2                     bpl .save
+  376  34:FFF0  60                rts
+  377                     
+  378                     ;workaround for doFight behavior
+  379  34:FFF1            initAllDamages:
+  380  34:FFF1  A2 E0             ldx #$e0
+  381  34:FFF3  D0 02             bne initDamage
+  382  34:FFF5            initActorDamages:
+  383  34:FFF5  A2 F0             ldx #$f0
+  384                             ;fall through
+  385  34:FFF7            initDamage:
+  386  34:FFF7  A9 FF             lda #$ff
+  387  34:FFF9            .fill:
+  388  34:FFF9  9D 6F 7D                  sta play_damages+$10-$f0,x
+  389  34:FFFC  E8                        inx
+  390  34:FFFD  D0 FA                     bne .fill
+  391  34:FFFF  60                rts
+  392                     ;------------------------------------------------------------------------------------------------------
+  393                             INIT_PATCH $35,$a000,$a104
                 0035              .bank   $35
                 0000              .org    $a000
        35:0000                    .ds             (($a104) - ($a000))
                 0000              .org    $a000
-  392                     
-  393  35:0000            executeAction_summon:
-  394           0018      .magicParamsCache = $18
-  395                     ;.actionId = $26
-  396                     ;.targetBit = $27
-  397                     ;.targetFlag = $28
-  398           0030      .summonType = $30
-  399           0052      .iPlayer = $52
-  400           006E      .pActor = $6e
-  401                     
-  402  35:0000  A2 3F             ldx #$3f
-  403  35:0002  A9 00             lda #0
-  404  35:0004  8D 93 7E          sta $7e93
-  405  35:0007            .init_char_struct:
-  406  35:0007  9D 75 78                  sta $7875,x
-  407  35:000A  CA                        dex
-  408  35:000B  10 FA                     bpl .init_char_struct
-  409  35:000D  A9 02             lda #2
-  410  35:000F  85 30             sta <.summonType
-  411                     ;original checks job == #13 || #14
-  412  35:0011  A0 3C             ldy #EXTRA_ABILITY_OFFSET
-  413  35:0013  B1 6E             lda [.pActor],y
-  414  35:0015  29 10             and #PASSIVE_SUMMON_FUSION
-  415  35:0017  D0 0D             bne .summon_fusion
-  416                     ;$9ffc:
-  417  35:0019  A9 63                     lda #99
-  418  35:001B  20 64 A5                  jsr getSys1Random       ;a564
-  419  35:001E  C9 32                     cmp #50
-  420  35:0020  B0 02                     bcs .summon_black
-  421  35:0022  C6 30                             dec <.summonType
-  422  35:0024                    .summon_black:
-  423  35:0024  C6 30                     dec <.summonType
-  424  35:0026            .summon_fusion:
-  425                     ;$a009:
-  426                             ;.bank $35
-  427                             
-  428                             ;jsr getActor2C
-  429                             ;and #7
-  430                             ;sta <.iPlayer
-  431                             ;tax
-  432  35:0026  20 AD 9F          jsr setXtoActorIndex
-  433  35:0029  BD C7 7A          lda selectedMagicLv,x
-  434  35:002C  48                pha
-  435                             
-  436  35:002D  20 3E FD          jsr $fd3e       ;a<<=4
-  437  35:0030  05 30             ora <.summonType
-  438  35:0032  8D 94 7E          sta $7e94
-  439                     
-  440                     ;       INIT16 <.pActor,$7875
-  441                     ;       setYtoOffsetOf(a = #0f);        //$9b88
-  442  35:0035  A0 0F             ldy #$0f
-  443  35:0037  A2 02             ldx #2
-  444  35:0039            .load_params:
-  445  35:0039  B1 6E                     lda [.pActor],y
-  446  35:003B  0A                        asl a
-  447  35:003C  95 18                     sta <.magicParamsCache,x
-  448  35:003E  C8                        iny
-  449  35:003F  CA                        dex
-  450  35:0040  10 F7                     bpl .load_params
-  451                     
-  452  35:0042  A0 01             ldy #1
-  453  35:0044  B1 6E             lda [.pActor],y
-  454  35:0046  29 30             and #$30        ;toad|sealed
-  455  35:0048  48                pha
-  456                             
-  457                             INIT16 <.pActor,$7875
+  394                     
+  395  35:0000            executeAction_summon:
+  396           0018      .magicParamsCache = $18
+  397                     ;.actionId = $26
+  398                     ;.targetBit = $27
+  399                     ;.targetFlag = $28
+  400           0030      .summonType = $30
+  401           0052      .iPlayer = $52
+  402           006E      .pActor = $6e
+  403                     
+  404  35:0000  A2 3F             ldx #$3f
+  405  35:0002  A9 00             lda #0
+  406  35:0004  8D 93 7E          sta $7e93
+  407  35:0007            .init_char_struct:
+  408  35:0007  9D 75 78                  sta $7875,x
+  409  35:000A  CA                        dex
+  410  35:000B  10 FA                     bpl .init_char_struct
+  411  35:000D  A9 02             lda #2
+  412  35:000F  85 30             sta <.summonType
+  413                     ;original checks job == #13 || #14
+  414  35:0011  A0 3C             ldy #EXTRA_ABILITY_OFFSET
+  415  35:0013  B1 6E             lda [.pActor],y
+  416  35:0015  29 10             and #PASSIVE_SUMMON_FUSION
+  417  35:0017  D0 0D             bne .summon_fusion
+  418                     ;$9ffc:
+  419  35:0019  A9 63                     lda #99
+  420  35:001B  20 64 A5                  jsr getSys1Random       ;a564
+  421  35:001E  C9 32                     cmp #50
+  422  35:0020  B0 02                     bcs .summon_black
+  423  35:0022  C6 30                             dec <.summonType
+  424  35:0024                    .summon_black:
+  425  35:0024  C6 30                     dec <.summonType
+  426  35:0026            .summon_fusion:
+  427                     ;$a009:
+  428                             ;.bank $35
+  429                             
+  430                             ;jsr getActor2C
+  431                             ;and #7
+  432                             ;sta <.iPlayer
+  433                             ;tax
+  434  35:0026  20 AF 9F          jsr setXtoActorIndex
+  435  35:0029  BD C7 7A          lda selectedMagicLv,x
+  436  35:002C  48                pha
+  437                             
+  438  35:002D  20 3E FD          jsr $fd3e       ;a<<=4
+  439  35:0030  05 30             ora <.summonType
+  440  35:0032  8D 94 7E          sta $7e94
+  441                     
+  442                     ;       INIT16 <.pActor,$7875
+  443                     ;       setYtoOffsetOf(a = #0f);        //$9b88
+  444  35:0035  A0 0F             ldy #$0f
+  445  35:0037  A2 02             ldx #2
+  446  35:0039            .load_params:
+  447  35:0039  B1 6E                     lda [.pActor],y
+  448  35:003B  0A                        asl a
+  449  35:003C  95 18                     sta <.magicParamsCache,x
+  450  35:003E  C8                        iny
+  451  35:003F  CA                        dex
+  452  35:0040  10 F7                     bpl .load_params
+  453                     
+  454  35:0042  A0 01             ldy #1
+  455  35:0044  B1 6E             lda [.pActor],y
+  456  35:0046  29 30             and #$30        ;toad|sealed
+  457  35:0048  48                pha
+  458                             
+  459                             INIT16 <.pActor,$7875
        35:0049  A9 75             lda #LOW($7875)
        35:004B  85 6E             sta <.pActor
        35:004D  A9 78             lda #HIGH($7875)
        35:004F  85 6F             sta <.pActor+1
-  458                     
-  459  35:0051  68                pla
-  460  35:0052  91 6E             sta [.pActor],y
-  461                             ;
-  462  35:0054  88                dey
-  463  35:0055  A5 1A             lda <.magicParamsCache+2        ;joblv
-  464  35:0057  91 6E             sta [.pActor],y
-  465                     
-  466  35:0059  A0 0F             ldy #$0f
-  467  35:005B  A2 02             ldx #2
-  468  35:005D            .store_params:
-  469  35:005D  B5 18                     lda <.magicParamsCache,x
-  470  35:005F  91 6E                     sta [.pActor],y
-  471  35:0061  C8                        iny
-  472  35:0062  CA                        dex
-  473  35:0063  10 F8                     bpl .store_params
-  474  35:0065  A0 03             ldy #3
-  475  35:0067  98                tya
-  476  35:0068  91 6E             sta [.pActor],y ;hp
-  477                             
-  478  35:006A  AE C2 7A          ldx $7ac2
-  479  35:006D  A9 88             lda #$88
-  480  35:006F  9D CB 7A          sta $7acb,x
-  481                     
-  482                             ;$6e[y] = getActor2C() | #90;
-  483  35:0072  A0 2C             ldy #$2c
-  484  35:0074  A9 90             lda #$90
-  485  35:0076  91 6E             sta [.pActor],y
-  486                     ;$a065:
-  487  35:0078  68                pla     ;selectedMagicLv
-  488  35:0079  85 18             sta <$18
-  489  35:007B  0A                asl a
-  490  35:007C  18                clc
-  491  35:007D  65 18             adc <$18
-  492  35:007F  65 30             adc <.summonType
-  493  35:0081  AA                tax     ; a = selectedMagicLv*3 + summonType
-  494                     
-  495  35:0082  18                clc
-  496  35:0083  69 78             adc #$78
-  497  35:0085  8D DA 78          sta battleMessages
-  498                             
-  499  35:0088  8A                txa
-  500  35:0089  18                clc
-  501  35:008A  69 21             adc #$21
-  502  35:008C  8D D9 78          sta effectMessage
-  503                     
-  504  35:008F  8A                txa
-  505  35:0090  69 5B             adc #$5b
-  506  35:0092  85 18             sta <$18
-  507  35:0094  48                pha     ;sta <.actionId
-  508                             
-  509  35:0095  A9 08             lda #8
-  510  35:0097  85 1A             sta <$1a
-  511                             INIT16 <$20,$98c0
+  460                     
+  461  35:0051  68                pla
+  462  35:0052  91 6E             sta [.pActor],y
+  463                             ;
+  464  35:0054  88                dey
+  465  35:0055  A5 1A             lda <.magicParamsCache+2        ;joblv
+  466  35:0057  91 6E             sta [.pActor],y
+  467                     
+  468  35:0059  A0 0F             ldy #$0f
+  469  35:005B  A2 02             ldx #2
+  470  35:005D            .store_params:
+  471  35:005D  B5 18                     lda <.magicParamsCache,x
+  472  35:005F  91 6E                     sta [.pActor],y
+  473  35:0061  C8                        iny
+  474  35:0062  CA                        dex
+  475  35:0063  10 F8                     bpl .store_params
+  476  35:0065  A0 03             ldy #3
+  477  35:0067  98                tya
+  478  35:0068  91 6E             sta [.pActor],y ;hp
+  479                             
+  480  35:006A  AE C2 7A          ldx $7ac2
+  481  35:006D  A9 88             lda #$88
+  482  35:006F  9D CB 7A          sta $7acb,x
+  483                     
+  484                             ;$6e[y] = getActor2C() | #90;
+  485  35:0072  A0 2C             ldy #$2c
+  486  35:0074  A9 90             lda #$90
+  487  35:0076  91 6E             sta [.pActor],y
+  488                     ;$a065:
+  489  35:0078  68                pla     ;selectedMagicLv
+  490  35:0079  85 18             sta <$18
+  491  35:007B  0A                asl a
+  492  35:007C  18                clc
+  493  35:007D  65 18             adc <$18
+  494  35:007F  65 30             adc <.summonType
+  495  35:0081  AA                tax     ; a = selectedMagicLv*3 + summonType
+  496                     
+  497  35:0082  18                clc
+  498  35:0083  69 78             adc #$78
+  499  35:0085  8D DA 78          sta battleMessages
+  500                             
+  501  35:0088  8A                txa
+  502  35:0089  18                clc
+  503  35:008A  69 21             adc #$21
+  504  35:008C  8D D9 78          sta effectMessage
+  505                     
+  506  35:008F  8A                txa
+  507  35:0090  69 5B             adc #$5b
+  508  35:0092  85 18             sta <$18
+  509  35:0094  48                pha     ;sta <.actionId
+  510                             
+  511  35:0095  A9 08             lda #8
+  512  35:0097  85 1A             sta <$1a
+  513                             INIT16 <$20,$98c0
        35:0099  A9 C0             lda #LOW($98c0)
        35:009B  85 20             sta <$20
        35:009D  A9 98             lda #HIGH($98c0)
        35:009F  85 21             sta <$20+1
-  512  35:00A1  A2 00             ldx #0
-  513  35:00A3  20 3A BA          jsr loadTo7400FromBank30        ;$ba3a
-  514                             
-  515           4400      .actionParams = $7400
+  514  35:00A1  A2 00             ldx #0
+  515  35:00A3  20 3A BA          jsr loadTo7400FromBank30        ;$ba3a
   516                             
-  517  35:00A6  2C 05 74          bit .actionParams+5
-  518  35:00A9  10 07             bpl .target_enemy
-  519  35:00AB  A9 F0                     lda #$f0
-  520  35:00AD  48                        pha
-  521  35:00AE  A9 40                     lda #$40
-  522  35:00B0  D0 11                     bne .store_action_params
-  523  35:00B2            .target_enemy:
-  524  35:00B2  50 07                     bvc .target_single
-  525  35:00B4  A9 FF                             lda #$ff
-  526  35:00B6  48                                pha
-  527  35:00B7                    .target_all:
-  528  35:00B7  A9 C0                             lda #$c0
-  529  35:00B9  D0 08                             bne .store_action_params
-  530  35:00BB                    .target_single:
-  531                             
-  532           0062      .targetBit = $62
-  533                     
-  534  35:00BB  20 DA A0                          jsr invokePickRandomTarget
-  535  35:00BE  A5 62                             lda <.targetBit
-  536  35:00C0  48                                pha
-  537  35:00C1  A9 80                             lda #$80
-  538  35:00C3            .store_action_params:
-  539  35:00C3  A0 30             ldy #$30
-  540  35:00C5  91 6E             sta [.pActor],y ;target flag
-  541  35:00C7  88                dey
-  542  35:00C8  68                pla
-  543  35:00C9  91 6E             sta [.pActor],y ;target bit
-  544  35:00CB  88                dey
-  545  35:00CC  68                pla
-  546  35:00CD  91 6E             sta [.pActor],y ;action id
-  547                     
-  548                             INIT16 <$5d,$7675
+  517           4400      .actionParams = $7400
+  518                             
+  519  35:00A6  2C 05 74          bit .actionParams+5
+  520  35:00A9  10 07             bpl .target_enemy
+  521  35:00AB  A9 F0                     lda #$f0
+  522  35:00AD  48                        pha
+  523  35:00AE  A9 40                     lda #$40
+  524  35:00B0  D0 11                     bne .store_action_params
+  525  35:00B2            .target_enemy:
+  526  35:00B2  50 07                     bvc .target_single
+  527  35:00B4  A9 FF                             lda #$ff
+  528  35:00B6  48                                pha
+  529  35:00B7                    .target_all:
+  530  35:00B7  A9 C0                             lda #$c0
+  531  35:00B9  D0 08                             bne .store_action_params
+  532  35:00BB                    .target_single:
+  533                             
+  534           0062      .targetBit = $62
+  535                     
+  536  35:00BB  20 DA A0                          jsr invokePickRandomTarget
+  537  35:00BE  A5 62                             lda <.targetBit
+  538  35:00C0  48                                pha
+  539  35:00C1  A9 80                             lda #$80
+  540  35:00C3            .store_action_params:
+  541  35:00C3  A0 30             ldy #$30
+  542  35:00C5  91 6E             sta [.pActor],y ;target flag
+  543  35:00C7  88                dey
+  544  35:00C8  68                pla
+  545  35:00C9  91 6E             sta [.pActor],y ;target bit
+  546  35:00CB  88                dey
+  547  35:00CC  68                pla
+  548  35:00CD  91 6E             sta [.pActor],y ;action id
+  549                     
+  550                             INIT16 <$5d,$7675
        35:00CF  A9 75             lda #LOW($7675)
        35:00D1  85 5D             sta <$5d
        35:00D3  A9 76             lda #HIGH($7675)
        35:00D5  85 5E             sta <$5d+1
-  549                     ;$a0ea:
-  550  35:00D7  4C E4 9D          jmp executeAction
-  551                             ;jmp $9de4      ;executeAction
-  552                     ;------------------------------------------------------------------------------------------------------
-  553  35:00DA            invokePickRandomTarget:
-  554           004C      .battleFunctionId = $4c
-  555  35:00DA  A9 0A             lda #BF_PICK_RANDOM_TARGET
-  556  35:00DC  85 4C             sta <.battleFunctionId
-  557  35:00DE  4C F3 FD          jmp invoke_b30_battleFunction
-  558                     ;$a104:
-  559                     
-  560                     ;======================================================================================================
-  561                             RESTORE_PC ff3_executeAction_begin
+  551                     ;$a0ea:
+  552  35:00D7  4C E4 9D          jmp executeAction
+  553                             ;jmp $9de4      ;executeAction
+  554                     ;------------------------------------------------------------------------------------------------------
+  555  35:00DA            invokePickRandomTarget:
+  556           004C      .battleFunctionId = $4c
+  557  35:00DA  A9 0A             lda #BF_PICK_RANDOM_TARGET
+  558  35:00DC  85 4C             sta <.battleFunctionId
+  559  35:00DE  4C F3 FD          jmp invoke_b30_battleFunction
+  560                     ;$a104:
+  561                     
+  562                     ;======================================================================================================
+  563                             RESTORE_PC ff3_executeAction_begin
                 0000              .bank   BANK(ff3_executeAction_begin)
                 0000              .org    ff3_executeAction_begin
 #[3]   ff3_hack_master.asm
@@ -4446,7 +4448,7 @@
   406           006E      .pActor = $6e
   407  35:886F  20 52 A8          jsr setupNullTargetActionType01
   408                     
-  409  35:8872  20 AD 9F          jsr setXtoActorIndex
+  409  35:8872  20 AF 9F          jsr setXtoActorIndex
   410  35:8875  A0 23             ldy #$23
   411  35:8877  B1 6E             lda [.pActor],y
   412  35:8879  9D E4 7C          sta $7ce4,x
@@ -4541,7 +4543,7 @@
   484  35:88EA  A9 1F             lda #$1f        ;"にげられない！"
   485                             ;sta battleMessages
   486                             ;rts
-  487  35:88EC  4C BF 9F          jmp addBattleMessage
+  487  35:88EC  4C C1 9F          jmp addBattleMessage
   488                     
   489                     ;enemy:
   490                     ;a978
@@ -4554,7 +4556,7 @@
   497                     
   498  35:88F6  A9 1E             lda #$1e
   499  35:88F8  8D DA 78          sta battleMessages
-  500  35:88FB  20 AD 9F          jsr setXtoActorIndex
+  500  35:88FB  20 AF 9F          jsr setXtoActorIndex
   501  35:88FE  A9 00             lda #0
   502  35:9900  20 20 FD          jsr flagTargetBit
   503  35:9903  48                pha ;sta $78d4
@@ -4604,7 +4606,7 @@
   541  35:9933            command_escape_succeeded:
   542  35:9933  8D D4 78          sta $78d4
   543  35:9936  A9 1E             lda #$1e        ;"にげだした････"
-  544  35:9938  4C BF 9F          jmp addBattleMessage
+  544  35:9938  4C C1 9F          jmp addBattleMessage
   545                             ;sta battleMessages
   546                             ;rts
   547                     ;======================================================================================================
@@ -4632,7 +4634,7 @@
   563  35:994B  4C 4C AA                  jmp command_setNoEffectAndReturn
   564  35:994E            .ok:
   565                     ;$a9f6:
-  566  35:994E  20 B4 9F          jsr setXtoActorIndex16
+  566  35:994E  20 B6 9F          jsr setXtoActorIndex16
   567  35:9951  E8                inx
   568  35:9952  B5 F0             lda <$f0,x
   569  35:9954  09 01             ora #$01
@@ -4715,7 +4717,7 @@
   728           0018      .maxhp = $18
   729           006E      .pActor = $6e
   730           00F0      .actorStatusCache = $f0
-  731  35:99A9  20 B4 9F          jsr setXtoActorIndex16
+  731  35:99A9  20 B6 9F          jsr setXtoActorIndex16
   732                     
   733  35:99AC  A0 05             ldy #5
   734  35:99AE  B1 6E             lda [.pActor],y
@@ -4830,7 +4832,7 @@
   843  35:AA36  98                                tya
   844                                             ;carry always be set
   845  35:AA37  69 47                             adc #$47
-  846  35:AA39  20 BF 9F                          jsr addBattleMessage
+  846  35:AA39  20 C1 9F                          jsr addBattleMessage
   847  35:AA3C  68                                pla
   848  35:AA3D                    .next:
   849  35:AA3D  C8                        iny
@@ -4839,7 +4841,7 @@
   852  35:AA42  A5 18             lda <.count
   853  35:AA44  D0 05             bne .finish
   854  35:AA46  A9 43                     lda #$43
-  855  35:AA48  20 BF 9F                  jsr addBattleMessage
+  855  35:AA48  20 C1 9F                  jsr addBattleMessage
   856                                     ;sta battleMessages,x
   857  35:AA4B            .finish:
   858  35:AA4B  60                rts
@@ -4849,7 +4851,7 @@
   862                             ;stx battleMessages
   863                             ;rts
   864  35:AA4C  A9 3B             lda #$3b
-  865  35:AA4E  4C BF 9F          jmp addBattleMessage
+  865  35:AA4E  4C C1 9F          jmp addBattleMessage
   866                     ;======================================================================================================
   867                     ;$35:ab73 command_inspect
   868  35:AA51            command_inspect:
@@ -4894,7 +4896,7 @@
   907  35:AA7F  30 05             bmi .target_is_enemy
   908  35:AA81            .fail:
   909  35:AA81  A9 35                     lda #$35 ;"ぬすみそこなった"
-  910  35:AA83  4C BF 9F                  jmp addBattleMessage
+  910  35:AA83  4C C1 9F                  jmp addBattleMessage
   911                                     ;sta battleMessages
   912                                     ;rts
   913  35:AA86            .target_is_enemy:
@@ -4964,7 +4966,7 @@
   973  35:AAF2            .finish:
   974  35:AAF2  8D E4 78          sta $78e4
   975  35:AAF5  A9 29             lda #$29
-  976  35:AAF7  4C BF 9F          jmp addBattleMessage
+  976  35:AAF7  4C C1 9F          jmp addBattleMessage
   977                             ;sta battleMessages
   978                             ;rts
   979  35:AAFA            .findItem:
@@ -5024,7 +5026,7 @@
  1032                                             ;jsr setXtoActorIndex
  1033                                             ;asl a
  1034                                             ;tax
- 1035  35:BB41  20 B4 9F                          jsr setXtoActorIndex16
+ 1035  35:BB41  20 B6 9F                          jsr setXtoActorIndex16
  1036  35:BB44  B5 F0                             lda <$f0,x
  1037  35:BB46  09 80                             ora #$80
  1038  35:BB48  95 F0                             sta <$f0,x
@@ -5286,7 +5288,7 @@
   108  34:CCB9            setIndexAndCallPresentScene:
   109           0052      .iPlayer = $52
   110  34:CCB9  48                pha
-  111  34:CCBA  20 AD 9F          jsr setXtoActorIndex
+  111  34:CCBA  20 AF 9F          jsr setXtoActorIndex
   112  34:CCBD  86 52             stx <.iPlayer
   113  34:CCBF  68                pla
   114  34:CCC0  4C 0E FA          jmp call_2e_9d53
@@ -5295,7 +5297,7 @@
   117  34:CCC3            updateTargetStatusByCache:
   118           0070      .pTarget = $70
   119           00E0      .targetStatusCache = $e0
-  120  34:CCC3  20 A6 9F          jsr setXtoTargetIndex
+  120  34:CCC3  20 A8 9F          jsr setXtoTargetIndex
   121  34:CCC6  0A                asl a
   122  34:CCC7  AA                tax
   123  34:CCC8  A0 02             ldy #2
@@ -7787,7 +7789,7 @@
    95  35:116A  20 87 8C                                  jsr getIndexOfGreatest  ;a30f
    96                                                     ;lda #0
    97                                                     ;jsr flagTargetBit      ;fd20
-   98  35:116D  20 BA 9F                                  jsr flagSingleTarget
+   98  35:116D  20 BC 9F                                  jsr flagSingleTarget
    99                                                     
   100  35:1170  8D 99 7E                                  sta $7e99
   101  35:1173  8D DF 7E                                  sta play_protectionTargetBits   ;$7edf
@@ -7795,7 +7797,7 @@
   103  35:1176  A6 18                                     ldx <.actorIndex
   104                                                     ;lda #0
   105                                                     ;jsr flagTargetBit
-  106  35:1178  20 BA 9F                                  jsr flagSingleTarget
+  106  35:1178  20 BC 9F                                  jsr flagSingleTarget
   107  35:117B  8D E0 7E                                  sta $7ee0
   108                                                     
   109  35:117E  A5 5F                                     lda <.playerOffset
@@ -7832,7 +7834,7 @@
   140  35:11A4  AD DF 7E          lda play_protectionTargetBits
   141  35:11A7  F0 0C             beq .sum_hit_count
   142  35:11A9  A9 52                     lda #$52        ;"ナイトが みをていして かばった！"
-  143  35:11AB  20 BF 9F                  jsr addBattleMessage
+  143  35:11AB  20 C1 9F                  jsr addBattleMessage
   144                     
   145  35:11AE  AD EA 7C                  lda $7cea
   146  35:11B1  A0 33                     ldy #$33
@@ -7917,7 +7919,7 @@
   225  35:221F  E8                                inx             ;"てきをたおした!"
   226  35:2220                    .store_death_message:
   227  35:2220  8A                        txa
-  228  35:2221  20 BF 9F                  jsr addBattleMessage
+  228  35:2221  20 C1 9F                  jsr addBattleMessage
   229                     
   230  35:2224            .consume_item: ;a2b7
   231           0024      .recalcRequired = $24
@@ -7958,7 +7960,7 @@
   266           0070      .pTarget = $70
   267  35:2253  20 27 9A          jsr isTargetActive
   268  35:2256  90 FA             bcc command_fight_doReturn
-  269  35:2258  20 A6 9F          jsr setXtoTargetIndex
+  269  35:2258  20 A8 9F          jsr setXtoTargetIndex
   270  35:225B  A0 3C             ldy #EXTRA_ABILITY_OFFSET
   271  35:225D  B1 70             lda [.pTarget],y
   272                             ;and #PASSIVE_COUNTER = 80
@@ -7986,7 +7988,7 @@
   295                     
   296  35:2279            .doCounter:
   297                             ;x = target index
-  298  35:2279  20 BA 9F          jsr flagSingleTarget
+  298  35:2279  20 BC 9F          jsr flagSingleTarget
   299  35:227C  8D 98 7E          sta play_actorBits
   300                             ;lda play_effectTargetSide
   301                             ;ora #$c1       ;original uses higher 2bit.
@@ -7994,10 +7996,10 @@
   303  35:2281  8D 9A 7E          sta play_effectTargetSide
   304                     
   305  35:2284  A9 59             lda #EXMSG_COUNTER
-  306  35:2286  20 BF 9F          jsr addBattleMessage
+  306  35:2286  20 C1 9F          jsr addBattleMessage
   307                     
-  308  35:2289  20 AD 9F          jsr setXtoActorIndex
-  309  35:228C  20 BA 9F          jsr flagSingleTarget
+  308  35:2289  20 AF 9F          jsr setXtoActorIndex
+  309  35:228C  20 BC 9F          jsr flagSingleTarget
   310  35:228F  8D 9B 7E          sta play_effectTargetBits       ;damage
   311  35:2292  8D 99 7E          sta play_castTargetBits         ;blow
   312                     
@@ -8873,8 +8875,8 @@
   151  35:663F  20 82 B6                  jsr hasProvokeSucceeded
   152  35:6642  B0 29                     bcs .next
   153                     
-  154  35:6644  20 AD 9F                          jsr setXtoActorIndex
-  155  35:6647  20 BA 9F                          jsr flagSingleTarget
+  154  35:6644  20 AF 9F                          jsr setXtoActorIndex
+  155  35:6647  20 BC 9F                          jsr flagSingleTarget
   156                                             
   157  35:664A  A0 2F                             ldy #BP_OFFSET_ACTION_TARGET    ;$2f    ;target bits
   158  35:664C  91 70                             sta [.pTarget],y
@@ -8913,7 +8915,7 @@
   184                             ;setup params for display
   185  35:667D            .finish:
   186  35:667D  A5 22             lda <.message
-  187  35:667F  4C BF 9F          jmp addBattleMessage
+  187  35:667F  4C C1 9F          jmp addBattleMessage
   188                     
   189                             .endif ;PROVOKE_TARGET_SINGLE
   190                     
@@ -9098,7 +9100,7 @@
    99  35:7744            disorderedShot_attackRandomTarget:
   100           006E      .pActor = $6e
   101           0062      .targetBit = $62
-  102  35:7744  20 F3 9F          jsr initActorDamages    ;workaround
+  102  35:7744  20 F5 9F          jsr initActorDamages    ;workaround
   103                     
   104  35:7747  A0 30             ldy #$30
   105  35:7749  A9 80             lda #$80        ;enemy
@@ -9112,7 +9114,7 @@
   113  35:7753  A9 04             lda #$04        ;fight
   114  35:7755  91 6E             sta [.pActor],y
   115                     
-  116  35:7757  20 B4 9F          jsr setXtoActorIndex16
+  116  35:7757  20 B6 9F          jsr setXtoActorIndex16
   117  35:775A  B5 F0             lda <$f0,x
   118  35:775C  30 4D             bmi disorderedShot_finish
   119                     ;x=ff
@@ -9351,7 +9353,7 @@
   355  35:8885  20 F8 B7          jsr cmdx_sumDamage
   356                             ;fall through
   357  35:8888            cmdx_sumActorDamage:
-  358  35:8888  20 AD 9F          jsr setXtoActorIndex
+  358  35:8888  20 AF 9F          jsr setXtoActorIndex
   359  35:888B  18                clc
   360  35:888C  69 08             adc #8
   361  35:888E  20 F8 B7          jsr cmdx_sumDamage
@@ -9483,7 +9485,7 @@
   104                             ;       attr:$27, bonus:$28, bonusMul:$29, divide:$2a);
   105  34:3370  20 BF 93          jsr .callCalcDamage
   106           001C      .resultDamage = $1c
-  107  34:3373  20 A6 9F          jsr setXtoTargetIndex
+  107  34:3373  20 A8 9F          jsr setXtoTargetIndex
   108                     ;flag target
   109  34:3376  AD 9B 7E          lda play_effectTargetBits
   110  34:3379  20 20 FD          jsr flagTargetBit
@@ -9610,7 +9612,7 @@
   218  35:88E3  20 A9 A9          jsr damageActorByQuoterHalf     ;also set x to cache index
   219                     ;setup message and effect params
   220  35:88E6  A9 5D             lda #EXMSG_ABYSS_MESSAGE
-  221  35:88E8  4C BF 9F          jmp addBattleMessage
+  221  35:88E8  4C C1 9F          jmp addBattleMessage
   222                     ;       sta battleMessages
   223                     ;       lda .actorStatusCache,x
   224                     ;       bpl .finish
@@ -9668,7 +9670,7 @@
    22  35:88F0  20 6D AA                  jsr setupNoMotionType01
    23  35:88F3  A9 60                     lda #$52+$0e    ;こんらん
    24  35:88F5  8D D7 78                  sta actionName
-   25  35:88F8  20 B4 9F                  jsr setXtoActorIndex16
+   25  35:88F8  20 B6 9F                  jsr setXtoActorIndex16
    26  35:88FB  B5 F1                     lda <.actorStatusCache+1,x
    27  35:88FD  09 28                     ora #$28        ;こんらん (remain1)
    28  35:88FF  95 F1                     sta <.actorStatusCache+1,x
@@ -9698,31 +9700,31 @@
    52                     ;               beq .sumDamages
    53                     
    54  35:9927  A9 5E                     lda #EXMSG_RAID_MESSAGE
-   55  35:9929  20 BF 9F                  jsr addBattleMessage
+   55  35:9929  20 C1 9F                  jsr addBattleMessage
    56                     
    57  35:992C  AD E1 7E                  lda play_segmentedGroup
    58  35:992F  48                        pha
    59  35:9930  AD D7 78                  lda actionName
    60  35:9933  48                        pha
-   61  35:9934  20 DE 9F                  jsr swapHitCounts
+   61  35:9934  20 E0 9F                  jsr swapHitCounts
    62                     
    63  35:9937  20 54 B9                  jsr .sumDamages
-   64  35:993A  20 EF 9F                  jsr initAllDamages
+   64  35:993A  20 F1 9F                  jsr initAllDamages
    65                     
    66  35:993D  20 95 A2                  jsr command_fight_counter
-   67  35:9940  20 AD 9F                  jsr setXtoActorIndex
+   67  35:9940  20 AF 9F                  jsr setXtoActorIndex
    68  35:9943  20 E6 A2                  jsr setupWeaponId
-   69  35:9946  20 DE 9F                  jsr swapHitCounts
+   69  35:9946  20 E0 9F                  jsr swapHitCounts
    70                     
    71  35:9949  68                        pla
    72  35:994A  8D D7 78                  sta actionName
    73  35:994D  68                        pla
    74  35:994E  8D E1 7E                  sta play_segmentedGroup
    75                     
-   76  35:9951  20 CA 9F                  jsr swapDamages
+   76  35:9951  20 CC 9F                  jsr swapDamages
    77                     
    78  35:9954            .sumDamages:
-   79  35:9954  20 A6 9F          jsr setXtoTargetIndex
+   79  35:9954  20 A8 9F          jsr setXtoTargetIndex
    80  35:9957  4C 85 B8          jmp cmdx_sumDamagesOfTargetAndActor
    81                     
    82  35:995A            cmdx_raid_end:
