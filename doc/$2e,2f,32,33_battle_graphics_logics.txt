@@ -1,3 +1,4 @@
+/* encoding: utf-8 */
 -------------------------------------------------------------------------------------------------
 $2e:9d50
 {
@@ -35,7 +36,7 @@ $2e:9d5f
 	} else {
 $9d75:
 		if (($7d73 & #1f) == #08) { //bne 9d82
-			a = #28;	//‚­‚à
+			a = #28;	//ãã‚‚
 		} else {
 $9d82:
 			a = #2a;
@@ -241,7 +242,7 @@ $a13b:
 			ror $80;
 		}
 $a141:
-		a &= #80; a |= $7f; //? ˆÓ–¡‚ª–³‚¢
+		a &= #80; a |= $7f; //? æ„å‘³ãŒç„¡ã„
 	}
 $a145:
 	y = pop a;
@@ -412,7 +413,7 @@ $2f:a42e get_enemy_pattern_address_and_copy_pattern_to_vram()
     x = $86 << 1;
     $86++;
     if ( 0 == ($88 & #e0) ) {
-        // 4x4 tiles ‚Ìê‡
+        // 4x4 tiles ã®å ´åˆ
         x += 8;
     }
 $a497:
@@ -636,37 +637,37 @@ $2f:af48 is_backattacked_2f()    //is$78c3_#88
 
 $2f:af4e presentScene	//invoke$af74
 //	[in] u8 A : commandId (00-25h)
-//		01 : ‚³‚ª‚é(char:$52)
-//		02 : w¦‚·‚éƒLƒƒƒ‰‚ª‘O‚Éo‚é(char:$52)
+//		01 : ã•ãŒã‚‹(char:$52)
+//		02 : æŒ‡ç¤ºã™ã‚‹ã‚­ãƒ£ãƒ©ãŒå‰ã«å‡ºã‚‹(char:$52)
 //		03 : playEffect_05 (back(03) )
 //		04 : playEffect_04 (forward(02) )
-//		07 : playEffect_0e(€–SE–¡•û)
-//		08 : $b38b s“®I—¹‚µ‚½ƒLƒƒƒ‰‚ğŒ³‚ÌˆÊ’u‚Ü‚Å–ß‚·
-//		09 : $b38e s“®’†‚ÌƒLƒƒƒ‰‚ğ¦‚·(ˆê’è‚Ìƒ‰ƒCƒ“‚Ü‚Å‘O‚Éo‚é)
-//		0a : playEffect_0e(€–SE“G $7e=€–Sbit(Šebit‚ª“G1‘Ì‚É‘Š“–) )
+//		07 : playEffect_0e(æ­»äº¡ãƒ»å‘³æ–¹)
+//		08 : $b38b è¡Œå‹•çµ‚äº†ã—ãŸã‚­ãƒ£ãƒ©ã‚’å…ƒã®ä½ç½®ã¾ã§æˆ»ã™
+//		09 : $b38e è¡Œå‹•ä¸­ã®ã‚­ãƒ£ãƒ©ã‚’ç¤ºã™(ä¸€å®šã®ãƒ©ã‚¤ãƒ³ã¾ã§å‰ã«å‡ºã‚‹)
+//		0a : playEffect_0e(æ­»äº¡ãƒ»æ•µ $7e=æ­»äº¡bit(å„bitãŒæ•µ1ä½“ã«ç›¸å½“) )
 //		0b : playEffect_0e
-//			(‘h¶? bit‚ª—§‚Á‚Ä‚¢‚é“G‚Ì˜g‚É“G‚ª‚¢‚½‚È‚çƒOƒ‰•œŠˆ
-//			 ¶‘¶‚©‚Â”ñ•\¦‚Ì“G‚ª‚¢‚½‚Æ‚« $7e=¶‘¶bit ‚ÅŒÄ‚Î‚ê‚é)
-//		0C : “G¶¬(¢ŠÒE•ª—ôE‘B) playEffect_0F (disp_0C)
+//			(è˜‡ç”Ÿ? bitãŒç«‹ã£ã¦ã„ã‚‹æ•µã®æ ã«æ•µãŒã„ãŸãªã‚‰ã‚°ãƒ©å¾©æ´»
+//			 ç”Ÿå­˜ã‹ã¤éè¡¨ç¤ºã®æ•µãŒã„ãŸã¨ã $7e=ç”Ÿå­˜bit ã§å‘¼ã°ã‚Œã‚‹)
+//		0C : æ•µç”Ÿæˆ(å¬é‚„ãƒ»åˆ†è£‚ãƒ»å¢—æ®–) playEffect_0F (disp_0C)
 //		0d : playEffect_0c (escape(06/07) : $7e9a(sideflag) < 0)
 //		0e :
 //		
 //		0F : prize($35:bb49)
-//		10 : ‘ÎÛ‘I‘ğ
-//		12 : ‘ÅŒ‚ƒ‚[ƒVƒ‡ƒ“&ƒGƒtƒFƒNƒg(char:$52)
+//		10 : å¯¾è±¡é¸æŠ
+//		12 : æ‰“æ’ƒãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³&ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ(char:$52)
 //		13 : presentCharacter($34:8185)
-//		14 : playEffect_00 (fight/sing ”í’eƒ‚[ƒVƒ‡ƒ“?)
+//		14 : playEffect_00 (fight/sing è¢«å¼¾ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³?)
 //		15 : playEffect_06 (defend(05) )
-//		16 : playEffect_09 (charge(0f) ’Êí)
-//		17 : playEffect_09 (charge(0f) ‚½‚ß‚·‚¬)
+//		16 : playEffect_09 (charge(0f) é€šå¸¸)
+//		17 : playEffect_09 (charge(0f) ãŸã‚ã™ã)
 //		18 : playEffect_07 (jump(08) )
 //		19 : playEffect_08 (landing(09) )
 //		1a : playEffect_0a (intimidate(11) )
 //		1b : playEffect_0b (cheer(12) )
-//		1c : playEffect_0F (disp_0C) ƒ_ƒ[ƒW•\¦?
+//		1c : playEffect_0F (disp_0C) ãƒ€ãƒ¡ãƒ¼ã‚¸è¡¨ç¤º?
 //		1d : playEffect_01 (command13/ cast/item)
-//		1f : playEffect_00 s“®‚·‚é“G‚ª“_–Å
-//		20 : playEffect_00 (fight/sing “G‚Ì‘ÅŒ‚ƒGƒtƒFƒNƒg?)
+//		1f : playEffect_00 è¡Œå‹•ã™ã‚‹æ•µãŒç‚¹æ»…
+//		20 : playEffect_00 (fight/sing æ•µã®æ‰“æ’ƒã‚¨ãƒ•ã‚§ã‚¯ãƒˆ?)
 //		21 : playEffect_0d (escape(06/07) : $7e9a(effectside) >= 0)
 //		22 : playEffect_01 (magicparam+06 == #07)
 //		23 : playEffect_01 (magicparam+06 == #0d)
@@ -676,7 +677,7 @@ $2f:af4e presentScene	//invoke$af74
 //uses:
 //	u16 $2f:af74 : functionTable
 //notes:
-//	ŠeíƒQ[ƒ€ƒV[ƒ“•\¦Œn‚Ìƒ‹[ƒ`ƒ“‚©‚çŒÄ‚Î‚ê‚é
+//	å„ç¨®ã‚²ãƒ¼ãƒ ã‚·ãƒ¼ãƒ³è¡¨ç¤ºç³»ã®ãƒ«ãƒ¼ãƒãƒ³ã‹ã‚‰å‘¼ã°ã‚Œã‚‹
 {
 	$93 = a;
 	push (a = x);
@@ -732,7 +733,7 @@ $2f:b15e presentScene_1d	//[magic effect]
 	if (a < 0) {
 $b163:		dispatchEffectCommand(#d);	// $2f:af14();
 	} else {
-$b169:		moveCharacterForward();	//$2f:b38e();	//s“®‚·‚éƒLƒƒƒ‰‚ª‘O‚É‚Å‚é
+$b169:		moveCharacterForward();	//$2f:b38e();	//è¡Œå‹•ã™ã‚‹ã‚­ãƒ£ãƒ©ãŒå‰ã«ã§ã‚‹
 		$2f:a9cf();
 		dispatchEffectCommand(#d);	//$2f:af14();
 		$2f:b25b();
@@ -758,8 +759,8 @@ $2f:b1e0 presentScene_17	//[charge,fail]
 {
 	$7e19 = 1;
 $b1e5:
-	moveCharacterForward();	//‘O‚Éo‚é
-	$a9cf();	//sprite“Ç‚İ‚İ?
+	moveCharacterForward();	//å‰ã«å‡ºã‚‹
+	$a9cf();	//spriteèª­ã¿è¾¼ã¿?
 	$a9b1();
 	dispatchEffectFunction_07();	// $aefc();
 	return $b25b();
@@ -772,18 +773,18 @@ $2f:b24c presentScene_13	//caller: $34:8185
 
 $2f:b24f presentScene_12	//fight
 {
-	moveCharacterForward();	//$b38e()	//‚Ü‚¦‚É‚Å‚é
+	moveCharacterForward();	//$b38e()	//ã¾ãˆã«ã§ã‚‹
 	$a9cf();	
 	loadBlowEffectParams();	// $a8ea();
-	dispatchEffectFunction_04();	//$aef0();	//‘ÅŒ‚ƒ‚[ƒVƒ‡ƒ“
+	dispatchEffectFunction_04();	//$aef0();	//æ‰“æ’ƒãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³
 	x = $95;
-	return $b38b();	//‚³‚ª‚é
+	return $b38b();	//ã•ãŒã‚‹
 }
 
 $2f:b25b
 {
 	x = $95;
-	return $b38b();	//‚³‚ª‚é
+	return $b38b();	//ã•ãŒã‚‹
 }
 
 $2f:b2fa presentScene_10	//selectTarget
@@ -793,7 +794,7 @@ $2f:b2fa presentScene_10	//selectTarget
 	return dispatchEffectFunction_01();	//$aee4()
 }
 
-$2f:b348 presentScene_0C	//“G¶¬
+$2f:b348 presentScene_0C	//æ•µç”Ÿæˆ
 {
 	return $b93a(x = $7e);
 }
@@ -1038,9 +1039,9 @@ $32:8000 invokeEffectFunction
 //	[in] u8 A : effectId (00-19h)
 //	01:$9a1c selectTarget
 //	03:$9f11 presentCharacter? ($34:8185)+
-//	04:$a0c0 –¡•û‘ÅŒ‚
-//	0d:$bafd –‚–@
-//	14:$be9a ˆÚ“®
+//	04:$a0c0 å‘³æ–¹æ‰“æ’ƒ
+//	0d:$bafd é­”æ³•
+//	14:$be9a ç§»å‹•
 {
 	y = a << 1;
 	$96,97 = $800f.y,$8010.y;
@@ -1137,9 +1138,9 @@ $32:98e0 showBlowSprite_01	//type 0(fist) ,2(bell,book,rod,cane) ,4(harp),9(claw
 $32:98e8 getRandomizedBlowSpritePosition
 //	[in] u8 $b6 : frameCount
 //note:
-//	‹ô”ƒtƒŒ[ƒ€‚µ‚©À•W‚ğXV‚µ‚È‚¢‚Ì‚Å
-//	Å‰‚É•\¦‚·‚éƒtƒŒ[ƒ€‚ªŠï”ƒtƒŒ[ƒ€(‘S‘ÌƒtƒŒ[ƒ€/2=Šï”)‚¾‚Æ
-//	ˆê”­–Ú‚Ì‚İ‚»‚Ì‘O‚É‰£‚Á‚½“G‚ÌˆÊ’u‚É•\¦‚³‚ê‚é
+//	å¶æ•°ãƒ•ãƒ¬ãƒ¼ãƒ ã—ã‹åº§æ¨™ã‚’æ›´æ–°ã—ãªã„ã®ã§
+//	æœ€åˆã«è¡¨ç¤ºã™ã‚‹ãƒ•ãƒ¬ãƒ¼ãƒ ãŒå¥‡æ•°ãƒ•ãƒ¬ãƒ¼ãƒ (å…¨ä½“ãƒ•ãƒ¬ãƒ¼ãƒ /2=å¥‡æ•°)ã ã¨
+//	ä¸€ç™ºç›®ã®ã¿ãã®å‰ã«æ®´ã£ãŸæ•µã®ä½ç½®ã«è¡¨ç¤ºã•ã‚Œã‚‹
 {
 	if (($b6 & 1) == 0) { //b6=framecount bne 9912
 $98ee:
@@ -1356,7 +1357,7 @@ $a0dd:			a = 0; goto $a0ee; //beq
 $a0e1:	if ( (a == #8)		//bne a0f8
 $a0e5:	  && ($7e20 == #3) )	//bne a0f8
 	{
-		//‹|–î
+		//å¼“çŸ¢
 $a0ec:
 		a = 1;
 $a0ee:
@@ -1368,7 +1369,7 @@ $a0ee:
 $a0f8:
 	if ($7e1f == 4) { //bne a105
 $a0ff:
-		//’G‹Õ
+		//ç«ªç´
 		$a24c();
 		goto a10c;
 	} else {
@@ -1489,7 +1490,7 @@ $a26d:
 $a275:
 	$a05e();
 	if (($b6 & 8) == 0) { //bne a2a0
-		//‘O”¼(frame0-7)
+		//å‰åŠ(frame0-7)
 	} else {
 $a2a0:
 		//...
@@ -1598,7 +1599,7 @@ $a38e:
 $a393:
 		if (($b6 & 4) == 0) { //bne a3af
 $a397:
-		//‘O”¼(4ƒtƒŒ[ƒ€)
+		//å‰åŠ(4ãƒ•ãƒ¬ãƒ¼ãƒ )
 			if ($cd != 0) { //beq $a3a5
 $a39b:
 				x = 2; a = 7;
@@ -1611,7 +1612,7 @@ $a3a5:
 			} //goto $a3c8();
 		} else {
 $a3af:
-		//Œã”¼
+		//å¾ŒåŠ
 			if ($cd != 0) { //beq $a3bd
 $a3b3:
 				x = 3;a = 6;
@@ -1773,9 +1774,9 @@ $33:ad2b effect_0C	//damageEffect
 //	[in] u8 $7e6f : side (0 = player)
 //	[in] damage $7e4f[8] : damages
 //	struct damage {
-//		u16 damage : 14;	//•\¦‚·‚é’l 3FFF‚Å •\¦–³‚µ
-//		u16 miss : 1;		//1‚È‚ç damage == 3fff‚Å‚È‚¢ŒÀ‚èƒ~ƒX!‚Æ•\¦
-//		u16 heal : 1;		//1‚È‚ç”š‚ÌF‚ª—Î($56-‚Ì‘ã‚í‚è‚É$66-‚Ìƒ^ƒCƒ‹‚ğg—p,ƒpƒŒƒbƒg‚Í“¯‚¶)
+//		u16 damage : 14;	//è¡¨ç¤ºã™ã‚‹å€¤ 3FFFã§ è¡¨ç¤ºç„¡ã—
+//		u16 miss : 1;		//1ãªã‚‰ damage == 3fffã§ãªã„é™ã‚ŠãƒŸã‚¹!ã¨è¡¨ç¤º
+//		u16 heal : 1;		//1ãªã‚‰æ•°å­—ã®è‰²ãŒç·‘($56-ã®ä»£ã‚ã‚Šã«$66-ã®ã‚¿ã‚¤ãƒ«ã‚’ä½¿ç”¨,ãƒ‘ãƒ¬ãƒƒãƒˆã¯åŒã˜)
 //	};
 {
 	$cb = 0;
@@ -1984,7 +1985,7 @@ $33:b19b invertHorizontalIfBackattack
 	if (is_backattacked_32()) //$32:90d2()
 	{	//bne $b1b3
 		$0200.x = ($0200.x ^ #ff) - 8;	//x = #ff - x - 8
-		$01ff.x = ($01ff.x ^ #40);	//bit6:…•½”½“]?
+		$01ff.x = ($01ff.x ^ #40);	//bit6:æ°´å¹³åè»¢?
 	}
 $b1b3:
 }
@@ -2172,7 +2173,7 @@ $b73c:
 	} else {
 $b74d:
 		x = a = $90 << 1;
-		$8c = $7dd7.x - #18;	//˜A‘±‚µ‚Ä‚¢‚é‚ª16bit’l‚Å‚Í‚È‚¢(sec‚ª‹²‚Ü‚Á‚Ä‚é‚Ì‚ÅŒÂ•ÊŒvZ)
+		$8c = $7dd7.x - #18;	//é€£ç¶šã—ã¦ã„ã‚‹ãŒ16bitå€¤ã§ã¯ãªã„(secãŒæŒŸã¾ã£ã¦ã‚‹ã®ã§å€‹åˆ¥è¨ˆç®—)
 		$8d = $7dd8.x - #10;
 	}
 $b761:
@@ -2289,7 +2290,7 @@ $b87c:		a &= #1f; a += #49;
 $b881:
 	$7925.y = a;	//tileIndex
 	$18 = ($7f & 3) | $7926.y;
-	$7926.y = ($7f & #c0) ^ $18;	//attr:ƒpƒŒƒbƒg”Ô†‚Í•K‚¸3?
+	$7926.y = ($7f & #c0) ^ $18;	//attr:ãƒ‘ãƒ¬ãƒƒãƒˆç•ªå·ã¯å¿…ãš3?
 	y += 4;
 }
 
