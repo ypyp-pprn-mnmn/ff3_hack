@@ -885,90 +885,101 @@
 #[2]   ff3_hack_master.asm
 #[3]   ff3_fix.asm
    31                             .include "ff3_fix.asm"
-    1                     ; ff3_fix.asm
-    2                     ;
-    3                     ;description:
-    4                     ;       small fixes
-    5                     ;
-    6                     ;version:
-    7                     ;       0.06 (2006-11-07)
-    8                     ;
-    9                     ;======================================================================================================
-   10  00:0000            ff3_fix_begin:
-   11                     
-   12           0001              .ifdef FIX_ATTR_BOOST
-   13           0031                      .bank   $31
-   14           BB62                      .org    $ab62
-   15  31:BB62                    resetAttributeBoostAndFormation:
-   16  31:BB62  29 01                     and #$01        ;original : $f9 (this improperly keeps previous attr-boost value,seems to be bug)
-   17           FF18                      .org    $af18
-   18  31:FF18                    storeAttributeBoostAndFormation:
-   19  31:FF18  29 F9                     and #$f9        ;original: 1 (this masks attr-boost out, seems to be bug)
-   20                             .endif  ;FIX_ATTR_BOOST
-   21                     ;------------------------------------------------------------------------------------------------------
-   22           0001              .ifdef FIX_HP_GROW
-   23           0035                      .bank   $35
-   24           EEC3                      .org    $bec3
-   25  35:EEC3            prize_doLevelUp:
-   26           0032      .lvBefore = $32
-   27           0024      .hpGrowth = $24
-   28           0057      .pBaseParam = $57
-   29                             ;a = lvAfter
-   30                             ;x = lvAfter
-   31                             ;y = offset01 (lv)
-   32  35:EEC3  91 57                     sta [.pBaseParam],y
-   33  35:EEC5  0A                        asl a
-   34  35:EEC6  85 24                     sta <.hpGrowth
-   35  35:EEC8  A9 14                     lda #$14
-   36  35:EECA  20 88 9B                  jsr setYtoOffsetOf
-   37  35:EECD  B1 57                     lda [.pBaseParam],y     ;vit
-   38  35:EECF  4A                        lsr a
-   39  35:EED0  20 64 A5                  jsr getSys1Random       ;a564 (y is unchanged)
-   40  35:EED3  18                        clc
-   41  35:EED4  71 57                     adc [.pBaseParam],y
-   42                                     ;carry should be cleared (99+48)
-   43  35:EED6  18                        clc
-   44  35:EED7  65 24                     adc <.hpGrowth
-   45  35:EED9  85 24                     sta <.hpGrowth
-   46  35:EEDB  A9 00                     lda #0
-   47  35:EEDD  69 00                     adc #0
-   48  35:EEDF  48                        pha
-   49  35:EEE0  A9 0E                     lda #$0e
-   50  35:EEE2  20 88 9B                  jsr setYtoOffsetOf      ;9b88
-   51  35:EEE5  18                        clc
-   52  35:EEE6  B1 57                     lda [.pBaseParam],y     ;maxHp
-   53  35:EEE8  65 24                     adc <.hpGrowth
-   54  35:EEEA  91 57                     sta [.pBaseParam],y
-   55  35:EEEC  C8                        iny
-   56  35:EEED  68                        pla
-   57  35:EEEE  71 57                     adc [.pBaseParam],y
-   58  35:EEF0  91 57                     sta [.pBaseParam],y
-   59  35:EEF2  88                        dey     ;set y to maxHp.low
-   60  35:EEF3  EA                        nop
-   61  35:EEF4  EA                        nop
-   62  35:EEF5  EA                        nop
-   63                     ;$bef6:         
-   64                             .endif  ;FIX_HP_GROW
-   65                     ;------------------------------------------------------------------------------------------------------
-   66           0001              .ifdef FIX_ITEM99
-   67           0035                      .bank   $35
-   68           FFC7                      .org    $bfc7
-   69  35:FFC7                    branchIfItemOverflow:
-   70  35:FFC7  B0 25                     bcs $bfee
-   71                             .endif  ;FIX_ITEM99
-   72                     ;------------------------------------------------------------------------------------------------------
-   73           0000              .ifdef FIX_255X_DAMAGE
-   88                             .endif ;FIX_255X_DAMAGE
-   89                     ;------------------------------------------------------------------------------------------------------
-   90           0001              .ifdef FIX_DUNGEON_FLOOR_SAVE
-   91           003F                      .bank   $3f
-   92           2299                      .org    $e299
-   93  3F:2299                    dungeon_checkStackPointer:
-   94  3F:2299  BA                        tsx
-   95  3F:229A  E0 4B                     cpx #$4b        ;original:$20
-   96                             .endif ;FIX_DUNGEON_FLOOR_SAVE
-   97                     ;======================================================================================================
-   98                             RESTORE_PC ff3_fix_begin
+    1                     ;/* encoding: utf-8 */
+    2                     ; ff3_fix.asm
+    3                     ;
+    4                     ;description:
+    5                     ;       small fixes
+    6                     ;
+    7                     ;version:
+    8                     ;       0.07 (2017-11-13)
+    9                     ;
+   10                     ;======================================================================================================
+   11  00:0000            ff3_fix_begin:
+   12                     
+   13           0001              .ifdef FIX_ATTR_BOOST
+   14           0031                      .bank   $31
+   15           BB62                      .org    $ab62
+   16  31:BB62                    resetAttributeBoostAndFormation:
+   17  31:BB62  29 01                     and #$01        ;original : $f9 (this improperly keeps previous attr-boost value,seems to be bug)
+   18           FF18                      .org    $af18
+   19  31:FF18                    storeAttributeBoostAndFormation:
+   20  31:FF18  29 F9                     and #$f9        ;original: 1 (this masks attr-boost out, seems to be bug)
+   21                             .endif  ;FIX_ATTR_BOOST
+   22                     ;------------------------------------------------------------------------------------------------------
+   23           0001              .ifdef FIX_HP_GROW
+   24           0035                      .bank   $35
+   25           EEC3                      .org    $bec3
+   26  35:EEC3            prize_doLevelUp:
+   27           0032      .lvBefore = $32
+   28           0024      .hpGrowth = $24
+   29           0057      .pBaseParam = $57
+   30                             ;a = lvAfter
+   31                             ;x = lvAfter
+   32                             ;y = offset01 (lv)
+   33  35:EEC3  91 57                     sta [.pBaseParam],y
+   34  35:EEC5  0A                        asl a
+   35  35:EEC6  85 24                     sta <.hpGrowth
+   36  35:EEC8  A9 14                     lda #$14
+   37  35:EECA  20 88 9B                  jsr setYtoOffsetOf
+   38  35:EECD  B1 57                     lda [.pBaseParam],y     ;vit
+   39  35:EECF  4A                        lsr a
+   40  35:EED0  20 64 A5                  jsr getSys1Random       ;a564 (y is unchanged)
+   41  35:EED3  18                        clc
+   42  35:EED4  71 57                     adc [.pBaseParam],y
+   43                                     ;carry should be cleared (99+48)
+   44  35:EED6  18                        clc
+   45  35:EED7  65 24                     adc <.hpGrowth
+   46  35:EED9  85 24                     sta <.hpGrowth
+   47  35:EEDB  A9 00                     lda #0
+   48  35:EEDD  69 00                     adc #0
+   49  35:EEDF  48                        pha
+   50  35:EEE0  A9 0E                     lda #$0e
+   51  35:EEE2  20 88 9B                  jsr setYtoOffsetOf      ;9b88
+   52  35:EEE5  18                        clc
+   53  35:EEE6  B1 57                     lda [.pBaseParam],y     ;maxHp
+   54  35:EEE8  65 24                     adc <.hpGrowth
+   55  35:EEEA  91 57                     sta [.pBaseParam],y
+   56  35:EEEC  C8                        iny
+   57  35:EEED  68                        pla
+   58  35:EEEE  71 57                     adc [.pBaseParam],y
+   59  35:EEF0  91 57                     sta [.pBaseParam],y
+   60  35:EEF2  88                        dey     ;set y to maxHp.low
+   61  35:EEF3  EA                        nop
+   62  35:EEF4  EA                        nop
+   63  35:EEF5  EA                        nop
+   64                     ;$bef6:         
+   65                             .endif  ;FIX_HP_GROW
+   66                     ;------------------------------------------------------------------------------------------------------
+   67           0001              .ifdef FIX_ITEM99
+   68           0035                      .bank   $35
+   69           FFC7                      .org    $bfc7
+   70  35:FFC7                    branchIfItemOverflow:
+   71  35:FFC7  B0 25                     bcs $bfee
+   72                             .endif  ;FIX_ITEM99
+   73                     ;------------------------------------------------------------------------------------------------------
+   74           0000              .ifdef FIX_255X_DAMAGE
+   89                             .endif ;FIX_255X_DAMAGE
+   90                     ;------------------------------------------------------------------------------------------------------
+   91           0001              .ifdef FIX_DUNGEON_FLOOR_SAVE
+   92           003F                      .bank   $3f
+   93           2299                      .org    $e299
+   94  3F:2299                    dungeon_checkStackPointer:
+   95  3F:2299  BA                        tsx
+   96  3F:229A  E0 4B                     cpx #$4b        ;original:$20
+   97                             .endif ;FIX_DUNGEON_FLOOR_SAVE
+   98                     
+   99                     ;------------------------------------------------------------------------------------------------------
+  100           0001              .ifdef FIX_COMMAND_COUNT_UPDATE
+  101           0034                      .bank   $34
+  102           227C                      .org    $827c
+  103  34:227C                    battle_check_command_index:
+  104                                     ;;here A contains the executed command's 0-based position in command window
+  105  34:227C  C9 04                     cmp #4  ;;in addition to FF(:no action), 4(:step forward) and 5(:step back) should not be counted either.
+  106  34:227E  B0 0C                     bcs $828c       ;skip increment
+  107                             .endif ;FIX_COMMAND_COUNT_UPDATE
+  108                     ;======================================================================================================
+  109                             RESTORE_PC ff3_fix_begin
                 0000              .bank   BANK(ff3_fix_begin)
                 0000              .org    ff3_fix_begin
 #[2]   ff3_hack_master.asm
@@ -3278,278 +3289,279 @@
   309                     ;$34:9fa8 handleCommand00_0a //do nothing
   310                     ;======================================================================================================
   311                             ;INIT_PATCH $34,$9fa6,$a000
-  312                             INIT_PATCH $34,$9fa8,$a000
+  312                             ;;the bug report can be found here: http://966-yyff.cocolog-nifty.com/blog/2014/09/ds-3981.html
+  313                             INIT_PATCH $34,$9fa8,$a000
                 0034              .bank   $34
                 FFA8              .org    $9fa8
        34:FFA8                    .ds             (($a000) - ($9fa8))
                 FFA8              .org    $9fa8
-  313                     ;------------------------------------------------------------------------------------------------------
-  314  34:FFA8            setXtoTargetIndex:
-  315           0070      .pTarget = $70
-  316  34:FFA8  A0 2C             ldy #$2c
-  317  34:FFAA  B1 70             lda [.pTarget],y
-  318  34:FFAC  4C B2 9F          jmp maskToIndex
-  319                     ;       and #$07
-  320                     ;       tax
-  321                     ;       rts
-  322                     
-  323  34:FFAF            setXtoActorIndex:
-  324  34:FFAF  20 2E A4          jsr getActor2C
-  325  34:FFB2            maskToIndex:
-  326  34:FFB2  29 07             and #7
-  327  34:FFB4  AA                tax
-  328  34:FFB5  60                rts
-  329                     
-  330  34:FFB6            setXtoActorIndex16:
-  331  34:FFB6  20 AF 9F          jsr setXtoActorIndex
-  332  34:FFB9  0A                asl a
-  333  34:FFBA  AA                tax
-  334  34:FFBB  60                rts
-  335                     
-  336  34:FFBC            flagSingleTarget:
-  337                     ;[in] x = targetIndex
-  338  34:FFBC  A9 00             lda #0
-  339  34:FFBE  4C 20 FD          jmp flagTargetBit
-  340                     
-  341  34:FFC1            addBattleMessage:
-  342                     ;[in] a : msg
-  343                     ;[in,out] x : count
-  344  34:FFC1  AE EE 78          ldx battleMessageCount
-  345  34:FFC4  9D DA 78          sta battleMessages,x
-  346  34:FFC7  E8                inx
-  347  34:FFC8  8E EE 78          stx battleMessageCount
-  348                             ;inc battleMessageCount
-  349  34:FFCB  60                rts
-  350                     
-  351  34:FFCC            swapDamages:
-  352  34:FFCC  A2 0F             ldx #$0f
-  353  34:FFCE            .swap:
-  354  34:FFCE  BD 4F 7E                  lda play_damages,x
-  355  34:FFD1  48                        pha
-  356  34:FFD2  BD 5F 7E                  lda play_damages+$10,x
-  357  34:FFD5  9D 4F 7E                  sta play_damages,x
-  358  34:FFD8  68                        pla
-  359  34:FFD9  9D 5F 7E                  sta play_damages+$10,x
-  360  34:FFDC  CA                        dex
-  361  34:FFDD  10 EF                     bpl .swap
-  362  34:FFDF  60                rts
-  363                     
-  364  34:FFE0            swapHitCounts:
-  365           00BB      .hitCount = $bb
-  366           9900      .temp = TEMP_RAM
-  367  34:FFE0  A2 01             ldx #1
-  368  34:FFE2            .save:
-  369  34:FFE2  B4 BB                     ldy <.hitCount,x
-  370  34:FFE4  BD 00 79                  lda .temp,x
-  371  34:FFE7  95 BB                     sta <.hitCount,x
-  372  34:FFE9  98                        tya
-  373  34:FFEA  9D 00 79                  sta .temp,x
-  374  34:FFED  CA                        dex
-  375  34:FFEE  10 F2                     bpl .save
-  376  34:FFF0  60                rts
-  377                     
-  378                     ;workaround for doFight behavior
-  379  34:FFF1            initAllDamages:
-  380  34:FFF1  A2 E0             ldx #$e0
-  381  34:FFF3  D0 02             bne initDamage
-  382  34:FFF5            initActorDamages:
-  383  34:FFF5  A2 F0             ldx #$f0
-  384                             ;fall through
-  385  34:FFF7            initDamage:
-  386  34:FFF7  A9 FF             lda #$ff
-  387  34:FFF9            .fill:
-  388  34:FFF9  9D 6F 7D                  sta play_damages+$10-$f0,x
-  389  34:FFFC  E8                        inx
-  390  34:FFFD  D0 FA                     bne .fill
-  391  34:FFFF  60                rts
-  392                     ;------------------------------------------------------------------------------------------------------
-  393                             INIT_PATCH $35,$a000,$a104
+  314                     ;------------------------------------------------------------------------------------------------------
+  315  34:FFA8            setXtoTargetIndex:
+  316           0070      .pTarget = $70
+  317  34:FFA8  A0 2C             ldy #$2c
+  318  34:FFAA  B1 70             lda [.pTarget],y
+  319  34:FFAC  4C B2 9F          jmp maskToIndex
+  320                     ;       and #$07
+  321                     ;       tax
+  322                     ;       rts
+  323                     
+  324  34:FFAF            setXtoActorIndex:
+  325  34:FFAF  20 2E A4          jsr getActor2C
+  326  34:FFB2            maskToIndex:
+  327  34:FFB2  29 07             and #7
+  328  34:FFB4  AA                tax
+  329  34:FFB5  60                rts
+  330                     
+  331  34:FFB6            setXtoActorIndex16:
+  332  34:FFB6  20 AF 9F          jsr setXtoActorIndex
+  333  34:FFB9  0A                asl a
+  334  34:FFBA  AA                tax
+  335  34:FFBB  60                rts
+  336                     
+  337  34:FFBC            flagSingleTarget:
+  338                     ;[in] x = targetIndex
+  339  34:FFBC  A9 00             lda #0
+  340  34:FFBE  4C 20 FD          jmp flagTargetBit
+  341                     
+  342  34:FFC1            addBattleMessage:
+  343                     ;[in] a : msg
+  344                     ;[in,out] x : count
+  345  34:FFC1  AE EE 78          ldx battleMessageCount
+  346  34:FFC4  9D DA 78          sta battleMessages,x
+  347  34:FFC7  E8                inx
+  348  34:FFC8  8E EE 78          stx battleMessageCount
+  349                             ;inc battleMessageCount
+  350  34:FFCB  60                rts
+  351                     
+  352  34:FFCC            swapDamages:
+  353  34:FFCC  A2 0F             ldx #$0f
+  354  34:FFCE            .swap:
+  355  34:FFCE  BD 4F 7E                  lda play_damages,x
+  356  34:FFD1  48                        pha
+  357  34:FFD2  BD 5F 7E                  lda play_damages+$10,x
+  358  34:FFD5  9D 4F 7E                  sta play_damages,x
+  359  34:FFD8  68                        pla
+  360  34:FFD9  9D 5F 7E                  sta play_damages+$10,x
+  361  34:FFDC  CA                        dex
+  362  34:FFDD  10 EF                     bpl .swap
+  363  34:FFDF  60                rts
+  364                     
+  365  34:FFE0            swapHitCounts:
+  366           00BB      .hitCount = $bb
+  367           9900      .temp = TEMP_RAM
+  368  34:FFE0  A2 01             ldx #1
+  369  34:FFE2            .save:
+  370  34:FFE2  B4 BB                     ldy <.hitCount,x
+  371  34:FFE4  BD 00 79                  lda .temp,x
+  372  34:FFE7  95 BB                     sta <.hitCount,x
+  373  34:FFE9  98                        tya
+  374  34:FFEA  9D 00 79                  sta .temp,x
+  375  34:FFED  CA                        dex
+  376  34:FFEE  10 F2                     bpl .save
+  377  34:FFF0  60                rts
+  378                     
+  379                     ;workaround for doFight behavior
+  380  34:FFF1            initAllDamages:
+  381  34:FFF1  A2 E0             ldx #$e0
+  382  34:FFF3  D0 02             bne initDamage
+  383  34:FFF5            initActorDamages:
+  384  34:FFF5  A2 F0             ldx #$f0
+  385                             ;fall through
+  386  34:FFF7            initDamage:
+  387  34:FFF7  A9 FF             lda #$ff
+  388  34:FFF9            .fill:
+  389  34:FFF9  9D 6F 7D                  sta play_damages+$10-$f0,x
+  390  34:FFFC  E8                        inx
+  391  34:FFFD  D0 FA                     bne .fill
+  392  34:FFFF  60                rts
+  393                     ;------------------------------------------------------------------------------------------------------
+  394                             INIT_PATCH $35,$a000,$a104
                 0035              .bank   $35
                 0000              .org    $a000
        35:0000                    .ds             (($a104) - ($a000))
                 0000              .org    $a000
-  394                     
-  395  35:0000            executeAction_summon:
-  396           0018      .magicParamsCache = $18
-  397                     ;.actionId = $26
-  398                     ;.targetBit = $27
-  399                     ;.targetFlag = $28
-  400           0030      .summonType = $30
-  401           0052      .iPlayer = $52
-  402           006E      .pActor = $6e
-  403                     
-  404  35:0000  A2 3F             ldx #$3f
-  405  35:0002  A9 00             lda #0
-  406  35:0004  8D 93 7E          sta $7e93
-  407  35:0007            .init_char_struct:
-  408  35:0007  9D 75 78                  sta $7875,x
-  409  35:000A  CA                        dex
-  410  35:000B  10 FA                     bpl .init_char_struct
-  411  35:000D  A9 02             lda #2
-  412  35:000F  85 30             sta <.summonType
-  413                     ;original checks job == #13 || #14
-  414  35:0011  A0 3C             ldy #EXTRA_ABILITY_OFFSET
-  415  35:0013  B1 6E             lda [.pActor],y
-  416  35:0015  29 10             and #PASSIVE_SUMMON_FUSION
-  417  35:0017  D0 0D             bne .summon_fusion
-  418                     ;$9ffc:
-  419  35:0019  A9 63                     lda #99
-  420  35:001B  20 64 A5                  jsr getSys1Random       ;a564
-  421  35:001E  C9 32                     cmp #50
-  422  35:0020  B0 02                     bcs .summon_black
-  423  35:0022  C6 30                             dec <.summonType
-  424  35:0024                    .summon_black:
-  425  35:0024  C6 30                     dec <.summonType
-  426  35:0026            .summon_fusion:
-  427                     ;$a009:
-  428                             ;.bank $35
-  429                             
-  430                             ;jsr getActor2C
-  431                             ;and #7
-  432                             ;sta <.iPlayer
-  433                             ;tax
-  434  35:0026  20 AF 9F          jsr setXtoActorIndex
-  435  35:0029  BD C7 7A          lda selectedMagicLv,x
-  436  35:002C  48                pha
-  437                             
-  438  35:002D  20 3E FD          jsr $fd3e       ;a<<=4
-  439  35:0030  05 30             ora <.summonType
-  440  35:0032  8D 94 7E          sta $7e94
-  441                     
-  442                     ;       INIT16 <.pActor,$7875
-  443                     ;       setYtoOffsetOf(a = #0f);        //$9b88
-  444  35:0035  A0 0F             ldy #$0f
-  445  35:0037  A2 02             ldx #2
-  446  35:0039            .load_params:
-  447  35:0039  B1 6E                     lda [.pActor],y
-  448  35:003B  0A                        asl a
-  449  35:003C  95 18                     sta <.magicParamsCache,x
-  450  35:003E  C8                        iny
-  451  35:003F  CA                        dex
-  452  35:0040  10 F7                     bpl .load_params
-  453                     
-  454  35:0042  A0 01             ldy #1
-  455  35:0044  B1 6E             lda [.pActor],y
-  456  35:0046  29 30             and #$30        ;toad|sealed
-  457  35:0048  48                pha
-  458                             
-  459                             INIT16 <.pActor,$7875
+  395                     
+  396  35:0000            executeAction_summon:
+  397           0018      .magicParamsCache = $18
+  398                     ;.actionId = $26
+  399                     ;.targetBit = $27
+  400                     ;.targetFlag = $28
+  401           0030      .summonType = $30
+  402           0052      .iPlayer = $52
+  403           006E      .pActor = $6e
+  404                     
+  405  35:0000  A2 3F             ldx #$3f
+  406  35:0002  A9 00             lda #0
+  407  35:0004  8D 93 7E          sta $7e93
+  408  35:0007            .init_char_struct:
+  409  35:0007  9D 75 78                  sta $7875,x
+  410  35:000A  CA                        dex
+  411  35:000B  10 FA                     bpl .init_char_struct
+  412  35:000D  A9 02             lda #2
+  413  35:000F  85 30             sta <.summonType
+  414                     ;original checks job == #13 || #14
+  415  35:0011  A0 3C             ldy #EXTRA_ABILITY_OFFSET
+  416  35:0013  B1 6E             lda [.pActor],y
+  417  35:0015  29 10             and #PASSIVE_SUMMON_FUSION
+  418  35:0017  D0 0D             bne .summon_fusion
+  419                     ;$9ffc:
+  420  35:0019  A9 63                     lda #99
+  421  35:001B  20 64 A5                  jsr getSys1Random       ;a564
+  422  35:001E  C9 32                     cmp #50
+  423  35:0020  B0 02                     bcs .summon_black
+  424  35:0022  C6 30                             dec <.summonType
+  425  35:0024                    .summon_black:
+  426  35:0024  C6 30                     dec <.summonType
+  427  35:0026            .summon_fusion:
+  428                     ;$a009:
+  429                             ;.bank $35
+  430                             
+  431                             ;jsr getActor2C
+  432                             ;and #7
+  433                             ;sta <.iPlayer
+  434                             ;tax
+  435  35:0026  20 AF 9F          jsr setXtoActorIndex
+  436  35:0029  BD C7 7A          lda selectedMagicLv,x
+  437  35:002C  48                pha
+  438                             
+  439  35:002D  20 3E FD          jsr $fd3e       ;a<<=4
+  440  35:0030  05 30             ora <.summonType
+  441  35:0032  8D 94 7E          sta $7e94
+  442                     
+  443                     ;       INIT16 <.pActor,$7875
+  444                     ;       setYtoOffsetOf(a = #0f);        //$9b88
+  445  35:0035  A0 0F             ldy #$0f
+  446  35:0037  A2 02             ldx #2
+  447  35:0039            .load_params:
+  448  35:0039  B1 6E                     lda [.pActor],y
+  449  35:003B  0A                        asl a
+  450  35:003C  95 18                     sta <.magicParamsCache,x
+  451  35:003E  C8                        iny
+  452  35:003F  CA                        dex
+  453  35:0040  10 F7                     bpl .load_params
+  454                     
+  455  35:0042  A0 01             ldy #1
+  456  35:0044  B1 6E             lda [.pActor],y
+  457  35:0046  29 30             and #$30        ;toad|sealed
+  458  35:0048  48                pha
+  459                             
+  460                             INIT16 <.pActor,$7875
        35:0049  A9 75             lda #LOW($7875)
        35:004B  85 6E             sta <.pActor
        35:004D  A9 78             lda #HIGH($7875)
        35:004F  85 6F             sta <.pActor+1
-  460                     
-  461  35:0051  68                pla
-  462  35:0052  91 6E             sta [.pActor],y
-  463                             ;
-  464  35:0054  88                dey
-  465  35:0055  A5 1A             lda <.magicParamsCache+2        ;joblv
-  466  35:0057  91 6E             sta [.pActor],y
-  467                     
-  468  35:0059  A0 0F             ldy #$0f
-  469  35:005B  A2 02             ldx #2
-  470  35:005D            .store_params:
-  471  35:005D  B5 18                     lda <.magicParamsCache,x
-  472  35:005F  91 6E                     sta [.pActor],y
-  473  35:0061  C8                        iny
-  474  35:0062  CA                        dex
-  475  35:0063  10 F8                     bpl .store_params
-  476  35:0065  A0 03             ldy #3
-  477  35:0067  98                tya
-  478  35:0068  91 6E             sta [.pActor],y ;hp
-  479                             
-  480  35:006A  AE C2 7A          ldx $7ac2
-  481  35:006D  A9 88             lda #$88
-  482  35:006F  9D CB 7A          sta $7acb,x
-  483                     
-  484                             ;$6e[y] = getActor2C() | #90;
-  485  35:0072  A0 2C             ldy #$2c
-  486  35:0074  A9 90             lda #$90
-  487  35:0076  91 6E             sta [.pActor],y
-  488                     ;$a065:
-  489  35:0078  68                pla     ;selectedMagicLv
-  490  35:0079  85 18             sta <$18
-  491  35:007B  0A                asl a
-  492  35:007C  18                clc
-  493  35:007D  65 18             adc <$18
-  494  35:007F  65 30             adc <.summonType
-  495  35:0081  AA                tax     ; a = selectedMagicLv*3 + summonType
-  496                     
-  497  35:0082  18                clc
-  498  35:0083  69 78             adc #$78
-  499  35:0085  8D DA 78          sta battleMessages
-  500                             
-  501  35:0088  8A                txa
-  502  35:0089  18                clc
-  503  35:008A  69 21             adc #$21
-  504  35:008C  8D D9 78          sta effectMessage
-  505                     
-  506  35:008F  8A                txa
-  507  35:0090  69 5B             adc #$5b
-  508  35:0092  85 18             sta <$18
-  509  35:0094  48                pha     ;sta <.actionId
-  510                             
-  511  35:0095  A9 08             lda #8
-  512  35:0097  85 1A             sta <$1a
-  513                             INIT16 <$20,$98c0
+  461                     
+  462  35:0051  68                pla
+  463  35:0052  91 6E             sta [.pActor],y
+  464                             ;
+  465  35:0054  88                dey
+  466  35:0055  A5 1A             lda <.magicParamsCache+2        ;joblv
+  467  35:0057  91 6E             sta [.pActor],y
+  468                     
+  469  35:0059  A0 0F             ldy #$0f
+  470  35:005B  A2 02             ldx #2
+  471  35:005D            .store_params:
+  472  35:005D  B5 18                     lda <.magicParamsCache,x
+  473  35:005F  91 6E                     sta [.pActor],y
+  474  35:0061  C8                        iny
+  475  35:0062  CA                        dex
+  476  35:0063  10 F8                     bpl .store_params
+  477  35:0065  A0 03             ldy #3
+  478  35:0067  98                tya
+  479  35:0068  91 6E             sta [.pActor],y ;hp
+  480                             
+  481  35:006A  AE C2 7A          ldx $7ac2
+  482  35:006D  A9 88             lda #$88
+  483  35:006F  9D CB 7A          sta $7acb,x
+  484                     
+  485                             ;$6e[y] = getActor2C() | #90;
+  486  35:0072  A0 2C             ldy #$2c
+  487  35:0074  A9 90             lda #$90
+  488  35:0076  91 6E             sta [.pActor],y
+  489                     ;$a065:
+  490  35:0078  68                pla     ;selectedMagicLv
+  491  35:0079  85 18             sta <$18
+  492  35:007B  0A                asl a
+  493  35:007C  18                clc
+  494  35:007D  65 18             adc <$18
+  495  35:007F  65 30             adc <.summonType
+  496  35:0081  AA                tax     ; a = selectedMagicLv*3 + summonType
+  497                     
+  498  35:0082  18                clc
+  499  35:0083  69 78             adc #$78
+  500  35:0085  8D DA 78          sta battleMessages
+  501                             
+  502  35:0088  8A                txa
+  503  35:0089  18                clc
+  504  35:008A  69 21             adc #$21
+  505  35:008C  8D D9 78          sta effectMessage
+  506                     
+  507  35:008F  8A                txa
+  508  35:0090  69 5B             adc #$5b
+  509  35:0092  85 18             sta <$18
+  510  35:0094  48                pha     ;sta <.actionId
+  511                             
+  512  35:0095  A9 08             lda #8
+  513  35:0097  85 1A             sta <$1a
+  514                             INIT16 <$20,$98c0
        35:0099  A9 C0             lda #LOW($98c0)
        35:009B  85 20             sta <$20
        35:009D  A9 98             lda #HIGH($98c0)
        35:009F  85 21             sta <$20+1
-  514  35:00A1  A2 00             ldx #0
-  515  35:00A3  20 3A BA          jsr loadTo7400FromBank30        ;$ba3a
-  516                             
-  517           4400      .actionParams = $7400
-  518                             
-  519  35:00A6  2C 05 74          bit .actionParams+5
-  520  35:00A9  10 07             bpl .target_enemy
-  521  35:00AB  A9 F0                     lda #$f0
-  522  35:00AD  48                        pha
-  523  35:00AE  A9 40                     lda #$40
-  524  35:00B0  D0 11                     bne .store_action_params
-  525  35:00B2            .target_enemy:
-  526  35:00B2  50 07                     bvc .target_single
-  527  35:00B4  A9 FF                             lda #$ff
-  528  35:00B6  48                                pha
-  529  35:00B7                    .target_all:
-  530  35:00B7  A9 C0                             lda #$c0
-  531  35:00B9  D0 08                             bne .store_action_params
-  532  35:00BB                    .target_single:
-  533                             
-  534           0062      .targetBit = $62
-  535                     
-  536  35:00BB  20 DA A0                          jsr invokePickRandomTarget
-  537  35:00BE  A5 62                             lda <.targetBit
-  538  35:00C0  48                                pha
-  539  35:00C1  A9 80                             lda #$80
-  540  35:00C3            .store_action_params:
-  541  35:00C3  A0 30             ldy #$30
-  542  35:00C5  91 6E             sta [.pActor],y ;target flag
-  543  35:00C7  88                dey
-  544  35:00C8  68                pla
-  545  35:00C9  91 6E             sta [.pActor],y ;target bit
-  546  35:00CB  88                dey
-  547  35:00CC  68                pla
-  548  35:00CD  91 6E             sta [.pActor],y ;action id
-  549                     
-  550                             INIT16 <$5d,$7675
+  515  35:00A1  A2 00             ldx #0
+  516  35:00A3  20 3A BA          jsr loadTo7400FromBank30        ;$ba3a
+  517                             
+  518           4400      .actionParams = $7400
+  519                             
+  520  35:00A6  2C 05 74          bit .actionParams+5
+  521  35:00A9  10 07             bpl .target_enemy
+  522  35:00AB  A9 F0                     lda #$f0
+  523  35:00AD  48                        pha
+  524  35:00AE  A9 40                     lda #$40
+  525  35:00B0  D0 11                     bne .store_action_params
+  526  35:00B2            .target_enemy:
+  527  35:00B2  50 07                     bvc .target_single
+  528  35:00B4  A9 FF                             lda #$ff
+  529  35:00B6  48                                pha
+  530  35:00B7                    .target_all:
+  531  35:00B7  A9 C0                             lda #$c0
+  532  35:00B9  D0 08                             bne .store_action_params
+  533  35:00BB                    .target_single:
+  534                             
+  535           0062      .targetBit = $62
+  536                     
+  537  35:00BB  20 DA A0                          jsr invokePickRandomTarget
+  538  35:00BE  A5 62                             lda <.targetBit
+  539  35:00C0  48                                pha
+  540  35:00C1  A9 80                             lda #$80
+  541  35:00C3            .store_action_params:
+  542  35:00C3  A0 30             ldy #$30
+  543  35:00C5  91 6E             sta [.pActor],y ;target flag
+  544  35:00C7  88                dey
+  545  35:00C8  68                pla
+  546  35:00C9  91 6E             sta [.pActor],y ;target bit
+  547  35:00CB  88                dey
+  548  35:00CC  68                pla
+  549  35:00CD  91 6E             sta [.pActor],y ;action id
+  550                     
+  551                             INIT16 <$5d,$7675
        35:00CF  A9 75             lda #LOW($7675)
        35:00D1  85 5D             sta <$5d
        35:00D3  A9 76             lda #HIGH($7675)
        35:00D5  85 5E             sta <$5d+1
-  551                     ;$a0ea:
-  552  35:00D7  4C E4 9D          jmp executeAction
-  553                             ;jmp $9de4      ;executeAction
-  554                     ;------------------------------------------------------------------------------------------------------
-  555  35:00DA            invokePickRandomTarget:
-  556           004C      .battleFunctionId = $4c
-  557  35:00DA  A9 0A             lda #BF_PICK_RANDOM_TARGET
-  558  35:00DC  85 4C             sta <.battleFunctionId
-  559  35:00DE  4C F3 FD          jmp invoke_b30_battleFunction
-  560                     ;$a104:
-  561                     
-  562                     ;======================================================================================================
-  563                             RESTORE_PC ff3_executeAction_begin
+  552                     ;$a0ea:
+  553  35:00D7  4C E4 9D          jmp executeAction
+  554                             ;jmp $9de4      ;executeAction
+  555                     ;------------------------------------------------------------------------------------------------------
+  556  35:00DA            invokePickRandomTarget:
+  557           004C      .battleFunctionId = $4c
+  558  35:00DA  A9 0A             lda #BF_PICK_RANDOM_TARGET
+  559  35:00DC  85 4C             sta <.battleFunctionId
+  560  35:00DE  4C F3 FD          jmp invoke_b30_battleFunction
+  561                     ;$a104:
+  562                     
+  563                     ;======================================================================================================
+  564                             RESTORE_PC ff3_executeAction_begin
                 0000              .bank   BANK(ff3_executeAction_begin)
                 0000              .org    ff3_executeAction_begin
 #[2]   ff3_hack_master.asm
@@ -8466,23 +8478,24 @@
   133                                     ;;      checks for possesion of the ability should always be made against executor itself
   134                                     ;;      and here pActor points to that exexcutor.
   135                                     ;;      so it is fine to use the offset directly
-  136  31:7710  A0 3C                     ldy #EXTRA_ABILITY_OFFSET       
-  137  31:7712  B1 6E                     lda [.pActor],y
-  138  31:7714  29 40                     and #PASSIVE_DOUBLE_ITEM_EFFECT
-  139  31:7716  F0 03                     beq .effect_normal
-  140  31:7718  8A                                txa
-  141  31:7719  0A                                asl a
-  142  31:771A  AA                                tax
-  143  31:771B                    .effect_normal:
-  144  31:771B  86 30                     stx <.castCount
-  145  31:771D  86 7C                     stx <.castCountFinal
-  146                             .endif ;ENABLE_EXTRA_ABILITY_TAG
-  147                     
-  148  31:771F  4C 77 AF          jmp $af77       ;doSpecialAction
-  149                     ;------------------------------------------------------------------------------------------------------
-  150                     ;$a732
-  151                     ;======================================================================================================
-  152                             RESTORE_PC ff3_command_13_begin
+  136                                     ;;      see: http://966-yyff.cocolog-nifty.com/blog/2012/10/post-9708.html
+  137  31:7710  A0 3C                     ldy #EXTRA_ABILITY_OFFSET       
+  138  31:7712  B1 6E                     lda [.pActor],y
+  139  31:7714  29 40                     and #PASSIVE_DOUBLE_ITEM_EFFECT
+  140  31:7716  F0 03                     beq .effect_normal
+  141  31:7718  8A                                txa
+  142  31:7719  0A                                asl a
+  143  31:771A  AA                                tax
+  144  31:771B                    .effect_normal:
+  145  31:771B  86 30                     stx <.castCount
+  146  31:771D  86 7C                     stx <.castCountFinal
+  147                             .endif ;ENABLE_EXTRA_ABILITY_TAG
+  148                     
+  149  31:771F  4C 77 AF          jmp $af77       ;doSpecialAction
+  150                     ;------------------------------------------------------------------------------------------------------
+  151                     ;$a732
+  152                     ;======================================================================================================
+  153                             RESTORE_PC ff3_command_13_begin
                 0035              .bank   BANK(ff3_command_13_begin)
                 660A              .org    ff3_command_13_begin
 #[2]   ff3_hack_master.asm
