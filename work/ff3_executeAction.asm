@@ -5,7 +5,7 @@
 ;
 ;version:
 ;	0.02 (2017-11-12)
-;		special thanks to the owner of FF3C (aka 966)
+;		special thanks to the owner of FF3C (aka "966") for reporting $9fa6 bug
 ;
 ;======================================================================================================
 ff3_executeAction_begin:
