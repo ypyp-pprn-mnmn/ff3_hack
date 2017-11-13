@@ -1,13 +1,14 @@
 /* encoding: utf-8 */
 
 # $36:8003 soundDriverEntry
+<details>
+
 ## args:
 +	[in] u8 $7f43 : ?
 +	[in] u8 $7f49 : soundId ( =$ca | #80); #40 = playLast?
 ## callers:
 +	$3f:faf2(irq worker)
-<details>
-
+## code:
 ```asm
 {
 	if ($7f43 == #37) { //bne $8011
@@ -79,6 +80,7 @@ $80ab:
 # $36:80ab
 <details>
 
+## code:
 ```
 {
 	if ($7f42 >= 0) return;	//bmi 80b1
@@ -109,6 +111,9 @@ $80ff:
 </details>
 
 # $36:81e6
+<details>
+
+## code
 ```
 {
 	x = $d0;
@@ -128,8 +133,12 @@ $820a:
 	return;
 }
 ```
+</details>
 
 # $36:820b
+<details>
+
+## code
 ```
 {
 	$d3,d4 = $7f51.x,$7f58.x
@@ -142,15 +151,18 @@ $821e:
 	(*$d8)();
 }
 ```
+</details>
 
 # $36:8925 updateMusicStream
+<details>
+
 ## args:
 +	[in] u8 $7f40 : soundIdPlayingOn? | #80
 +	[in] u8 $7f41 : lastPlayedMusic?
 +	[in] u8 $7f42 : controlFlag 01:playNew 02:playLast 04:stopMusic 40:delayedStop 80:playOn
 +	[in] u8 $7f43 : soundIdToPlay?
-<details>
 
+## code:
 ```
 {
 	switch2ndBankToSoundDataBank($7f43);	//$899f();
@@ -205,6 +217,8 @@ $899f:
 </details>
 
 # $36:899f switch2ndBankToSoundDataBank
+<details>
+
 ## args:
 +	[in] u8 $7f43 : soundId
 ```
@@ -225,8 +239,11 @@ $89b8:
 	return;
 }
 ```
+</details>
 
 # $36:8aa7 stopMusic?
+<details>
+
 ```
 {
 	if ((a = ($7f42 & #8)) != 0) $8ab5;
@@ -239,8 +256,12 @@ $8ab5:
 	return;
 }
 ```
+</details>
 
 # $36:8ac0 muteChannels
+<details>
+
+## code
 ```
 {
 	for (x = 3;x >= 0;x--) {
@@ -275,8 +296,11 @@ $8aef:
 	return;
 }
 ```
+</details>
 
 # $36:8b9d
+<details>
+
 ```
 {
 	a = $7f49;
@@ -296,8 +320,11 @@ $8bb7:
 	return;
 }
 ```
+</details>
 
 # $36:8c58 loadMusicData?
+<details>
+
 ```
 {
 	$d2 = #ff;
@@ -312,3 +339,4 @@ $8bb7:
 	return;
 }
 ```
+</details>
