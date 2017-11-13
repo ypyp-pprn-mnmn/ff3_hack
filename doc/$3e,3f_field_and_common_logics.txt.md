@@ -1,8 +1,9 @@
 /* encoding: utf-8 */
 
-# $3f:fff0(file:80000)
+# $3f:fff0 hardware_vectors
 <details>
 
+## code:
 ```
 {
 	()	FF D6 
@@ -29,6 +30,7 @@ $xx:0103 jmp $fb30
 +	[in] $78 : world (00:"floating land")
 ## notes:
 least value of S = $1c = $20 - 4
+## code:
 ```asm
 {
 	switchToBank3C();	//$c98a();
@@ -53,6 +55,7 @@ least value of S = $1c = $20 - 4
 # $3e:c0ed
 <details>
 
+## code:
 ```asm
 {
 	$c859();
@@ -95,6 +98,7 @@ $c150:
 
 ## args:
 +	[in] u8 $78 : world (00:floating land)
+## code:
 ```asm
 {
 	$7f49 = #93;	//SE
@@ -122,6 +126,7 @@ $c1d4:
 # $3e:c1f2
 <details>
 
+## code:
 ```asm
 {
 	if ($23 != 0) $c269;	//start
@@ -139,6 +144,7 @@ $c20e:
 # $3e:c243 field::dispatchInput
 <details>
 
+## code:
 ```asm
 {
 	if ($a9 == 0) { //bne c252
@@ -162,6 +168,7 @@ $c255:
 # $3e:c269 field_OnStart
 <details>
 
+## code:
 ```asm
 {
 	$23 = 0;
@@ -180,6 +187,7 @@ $c255:
 # $3e:c389 field_doScroll
 <details>
 
+## code:
 ```asm
 {
 	if ($34 != 0) { //beq c398
@@ -199,6 +207,7 @@ $c397:
 # $3e:c398 field_setScroll
 <details>
 
+## code:
 ```asm
 {
 	$2001 = #1e;
@@ -216,6 +225,7 @@ $c3be:
 # $3e:c3be
 <details>
 
+## code:
 ```asm
 {
 	if ($32 != 0) {
@@ -246,6 +256,7 @@ $c3d4:
 # $3e:c416
 <details>
 
+## code:
 ```asm
 {
 }
@@ -263,6 +274,7 @@ $c3d4:
 # $3e:c4e6
 <details>
 
+## code:
 ```asm
 {
 	$44 = $43; return;
@@ -275,6 +287,7 @@ $c4eb:
 # $3e:c4eb
 <details>
 
+## code:
 ```asm
 {
 	$44 = $43;
@@ -299,6 +312,7 @@ $c4f9:
 	-	(0-歩行、1-チョコボ、2-カヌー 3-船、4-飛空艇、5-シドの飛空艇
 		6-ノーチラス、7-インビンシブル) 未確認
 +	[in] u8 a : input
+## code:
 ```asm
 {
 	if ((x = $42) < 2) { //bcs $c52b
@@ -387,6 +401,7 @@ $c59e:
 +	[in] u8 a : inputBits (see $3e:d281 field::getInput)
 +	[in] u8 $27 : screen left (not character pos)
 +	[in] u8 $28 : screen top ()
+## code:
 ```asm
 {
 	a >>= 1;
@@ -439,6 +454,7 @@ $c6b9:
 ## args:
 +	[in] u8 $42 : vehicle?
 +	[in] u8 $78 : world
+## code:
 ```asm
 {
 	if ( ($78 != #04)  //beq c6cb
@@ -461,6 +477,7 @@ $c6cd:
 # $3e:c6d5 field::OnCharacterMoved
 <details>
 
+## code:
 ```asm
 {
 	if ((a = $44) >= 0) { //bmi c6df
@@ -489,6 +506,7 @@ $c6f7:
 # $3e:c711 field::getRandom
 <details>
 
+## code:
 ```asm
 {
 	if ($f6 >= 0) { //bmi c71b
@@ -517,6 +535,7 @@ $c72c:
 ## args:
 +	[in] u8 a : index (= $6c)
 +	[out] ptr $72 : = $2c:8600[index]
+## code:
 ```asm
 {
 	y = a << 1;
@@ -540,6 +559,7 @@ $c72c:
 # $3e:c750 field::callSoundDriver
 <details>
 
+## code:
 ```asm
 {
 	call_switchFirst2Banks(per8kBank:a = #36); //ff03
@@ -553,6 +573,7 @@ $c72c:
 # $3e:c966
 <details>
 
+## code:
 ```asm
 {
 	if ( ($82 == #20) //bne c987
@@ -578,6 +599,7 @@ $c987:
 # $3e:c98a switchToBank3C
 <details>
 
+## code:
 ```asm
 {
 	return switchFirst2Banks(per8kBank:a = #3c); //jmp ff03
@@ -596,6 +618,7 @@ $c987:
 +	in u8 $38: window_left (in 8x8)
 +	in u8 $3b: window_row_in_draw (in 8x8)
 +	in u8 $3c: window_width (in 8x8)
+## code:
 ```asm
 {
 	if ($37 == 0) { //bne c9b5
@@ -619,6 +642,7 @@ $c9a9:
 ## args:
 +	[in] u8 $37 :
 +	[in] u8 $3c : palette entry count * 2
+## code:
 ```asm
 {
 	if ($37 == 0) { //bne c9b5
@@ -637,6 +661,7 @@ $c9b5:
 # $3e:ca67
 <details>
 
+## code:
 ```asm
 {
 	a = $2d >> 1;
@@ -669,6 +694,7 @@ $ca75:
 +	[out] u8 $07d0[0x10] : vram addr high
 +	[out] u8 $07e0[0x10] : vram addr low
 +	[out] u8 $07f0[0x10] : attr value
+## code:
 ```asm
 {
 	push ($31);
@@ -751,6 +777,7 @@ $cb61:
 
 ## args:
 +	[in] x : last entry (max = #0f)
+## code:
 ```asm
 {
 	$2002;
@@ -777,6 +804,7 @@ $cb84:
 //	u8 $00:8a00[0x100] : warp id => floor id for "floating land"
 //	u8 $00:8b00[0x100] : warp id => floor id for "under world"
 //	u16 $11:8000[0x100] : linear offset from $11:8000
+## code:
 ```asm
 {
 	call_switch1stBank(per8k;a = 00);	//ff06
@@ -826,6 +854,7 @@ $cbf2:
 +	[in] y : initial offset
 +	[in] ptr $80 : src
 +	[in] ptr $82 : dest (7400)
+## code:
 ```asm
 {
 		if ((a = $80[y] ) < 0) { //bpl cc2a
@@ -867,6 +896,7 @@ $cc41:
 # $3e:cc47 field::loadMapRow
 <details>
 
+## code:
 ```asm
 {
 	field::getMapDataPointers();	//$ccbb();
@@ -913,6 +943,7 @@ $cc82:
 +	u16 $06:9000[0x400] : linear offset from $06:9000( 0d000 )
 	cc42: 90 90 92 94 96
 +	u8 $78 : world (浮遊大陸//浮上前/浮上後/海中)
+## code:
 ```asm
 {
 	call_switch1stBank(per8k:a = #06);	//ff06
@@ -944,6 +975,7 @@ $cceb:
 # $3e:cd76 vehicleSpeeds[] =
 <details>
 
+## code:
 ```
 {
 	01 02 01 02 04 02 08 02
@@ -961,6 +993,7 @@ $cceb:
 +	[in] u8 $78 : world
 +	[out] u8 $34 : speed (pixel per frame)
 +	[in,out] u8 $4e : apply delay (0=yes)
+## code:
 ```asm
 {
 	if ($78 >= 4) { //bcc cd88
@@ -995,6 +1028,7 @@ $cda3:
 
 ## args:
 +	[in] ptr $80 : pMapData (7000-7eff)
+## code:
 ```asm
 {
 	for (x;x < #10;x++) {
@@ -1019,6 +1053,7 @@ $cda3:
 +	[in] a : string id (ptrTable = $30200)
 +	[out] u8 $7b00 : = 0
 +	[out] string $7b01
+## code:
 ```asm
 {
 	push a;
@@ -1067,6 +1102,7 @@ $d208:
 
 ## args:
 +	[in] ptr $72 : object event param ptr
+## code:
 ```asm
 {
 	if ($6c == 0) return field::getAndMaskInput(); //$d27a;
@@ -1107,6 +1143,7 @@ $d26d:
 # $3e:d27a field::getAndMaskInput
 <details>
 
+## code:
 ```asm
 {
 	field::getInput();	//d281
@@ -1125,6 +1162,7 @@ $d281:
 ## args:
 +	[out] u8 $20 : inputBits (bit7< A B select start up down left right >bit0)
 //	note:bitの配置が戦闘中のルーチンと逆
+## code:
 ```asm
 {
 	$4016 = 1; $4016 = 0;
@@ -1144,6 +1182,7 @@ $d29a:
 # $3e:d29a field_maskInput
 <details>
 
+## code:
 ```asm
 {
 	if ( ($20 & 3) != 0) { //beq d2a2
@@ -1198,6 +1237,7 @@ $d307:
 # $3e:d308
 <details>
 
+## code:
 ```asm
 {
 }
@@ -1209,6 +1249,7 @@ $d307:
 # $3e:d381 loadPalette
 <details>
 
+## code:
 ```asm
 {
 	$2002;
@@ -1232,6 +1273,7 @@ $d3af:
 # $3e:d4a2
 <details>
 
+## code:
 ```asm
 {
 	if (($8c & 4) != 0) { //beq d4bb
@@ -1262,6 +1304,7 @@ $d4ca:
 
 ## args:
 +	[in] u8 $42 : vehicle
+## code:
 ```asm
 {
 	y = $42
@@ -1278,6 +1321,7 @@ $d4ca:
 
 ## args:
 +	[in] u8 $78 : world
+## code:
 ```asm
 {
 	//...
@@ -1303,6 +1347,7 @@ $d899:	//[下の世界]
 			(objparam.+03 << 4) & #c0
 +	[in,out] u8 $26 : sprite offset
 +	[in] u8 $82 : tile index offset
+## code:
 ```asm
 {
 	y = 0;
@@ -1331,6 +1376,7 @@ $daa3:
 # $3e:dd06
 <details>
 
+## code:
 ```asm
 {
 	$dfd6();
@@ -1345,6 +1391,7 @@ $daa3:
 # $3d:ddc6
 <details>
 
+## code:
 ```asm
 {
 	call_switch2Banks(per8k:a = #0a); //ff03
@@ -1376,14 +1423,15 @@ $ddf6:
 
 ## args:
 +	[in] u8 a : vramAddrHigh (low=00)
+## code:
 ```asm
 {
 	bit $2002;
 	$2006 = a; $2006 = 0;
 }
 ```
-**fall through**
 </details>
+**fall through**
 ====================================================================================================
 
 # $3e:de1a loadPatternToVram
@@ -1392,6 +1440,7 @@ $ddf6:
 ## args:
 +	[in] u8 x : len (per256bytes)
 +	[in] ptr $80 : pPattern
+## code:
 ```asm
 {
 	y = 0;
@@ -1416,6 +1465,7 @@ $de2a:
 +	[in] ptr $80 : pattern
 +	[in] u8 x : len
 +	[in] u8 y : offset
+## code:
 ```asm
 {
 	do {
@@ -1436,6 +1486,7 @@ $de34:
 +	[in] u8 $78 : world
 +	$00:8c00[2][0x100] : tileSetId (index = warpId)
 +	ptr $00:8e00[0x30][0x8] : pTilePattern (index = tileSetId)
+## code:
 ```asm
 {
 	call_switchFirst2Banks(per8k:a = 00); //ff03
@@ -1491,6 +1542,7 @@ $deea:
 ## args:
 +	[in] x : tileCount
 +	[in] ptr $80 : pPattern
+## code:
 ```asm
 {
 	for (x;x != 0;x--) {
@@ -1515,6 +1567,7 @@ $df00:
 # $3e:df00
 <details>
 
+## code:
 ```
 {
 	1a 08 08 0e  08 10 10 10
@@ -1528,6 +1581,7 @@ $df00:
 
 ## args:
 +	[in] u8 $78 : world
+## code:
 ```asm
 {
 	$8c,8d = #9400 + ($78 >= 2 ? #100 : 0);
@@ -1550,6 +1604,7 @@ $df2c:
 # $3e:df40
 <details>
 
+## code:
 ```
 {
 	return;
@@ -1565,6 +1620,7 @@ $df2c:
 +	[in] u8 $8a : vramoffset high (base = #1200)
 +	[in] u8 $8b : objectOffset
 +	[in] ptr $8c : objectIdToPatternIndexMap ($00:9400-)
+## code:
 ```asm
 {
 	if ((a = $700a.(x = $8b)) == 0) return; //beq df40
@@ -1614,6 +1670,7 @@ $dfd6:
 # $3e:dfd6
 <details>
 
+## code:
 ```asm
 {
 	$ded6();
@@ -1640,6 +1697,7 @@ $dff8:
 ## args:
 	least value of S = $1e = $20 - 2
 +	[in] u8 $48 : warpId
+## code:
 ```asm
 {
 	a = #0;
@@ -1749,6 +1807,7 @@ $e2bc:
 # $3f:e2f8 floor::getInputAndHandleEvent
 <details>
 
+## code:
 ```asm
 {
 	if ($50 != 0) { //beq e32e
@@ -1814,6 +1873,7 @@ $e385:
 
 ## args:
 +	[out] bool carry : ?
+## code:
 ```asm
 {
 	floor::getEventSourceCoodinates(); //$e4e9();
@@ -1875,6 +1935,7 @@ $e3e5:
 +	[in] a : input bits?
 +	[out] $84 : mapX
 +	[out] $85 : mapY
+## code:
 ```asm
 {
 	a >>= 1;
@@ -1908,6 +1969,7 @@ $e50b:
 +	[ou] y : chipId
 +	[out] u8 $44 : chip attributes (80:event 40:encountable? 08:damage)
 +	[out] u8 $45 : [hhhhiiii] h : eventId(index of handler), i: eventParam(serial number)
+## code:
 ```asm
 {
 	y = $4c;
@@ -1932,6 +1994,7 @@ $e541:
 # $3f:e695
 <details>
 
+## code:
 ```asm
 {
 	$ab = #80;	//80:warp forward
@@ -1946,6 +2009,7 @@ $e541:
 # $3f:e69b floor::event05? //[warp?]
 <details>
 
+## code:
 ```asm
 {
 	$7f49 = #83;	//7f49:soundDriver_effectId
@@ -1961,6 +2025,7 @@ $e541:
 # $3f:e6be floor::event07
 <details>
 
+## code:
 ```asm
 {
 	x = $45 & #0f;
@@ -1988,6 +2053,7 @@ $e6eb:
 # $3f:e6f2
 <details>
 
+## code:
 ```asm
 {
 	$0d = a;
@@ -2017,6 +2083,7 @@ $e715:
 # $3f:e7ec dungeon::loadFloor
 <details>
 
+## code:
 ```asm
 {
 	dungeon::loadFloorData();	//$e803();
@@ -2034,6 +2101,7 @@ $e715:
 # $3f:e803 dungeon::loadFloorData
 <details>
 
+## code:
 ```asm
 {
 	$aa = a;
@@ -2049,6 +2117,7 @@ $e715:
 # $3f:e811
 <details>
 
+## code:
 ```asm
 {
 	call_switch2ndBank(per8k:a = #3b);	//ff09
@@ -2063,6 +2132,7 @@ $e715:
 # $3f:e81b
 <details>
 
+## code:
 ```asm
 {
 	$37 = 0;
@@ -2086,6 +2156,7 @@ $e715:
 
 ## args:
 +	[out] u8 $f8 : encounter bound
+## code:
 ```asm
 {
 	//...
@@ -2112,6 +2183,7 @@ $e8aa:
 +	[in] u8 $49 : warpparam.+01 & 0x20
 +	[out] bool carry : event fired (1=yes)
 +	[out] u8 a : message id?
+## code:
 ```asm
 {
 	floor::getChipEvent();	//$e51c();
@@ -2166,6 +2238,7 @@ $e976:
 
 ## args:
 +	[in] u8 $ba : 00: chipId=d0-df ff:chipId=e0-ef
+## code:
 ```asm
 {
 	$7f49 = #bf;
@@ -2203,6 +2276,7 @@ $e9bb:
 
 ## args:
 +	[in] u8 x : object offset
+## code:
 ```asm
 {
 	$44 = $43;
@@ -2252,6 +2326,7 @@ $ea03:
 +	[in] u8 x : ptr address high ($78 == 0 then #82, otherwise #84)
 +	[out] $7b00 : scripts (40h bytes)
 +	ptr $82 : = $2c:8200[scriptId]
+## code:
 ```asm
 {
 	y = a << 1;
@@ -2265,13 +2340,14 @@ $ea09:
 	$82,83 = $80[y,++y];
 }
 ```
-//**fall through**
 </details>
+**fall through**
 ====================================================================================================
 
 # $3f:ea1b
 <details>
 
+## code:
 ```asm
 {
 	for (y = #3f;y >= 0;y--) {
@@ -2287,6 +2363,7 @@ $ea26:
 # $3f:ea26 floor::getEvent?
 <details>
 
+## code:
 ```asm
 {
 	$24 = 0;
@@ -2317,6 +2394,7 @@ $ea56:
 # $3f:eb23 switch1stBankTo2C
 <details>
 
+## code:
 ```asm
 {
 	return call_switch1stBank(a = #2c);
@@ -2329,6 +2407,7 @@ $ea56:
 # $3f:eb28 switch1stBankTo3C
 <details>
 
+## code:
 ```asm
 {
 	return call_switch1stBank(a = #3c);
@@ -2340,6 +2419,7 @@ $ea56:
 # $3f:eb61 field::drawEncodedStringInWindowAndRestoreBanks
 <details>
 
+## code:
 ```asm
 {
 	field::drawEncodedStringInWindow();	//$eec0
@@ -2356,6 +2436,7 @@ $eb69:
 # $3f:eba9 field::seek_to_next_line
 <details>
 
+## code:
 ```asm
 {
 /*
@@ -2392,6 +2473,7 @@ $eb69:
 ## args:
 +	[in]	u8 X: window_type
 ## callers:
+## code:
 ```asm
 {
 /*
@@ -2471,13 +2553,14 @@ $ec67:
 
 ## callers:
 +	1F:E237:20 8B EC  JSR field::show_message_window
+## code:
 ```
 {
 	1F:EC8B:A9 00     LDA #$00
 }
 ```
-//**fall through**
 </details>
+**fall through**
 ====================================================================================================
 
 
@@ -2488,6 +2571,7 @@ $ec67:
 +	1F:E264:20 8D EC  JSR $EC8D
 ## args:
 +	u8 A : window_type
+## code:
 ```
 {
  1F:EC8D:20 FA EC  JSR field::draw_inplace_window
@@ -2515,6 +2599,7 @@ $ec67:
 +	 1F:EC93:20 AB EC  JSR field::await_and_get_new_input ($3f:ec8b field::show_message_window)
 +	 1F:ECBA:4C AB EC  JMP field::await_and_get_new_input (tail recursion)
 +	 1F:EE6A:20 AB EC  JSR field::await_and_get_new_input ($3f:ee65 field::stream_string_in_window)
+## code:
 ```
 {
  1F:ECAB:20 81 D2  JSR field::get_pad_input
@@ -2532,6 +2617,7 @@ $ec67:
 # $3f:ECbd field::get_next_input: 
 <details>
 
+## code:
 ```
 {
  1F:ECBD:20 81 D2  JSR field::get_pad_input
@@ -2547,6 +2633,7 @@ $ec67:
 
 ## callers:
 +	1F:EC9E:20 C4 EC  JSR field::get_next_input
+## code:
 ```
 {
 	1F:ECC4:20 00 FF  JSR thunk_waitNmiBySetHandler
@@ -2567,6 +2654,7 @@ $ec67:
 
 ## callers:
 +	 1F:EE74:20 D8 EC  JSR field::advance_frame_w_sound ($3f:ee65 field::stream_string_in_window)
+## code:
 ```asm
 {
 //field::advance_frame_w_sound:
@@ -2587,6 +2675,7 @@ $ece5:
 
 ## notes:
 called when executed an exchange of position in item window from menu
+## code:
 ```asm
 {
 //1F:ECE5:A5 39     LDA window_top = #$02
@@ -2597,8 +2686,8 @@ called when executed an exchange of position in item window from menu
 //1F:ECF2:20 C6 ED  JSR field::draw_window_row
 }
 ```
-//**fall through**
 </details>
+**fall through**
 ====================================================================================================
 
 # $3f:ecf5 restoreBanksBy$57
@@ -2609,6 +2698,7 @@ called when executed an exchange of position in item window from menu
 +	1F:F49E:4C F5 EC  JMP field::restore_bank
 +	field::draw_window_top (by falling thourgh)
 +	field::draw_window_box
+## code:
 ```asm
 {
 	return call_switchFirst2Banks(per8k:a = $57);
@@ -2622,6 +2712,7 @@ called when executed an exchange of position in item window from menu
 
 ## args:
 +	[in] u8 A: window_type
+## code:
 ```asm
 {
 //1F:ECFA:85 96     STA window_id = #$00
@@ -2630,8 +2721,8 @@ called when executed an exchange of position in item window from menu
 //1F:ED00:85 25     STA $0025 = #$00
 }
 ```
-//**fall through**
 </details>
+**fall through**
 ====================================================================================================
 
 # $3f:ed02 field::draw_window_box
@@ -2648,6 +2739,7 @@ called when executed an exchange of position in item window from menu
 +	$3c:8fd5
 +	$3c:90b1
 +	$3d:aaf4 (jmp)
+## code:
 ```asm
 {
 	x = $96;
@@ -2695,6 +2787,7 @@ $ed56:
 # $3f:ed56 field::init_window_attr_buffer
 <details>
 
+## code:
 ```asm
 {
 	for (x = #f;x >= 0;x--) {
@@ -2727,6 +2820,7 @@ $ed61:
 +	u8 $39: start_y
 +	u8 $3c: width
 +	u8 $3d: height
+## code:
 ```asm
 {
 	if ($37 == 0) { //bne edb1
@@ -2752,6 +2846,7 @@ $edb1:
 # $3f:edc6 field::draw_window_row
 <details>
 
+## code:
 ```asm
 {
 	$90 = $3c;
@@ -2771,6 +2866,7 @@ $ede1:
 # $3f:ede1 field::sync_ppu_scroll
 <details>
 
+## code:
 ```asm
 {
 	if ($37 == 0) { //bne ede8
@@ -2793,6 +2889,7 @@ $ede1:
 ## callers:
 +	$3f:ecef
 +	$3f:ed17
+## code:
 ```asm
 {
 	x = 1;
@@ -2818,6 +2915,7 @@ $ee1d:
 
 ## callers:
 +	field::drawWindow
+## code:
 ```asm
 {
 	x = 1;
@@ -2841,6 +2939,7 @@ $ee3e:
 
 ## callers:
 +	$3f:ed3b
+## code:
 ```asm
 {
 	x = 1;
@@ -2869,6 +2968,7 @@ $ee65:
 +	$3d:a666	? 1E:A675:4C 65 EE  JMP $EE65
 +	$3f:ec83	? 1F:EC88:4C 65 EE  JMP $EE65
 +	$3f:ec8b	? 1F:EC90:20 65 EE  JSR $EE65
+## code:
 ```asm
 {
  1F:EE65:20 9A EE  JSR field::load_and_draw_string
@@ -2915,6 +3015,7 @@ $ee99:
 ## args:
 ### out:
 +	bool carry: more_to_draw	//flagged cases could be tested at サロニアの図書館(オーエンのほん1)
+## code:
 ```asm
 {
 	call_switch1stBank(per8k:a = #18); //ff06
@@ -2929,8 +3030,8 @@ $ee99:
 $eec0:
 }
 ```
-//**fall through**
 </details>
+**fall through**
 ====================================================================================================
 
 # $3f:eec0 field::draw_string_in_window
@@ -2940,6 +3041,7 @@ $eec0:
 +	[in] ptr $3e : string offset
 +	[in] u8 $93 : string bank
 +	[out] bool carry: more_to_draw
+## code:
 ```asm
 {
 	call_switchFirst2Banks(per8k:a = $93);
@@ -2976,6 +3078,7 @@ $eef3:
 +	[in, out] string* $3e : ptr to string
 +	[out] u8 $90 : destOffset
 +	[out] bool carry: more_to_draw
+## code:
 ```asm
 {
 	for (;;) {
@@ -3052,6 +3155,7 @@ $ef5b:
 ### code meanings:
 +	15-17 : left-align text by paramter,increment menu-item count by 4
 +	1e : get job name
+## code:
 ```asm
 {
 	push a;
@@ -3130,6 +3234,7 @@ $f19a:
 # $3f:f239 field::decodeString::OnCode10_13
 <details>
 
+## code:
 ```asm
 {
 	$67 = ((a & 3) << 6) & #c0; //lsr ror ror
@@ -3168,6 +3273,7 @@ $f299:
 # $3f:f38a getLastValidJobId
 <details>
 
+## code:
 ```asm
 {
 	a = $6021 & #1f;
@@ -3201,6 +3307,7 @@ $f3aa:
 ## args:
 +	[in] u8 $3a : x offset
 +	[in] u8 $3b : y
+## code:
 ```asm
 {
 	a = $2002;
@@ -3234,6 +3341,7 @@ $f435:
 	-	FF: chipId=e0-ef
 	-	chipId:D0-DF = staticChipId:7C(宝箱)
 +	[out] a : messageId
+## code:
 ```asm
 {
 	x = $45 & #0f;
@@ -3305,6 +3413,7 @@ $f5c4:
 +	[in] x : treasureId
 +	[out] a : itemId
 +	$01:9c00 u8 param[0x200]
+## code:
 ```asm
 {
 	call_switch1stBank(per8k:a = #01); //ff06
@@ -3333,6 +3442,7 @@ $f5d3:
 +	$3f:f5b8 @ floor::getTreasure
 ## notes:
 caller expects y has been unchanged
+## code:
 ```asm
 {
 	call_switch1stBank(per8k:a = #10); //ff06
@@ -3361,6 +3471,7 @@ caller expects y has been unchanged
 ## callers:
 +	$3d:b1c2 @ floor::shop::
 +	$3f:f5bb @ floor::getTreasure
+## code:
 ```asm
 {
 	$601c,$601d,$601e += $80,81,82;
@@ -3378,6 +3489,7 @@ $f63f:
 # $3f:f640 invertTreasureGotFlag
 <details>
 
+## code:
 ```asm
 {
 	x = $45 & #0f;
@@ -3401,6 +3513,7 @@ $f668:
 # $3f:f670 field::calc_draw_width_and_init_window_tile_buffer
 <details>
 
+## code:
 ```asm
 {
 	$91 = $3c;
@@ -3410,13 +3523,14 @@ $f668:
 $f683:
 }
 ```
-**fall through**
 </details>
+**fall through**
 ====================================================================================================
 
 # $3f:f683 field::init_window_tile_buffer
 <details>
 
+## code:
 ```asm
 {
 	a = #ff
@@ -3436,6 +3550,7 @@ $f692:
 # $3f:f692 field::drawStringInWindow
 <details>
 
+## code:
 ```asm
 {
 	push a;
@@ -3462,6 +3577,7 @@ $f6aa:
 +	[in] u8 $38 : offset x
 +	[in] u8 $39 : offset per 2 line
 +	[in,out] u8 $3b : offset y (wrap-around)
+## code:
 ```asm
 {
 	if (a != 9) { //beq f6e5
@@ -3513,6 +3629,7 @@ $f715:
 # $3f:f727 switchBanksTo3c3d
 <details>
 
+## code:
 ```asm
 {
 	call_switchFirst2banks(per8kBase:a = #3c); //ff03
@@ -3524,6 +3641,7 @@ $f715:
 # $3f:f800 call_doBattle
 <details>
 
+## code:
 ```
 {
 	return doBattle();	//fa26
@@ -3535,6 +3653,7 @@ $f715:
 # $3f:f82c
 <details>
 
+## code:
 ```asm
 {
 	push a;
@@ -3554,6 +3673,7 @@ $f715:
 # $3f:f83b restoreFieldVariables
 <details>
 
+## code:
 ```asm
 {
 	for (x = 0;x != #d0;x++) {
@@ -3573,6 +3693,7 @@ $f715:
 ## args:
 +	[in] u8 a,x : param
 +	[in] u8 $7cf6 : currentBank (bankToRestore)
+## code:
 ```asm
 {
 	$96 = a; $97 = x;
@@ -3594,6 +3715,7 @@ $f715:
 # $3f:f897 loadPalette
 <details>
 
+## code:
 ```asm
 {
 	setVramAddr(high:a = #3f, low:x = #0);	//f8e0
@@ -3610,6 +3732,7 @@ $f8aa:
 # $3f:f8aa do_sprite_dma_from_0200
 <details>
 
+## code:
 ```
 {
 	$4014 = #02; //sprite DMA source addr
@@ -3623,6 +3746,7 @@ $f8aa:
 # $3f:f8b0 updatePpuDmaScrollSyncNmiEx
 <details>
 
+## code:
 ```
 {
 	waitNmi();	//$3f:fb80();
@@ -3637,6 +3761,7 @@ $f8aa:
 # $3f:f8c5 updatePpuDmaScrollSyncNmi
 <details>
 
+## code:
 ```asm
 {
 	waitNmi();
@@ -3650,6 +3775,7 @@ $f8aa:
 # $3f:f8cb updatePpuScrollNoWait
 <details>
 
+## code:
 ```asm
 {
 	$2000 = $06;	//PPU ctrl1
@@ -3667,6 +3793,7 @@ $f8aa:
 ## args:
 +	[in] u8 a : addr(high byte)
 +	[in] u8 x : addr(low byte)
+## code:
 ```
 {
 	bit $2002;	//PPU status
@@ -3684,6 +3811,7 @@ $f8aa:
 +	[in] u8 a : multicand
 +	[in] u8 x : multiplier
 +	[out] u16 a,x : result
+## code:
 ```asm
 {
 	mul8x8();	//$3f:fcd6()
@@ -3696,6 +3824,7 @@ $f8aa:
 # $3f:f8f2 offset$7e_16 
 <details>
 
+## code:
 ```asm
 {
 	$7e,7f += a;
@@ -3707,6 +3836,7 @@ $f8aa:
 # $3f:f8fe offset$80_16
 <details>
 
+## code:
 ```asm
 {
 	$80,81 += a;
@@ -3725,6 +3855,7 @@ $f8aa:
 +	[in] u8 $84 : sourceBank (per16k)
 +	[in] u8 $7cf6 : currentBank (bankToRestore)
 +	[out] u8 $82 : 0
+## code:
 ```asm
 {
 	switchFirst2Banks(a = $84);
@@ -3742,6 +3873,7 @@ $f891:
 # $3f:f942 copy_to_vram_with_encounter_mode
 <details>
 
+## code:
 ```asm
 {
     if ( $78c3 != 0x88 ) {
@@ -3766,6 +3898,7 @@ $f891:
 # $3f:f969 copyToVramDirect
 <details>
 
+## code:
 ```asm
 {
 	$92 = 0;   // 0: 参照マップを使用しない
@@ -3786,6 +3919,7 @@ $f891:
 +	[in] u8 $92 : use_palette (1: yes, 0: no)
 +	[in] u8 $7300[] : palette (used if $92 != 0)
 +	[in] u8 $7cf3 : init_completed (1: yes, 0: no( still-initializing ))
+## code:
 ```asm
 {
 	$83 = $82 & 3;
@@ -3857,6 +3991,7 @@ $f9fe:
 +	[in] u8 A : 9d53_param
 ## notes:
 各種ゲームシーン表示系のルーチンから呼ばれる
+## code:
 ```asm
 {
 	push a;
@@ -3872,6 +4007,7 @@ $f9fe:
 # $3f:fa1d blackOutScreen
 <details>
 
+## code:
 ```asm
 {
 	$2001 = $2000 = 0;
@@ -3889,6 +4025,7 @@ $f9fe:
 +	[in] y : battleMode?
 ## notes:
 	least value of S = $1a = $20 - 6
+## code:
 ```asm
 {
 	$7ced = a;
@@ -3935,6 +4072,7 @@ $fa81:
 # $3f:fab5 saveNmiIrqHandlerAndSetHandlerForBattle
 <details>
 
+## code:
 ```asm
 {
 	for (x = 6;x != 0;x--) {
@@ -3951,6 +4089,7 @@ $fadd:
 # $3f:fadd restoreIrqHandlerAndNmiHandler
 <details>
 
+## code:
 ```asm
 {
 	for (x = 6;x != 0;x--) {
@@ -3964,6 +4103,7 @@ $fadd:
 # $3f:faf2
 <details>
 
+## code:
 ```asm
 {
 	push (a = x);
@@ -3986,6 +4126,7 @@ $fadd:
 # $3f:fb17 saveFieldVars
 <details>
 
+## code:
 ```asm
 {
 	for (x = 0;x != #d0;x++) {
@@ -4003,6 +4144,7 @@ $fadd:
 # $3f:fb30 irq_handler	//[in battle]
 <details>
 
+## code:
 ```asm
 {
 	push a;
@@ -4028,6 +4170,7 @@ $fb55:
 # $3f:fb57 nmi_handler
 <details>
 
+## code:
 ```asm
 {
 	push a;
@@ -4052,6 +4195,7 @@ $fb71:
 # $3f:fb80 waitNmi
 <details>
 
+## code:
 ```asm
 {
 	$05++;
@@ -4069,6 +4213,7 @@ $fb71:
 ## uses:
 +	u8 $ab : per16kBankNo
 +	u8 $a9 : lock? (コマンド発行中のみincr)
+## code:
 ```asm
 {
 	$ab = a;
@@ -4100,6 +4245,7 @@ $fb9b:
 +	[in] u8 $13 : inputMask?
 +	[out] u8 $12 : inputFlag(bit7 > < v ^ st sel b a bit0)
 +	[out] u8 $14 : ?
+## code:
 ```asm
 {
 	$12 = $13;
@@ -4153,6 +4299,7 @@ $fbe2:
 => (diff*(0x00~0xFF)/256 + diff/512) = diff*(1/512 ~ 511/512)
 繰上げの処理により最小値と最大値だけ出る確率が他の約半分(中央二人が狙われやすいのもそのせいか?)
 
+## code:
 ```asm
 { 
 	$20 = x;
@@ -4190,6 +4337,7 @@ $fbe2:
 	$fc39 85 22	sta $22
 	$fc3b a9 01
 	
+## code:
 ```asm
 {
 	for ( x = 0;x < 256;x++) a += $00.x;
@@ -4230,6 +4378,7 @@ $fc34:
 +	[in] u16 $1a divisor
 +	[out] u16 $1c quotient (result)
 +	[out] u16 $1e modulo (remainder)
+## code:
 ```asm
 {
 	$1c,1d,1e,1f = 0;
@@ -4264,6 +4413,7 @@ $fc34:
 +	[in] u8 a : multicand
 +	[in] u8 x : multiplier
 +	[out] u16 $1a : product
+## code:
 ```asm
 {
 	$18 = a;
@@ -4289,6 +4439,7 @@ $fc34:
 +	[in] u16 $18 multicand
 +	[in] u16 $1a multiplier
 +	[out] u32 $1c = $18 * $1a
+## code:
 ```asm
 { 
 	$1c,1d,1e,1f=0;
@@ -4319,6 +4470,7 @@ $fc34:
 # $3f:fd2c clearTargetBit //[andNotBitX]
 <details>
 
+## code:
 ```asm
 {
 	a &= $fd30.x;
@@ -4331,6 +4483,7 @@ $fc34:
 # $3f:fd38 maskTargetBit //[andBitX]
 <details>
 
+## code:
 ```asm
 {
 	a &= $fd24.x;
@@ -4342,6 +4495,7 @@ $fc34:
 # $3f:fd3c shiftLeftN
 <details>
 
+## code:
 ```
 {
 	a <<= 1;
@@ -4358,6 +4512,7 @@ $fd41	a <<= 1;
 # $3f:fd43 shiftRightN
 <details>
 
+## code:
 ```
 {
 	a >>= 1;
@@ -4380,6 +4535,7 @@ $fd48	a >>= 1;
 +	[in] u16 $18 : ptr
 +	[out] u8 $7ad7[] : dest
 +	[out] u8 Y : len
+## code:
 ```asm
 {
 	switchFirst2Banks(a);
@@ -4403,6 +4559,7 @@ $fd5a:
 +	[in] u16 $18 : baseOffset
 +	[in] u8 $1a : index
 +	[out] u16 $18 : 2byte-value
+## code:
 ```asm
 {
 	switchFirst2Banks(a = #0c);	//$3f:fb87();
@@ -4422,6 +4579,7 @@ $fd5a:
 
 ## args:
 +	[in] x : userTypeId (itemParam[7])
+## code:
 ```
 {
 	$3b,3c,3d = $00:8900,x
@@ -4441,6 +4599,7 @@ $fd5a:
 +	[in,out] u8 X : destOffset
 +	[in] u8 Y : bankToRestore
 +	[out sizeis($1a)] $7400.x loadedParam
+## code:
 ```asm
 {
 	switchFirst2Banks(a);
@@ -4474,6 +4633,7 @@ $fdcd:
 +	[in] u8 $4b : dataSize
 +	[in] u8 A : sourceBank (per16k)
 +	[out sizeis($4b) ] $7400 : destination
+## code:
 ```asm
 {
 	switchFirst2Banks();	//jsr $3f:fb87()
@@ -4489,6 +4649,7 @@ $fdcd:
 # $3f:fdf3 call_bank30_9e58()
 <details>
 
+## code:
 ```asm
 {
 	switchFirst2Banks(#18);
@@ -4502,6 +4663,7 @@ $fdcd:
 # $3f:ff00 waitNmiBySetHandler
 <details>
 
+## code:
 ```asm
 {
 	return setNmiHandlerTo_ff2a_andWaitNmi();	//jmp $ff36();
@@ -4513,6 +4675,7 @@ $fdcd:
 # $3f:ff03 call_switchFirst2Banks
 <details>
 
+## code:
 ```asm
 {
 	return switchFirst2Banks();	//jmp ff17
@@ -4524,6 +4687,7 @@ $fdcd:
 # $3f:ff06 call_switch1stBank
 <details>
 
+## code:
 ```
 {
 	return switch1stBank();
@@ -4535,6 +4699,7 @@ $fdcd:
 # $3f:ff09 call_switch2ndBank
 <details>
 
+## code:
 ```
 {
 	return switch2ndBank();
@@ -4546,6 +4711,7 @@ $fdcd:
 # $3f:ff0c switch1stBank
 <details>
 
+## code:
 ```asm
 {
 	push a;
@@ -4562,6 +4728,7 @@ $fdcd:
 
 ## args:
 +	[in] u8 a : basebank (per 8k)
+## code:
 ```asm
 {
 	push a;
@@ -4570,13 +4737,15 @@ $fdcd:
 	a += 1;
 }
 ```
-**fall through**
 </details>
+**fall through**
 ====================================================================================================
+
 
 # $3f:ff1f switch2ndBank
 <details>
 
+## code:
 ```
 {
 	push a;
@@ -4592,6 +4761,7 @@ $ff2a:
 # $3f:ff2a nmi_handler_01
 <details>
 
+## code:
 ```asm
 {
 	$2002;
@@ -4606,6 +4776,7 @@ $ff2a:
 # $3f:ff36 setNmiHandlerTo_ff2a_andWaitNmi
 <details>
 
+## code:
 ```asm
 {
 	$0100,0101,0102 = #4c,#2a,#ff; //jmp $ff2a
