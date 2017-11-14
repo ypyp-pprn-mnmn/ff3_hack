@@ -12,22 +12,10 @@ DSがない…せや!ファミコンですればええんや!
  なお、DS化と銘打ってはありますが、アイテム、敵モンスター、マップなど、
  基本はFC版FF3そのものです。
 
-## パッチの入手と開発
-### パッチ
+## パッチの入手
  最新のパッチは[work/release](work/release)にips形式/bps形式で置いていますのでダウンロードしてご利用ください。
  各形式のパッチともに、iNESヘッダ(v1. 10bytes)が存在するNESファイルを期待しています。
  リリースノートは[こちら](published/README.md)です。
-
-### 開発
- パッチの開発は大まかに次のステップのサイクルです。
-  1. エミュレータを利用して、興味のある処理を特定する
-  + 最近は[fceux](http://www.fceux.com/web/home.html)を利用しています
-  2. 必要十分な解析を行う
-  + 解析結果などは適宜[docs](docs)フォルダに放り込んでいます。
-  3. [nesasm](https://github.com/camsaul/nesasm)の記法で、asmのソースコードを記述
-  4. テスト&デバッグ
-  5. ips/bps作成
-  + 最近は[flips](https://github.com/Alcaro/Flips)を利用しています。
 
 ## 大まかな方針
  [UFF3 Type-B](http://www.geocities.jp/uffmain/patchmain_frame.html),
@@ -51,13 +39,24 @@ DSがない…せや!ファミコンですればええんや!
 + ### 当面はROM容量512k, マッパーMMC3 を想定したコードにしておきます
   + 家を建てるにはまず基礎工事が必要です
 
-## Milestones
+## 開発
+### Milestones
 ここまでできたらバージョンアップ(リリースするとはいってない)
-### v0.8.0
+#### v0.8.0
 + フィールドでのウインドウ描画高速化
-### v0.9.0
+#### v0.9.0
 + グラフィックスの圧縮(改造は容易なままで)
-+ 圧縮により捻出された容量を利用したPoC的なコンセプトダンジョン
++ 圧縮により捻出された容量を利用したPoC的なコンセプトダンジョン  
+
+### パッチの開発は大まかに次のステップのサイクルです
+  1. エミュレータを利用して、興味のある処理を特定する
+  + 最近は[fceux](http://www.fceux.com/web/home.html)を利用しています
+  2. 必要十分な解析を行う
+  + 解析結果などは適宜[docs](docs)フォルダに放り込んでいます。
+  3. [nesasm](https://github.com/camsaul/nesasm)の記法で、asmのソースコードを記述
+  4. テスト&デバッグ
+  5. ips/bps作成
+  + 最近は[flips](https://github.com/Alcaro/Flips)を利用しています。
 
 ## Contribution
 (　ﾟдﾟ) ・・・
