@@ -2540,10 +2540,15 @@ ________________________________________________________________________________
 # $3f:ec83 field::show_message_UNKNOWN:
 <details>
 
- 1F:EC83:A9 00     LDA #$00
- 1F:EC85:20 FA EC  JSR field::draw_inplace_window
- 1F:EC88:4C 65 EE  JMP field::stream_string_in_window
-
+```js
+{
+/*
+1F:EC83:A9 00     LDA #$00
+1F:EC85:20 FA EC  JSR field::draw_inplace_window
+1F:EC88:4C 65 EE  JMP field::stream_string_in_window
+*/
+}
+```
 </details>
 
 ________________________________________________________________________________
@@ -2555,7 +2560,9 @@ ________________________________________________________________________________
 ## code:
 ```js
 {
+/*
 	1F:EC8B:A9 00     LDA #$00
+*/
 }
 ```
 </details>
@@ -2567,25 +2574,27 @@ ________________________________________________________________________________
 <details>
 
 ## callers:
-+	1F:E264:20 8D EC  JSR $EC8D
++	`1F:E264:20 8D EC  JSR $EC8D`
 ## args:
 +	u8 A : window_type
 ## code:
 ```js
 {
- 1F:EC8D:20 FA EC  JSR field::draw_inplace_window
- 1F:EC90:20 65 EE  JSR field::stream_string_in_window
- 1F:EC93:20 AB EC  JSR field::await_and_get_new_input
- 1F:EC96:A5 7D     LDA $007D = #$00
- 1F:EC98:F0 0E     BEQ $ECA8
-	 1F:EC9A:A5 20     LDA field::pad1_bits = #$00
-	 1F:EC9C:30 06     BMI $ECA4
-		 1F:EC9E:20 C4 EC  JSR field::get_next_input
-		 1F:ECA1:4C 9A EC  JMP $EC9A
-		 
-		 1F:ECA4:A9 00     LDA #$00
-		 1F:ECA6:85 7D     STA $007D = #$00
- 1F:ECA8:4C B6 C9  JMP $C9B6
+/*
+1F:EC8D:20 FA EC  JSR field::draw_inplace_window
+1F:EC90:20 65 EE  JSR field::stream_string_in_window
+1F:EC93:20 AB EC  JSR field::await_and_get_new_input
+1F:EC96:A5 7D     LDA $007D = #$00
+1F:EC98:F0 0E     BEQ $ECA8
+	1F:EC9A:A5 20     LDA field::pad1_bits = #$00
+	1F:EC9C:30 06     BMI $ECA4
+		1F:EC9E:20 C4 EC  JSR field::get_next_input
+		1F:ECA1:4C 9A EC  JMP $EC9A
+		
+		1F:ECA4:A9 00     LDA #$00
+		1F:ECA6:85 7D     STA $007D = #$00
+1F:ECA8:4C B6 C9  JMP $C9B6
+*/
 }
 ```
 </details>
@@ -2595,19 +2604,21 @@ ________________________________________________________________________________
 <details>
 
 ## callers:
-+	 1F:EC93:20 AB EC  JSR field::await_and_get_new_input ($3f:ec8b field::show_message_window)
-+	 1F:ECBA:4C AB EC  JMP field::await_and_get_new_input (tail recursion)
-+	 1F:EE6A:20 AB EC  JSR field::await_and_get_new_input ($3f:ee65 field::stream_string_in_window)
++	 `1F:EC93:20 AB EC  JSR field::await_and_get_new_input` ($3f:ec8b field::show_message_window)
++	 `1F:ECBA:4C AB EC  JMP field::await_and_get_new_input` (tail recursion)
++	 `1F:EE6A:20 AB EC  JSR field::await_and_get_new_input` ($3f:ee65 field::stream_string_in_window)
 ## code:
 ```js
 {
- 1F:ECAB:20 81 D2  JSR field::get_pad_input
- 1F:ECAE:A5 20     LDA field::pad1_bits = #$00
- 1F:ECB0:F0 0B     BEQ $ECBD
- 1F:ECB2:20 00 FF  JSR thunk_waitNmiBySetHandler
- 1F:ECB5:E6 F0     INC field_frame_counter = #$EF
- 1F:ECB7:20 50 C7  JSR field::call_sound_driver
- 1F:ECBA:4C AB EC  JMP field::await_and_get_new_input
+/*
+	1F:ECAB:20 81 D2  JSR field::get_pad_input
+	1F:ECAE:A5 20     LDA field::pad1_bits = #$00
+	1F:ECB0:F0 0B     BEQ $ECBD
+	1F:ECB2:20 00 FF  JSR thunk_waitNmiBySetHandler
+	1F:ECB5:E6 F0     INC field_frame_counter = #$EF
+	1F:ECB7:20 50 C7  JSR field::call_sound_driver
+	1F:ECBA:4C AB EC  JMP field::await_and_get_new_input
+*/
 }
 ```
 </details>
@@ -2619,9 +2630,11 @@ ________________________________________________________________________________
 ## code:
 ```js
 {
- 1F:ECBD:20 81 D2  JSR field::get_pad_input
- 1F:ECC0:A5 20     LDA field::pad1_bits = #$00
- 1F:ECC2:D0 0B     BNE $ECCF
+/*
+1F:ECBD:20 81 D2  JSR field::get_pad_input
+1F:ECC0:A5 20     LDA field::pad1_bits = #$00
+1F:ECC2:D0 0B     BNE $ECCF
+*/
 }
 ```
 </details>
@@ -2631,10 +2644,11 @@ ________________________________________________________________________________
 <details>
 
 ## callers:
-+	1F:EC9E:20 C4 EC  JSR field::get_next_input
++	`1F:EC9E:20 C4 EC  JSR field::get_next_input`
 ## code:
 ```js
 {
+/*
 	1F:ECC4:20 00 FF  JSR thunk_waitNmiBySetHandler
 	1F:ECC7:E6 F0     INC field_frame_counter = #$EF
 	1F:ECC9:20 50 C7  JSR field::call_sound_driver
@@ -2643,6 +2657,7 @@ ________________________________________________________________________________
 	1F:ECD1:85 21     STA $0021 = #$06
 	1F:ECD3:A5 93     LDA field::bank_of_loaded_string = #$1B
 	1F:ECD5:4C 03 FF  JMP call_switch_2banks
+*/
 }
 ``` 
 </details>
@@ -2652,7 +2667,7 @@ ________________________________________________________________________________
 <details>
 
 ## callers:
-+	 1F:EE74:20 D8 EC  JSR field::advance_frame_w_sound ($3f:ee65 field::stream_string_in_window)
++	 `1F:EE74:20 D8 EC  JSR field::advance_frame_w_sound` ($3f:ee65 field::stream_string_in_window)
 ## code:
 ```js
 {
@@ -2693,8 +2708,8 @@ ________________________________________________________________________________
 <details>
 
 ## callers:
-+	1F:EB64:20 F5 EC  JSR field::restore_bank (in $3f:eb61 field::drawEncodedStringInWindowAndRestoreBanks)
-+	1F:F49E:4C F5 EC  JMP field::restore_bank
++	`1F:EB64:20 F5 EC  JSR field::restore_bank` (in $3f:eb61 field::drawEncodedStringInWindowAndRestoreBanks)
++	`1F:F49E:4C F5 EC  JMP field::restore_bank`
 +	field::draw_window_top (by falling thourgh)
 +	field::draw_window_box
 ## code:
@@ -2728,10 +2743,15 @@ ________________________________________________________________________________
 <details>
 
 ## args:
-+	[in] u8 $3c : width (border incl)
-+	[in] u8 $3d : height
-## uses:
-+	u8 $3b : line
+### in:
++	u8 $37 : in_menu_mode (1: yes; skip some initializations)
+### out:
++	u8 $38 : window_left (in 8x8 tile unit)
++	u8 $39 : window_top
++	u8 $3a : offset_x (or column in drawing)
++	u8 $3b : offset_y (or row in drawing)
++	u8 $3c : window_width (border excl.)
++	u8 $3d : window_height (border excl.)
 ## callers:
 +	$3c:8efd
 +	$3c:8f0e
@@ -2802,23 +2822,33 @@ $ed61:
 ________________________________________________________________________________
 # $3f:ed61 field::get_window_metrics
 <details>
+<summary>
+マップのスクロールも考慮して、ウインドウの描画に用いる各種値(座標etc)を取得する。
+あわせて、ウインドウ領域の内外に基づいてオブジェクトの属性を変更する。
+</summary>
 
 ## args:
-### in
-+	u8 $29: offsetX (in 16x16 unit)
-+	u8 $2f: offsetY (in 16x16 unit)
-+	u8 $37: skipAttrUpdate
+### in:
 +	u8 X: window_type (0...4)
 	-	0: object's message?
 	-	1: choose dialog (Yes/No) (can be checked at INN)
 	-	2: use item to object
 	-	3: Gil (can be checked at INN)
 	-	4: floor name
-### out
-+	u8 $38: start_x
-+	u8 $39: start_y
-+	u8 $3c: width
-+	u8 $3d: height
++	u8 $29: floor_scroll_x (in 16x16 unit)
++	u8 $2f: floor_scroll_y (in 16x16 unit)
++	u8 $37: in_menu_mode
+### out:
++	u8 $38: window_left (border included)
++	u8 $39: window_top (border included)
++	u8 $3c: window_width (border included)
++	u8 $3d: window_height (border included)
++	u8 $97:
++	u8 $98:
++	u8 $b5:
++	u8 $b6:
++	u8 $b7:
++	u8 $b8:
 ## code:
 ```js
 {
@@ -2827,10 +2857,11 @@ ________________________________________________________________________________
 		$97 = a - 1;
 		$98 = $b5 = a = $edb7.x + 2;
 		$b5--;
-		$38 = (($29 << 1) + $edb2.x) & #3f;
-		$39 = (($2f << 1) + $edb7.x) % #1e;
+		$38 = (($29 << 1) + $edb2.x) & 0x3f;
+		$39 = (($2f << 1) + $edb7.x) % 0x1e;
 		a = $3c = $edbc.x;
-		a = $b8 = $b6 + a; $b8--;
+		a = $b8 = $b6 + a;
+		$b8--;
 		a = $3d = $edc1.x;
 		$b7 = a + $b5 - 3;
 		$ec18();	//field_hide_sprites_around_window
