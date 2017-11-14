@@ -73,8 +73,8 @@ The 6502 registers will have the same name in the (pseudo-)code.
 So the following one character variables represent these:
     `A, X, Y, P, S`.
 #### processor flags
-While `P` is avaialbe as a whole processor flags,
-it may be more convenient to define its individual flags seperately, like:
+While `P` is available as a whole processor flags,
+it may be more convenient to define its individual flags separately, like:
     `carry, zero, overflow` etc.
 #### other variables
 For variables live in other than the registers, it should be named after its address.
