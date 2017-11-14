@@ -1,6 +1,6 @@
 Param(
 )
-$release_dir = "./release";
+$release_dir = "../published/release";
 $original = "./base-binary/ff3.nes";
 $build_files = @(
 	"ff3_hack_beta.asm",
