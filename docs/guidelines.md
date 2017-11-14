@@ -6,28 +6,29 @@ These rules shouldn't never be treated as 'hard' rule anyways, as it could be co
 However, it is still consindered to be useful to define here,
 since it could be a reference for readers or be for helping future discussions.
 
-# Character Encoding
+## Character Encoding
 It should be utf-8. As it is considered to be most interoperable.
 
-# Pseudo-code Conventions
+## Pseudo-code Conventions
 For most part, the code should have javascript-like syntax.
 Each function (or routine, whatever you call it) documentation consists of
 3 sections of description.
 Those 3 sections should be marked up with Markdown, so that it gets more pretty if it is rendered as html, without sacrificing readability of the raw text.
 
 ## 1.   declaration
-The declaration starts with the line with the syntax below:
+The declaration starts with 3 or more underscores (_) to separate it from other ones,
+followed by the line at 1st level heading with the syntax below.
 
-```js
-____________________________________
-$<bank>$<address> <namespace>.<name>
+```md
+______________________________________
+# $<bank>$<address> <namespace>.<name>
 ```
 Where:
 -   bank: per 8k-byte bank page number.
 -   address: mapped address where the code begins execution.
 -   namespace: see below.
 -   name: whatever you choose to help with code reading and understanding.
-### namespaces
+#### namespaces
 <details>
 
 Namespace are currently defined as follows, but it is fine to define new ones:
@@ -57,13 +58,30 @@ Any metadata notation should have its own heading, which is at 2nd level.
 Once the declaration and metadata have completed, the code secion will follow.
 You may surround the code with markup "```" and may also add a heading immediately before it.
 
+The code here would be good to be written in javascript-like syntax as possible,
+so that the syntax highlighting works well to help understanding.
+The langauge should have enough capability to express original code intention.
+
+In addition to the above, it would also be good to define some basic rules to name variables:
+### variable names
+#### registers
+The 6502 registers will have the same name in the (pseudo-)code.
+So the following one character variables represent these:
+    `A, X, Y, P, S`.
+#### processor flags
+While `P` is avaialbe as a whole processor flags,
+it may be more convenient to define its individual flags seperately, like:
+    `carry, zero, overflow` etc.
+#### other variables
+For variables live in other than the registers, it should be named after its address. Aliases are fine, but its assignment should be explicit.
+
 ## example
 Wrapping up the above as a whole, an example documentation will like the below:
 
 ### 1st part (function declaration)
 ```md
 ________________________________________
-$2f$a38c battle.enemy.gfx.load_pattern()
+# $2f$a38c battle.enemy.gfx.load_pattern()
 <details>
 ```
 
