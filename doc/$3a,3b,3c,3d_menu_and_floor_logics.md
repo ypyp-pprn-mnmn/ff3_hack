@@ -1,7 +1,12 @@
 /* encoding: utf-8 */
-=====================================================================================================
-$3a:8533 getBattleFieldId
-//	[in] u8 $48 : warpId
+________________________________________________________________________________
+# $3a:8533 getBattleFieldId
+<details>
+
+## args:
++	`[in] u8 $48 : warpId`
+## (pseudo)code:
+```js
 {
 	call_switch2ndBank(per8k:a = #39); //ff09
 	x = $48;
@@ -15,17 +20,24 @@ $8546:
 	return;
 $854e:
 }
+```
+</details>
 
-$3a:8f43 field::loadTileParams
-//	[out] u8 $0500[64],0580[64],0600[64],0680[64] : 
-//		static tile indices (shared by all maps)
-//	[out] u8 $0700[64] :
-//		palette ids for static tiles?
-//	[out] u8 $0540[64],05c0[64],0640[64],06c0[64] : 
-//		dynamic tile indices (indiviual to each maps,also updated dynamically)
-//	[out] u8 $0740[64] :
-//
-//	[out] TileEvent $0400[128]
+________________________________________________________________________________
+# $3a:8f43 field::loadTileParams
+<details>
+
+## args:
++	[out] u8 $0500[64],0580[64],0600[64],0680[64] : 
+	static tile indices (shared by all maps)`
++	[out] u8 $0700[64] :
+	palette ids for static tiles?
++	[out] u8 $0540[64],05c0[64],0640[64],06c0[64] : 
+	dynamic tile indices (indiviual to each maps,also updated dynamically)
++	[out] u8 $0740[64] :
++	[out] TileEvent $0400[128]
+## (pseudo)code:
+```js
 {
 	call_switch2ndBank(per8k:a = #00); //ff09
 	for (x = #3f;x >= 0;x--) {
@@ -65,11 +77,20 @@ $8fbb:
 $8fd7:
 	return;
 }
+```
+</details>
 
-$3a:9091 getPaletteEntriesForWorld
-//	[in] u8 $78 : world
-//	u8 $00:b640[0x10] : paletteEntries for background
-//	フロアマップでも呼ばれる
+________________________________________________________________________________
+# $3a:9091 getPaletteEntriesForWorld
+<details>
+
+## args:
++	[in] u8 $78 : world
++	u8 $00:b640[0x10] : paletteEntries for background
+## notes:
+フロアマップでも呼ばれる
+## (pseudo)code:
+```js
 {
 	y = ($78 & #06) << 3;
 	for (x = 0;x < #10;x++) {
@@ -81,9 +102,17 @@ $3a:9091 getPaletteEntriesForWorld
 	}
 	//....
 }
+```
+</details>
 
-$3a:910b getPaletteEntriesForFloor
-//	[in] WarpParam $0780
+________________________________________________________________________________
+# $3a:910b getPaletteEntriesForFloor
+<details>
+
+## args:
++	[in] WarpParam $0780
+## (pseudo)code:
+```js
 {
 	getPaletteEntries(offset:x = 1, paletteId:y = $0785);
 	getPaletteEntries(offset:x = 5, paletteId:y = $0786);
@@ -97,21 +126,37 @@ $3a:910b getPaletteEntriesForFloor
 	return;
 $914b:
 }
+```
+</details>
 
-$3a:914b getPaletteEntries
-//	[in] x : dest offset
-//	[in] y : paletteId
-//	$00:b100[3][0x100] : colorIds
+________________________________________________________________________________
+# $3a:914b getPaletteEntries
+<details>
+
+## args:
++	[in] x : dest offset
++	[in] y : paletteId
++	$00:b100[3][0x100] : colorIds
+## (pseudo)code:
+```js
 {
 	$03c0.x = $b100.y;
 	$03c1.x = $b200.y;
 	$03c2.x = $b300.y;
 	return;
 }
+```
+</details>
 
-$3a:915e
-//	[in] u8 $48 : warpId
-//	u8 $02:a000[0x10][0x100]
+________________________________________________________________________________
+# $3a:915e
+<details>
+
+## args:
++	[in] u8 $48 : warpId
++	u8 $02:a000[0x10][0x100]
+## (pseudo)code:
+```js
 {
 	call_switch2ndBank(per8k:a = #02);	//ff09
 	$80,81 = #a000 | ($48 << 4);
@@ -150,18 +195,27 @@ $91bb:
 	return;
 $91c8:
 }
+```
+</details>
 
-$3a:91c8 floor::getDynamicChip
-//	[in,out] a : chipId
-//	[out] $0500[ allocatedChipId ] : serial number 
-//	$921f(7521f) : チップ分類
-//		00 00 00 00 04 04 04 04  04 04 04 04 04 04 04 04
-//		01 01 01 01 01 01 01 01  02 02 02 02 04 04 04 04
-//	$923f: チップに割り当てるIDのベース値
-//	(割り当てるのはベース+同IDチップ内における順番)
-//		f0 f4 f8 fc 00 00 00 00  00 00 00 00 00 00 00 00
-//		80 90 a0 b0 c0 c4 c8 cc  e0 e4 e8 ec d0 00 00 00
-//	
+________________________________________________________________________________
+# $3a:91c8 floor::getDynamicChip
+<details>
+
+## args:
++	[in,out] a : chipId
++	[out] $0500[ allocatedChipId ] : serial number 
++	$921f(7521f) : チップ分類
+
+		00 00 00 00 04 04 04 04  04 04 04 04 04 04 04 04
+		01 01 01 01 01 01 01 01  02 02 02 02 04 04 04 04
++	$923f: チップに割り当てるIDのベース値
+		(割り当てるのはベース+同IDチップ内における順番)
+
+		f0 f4 f8 fc 00 00 00 00  00 00 00 00 00 00 00 00
+		80 90 a0 b0 c0 c4 c8 cc  e0 e4 e8 ec d0 00 00 00
+## (pseudo)code:
+```js
 {
 	x = a - #60;
 	$88 = $0740.x; $0740.x++; //特定IDのチップの数
@@ -194,12 +248,19 @@ $921c:
 	return;
 $921f:
 }
+```
+</details>
 
-$3a:9267 floor::init
-//
-//	ChipDef $01:a380(2380)[?][4][128]
-//	ChipToPalette $01:b100(03100)[8][128]
-//	ChipAttributes $01:b500(03500)[8][128] : chipAttributeTable { attributes, event }
+________________________________________________________________________________
+# $3a:9267 floor::init
+<details>
+
+## args:
++	ChipDef $01:a380(2380)[?][4][128]
++	ChipToPalette $01:b100(03100)[8][128]
++	ChipAttributes $01:b500(03500)[8][128] : chipAttributeTable { attributes, event }
+## (pseudo)code:
+```js
 {
 	call_switch2ndBank(per8k:a = #01);	//ff09
 	x = ($0780 >> 5) & 7;
@@ -290,19 +351,39 @@ $93ac:
 	return;
 $93c1:
 }
+```
+</details>
 
-$3b:a000 floor::call_dispatchObjectEvent {
+________________________________________________________________________________
+# $3b:a000 floor::call_dispatchObjectEvent {
+<details>
+
 	return $a067();
 }
+```
+</details>
 
-$3b:a067
+________________________________________________________________________________
+# $3b:a067
+<details>
+
+## (pseudo)code:
+```js
 {
 	$24 = $25 = $23 = $22 = $20 = 0;
 	return floor::object::dispatchEvent(); //a12b
 }
+```
+</details>
 
-$3b:a12b floor::object::dispatchEvent
-//	[in] u8 $70 : eventId
+________________________________________________________________________________
+# $3b:a12b floor::object::dispatchEvent
+<details>
+
+## args:
++	[in] u8 $70 : eventId
+## (pseudo)code:
+```js
 {
 	a = $70;
 	if (a < #c0) return floor::object::processEventUnderC0(); //$acd1();
@@ -337,11 +418,19 @@ $a1be:	case #0f: $42 = $46 = 1; return;	//ride on chocobo?
 $a1c9:
 	return;
 }
+```
+</details>
 
-$3b:acd1 floor::object::processEventUnderC0
-//	[in] u8 $70 : [iiiieeee] i:object index e:object event id
-//	[out] u8 $17 :
+________________________________________________________________________________
+# $3b:acd1 floor::object::processEventUnderC0
+<details>
 
+## args:
++	[in] u8 $70 : [iiiieeee] i:object index e:object event id
++	[out] u8 $17 :
+
+## (pseudo)code:
+```js
 {
 	a = $700c.(x = $70 & #f0);
 	if (a != 0) {
@@ -376,20 +465,36 @@ $ad0c:
 	default: return $ac25();
 	}
 }
+```
+</details>
 
-$3b:aead
-//	[in] ptr $80 : $700e.x,$700f.x + 0|8
+________________________________________________________________________________
+# $3b:aead
+<details>
+
+## args:
++	[in] ptr $80 : $700e.x,$700f.x + 0|8
+## (pseudo)code:
+```js
 {
 	$80,81 += $7105.x;
 	$c01e(); //call_da3a
 }
+```
+</details>
 
-$3b:b0c5 getChipIdAtObject
-//	[in] u8 $4c : default chip id? (warpparam.+03 = $0783)
-//	[in] u8 $84 : object.x?
-//	[in] u8 $85 : object.y?
-//	[in] mapdata $7400[0x20*0x20]
-//	[in] chipattr $0400[0x100]
+________________________________________________________________________________
+# $3b:b0c5 getChipIdAtObject
+<details>
+
+## args:
++	[in] u8 $4c : default chip id? (warpparam.+03 = $0783)
++	[in] u8 $84 : object.x?
++	[in] u8 $85 : object.y?
++	[in] mapdata $7400[0x20*0x20]
++	[in] chipattr $0400[0x100]
+## (pseudo)code:
+```js
 {
 	y = $4c;
 	a = ($84 | $85) & #20;
@@ -417,8 +522,15 @@ $b104:
 $b106:
 	sec; return;
 }
+```
+</details>
 
-$3b:b17c floor::object::
+________________________________________________________________________________
+# $3b:b17c floor::object:
+<details>
+
+## (pseudo)code:
+```js
 {
 	if ($700d.x != 0) //bne b188
 	 	||  (($7102.x & $f0) == 0) //bne b1cd
@@ -526,9 +638,16 @@ $b2c3:
 $b2c6:
 	//....
 }
+```
+</details>
 
-$3b:b2fd floor::loadObjects
-//	ptr $2c:8000[0x100] : index = $0784 (warpparam.+04)
+________________________________________________________________________________
+# $3b:b2fd floor::loadObjects
+<details>
+
++	ptr $2c:8000[0x100] : index = $0784 (warpparam.+04)
+## (pseudo)code:
+```js
 {
 	do {
 		$7000.x = 0;
@@ -546,14 +665,22 @@ $b336:
 $b34d:
 	return;
 }
+```
+</details>
 
-$3b:b34e floor::loadObject
-//	[in] u8 $78 : world
-//	[in] u8 a : objectId? (= $8c[0] )
-//	[in,out] ptr $8a : ? ( = #7100) [out] += #10
-//	[in] ObjectParam* $8c : from $2c:8000 + [ $2c:8000[ $0784] ]
-//	[in,out] RuntimeObject* $8e : ( = #7000) [out] += #10
-//	$01:9e00[0x200] : [aaaabbbb] a:? ->$7103 b:? ->$7102
+________________________________________________________________________________
+# $3b:b34e floor::loadObject
+<details>
+
+## args:
++	[in] u8 $78 : world
++	[in] u8 a : objectId? (= $8c[0] )
++	[in,out] ptr $8a : ? ( = #7100) [out] += #10
++	[in] ObjectParam* $8c : from $2c:8000 + [ $2c:8000[ $0784] ]
++	[in,out] RuntimeObject* $8e : ( = #7000) [out] += #10
++	$01:9e00[0x200] : [aaaabbbb] a:? ->$7103 b:? ->$7102
+## (pseudo)code:
+```js
 {
 	y = $8e[y = #0a] = a;
 	getObjectFlag();	//$b51a();
@@ -595,14 +722,22 @@ $b3d9:
 	return;
 $b3f8:
 }
+```
+</details>
 
-$3b:b3f8 getObjectBuilderAddress
-//	[in] u8 $86 : = ObjectParam.+03
-//	[out] a,x = 
-//		$86 == 0 : #b43a
-//		$86 == 1 : #b44a
-//		$86 == 2 : #b42a
-//		$86 == 3 : #b41a
+________________________________________________________________________________
+# $3b:b3f8 getObjectBuilderAddress
+<details>
+
+## args:
++	[in] u8 $86 : = ObjectParam.+03
++	[out] a,x = 
+	+	$86 == 0 : #b43a
+	+	$86 == 1 : #b44a
+	+	$86 == 2 : #b42a
+	+	$86 == 3 : #b41a
+## (pseudo)code:
+```js
 {
 	switch ( $86 & #03) {
 	case 0: //beq b410
@@ -618,11 +753,19 @@ $b406:
 		a = #b4; x = #1a; return;
 	}
 }
+```
+</details>
 
-$3b:b51a getObjectFlag
-//	[in] u8 a : objectId?
-//	[in] u8 $78 : world
-//	[in] $6080[2][0x20] : flags (1bit per id)
+________________________________________________________________________________
+# $3b:b51a getObjectFlag
+<details>
+
+## args:
++	[in] u8 a : objectId?
++	[in] u8 $78 : world
++	[in] $6080[2][0x20] : flags (1bit per id)
+## (pseudo)code:
+```js
 {
 	$80 = a;
 	x = a & 7;
@@ -637,9 +780,17 @@ $b530:
 $b537:
 	01 02 04 08 10 20 40 80
 }
+```
+</details>
 
-$3b:b53f floor::object::invokeEventAboveD0
-//	[in] u8 a : event (d0-ff)
+________________________________________________________________________________
+# $3b:b53f floor::object::invokeEventAboveD0
+<details>
+
+## args:
++	[in] u8 a : event (d0-ff)
+## (pseudo)code:
+```js
 {
 	if (a >= #e4) { //bcc b555
 		x = (a - #e4) << 1;
@@ -665,10 +816,18 @@ $b617: //77617
 	1C B7  50 B7  5E B7  6C B7
 	75 B7  9D B7  A2 B7  A3 B7
 }
+```
+</details>
 
-$3b:b6bf floor::object::event::F0
-//	[out] ptr $94 : string ptr
-//	[out] u8 $76 : string Id
+________________________________________________________________________________
+# $3b:b6bf floor::object::event::F0
+<details>
+
+## args:
++	[out] ptr $94 : string ptr
++	[out] u8 $76 : string Id
+## (pseudo)code:
+```js
 {
 	$76 = $0740.(x = $71);
 	a = #84;
@@ -680,8 +839,15 @@ $b6ce:
 	$94 = 0;
 	return;
 }
+```
+</details>
 
-$3b:bec6 drawNextLineVertical
+________________________________________________________________________________
+# $3b:bec6 drawNextLineVertical
+<details>
+
+## (pseudo)code:
+```js
 {
 	$82 = #f - $30;
 	y = 0;
@@ -726,11 +892,19 @@ $bf5b:
 	return;
 $bf61:
 }
-=====================================================================================================
-$3c:91a3 fieldMenu::updateCursorPos
-//	[in] u8 a : cursorIncrement
-//	[in,out] u8 $78f0 : cursor
-//	[in] u8 $78f1 : rowSize
+```
+</details>
+
+________________________________________________________________________________
+# $3c:91a3 fieldMenu::updateCursorPos
+<details>
+
+## args:
++	[in] u8 a : cursorIncrement
++	[in,out] u8 $78f0 : cursor
++	[in] u8 $78f1 : rowSize
+## (pseudo)code:
+```js
 {
 	$06 = a;
 	$9175();
@@ -758,8 +932,15 @@ $91c9:
 	if (a >= 0) $91c5;
 $91d9:
 }
+```
+</details>
 
-$3c:92f3 floor::copyEventScriptStream
+________________________________________________________________________________
+# $3c:92f3 floor::copyEventScriptStream
+<details>
+
+## (pseudo)code:
+```js
 {
 	x = 0;
 $92f5:
@@ -797,7 +978,15 @@ $9338:
 	x++;
 	return $931b;
 }
-$3c:9344 getEventFlag?
+```
+</details>
+
+________________________________________________________________________________
+# $3c:9344 getEventFlag?
+<details>
+
+## (pseudo)code:
+```js
 {
 	push (a & #7f);
 	y = a & 7;
@@ -808,11 +997,19 @@ $3c:9344 getEventFlag?
 $935a:
 	01 02 04 08 10 20 40 80
 }
+```
+</details>
 
-$3c:937e floor::searchSpaceForItem
-//	[in] u8 $80 : itemid
-//	[out] bool carry : item full
-//	[out] u8 x : index
+________________________________________________________________________________
+# $3c:937e floor::searchSpaceForItem
+<details>
+
+## args:
++	[in] u8 $80 : itemid
++	[out] bool carry : item full
++	[out] u8 x : index
+## (pseudo)code:
+```js
 {
 	for (x = 0;x < 0x20;x++) {
 $9380:
@@ -829,17 +1026,32 @@ $9399:
 	clc;
 	return;
 }
+```
+</details>
 
-$3c:961c {
+________________________________________________________________________________
+# $3c:961c {
+<details>
+
+```js
+{
 	$8f74();
 	$78f0 = #14;
 	x = $7f | #0f
 	$d10b();
 	return $a685;
 }
+```
+</details>
 
-$3c:962f jobMenu::main
-//	[in] u8 $7f,x : character offset
+________________________________________________________________________________
+# $3c:962f jobMenu::main
+<details>
+
+## args:
++	[in] u8 $7f,x : character offset
+## (pseudo)code:
+```js
 {
 	$96ba();
 	$9592();
@@ -883,8 +1095,15 @@ $9692:
 	$ab8f();
 	return $961c();	//jmp
 }
+```
+</details>
 
-$3d:a52f fieldMenu::main
+________________________________________________________________________________
+# $3d:a52f fieldMenu::main
+<details>
+
+## (pseudo)code:
+```js
 {
 	$78f0 = 0;
 	$25 = 0;
@@ -1009,28 +1228,58 @@ $a646:
 	$a654();
 	return $8f58();
 }
+```
+</details>
 
-$3d:a666
+________________________________________________________________________________
+# $3d:a666
+<details>
+
+## (pseudo)code:
+```js
 {
-	//fall through
+	
 }
+```
+</details>
 
-$3d:a66b
+**fall through**
+________________________________________________________________________________
+# $3d:a66b
+<details>
+
+## (pseudo)code:
+```js
 {
 	$92 = a;
 	$94,95 = #8200
 	return $ee65();
 }
+```
+</details>
 
-$3d:a6b4 fieldMenu::selectCharacter
-//	out:
-//	bool carry : canceled
-//	u8 $7f : offset of selected character
+________________________________________________________________________________
+# $3d:a6b4 fieldMenu::selectCharacter
+<details>
+
+## args:
+###	out:
++	bool carry : canceled
++	u8 $7f : offset of selected character
+## (pseudo)code:
+```js
 {
 	//...
 }
+```
+</details>
 
-$3d:a87a field::loadAndDrawString
+________________________________________________________________________________
+# $3d:a87a field::loadAndDrawString
+<details>
+
+## (pseudo)code:
+```js
 {
 	field::loadString();	//$d1b1();
 	$93 = #18;
@@ -1038,18 +1287,32 @@ $3d:a87a field::loadAndDrawString
 	$3f = #7b;
 	return field::drawEncodedStringInWindowAndRestoreBanks();	//$eb61();
 }
+```
+</details>
 
-$3d:a88c saveMenu::close
+________________________________________________________________________________
+# $3d:a88c saveMenu::close
+<details>
+
+## (pseudo)code:
+```js
 {
 	$8f74();
 	$78f0 = #18;
 	return $a685();
 }
+```
+</details>
 
+________________________________________________________________________________
+# $3d:a897 fieldMenu::OnSaveSelected
+<details>
 
+## notes:
+$24:a $25:b
 
-//$24:a $25:b
-$3d:a897 fieldMenu::OnSaveSelected
+## (pseudo)code:
+```js
 {
 	//...
 $a8e3:
@@ -1111,8 +1374,15 @@ $a973:
 	$aa4b();
 	return saveMenu::close();	//$a88c();
 }
+```
+</details>
 
-$3d:aa67
+________________________________________________________________________________
+# $3d:aa67
+<details>
+
+## (pseudo)code:
+```js
 {
 	$a3 = $a2 = 0;
 	$a7cd();
@@ -1127,8 +1397,15 @@ $3d:aa67
 	return $a7cd();
 $aa8e:
 }
+```
+</details>
 
-$3d:aaa6
+________________________________________________________________________________
+# $3d:aaa6
+<details>
+
+## (pseudo)code:
+```js
 {
 	field::getWindowParam();	//aabc
 	$38++; $39++;
@@ -1136,9 +1413,15 @@ $3d:aaa6
 	$3d -= 2;
 	return;
 }
+```
+</details>
 
-//$3d:aabc field::getWindowParam
-$3d:aabc field::get_menu_window_metrics
+________________________________________________________________________________
+# $3d:aabc field::get_menu_window_metrics
+<details>
+
+## (pseudo)code:
+```js
 {
 	a = $38 = $b6 = $aaf7.x;
 	$97 = a - 1;
@@ -1150,24 +1433,54 @@ $3d:aabc field::get_menu_window_metrics
 	$b7 = a + $b5 - 3;
 	return;
 }
+```
+</details>
 
-$3d:aaf1 field::draw_menu_window
-//	[in] x : window id
+________________________________________________________________________________
+# $3d:aaf1 field::draw_menu_window
+<details>
+
+## args:
++	[in] x : window id
+## (pseudo)code:
+```js
 {
 	field::getWindowParam();	//$aabc();
 	return field::drawWindow();	//$ed02();
 $aaf7:
 }
+```
+</details>
 
-$3d:aaf7 field::menu_window_metrics
-//0x26 entries each for left, top, width, and height.
+________________________________________________________________________________
+# $3d:aaf7 field::menu_window_metrics
+<details>
+
+## (pseudo)code:
+```js
 {
-$3d:ab8f:
+	//0x26 entries each for left, top, width, and height.
 }
+```
+</details>
+
+________________________________________________________________________________
+# $3d:ab8f
+<details>
+
+}
+```
+</details>
 
 
-$3d:ad85 jobMenu::getCosts
-//	[out] u8 $7200[0x17] : costs
+________________________________________________________________________________
+# $3d:ad85 jobMenu::getCosts
+<details>
+
+## args:
++	[out] u8 $7200[0x17] : costs
+## (pseudo)code:
+```js
 {
 	for ($8f = 0; $8f < #17; $8f++) {
 $ad89:
@@ -1195,12 +1508,20 @@ $addd:
 $aded:
 	return call_switch1stBank(a = #3c);	//jmp $ff06
 }
+```
+</details>
 
-$3d:adf2 getJobParameter
-//	[in] u8 $7f : offset of character
-//	[in] u8 $8f : jobId
-//	[out] JobBaseParam $7c00 : target job's
-//	[out] JobBaseParam $7c08 : current job's
+________________________________________________________________________________
+# $3d:adf2 getJobParameter
+<details>
+
+## args:
++	[in] u8 $7f : offset of character
++	[in] u8 $8f : jobId
++	[out] JobBaseParam $7c00 : target job's
++	[out] JobBaseParam $7c08 : current job's
+## (pseudo)code:
+```js
 {
 	call_switch1stBank(a = #39);	//ff06
 	y = $8f << 3;
@@ -1217,13 +1538,30 @@ $ae16:
 	}
 	return;
 }
+```
+</details>
 
-$3d:aba3
+________________________________________________________________________________
+# $3d:aba3
+<details>
+
+## (pseudo)code:
+```js
+{
 	$6110-$6116 = targetjob baseparam
 	$6130-$613f = {currentMp,maxMp} [8]
 	$39:9b88 = base mp
 	$87 <- $6101 (lv)
-$3d:ac31//[in] $87 = lv
+}
+```
+</details>
+
+________________________________________________________________________________
+# $3d:ac31//[in] $87 = lv
+<details>
+
+## (pseudo)code:
+```js
 {
 	while (lv > 0) {
 		y = jobindex*2;
@@ -1237,13 +1575,28 @@ $3d:ac31//[in] $87 = lv
 		$83 = ($80),y	//mpup flag,87654321
 	}
 }
-3d:ad45
+```
+</details>
+
+________________________________________________________________________________
+# $3d:ad45
+<details>
+
+## (pseudo)code:
+```js
 {
 	A = A + $84;
 	if (A > 99) A = 99;
 }
+```
+</details>
 
-$3d:a2df checkmagic
+________________________________________________________________________________
+# $3d:a2df checkmagic
+<details>
+
+## (pseudo)code:
+```js
 {
 	a = $a20c,y //y=magicid (00-37)
 	$80 = a //a=flagMask
@@ -1255,9 +1608,15 @@ $3d:a2df checkmagic
 
 	$7c00,x = itemid of magic
 }
+```
+</details>
 
-//-----------------------------------------------------------------------------------------------------
-$3d:b0eb floor::shop::
+________________________________________________________________________________
+# $3d:b0eb floor::shop:
+<details>
+
+## (pseudo)code:
+```js
 {
 	//...
 $b19a:
@@ -1278,7 +1637,15 @@ $b1c2:
 	$b1f2();
 	return $b137();
 }
-$3d:b220 floor::shop::getItemValues
+```
+</details>
+
+________________________________________________________________________________
+# $3d:b220 floor::shop::getItemValues
+<details>
+
+## (pseudo)code:
+```js
 {
 	for (x = 7;x >= 0;x--) {
 $b222:
@@ -1294,11 +1661,19 @@ $b22d:
 $b247:
 	return;
 }
+```
+</details>
 
-$3d:b248 floor::shop::getSellingPrice
-//	[out] u24 $61 : price
-//	[in] u8 $64 : bulk selling?
-//	[in] u8 $8e : selling item index
+________________________________________________________________________________
+# $3d:b248 floor::shop::getSellingPrice
+<details>
+
+## args:
++	[out] u24 $61 : price
++	[in] u8 $64 : bulk selling?
++	[in] u8 $8e : selling item index
+## (pseudo)code:
+```js
 {
 	if ( $64 == 0 ) { //bne b257
 		a = $60c0.(x = $8e);
@@ -1316,17 +1691,32 @@ $b269:
 	return;
 $b270:
 }
+```
+</details>
 
-$3d:b270 floor::shop::getItemValue
-//	[in] u8 a : itemid??
-//	[out] u24 $61 : gil?
+________________________________________________________________________________
+# $3d:b270 floor::shop::getItemValue
+<details>
+
+## args:
++	[in] u8 a : itemid??
++	[out] u24 $61 : gil?
+## (pseudo)code:
+```js
 {
 	floor::getTreasureGil( treasureParam:x = a ); //f5d4
 	$61,$62,$63 = $80,$81,$82;
 	return;
 }
+```
+</details>
 
-$3d:b6da
+________________________________________________________________________________
+# $3d:b6da
+<details>
+
+## (pseudo)code:
+```js
 {
 	$e4 = $e3;
 	$e3 = $e2;
@@ -1353,10 +1743,20 @@ $b706:
 $b712:
 	a = #70; return $b6f5;
 }
+```
+</details>
 
-$3d:b78a
+________________________________________________________________________________
+# $3d:b78a
+<details>
+</details>
 
-$3d:bc5b
+________________________________________________________________________________
+# $3d:bc5b
+<details>
+
+## (pseudo)code:
+```js
 {
 	if (carry) {
 		return isEncounterOccured();	//$bdb9();
@@ -1364,8 +1764,15 @@ $3d:bc5b
 		return $bc68();
 	}
 }
+```
+</details>
 
-$3d:bd4d getEncounterId
+________________________________________________________________________________
+# $3d:bd4d getEncounterId
+<details>
+
+## (pseudo)code:
+```js
 {
 	//$81 = y = 0;
 	$80,81 = #94f0 + (a << 3);
@@ -1377,11 +1784,29 @@ $3d:bd4d getEncounterId
 $bd78:
 	
 }
+```
+</details>
 
-$3d:bdb8 { return; }
-$3d:bdb9 isEncounterOccured
-//	[in] u8 $48 : warpId
-//	[in] u8 $f8 : bound
+________________________________________________________________________________
+# $3d:bdb8
+<details>
+
+```js
+{
+	return;
+}
+```
+</details>
+
+________________________________________________________________________________
+# $3d:bdb9 isEncounterOccured
+<details>
+
+## args:
++	[in] u8 $48 : warpId
++	[in] u8 $f8 : bound
+## (pseudo)code:
+```js
 {
 	if ($6c != 0) bdb8;
 	field::getRandom();	//$c711();
@@ -1400,3 +1825,5 @@ $bdda:
 	a = $93f0.x;
 	goto $bdd2;
 }
+```
+</details>
