@@ -2,18 +2,22 @@ Documentation Guidelines
 ========================
 To ease with writing, reading, and utilizing (pseuso-)code documentation,
 here defines some rules.
-These rules shouldn't never be treated as 'hard' rule anyways, as it could be continously evolved and sometimes good idea is delivered by a momentum inspiration during writing.
+These rules shouldn't never be treated as 'hard' rule anyways,
+as it could be continously evolved and
+sometimes good idea is delivered by a momentum inspiration during writing.
 However, it is still consindered to be useful to define here,
 since it could be a reference for readers or be for helping future discussions.
 
 ## Character Encoding
-It should be utf-8. As it is considered to be most interoperable.
+It should be utf-8. It is considered to be most interoperable.
 
 ## Pseudo-code Conventions
 For most part, the code should have javascript-like syntax.
 Each function (or routine, whatever you call it) documentation consists of
 3 sections of description.
-Those 3 sections should be marked up with Markdown, so that it gets more pretty if it is rendered as html, without sacrificing readability of the raw text.
+Those 3 sections should be marked up with Markdown,
+so that it gets more pretty if it is rendered as html,
+without sacrificing readability of the raw text.
 
 ## 1.   declaration
 The declaration starts with 3 or more underscores (_) to separate it from other ones,
@@ -60,7 +64,7 @@ You may surround the code with markup "```" and may also add a heading immediate
 
 The code here would be good to be written in javascript-like syntax as possible,
 so that the syntax highlighting works well to help understanding.
-The langauge should have enough capability to express original code intention.
+The langauge should have enough capability to express the original code's intention.
 
 In addition to the above, it would also be good to define some basic rules to name variables:
 ### variable names
@@ -73,7 +77,8 @@ While `P` is avaialbe as a whole processor flags,
 it may be more convenient to define its individual flags seperately, like:
     `carry, zero, overflow` etc.
 #### other variables
-For variables live in other than the registers, it should be named after its address. Aliases are fine, but its assignment should be explicit.
+For variables live in other than the registers, it should be named after its address.
+Aliases are fine, but its assignment should be explicit.
 
 ## example
 Wrapping up the above as a whole, an example documentation will like the below:
