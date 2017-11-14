@@ -2466,12 +2466,13 @@ ________________________________________________________________________________
 </details>
 
 ________________________________________________________________________________
-# $3f:ec18 field::hide_sprites_under_wind
+# $3f:ec18 field::showhide_sprites_by_window_region
 <details>
 
 ## args:
 +	[in]	u8 X: window_type
 ## callers:
++	$3f$ed61 field::get_window_region
 ## code:
 ```js
 {
