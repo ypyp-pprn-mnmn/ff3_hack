@@ -236,7 +236,7 @@ field_draw_window_box:	;;$ed02
 .newAttrBuffer = $07c0	;16bytes. only for 1 line (2 consecutive window row)
 
 	ldx <.window_id
-	jsr field_get_window_metrics	;$ed61
+	jsr field_get_window_region	;$ed61
 ;---
 	;jsr field_calc_draw_width_and_init_window_tile_buffer ;	$f670
 ;---
@@ -464,7 +464,7 @@ field_window_rts_1:
 ;//		3: Gil (can be checked at INN)
 ;//		4: floor name
 	;INIT_PATCH $3f,$ed61,$edc6
-;;$3f:ed61 field::get_window_metrics
+;;$3f:ed61 field::get_window_region
 ;;callers:
 ;;	$3f:ed02 field::draw_window_box
 ;;NOTEs:
@@ -477,7 +477,7 @@ field_window_rts_1:
 ;;	the difference is:
 ;;		A) this logic takes care of wrap-around unlike the other one, which does not.
 ;;		B) target window and the address of table where the corresponding metrics defined at
-field_get_window_metrics:
+field_get_window_region:
 ;[in]
 .viewport_left = $29	;in 16x16 unit
 .viewport_top = $2f	;in 16x16 unit
@@ -539,8 +539,8 @@ field_get_window_metrics:
 	sbc #2	;effectively -3
 	sta <.internal_bottom
 	;; done calcs
-	;; here X must have window_type (field_hide_sprites_around_window expects it)
-	jmp field_hide_sprites_around_window	;$ec18
+	;; here X must have window_type (as an argument to the call below)
+	jmp field_showhide_sprites_by_window_region	;$ec18
 	;rts
 	;VERIFY_PC $edb2
 	;.org $edb2
