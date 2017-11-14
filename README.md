@@ -13,7 +13,7 @@ DSがない…せや!ファミコンですればええんや!
  基本はFC版FF3そのものです。
 
 ## パッチの入手
- 最新のパッチは[work/release](work/release)にips形式/bps形式で置いていますのでダウンロードしてご利用ください。
+ 最新のパッチは[work/release](published/release)にips形式/bps形式で置いていますのでダウンロードしてご利用ください。
  各形式のパッチともに、iNESヘッダ(v1. 10bytes)が存在するNESファイルを期待しています。
  リリースノートは[こちら](published/README.md)です。
 
