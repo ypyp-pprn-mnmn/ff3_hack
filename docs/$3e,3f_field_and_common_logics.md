@@ -2585,7 +2585,7 @@ ________________________________________________________________________________
 +	[in]	u8 A: show/hide.
 	+	1: show
 	+	0: hide
-+	[in]	u8 X: region_type (0..6; with 0 to 4 are shared with window_type)
++	[in]	u8 X: region_type (0..6; with 0 to 4 being shared with window_type)
 ## callers:
 +	$3f:ec0c field::show_sprites_on_lower_half_screen
 +	$3f:ec12 field::show_sprites_on_region7 (with X set to 7)
@@ -2593,7 +2593,7 @@ ________________________________________________________________________________
 ## notes:
 region_type 7 seems to be INVALID.
 Static data referred to by this function consists of
-4 entries of structure, which has 7 entries in each.
+4 parallel arrays, of which has 7 entries in each.
 ## code:
 ```js
 {
