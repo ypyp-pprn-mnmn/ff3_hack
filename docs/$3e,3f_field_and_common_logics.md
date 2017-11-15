@@ -2586,16 +2586,16 @@ ________________________________________________________________________________
 	+	1: show
 	+	0: hide
 +	[in]	u8 X: region_type (0..6; with 0 to 4 being shared with window_type)
+## callers:
++	$3f:ec0c field::show_sprites_on_lower_half_screen
++	$3f:ec12 field::show_sprites_on_region7 (with X set to 7)
++	$3f:ec18 field::showhide_sprites_by_window_region
 ## local variables:
 +	u8 $80: region boundary in pixels, left, inclusive.
 +	u8 $81: region boundary in pixels, right, exclusive.
 +	u8 $82: region boundary in pixels, top, inclusive.
 +	u8 $83: region boundary in pixels, bottom, exclusive.
 +	u8 $84: show/hide flag
-## callers:
-+	$3f:ec0c field::show_sprites_on_lower_half_screen
-+	$3f:ec12 field::show_sprites_on_region7 (with X set to 7)
-+	$3f:ec18 field::showhide_sprites_by_window_region
 ## notes:
 region_type 7 seems to be INVALID.
 Static data referred to by this function consists of
