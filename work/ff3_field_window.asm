@@ -540,7 +540,7 @@ field_get_window_region:
 	sta <.internal_bottom
 	;; done calcs
 	;; here X must have window_type (as an argument to the call below)
-	jmp field_showhide_sprites_by_window_region	;$ec18
+	jmp field_hide_sprites_under_window	;$ec18
 	;rts
 	;VERIFY_PC $edb2
 	;.org $edb2

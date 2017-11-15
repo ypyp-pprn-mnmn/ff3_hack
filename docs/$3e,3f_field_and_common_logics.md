@@ -1160,7 +1160,8 @@ ________________________________________________________________________________
 
 ## args:
 +	[out] u8 $20 : inputBits (bit7< A B select start up down left right >bit0)
-//	note:bitの配置が戦闘中のルーチンと逆
+## notes:
+bitの配置が戦闘中のルーチンと逆
 ## code:
 ```js
 {
@@ -2428,13 +2429,15 @@ ________________________________________________________________________________
 $eb69:
 }
 ```
-
 </details>
 
 ________________________________________________________________________________
-# $3f:eba9 field::seek_to_next_line
+# $3f:eba9 field::seek_text_to_next_line
 <details>
 
+## args:
++	[in,out] ptr $1c: pointer to text to seek with
++	[out] ptr $3e: pointer to the text, pointing the beginning of next line
 ## code:
 ```js
 {
@@ -2462,22 +2465,139 @@ ________________________________________________________________________________
 */
 }
 ```
-
 </details>
 
 ________________________________________________________________________________
-# $3f:ec18 field::showhide_sprites_by_window_region
+# $3f:ebd1 field::unseek_text_to_line_beginning
 <details>
 
 ## args:
-+	[in]	u8 X: window_type
++	[in,out] ptr $1c: pointer to text to seek with
++	[out] ptr $3e: pointer to the text, pointing the beginning of line
+## callers:
++	`1F:EB81:20 D1 EB  JSR field.unseek_to_line_beginning`
+## notes:
+unless the pointer given by caller is pointing to reverse-order text,
+the result of this function seems not reliable
+due to the handling of 2-bytes opcodes (0x10 to 0x28).
+this seems to be a bug, but yet to be confirmed.
+## code:
+```js
+{
+/*
+	1F:EBD1:A5 1C     LDA $001C = #$A8
+	1F:EBD3:38        SEC
+	1F:EBD4:E9 01     SBC #$01
+	1F:EBD6:85 1C     STA $001C = #$A8
+	1F:EBD8:A5 1D     LDA $001D = #$83
+	1F:EBDA:E9 00     SBC #$00
+	1F:EBDC:85 1D     STA $001D = #$83
+	1F:EBDE:A0 00     LDY #$00
+	1F:EBE0:B1 1C     LDA ($1C),Y @ $83A8 = #$C0
+	1F:EBE2:C9 10     CMP #$10
+	1F:EBE4:90 0C     BCC $EBF2
+	1F:EBE6:C9 28     CMP #$28
+	1F:EBE8:B0 08     BCS $EBF2
+	1F:EBEA:A5 1C     LDA $001C = #$A8
+	1F:EBEC:38        SEC
+	1F:EBED:E9 02     SBC #$02
+	1F:EBEF:4C D6 EB  JMP $EBD6
+	1F:EBF2:C8        INY
+	1F:EBF3:B1 1C     LDA ($1C),Y @ $83A8 = #$C0
+	1F:EBF5:F0 07     BEQ $EBFE
+	1F:EBF7:C9 01     CMP #$01
+	1F:EBF9:F0 03     BEQ $EBFE
+	1F:EBFB:4C D1 EB  JMP field.unseek_to_line_beginning
+	1F:EBFE:A5 1C     LDA $001C = #$A8
+	1F:EC00:18        CLC
+	1F:EC01:69 02     ADC #$02
+	1F:EC03:85 3E     STA $003E = #$AC
+	1F:EC05:A5 1D     LDA $001D = #$83
+	1F:EC07:69 00     ADC #$00
+	1F:EC09:85 3F     STA $003F = #$83
+	1F:EC0B:60        RTS
+*/
+}
+```
+</details>
+
+________________________________________________________________________________
+# $3f:ec0c field::show_sprites_on_lower_half_screen
+<details>
+
+## callers:
++	`1F:C9B6:20 0C EC  JSR field.show_sprites_on_region6`
+## code:
+```js
+{
+/*
+ 1F:EC0C:A2 06     LDX #$06
+ 1F:EC0E:A9 01     LDA #$01
+ 1F:EC10:D0 08     BNE $EC1A
+*/
+	return field.showhide_sprites_by_region(A = 1, X = 6);	//bne $ec1a
+}
+```
+</details>
+
+________________________________________________________________________________
+# $3f:ec12 field::show_sprites_on_region7 (bug?)
+<details>
+
+## callers:
++	`1F:C9C1:20 12 EC  JSR field.show_sprites_on_region7`
+## code:
+```js
+{
+/*
+ 1F:EC12:A2 07     LDX #$07
+ 1F:EC14:A9 01     LDA #$01
+ 1F:EC16:D0 02     BNE $EC1A
+*/
+	return field.showhide_sprites_by_region(A = 1, X = 7);	//bne $ec1a
+}
+```
+</details>
+
+________________________________________________________________________________
+# $3f:ec18 field::hide_sprites_under_window
+<details>
+
+## args:
++	[in]	u8 X: window_type (0...4)
 ## callers:
 +	$3f$ed61 field::get_window_region
 ## code:
 ```js
 {
+// 1F:EC18:A9 00     LDA #$00
+	return field.showhide_sprites_by_region(A = 0);	//fall through
+}
+```
+</details>
+
+**fall through**
+________________________________________________________________________________
+# $3f:ec1a field::showhide_sprites_by_region
+<details>
+
+## args:
++	[in]	u8 A: show/hide.
+	+	1: show
+	+	0: hide
++	[in]	u8 X: region_type (0..6; with 0 to 4 are shared with window_type)
+## callers:
++	$3f:ec0c field::show_sprites_on_lower_half_screen
++	$3f:ec12 field::show_sprites_on_region7 (with X set to 7)
++	$3f:ec18 field::showhide_sprites_by_window_region
+## notes:
+region_type 7 seems to be INVALID.
+Static data referred to by this function consists of
+4 entries of structure, which has 7 entries in each.
+## code:
+```js
+{
 /*
- 1F:EC18:A9 00     LDA #$00
  1F:EC1A:85 84     STA $0084 = #$07
  1F:EC1C:BD 67 EC  LDA $EC67,X @ $ECE7 = #$85
  1F:EC1F:85 80     STA $0080 = #$2A
@@ -2501,11 +2621,11 @@ ________________________________________________________________________________
  1F:EC48:A5 84     LDA $0084 = #$07
  1F:EC4A:D0 0B     BNE $EC57
  1F:EC4C:B9 02 02  LDA sprite_buffer.attr,Y @ $0282 = #$02
- 1F:EC4F:09 20     ORA #$20
+ 1F:EC4F:09 20     ORA #$20	;bit5 <- 1(: behind BG)
  1F:EC51:99 02 02  STA sprite_buffer.attr,Y @ $0282 = #$02
  1F:EC54:4C 5F EC  JMP $EC5F
  1F:EC57:B9 02 02  LDA sprite_buffer.attr,Y @ $0282 = #$02
- 1F:EC5A:29 DF     AND #$DF
+ 1F:EC5A:29 DF     AND #$DF	;bit5 <- 0(: in front of BG)
  1F:EC5C:99 02 02  STA sprite_buffer.attr,Y @ $0282 = #$02
  1F:EC5F:98        TYA
  1F:EC60:18        CLC
@@ -2524,7 +2644,7 @@ ________________________________________________________________________________
 <details>
 
 ```
-// index:= ((left, right, top, bottom), window_type)
+// index:= ((left, right, top, bottom), region_type)
 {
 	0A 0A 0A 8A 0A 0A 0A	//left
 	EF 4F EF EF EF EF EF	//right (inclusive)
