@@ -2985,6 +2985,19 @@ ________________________________________________________________________________
 +	u8 $b6:
 +	u8 $b7:
 +	u8 $b8:
+## callers:
++	$3f:ed02 field::draw_window_box
+## notes:
+1.	to reflect changes in screen those made by `field.hide_sprites_under_window`,
+	which is called from within this function,
+	caller must upload sprite attr onto OAM, such as:
+
+		lda #2
+		sta $4014	;DMA
+2.	this logic is very simlar to `$3d$aabc field::get_menu_window_metrics`.
+	the difference is:
+	-	A) this logic takes care of wrap-around unlike the other one, which does not.
+	-	B) target window and the address of table where the corresponding metrics defined at
 ## code:
 ```js
 {
