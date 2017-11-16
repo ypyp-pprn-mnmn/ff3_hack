@@ -2477,9 +2477,12 @@ ________________________________________________________________________________
 ## callers:
 +	`1F:EB81:20 D1 EB  JSR field.unseek_to_line_beginning`
 ## notes:
+used to scroll back texts, in particular when a cursor moved up in item window.
+
 unless the pointer given by caller is pointing to reverse-order text,
 the result of this function seems not reliable
-due to the handling of 2-bytes opcodes (0x10 to 0x28).
+due to the incorrect handling of 2-bytes opcodes (0x10 to 0x28).
+however this isn't the case (caller passes normal string).
 this seems to be a bug, but yet to be confirmed.
 ## code:
 ```js
@@ -2516,6 +2519,7 @@ this seems to be a bug, but yet to be confirmed.
 	1F:EC07:69 00     ADC #$00
 	1F:EC09:85 3F     STA $003F = #$83
 	1F:EC0B:60        RTS
+$ec0c:
 */
 }
 ```
@@ -2683,7 +2687,7 @@ ________________________________________________________________________________
 <details>
 
 ## callers:
-+	1F:E237:20 8B EC  JSR field::show_message_window
++	`1F:E237:20 8B EC  JSR field::show_message_window`
 ## code:
 ```js
 {
