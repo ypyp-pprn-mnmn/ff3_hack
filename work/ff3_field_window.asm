@@ -72,11 +72,11 @@ field.showhide_sprites_by_region:
 ;; --- fixups
 ;; all callers have got replaced their implementation within this file
 ;; --- 
+;.region_left = $80	;in pixels
+;.region_right = $81	;in pixels
+;.region_top = $82	;in pixels
+;.region_bottom = $83;in pixels
 .is_to_show = $84
-.region_left = $80	;in pixels
-.region_right = $81	;in pixels
-.region_top = $82	;in pixels
-.region_bottom = $83;in pixels
 .sprite_buffer.x = $0203
 .sprite_buffer.y = $0200
 .sprite_buffer.attr = $0202
