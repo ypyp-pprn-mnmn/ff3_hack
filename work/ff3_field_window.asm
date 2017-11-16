@@ -87,27 +87,23 @@ field.showhide_sprites_by_region:
 	.for_each_sprites:
 		;; if (x < left || right <= x) { continue; }
 		lda .sprite_buffer.x, y
-		;cmp .region_bounds.left, x
-		;bcc .next
 		sec
 		sbc .region_bounds.left, x
 		cmp .region_bounds.right, x
 		bcs .next
-		;; if (y < top || bottom <= y) { continue; }
-		lda .sprite_buffer.y, y
-		;cmp .region_bounds.top, x
-		;bcc .next
-		;;here carry is always clear
-		sbc .region_bounds.top, x
-		cmp .region_bounds.bottom, x
-		bcs .next
-		lda .sprite_buffer.attr, y
-		and #$df	;bit 5 <- 0: sprite in front of BG
-		bit <.is_to_show
-		bne .update
-			ora #$20	;bit 5 <- 1: sprite behind BG
-	.update:
-		sta .sprite_buffer.attr, y
+			;; if (y < top || bottom <= y) { continue; }
+			lda .sprite_buffer.y, y
+			;;here carry is always clear
+			sbc .region_bounds.top, x	;;top is adjusted to account carry
+			cmp .region_bounds.bottom, x
+			bcs .next
+				lda .sprite_buffer.attr, y
+				and #$df	;bit 5 <- 0: sprite in front of BG
+				bit <.is_to_show
+				bne .update
+					ora #$20	;bit 5 <- 1: sprite behind BG
+			.update:
+				sta .sprite_buffer.attr, y
 	.next:
 		iny
 		iny
