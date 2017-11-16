@@ -18,7 +18,7 @@ field_get_input				= $d281	;$3e:d281 field::get_input
 ;;
 field_sync_ppu_scroll_with_player	= $e571
 field_seek_string_to_next_line = $eba9
-field_hide_sprites_under_window = $ec18
+;field_hide_sprites_under_window = $ec18
 ;field_await_and_get_next_input	= $ecab
 ;field_advance_frame_with_sound	= $ecd8	;[in] $93 : bank, [in,out] $f0: frame_counter
 ;field_restore_bank			= $ecf5	;[in] $57: bank

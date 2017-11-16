@@ -11,6 +11,115 @@ ff3_field_window_begin:
 FIELD_WINDOW_SCROLL_FRAMES = $01
 
 	.ifdef FAST_FIELD_WINDOW
+
+;------------------------------------------------------------------------------------------------------
+	INIT_PATCH $3f, $ec0c, $ec83
+;;# $3f:ec0c field::show_sprites_on_lower_half_screen
+;;<details>
+;;
+;;## callers:
+;;+	`1F:C9B6:20 0C EC  JSR field.show_sprites_on_region6`
+field.show_sprites_on_lower_half_screen:
+;; --- fixup address on callers
+	FIX_ADDR_ON_CALLER $3e,$c9b6+1
+;; ---
+	ldx #6
+	bne	field.show_sprites_by_region
+;------------------------------------------------------------------------------------------------------
+;;# $3f:ec12 field::show_sprites_on_region7 (bug?)
+;;<details>
+;;
+;;## callers:
+;;+	`1F:C9C1:20 12 EC  JSR field.show_sprites_on_region7`
+field.show_sprites_on_region7:
+;; --- fixup address on callers
+	FIX_ADDR_ON_CALLER $3e,$c9c1+1
+;; --- begin
+	ldx #7
+field.show_sprites_by_region:
+	lda #1
+	bne	field.showhide_sprites_by_region
+;------------------------------------------------------------------------------------------------------
+;;# $3f:ec18 field::hide_sprites_under_window
+;;<details>
+;;
+;;## args:
+;;+	[in]	u8 X: window_type (0...4)
+;;## callers:
+;;+	$3f$ed61 field::get_window_region
+;;## code:
+field.hide_sprites_under_window:
+	lda #0
+;;fall through.
+;------------------------------------------------------------------------------------------------------
+;;# $3f:ec1a field::showhide_sprites_by_region
+;;## args:
+;;+	[in]	u8 A: show/hide.
+;;	+	1: show
+;;	+	0: hide
+;;+	[in]	u8 X: region_type (0..6; with 0 to 4 being shared with window_type)
+;;## callers:
+;;+	$3f:ec0c field::show_sprites_on_lower_half_screen
+;;+	$3f:ec12 field::show_sprites_on_region7 (with X set to 7)
+;;+	$3f:ec18 field::showhide_sprites_by_window_region
+;;## local variables:
+;;+	u8 $80: region boundary in pixels, left, inclusive.
+;;+	u8 $81: region boundary in pixels, right, exclusive.
+;;+	u8 $82: region boundary in pixels, top, inclusive.
+;;+	u8 $83: region boundary in pixels, bottom, exclusive.
+;;+	u8 $84: show/hide flag
+field.showhide_sprites_by_region:
+;; --- fixups
+;; all callers have got replaced their implementation within this file
+;; --- 
+.is_to_show = $84
+.region_left = $80	;in pixels
+.region_right = $81	;in pixels
+.region_top = $82	;in pixels
+.region_bottom = $83;in pixels
+.sprite_buffer.x = $0203
+.sprite_buffer.y = $0200
+.sprite_buffer.attr = $0202
+	sta <.is_to_show
+	ldy #$40	;don't change player and cursor anyways
+	.for_each_sprites:
+		;; if (x < left || right <= x) { continue; }
+		lda .sprite_buffer.x, y
+		cmp .region_bounds.left, x
+		bcc .next
+		cmp .region_bounds.right, x
+		bcs .next
+		;; if (y < top || bottom <= y) { continue; }
+		lda .sprite_buffer.y, y
+		cmp .region_bounds.top, x
+		bcc .next
+		cmp .region_bounds.bottom, x
+		bcs .next
+		lda .sprite_buffer.attr, y
+		and #$df	;bit 5 <- 0: sprite in front of BG
+		bit .is_to_show
+		bne .update
+			ora #$20	;bit 5 <- 1: sprite behind BG
+	.update:
+		sta .sprite_buffer.attr, y
+	.next:
+		iny
+		iny
+		iny
+		iny 
+		bne .for_each_sprites
+	rts
+.region_bounds.left:	;$ec67 left (inclusive)
+	DB $0A,$0A,$0A,$8A,$0A,$0A,$0A
+.region_bounds.right:	;$ec6e right (inclusive)
+	DB $EF,$4F,$EF,$EF,$EF,$EF,$EF	
+.region_bounds.top:		;$ec75 top (inclusive)
+	DB $0A,$8A,$8A,$6A,$0A,$0A,$6A
+.region_bounds.bottom:	;$ec7c bottom (inclusive)
+	DB $57,$D7,$D7,$87,$2A,$57,$D7	
+
+	VERIFY_PC $ec83
+;------------------------------------------------------------------------------------------------------
 	;INIT_PATCH $3f,$ec83,$ed02
 	INIT_PATCH $3f,$ec83,$ee9a
 
@@ -540,7 +649,7 @@ field_get_window_region:
 	sta <.internal_bottom
 	;; done calcs
 	;; here X must have window_type (as an argument to the call below)
-	jmp field_hide_sprites_under_window	;$ec18
+	jmp field.hide_sprites_under_window	;$ec18
 	;rts
 	;VERIFY_PC $edb2
 	;.org $edb2

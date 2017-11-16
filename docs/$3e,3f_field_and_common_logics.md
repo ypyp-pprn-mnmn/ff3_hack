@@ -2550,6 +2550,8 @@ ________________________________________________________________________________
 
 ## callers:
 +	`1F:C9C1:20 12 EC  JSR field.show_sprites_on_region7`
+## notes:
+called when choose item dialog (window_type=2) is about to close
 ## code:
 ```js
 {
@@ -2657,9 +2659,9 @@ ________________________________________________________________________________
 // index:= ((left, right, top, bottom), region_type)
 {
 	0A 0A 0A 8A 0A 0A 0A	//left
-	EF 4F EF EF EF EF EF	//right (inclusive)
+	EF 4F EF EF EF EF EF	//right (exclusive. (out of region))
 	0A 8A 8A 6A 0A 0A 6A	//top
-	57 D7 D7 87 2A 57 D7	//bottom (inclusive)
+	57 D7 D7 87 2A 57 D7	//bottom (exclusive)
 	//$ec83:
 }
 ```
@@ -2963,7 +2965,7 @@ ________________________________________________________________________________
 +	u8 X: window_type (0...4)
 	-	0: object's message?
 	-	1: choose dialog (Yes/No) (can be checked at INN)
-	-	2: use item to object
+	-	2: choose item dialog (which is shown to use item on object, when hit 'B' in front of object)
 	-	3: Gil (can be checked at INN)
 	-	4: floor name
 +	u8 $29: floor_scroll_x (in 16x16 unit)
