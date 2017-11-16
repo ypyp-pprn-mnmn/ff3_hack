@@ -77,7 +77,7 @@ While `P` is available as a whole processor flags register,
 it may be more convenient to define its individual flags separately, like:
     `carry, zero, overflow` etc.
 #### other variables
-For variables live in other than the registers, it should be named after its address.
+For variables which live in other than the registers, it should be named after its address.
 Aliases are fine, but its assignment should be explicit.
 
 ## example
