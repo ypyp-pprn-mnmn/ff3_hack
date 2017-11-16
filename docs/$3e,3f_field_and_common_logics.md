@@ -2602,7 +2602,10 @@ ________________________________________________________________________________
 +	u8 $83: region boundary in pixels, bottom, exclusive.
 +	u8 $84: show/hide flag
 ## notes:
--	"サロニア その1" is convenient location to test this function as there are various object and floor levels
+-	"サロニア その1" (floor_id: $07) would be convenient location
+	to test this function as there are various objects and floor levels.
+
+	![The below is capturing a sprite that is about to cross window's boundary](images/sprite-and-window.png)
 -	region_type 7 (i.e., 8th entry) seems to be INVALID.
 	Static data referred to by this function consists of
 	4 parallel arrays, of which has only 7 entries in each.
