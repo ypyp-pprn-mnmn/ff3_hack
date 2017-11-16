@@ -127,17 +127,17 @@ field.showhide_sprites_by_region:
 ;; 1F:EC83:A9 00     LDA #$00
 ;; 1F:EC85:20 FA EC  JSR field::draw_inplace_window
 ;; 1F:EC88:4C 65 EE  JMP field::stream_string_in_window
-field_show_off_message_window:
+field.show_off_message_window:
 	lda #0
-field_X_show_off_window:
-	jsr field_draw_inplace_window		;$ecfa
-	jmp field_stream_string_in_window	;$ee65
+field_x.show_off_window:
+	jsr field.draw_inplace_window		;$ecfa
+	jmp field.stream_string_in_window	;$ee65
 ;------------------------------------------------------------------------------------------------------
 ;;$3f:ec8b field::show_message_window:
 ;;callers:
 ;;	1F:E237:20 8B EC  JSR field::show_message_window
 ;;
-field_show_message_window:
+field.show_message_window:
 ;;patch out callers
 	FIX_ADDR_ON_CALLER $3f,$e237+1
 ;;
@@ -148,24 +148,24 @@ field_show_message_window:
 ;;	 1F:E264:20 8D EC  JSR $EC8D
 ;;in:
 ;;	u8 A : window_type
-field_show_window:
+field.show_window:
 ;;patch out external callers {
 	FIX_ADDR_ON_CALLER $3e,$e264+1
 ;;}
-.field_pad1_inputs = $20
-	;jsr field_draw_inplace_window		;$ecfa
-	;jsr field_stream_string_in_window	;$ee65
-	jsr field_X_show_off_window
-	jsr field_await_and_get_next_input	;$ecab
+.field.pad1_inputs = $20
+	;jsr field.draw_inplace_window		;$ecfa
+	;jsr field.stream_string_in_window	;$ee65
+	jsr field_x.show_off_window
+	jsr field.await_and_get_next_input	;$ecab
 	lda <$7d
 	;beq .leave	;$eca8
 	bne .enter_input_loop
 .leave:	;$eca8
 		jmp $c9b6
 .input_loop:	;$ec9e
-	jsr field_get_next_input	
+	jsr field.get_next_input	
 .enter_input_loop:	;$ec9a
-	lda <.field_pad1_inputs
+	lda <.field.pad1_inputs
 	bpl .input_loop
 .on_a_button_down:	;$eca4
 	lda #0
@@ -177,51 +177,51 @@ field_show_window:
 ;;	 1F:EC93:20 AB EC  JSR field::await_and_get_new_input ($3f:ec8b field::show_message_window)
 ;;	 1F:ECBA:4C AB EC  JMP field::await_and_get_new_input (tail recursion)
 ;;	 1F:EE6A:20 AB EC  JSR field::await_and_get_new_input ($3f:ee65 field::stream_string_in_window)
-field_await_and_get_next_input:
-	jsr field_X_get_input_with_result	;on exit, A have the value from $20
-	beq field_get_next_input_in_this_frame
-	jsr field_X_advance_frame
-	jmp field_await_and_get_next_input
+field.await_and_get_next_input:
+	jsr field_x.get_input_with_result	;on exit, A have the value from $20
+	beq field.get_next_input_in_this_frame
+	jsr field_x.advance_frame
+	jmp field.await_and_get_next_input
 ;------------------------------------------------------------------------------------------------------
 ;;$3f:ECc4 field::get_next_input:
 ;;callers:
 ;;	1F:EC9E:20 C4 EC  JSR field::get_next_input
-field_get_next_input:
-;.field_pad1_inputs = $20	;bit7 <- A ...  -> bit0
+field.get_next_input:
+;.field.pad1_inputs = $20	;bit7 <- A ...  -> bit0
 ;;$ecc4:
-	jsr field_X_advance_frame
+	jsr field_x.advance_frame
 	;;fall through
-field_get_next_input_in_this_frame:
-.field_input_cache = $21
+field.get_next_input_in_this_frame:
+.field.input_cache = $21
 ;;$ecbd:
-	jsr field_X_get_input_with_result	;on exit, A have the value from $20
-	beq field_get_next_input
+	jsr field_x.get_input_with_result	;on exit, A have the value from $20
+	beq field.get_next_input
 ;;$eccf
-	sta <.field_input_cache
-	bne field_X_set_bank_for_window_content_string
+	sta <.field.input_cache
+	bne field_x.set_bank_for_window_content_string
 ;------------------------------------------------------------------------------------------------------
 ;;$3f:ecd8 field::advance_frame_with_sound
 ;;callers:
 ;;	 1F:EE74:20 D8 EC  JSR field::advance_frame_w_sound ($3f:ee65 field::stream_string_in_window)
-field_advance_frame_and_set_bank:
-	jsr field_X_advance_frame
-	;;jmp field_X_set_bank_for_window_content_string
+field.advance_frame_and_set_bank:
+	jsr field_x.advance_frame
+	;;jmp field_x.set_bank_for_window_content_string
 	;;fall thorugh
 ;------------------------------------------------------------------------------------------------------
-field_X_set_bank_for_window_content_string:
+field_x.set_bank_for_window_content_string:
 .content_string_bank = $93
 	lda <.content_string_bank
 	jmp call_switch_2banks
 
-field_X_advance_frame:
+field_x.advance_frame:
 	jsr waitNmiBySetHandler
-	inc <field_frame_counter
-	jmp field_callSoundDriver
+	inc <field.frame_counter
+	jmp field.callSoundDriver
 
-field_X_get_input_with_result:
-.field_pad1_inputs = $20	;bit7 <- A ...  -> bit0
-	jsr field_get_input
-	lda <.field_pad1_inputs
+field_x.get_input_with_result:
+.field.pad1_inputs = $20	;bit7 <- A ...  -> bit0
+	jsr field.get_input
+	lda <.field.pad1_inputs
 	rts
 
 	;VERIFY_PC $ece5
@@ -242,7 +242,7 @@ field_X_get_input_with_result:
 ;1F:ECEC:20 56 ED  JSR field::init_window_attr_buffer
 ;1F:ECEF:20 F6 ED  JSR field::get_window_top_tiles
 ;1F:ECF2:20 C6 ED  JSR field::draw_window_row
-field_draw_window_top:
+field.draw_window_top:
 ;; patch out callers external to current implementation {
 	FIX_ADDR_ON_CALLER $3d,$aaa3+1
 ;;}
@@ -250,12 +250,12 @@ field_draw_window_top:
 .window_row_in_drawing = $3b
 	lda <.window_top
 	sta <.window_row_in_drawing
-	jsr field_calc_draw_width_and_init_window_tile_buffer
-	;jsr field_init_window_attr_buffer
-	jsr field_get_window_top_tiles
-	jsr field_draw_window_row
-	;; fall through (into $ecf5: field_restore_bank)
-	;jmp field_restore_bank	;$ecf5
+	jsr field.calc_draw_width_and_init_window_tile_buffer
+	;jsr field.init_window_attr_buffer
+	jsr field.get_window_top_tiles
+	jsr field.draw_window_row
+	;; fall through (into $ecf5: field.restore_bank)
+	;jmp field.restore_bank	;$ecf5
 
 
 	;VERIFY_PC $ecf5
@@ -266,7 +266,7 @@ field_draw_window_top:
 ;;	 1F:F49E:4C F5 EC  JMP field::restore_bank
 ;;	field::draw_window_top (by falling thourgh)
 ;;	field::draw_window_box
-field_restore_bank:
+field.restore_bank:
 ;; patch out external callers {
 	FIX_ADDR_ON_CALLER $3f,$eb64+1
 	FIX_ADDR_ON_CALLER $3f,$f49e+1
@@ -281,7 +281,7 @@ field_restore_bank:
 ;;callers:
 ;;	$3f:ec8d field::show_window (original implementation only)
 ;;	$3f:ec83 field::show_message_UNKNOWN
-field_draw_inplace_window:
+field.draw_inplace_window:
 ;; patch out external callers {
 ;;}
 .window_id = $96
@@ -290,7 +290,7 @@ field_draw_inplace_window:
 	sta <$24
 	sta <$25
 	;;originally fall through to $3f:ed02 field::draw_window_box
-	;;jmp field_draw_window_box
+	;;jmp field.draw_window_box
 
 	VERIFY_PC $ed02
 ;------------------------------------------------------------------------------------------------------
@@ -324,7 +324,7 @@ field_draw_inplace_window:
 ;;	1E:90B1:20 02 ED  JSR field::draw_window_box	@ $3c:90ad ?; window_type = 2
 ;;	1E:AAF4:4C 02 ED  JMP field::draw_window_box	@ $3d:aaf1 field::draw_menu_window
 ;;	(by falling through) @$3f:ecfa field::draw_in_place_window
-field_draw_window_box:	;;$ed02
+field.draw_window_box:	;;$ed02
 ;; patch out external callers {
 	FIX_ADDR_ON_CALLER $3c,$8efd+1
 	FIX_ADDR_ON_CALLER $3c,$8f0e+1
@@ -336,31 +336,31 @@ field_draw_window_box:	;;$ed02
 .window_id = $96
 .skipAttrUpdate = $37	;;or in more conceptual, 'is in menu window'
 ;;[in,out]
-.beginX = $38	;loaded by field_get_window_metrics
-.beginY = $39	;loaded by field_get_window_metrics
+.beginX = $38	;loaded by field.get_window_metrics
+.beginY = $39	;loaded by field.get_window_metrics
 .currentY = $3b
-.width = $3c	;loaded by field_get_window_metrics
-.height = $3d	;loaded by field_get_window_metrics
+.width = $3c	;loaded by field.get_window_metrics
+.height = $3d	;loaded by field.get_window_metrics
 .attrCache = $0300	;128bytes. 1st 64bytes for 1st BG, 2nd for 2nd.
 .newAttrBuffer = $07c0	;16bytes. only for 1 line (2 consecutive window row)
 
 	ldx <.window_id
-	jsr field_get_window_region	;$ed61
+	jsr field.get_window_region	;$ed61
 ;---
-	;jsr field_calc_draw_width_and_init_window_tile_buffer ;	$f670
+	;jsr field.calc_draw_width_and_init_window_tile_buffer ;	$f670
 ;---
 	lda <.skipAttrUpdate
 	bne .post_attr_update
-		jsr field_init_window_attr_buffer	;ed56
+		jsr field.init_window_attr_buffer	;ed56
 		lda <.height
 		pha
 		ldy <.beginY
 .setupAttributes:
 		sty <.currentY
-		jsr field_updateTileAttrCache	;$c98f
+		jsr field.update_window_attr_buff	;$c98f
 		ldy <.currentY
 		iny
-		;; field_updateTileAttrCache() isn't prepared for cases that window crosses vertical boundary (which is at 0x1e)
+		;; field.updateTileAttrCache() isn't prepared for cases that window crosses vertical boundary (which is at 0x1e)
 		;; that is, if currentY > 0x1e, updated attributes are placed 1 row above where it should be in.
 		;; so here handles as a wrokaround wrapping vertical coordinates.
 		cpy #30	;; wrap around
@@ -375,19 +375,19 @@ field_draw_window_box:	;;$ed02
 
 	.update_ppu:
 		pla	;dispose
-		jsr field_X_begin_ppu_update	;wait_nmi+do_dma. if omitted dma, sprites are shown on top of window
-		jsr field_X_update_ppu_attr_table
-		jsr field_X_end_ppu_update	;sync_ppu_scroll+call_sound_driver
+		jsr field_x.begin_ppu_update	;wait_nmi+do_dma. if omitted dma, sprites are shown on top of window
+		jsr field_x.update_ppu_attr_table
+		jsr field_x.end_ppu_update	;sync_ppu_scroll+call_sound_driver
 
 .post_attr_update:
-	jsr field_X_render_borders
+	jsr field_x.render_borders
 ; adjust metrics as borders don't need further drawing...
-	jsr field_X_shrink_window_metrics
-	jmp field_restore_bank	;$ecf5
+	jsr field_x.shrink_window_metrics
+	jmp field.restore_bank	;$ecf5
 
 	;VERIFY_PC $ed56
 
-field_X_update_ppu_attr_table:
+field_x.update_ppu_attr_table:
 .left = $38
 .top = $39	;in 8x8
 .offset_x = $3a
@@ -412,9 +412,9 @@ field_X_update_ppu_attr_table:
 	sta <.offset_y
 
 	ldy #$23
-	jsr .field_X_upload_attributes
+	jsr .field_x.upload_attributes
 	ldy #$27
-.field_X_upload_attributes:
+.field_x.upload_attributes:
 	lda <.offset_x
 .loop:
 	;A = offset into attr table
@@ -441,7 +441,7 @@ field_X_update_ppu_attr_table:
 	rts
 
 	.if 1
-field_X_render_borders:
+field_x.render_borders:
 .in_menu_mode = $37
 .left = $38
 .top = $39
@@ -454,7 +454,7 @@ field_X_render_borders:
 .vram_addr_high = $07d0
 .vram_addr_low = $07e0
 .draw_flags = $07f0
-	jsr field_X_generate_uploader_code
+	jsr field_x.generate_uploader_code
 	ldy #0
 	sty <.draw_info_index
 	;; draw strategy:
@@ -468,11 +468,11 @@ field_X_render_borders:
 	;; left top ---> right top ---> right bottom
 	ldx <.left
 	lda <.top
-	jsr field_X_map_coords_to_vram
+	jsr field_x.map_coords_to_vram
 	inc <.draw_info_index
 	rts
 
-field_X_map_coords_to_vram:
+field_x.map_coords_to_vram:
 	.if 0
 ;@see $3f:f40a setVramAddrForWindow
 .y_to_addr_low = $f4a1
@@ -504,10 +504,10 @@ field_X_map_coords_to_vram:
 	.endif	;0
 	rts
 	
-field_X_generate_uploader_code:
-;.template_code_start = field_X_update_ppu_attr_table_end - 8	
-;.template_code_end = field_X_update_ppu_attr_table_end - 5
-field_X_store_PPUDATA = $f7b0
+field_x.generate_uploader_code:
+;.template_code_start = field_x.update_ppu_attr_table_end - 8	
+;.template_code_end = field_x.update_ppu_attr_table_end - 5
+field_x.store_PPUDATA = $f7b0
 .generated_code_base = $0780
 .SIZE_OF_CODE = 3
 .UNROLLED_BYTES = $1f*.SIZE_OF_CODE
@@ -516,7 +516,7 @@ field_X_store_PPUDATA = $f7b0
 		ldx #-.SIZE_OF_CODE	;src
 .generate_loop:
 		;lda .template_code_start-$0100+.SIZE_OF_CODE,x
-		lda (field_X_store_PPUDATA)-$0100+.SIZE_OF_CODE,x
+		lda (field_x.store_PPUDATA)-$0100+.SIZE_OF_CODE,x
 		sta (2+.generated_code_base)-($0100-.UNROLLED_BYTES),y
 		iny
 		beq .generate_epilog
@@ -533,14 +533,14 @@ field_X_store_PPUDATA = $f7b0
 	.endif ;0
 
 	.ifdef TEST_BLACKOUT_ON_WINDOW
-field_X_blackout_1frame:
+field_x.blackout_1frame:
 	lda #%00000110
 	sta $2001
 
 	jsr waitNmiBySetHandler
-	inc <field_frame_counter
-	jsr field_sync_ppu_scroll	;if omitted, noticable glithces arose in town conversations
-	jsr field_callSoundDriver
+	inc <field.frame_counter
+	jsr field.sync_ppu_scroll	;if omitted, noticable glithces arose in town conversations
+	jsr field.callSoundDriver
 	lda #%00011110
 	sta $2001	
 	rts
@@ -550,7 +550,7 @@ field_X_blackout_1frame:
 ;;callers:
 ;;	$3f:ece5 field::draw_window_top
 ;;	$3f:ed02 field::draw_window_box
-field_init_window_attr_buffer:
+field.init_window_attr_buffer:
 .window_attr_buffer = $07c0
 	ldx #$0f
 	lda #$ff
@@ -558,7 +558,7 @@ field_init_window_attr_buffer:
 	sta .window_attr_buffer,x
 	dex
 	bpl .fill
-field_window_rts_1:
+field.window_rts_1:
 	rts
 
 	;VERIFY_PC $ed61
@@ -577,7 +577,7 @@ field_window_rts_1:
 ;;callers:
 ;;	$3f:ed02 field::draw_window_box
 ;;NOTEs:
-;; 1) to reflect changes in screen those made by 'field_hide_sprites_around_window',
+;; 1) to reflect changes in screen those made by 'field.hide_sprites_around_window',
 ;;	which is called within this function,
 ;;	caller must update sprite attr such as:
 ;;	lda #2
@@ -586,7 +586,7 @@ field_window_rts_1:
 ;;	the difference is:
 ;;		A) this logic takes care of wrap-around unlike the other one, which does not.
 ;;		B) target window and the address of table where the corresponding metrics defined at
-field_get_window_region:
+field.get_window_region:
 ;[in]
 .viewport_left = $29	;in 16x16 unit
 .viewport_top = $2f	;in 16x16 unit
@@ -604,7 +604,7 @@ field_get_window_region:
 .internal_right = $b8
 
 	lda <.skip_attr_update
-	bne field_window_rts_1	;rts (original: bne $ed60)
+	bne field.window_rts_1	;rts (original: bne $ed60)
 	;; calculate left coordinates
 	lda .window_attr_table_x,x
 	sta <.internal_left
@@ -678,7 +678,7 @@ field_get_window_region:
 ;$ede1:
 ;}
 	;INIT_PATCH $3f,$edc6,$ede1
-field_draw_window_row:	;;$3f:edc6 field::draw_window_row
+field.draw_window_row:	;;$3f:edc6 field::draw_window_row
 ;;callers:
 ;;	$3f:ece5 field::draw_window_top
 ;;	$3f:ed02 field::draw_window_box (only the original implementation)
@@ -686,16 +686,16 @@ field_draw_window_row:	;;$3f:edc6 field::draw_window_row
 .iChar = $90
 	lda <.width
 	sta <.iChar
-	;jsr field_updateTileAttrCache	;$c98f
-	jsr field_X_begin_ppu_update
-	jsr field_upload_window_content	;$f6aa
-	;jsr field_setTileAttrForWindow	;$c9a9
+	;jsr field.updateTileAttrCache	;$c98f
+	jsr field_x.begin_ppu_update
+	jsr field.upload_window_content	;$f6aa
+	;jsr field.setTileAttrForWindow	;$c9a9
 	;;fall through.
-field_X_end_ppu_update:
-	jsr field_sync_ppu_scroll	;$ede1
-	jmp field_callSoundDriver	;$c750
+field_x.end_ppu_update:
+	jsr field.sync_ppu_scroll	;$ede1
+	jmp field.callSoundDriver	;$c750
 
-field_X_begin_ppu_update:
+field_x.begin_ppu_update:
 	jsr waitNmiBySetHandler	;$ff00
 	jmp do_sprite_dma_from_0200
 	;VERIFY_PC $ede1
@@ -716,12 +716,12 @@ field_X_begin_ppu_update:
 ;;callers:
 ;;	$3f:edc6 field::draw_window_row
 ;;	$3f:f692 field::draw_window_content
-field_sync_ppu_scroll:
+field.sync_ppu_scroll:
 .skip_attr_update = $37
 .ppu_ctrl_cache = $ff
 	lda <.skip_attr_update
 	bne .set_ppu_ctrl
-		jmp field_sync_ppu_scroll_with_player	;$e571
+		jmp field.sync_ppu_scroll_with_player	;$e571
 .set_ppu_ctrl:
 	lda <.ppu_ctrl_cache
 	sta $2000
@@ -737,12 +737,12 @@ field_sync_ppu_scroll:
 ;;callers:
 ;;	$3f:ece5 field::draw_window_top
 ;;	$3f:ed02 field::draw_window_box
-field_get_window_top_tiles:		
+field.get_window_top_tiles:		
 	lda #$00
-	jsr field_X_get_window_tiles
+	jsr field_x.get_window_tiles
 	;lda #$07
 	;;fall through
-field_X_get_window_tiles:
+field_x.get_window_tiles:
 .width = $3c
 .eol = $3c
 .window_tiles_buffer_upper_row = $0780
@@ -758,7 +758,7 @@ field_X_get_window_tiles:
 	lda <.width
 	pha	;width
 .left_tile:
-	lda field_X_window_parts,y
+	lda field_x.window_parts,y
 	sta .window_tiles_buffer_upper_row,x
 	txa
 	clc
@@ -766,13 +766,13 @@ field_X_get_window_tiles:
 	sta <.eol	;width + offset
 	inx
 .center_tiles:
-		lda field_X_window_parts+1,y
+		lda field_x.window_parts+1,y
 		sta .window_tiles_buffer_upper_row,x
 		inx
 		cpx <.eol
 		bcc .center_tiles
 .right_tile:
-	lda field_X_window_parts+2,y
+	lda field_x.window_parts+2,y
 	sta .window_tiles_buffer_upper_row-1,x
 	pla	;original width
 	sta <.width
@@ -781,7 +781,7 @@ field_X_get_window_tiles:
 	;adc #$22	;effectively +23
 	adc #$06
 	rts
-field_X_window_parts:
+field_x.window_parts:
 	db $f7, $f8, $f9
 	db $fa, $ff, $fb
 	db $fc, $fd, $fe
@@ -789,18 +789,18 @@ field_X_window_parts:
 ;;$3f:ee1d field::getWindowTilesForMiddle
 ;;callers:
 ;;	$3f:ed02 field::draw_window_box
-field_get_window_middle_tiles:	;ee1d
+field.get_window_middle_tiles:	;ee1d
 	lda #$03<<1
-	jsr field_X_get_window_tiles
+	jsr field_x.get_window_tiles
 	lda #$03<<1|1
-	bne field_X_get_window_tiles
+	bne field_x.get_window_tiles
 ;;$3f:ee3e field::getWindowTilesForBottom
 ;;callers:
 ;;	$3f:ed02 field::draw_window_box
-field_get_window_bottom_tiles:	;ed3b
+field.get_window_bottom_tiles:	;ed3b
 	lda #$03<<1
-	jsr field_X_get_window_tiles
-	bne field_X_get_window_tiles
+	jsr field_x.get_window_tiles
+	bne field_x.get_window_tiles
 	.endif	;.ifdef IMPL_BORDER_LOADER
 
 	;VERIFY_PC $ee65
@@ -812,7 +812,7 @@ field_get_window_bottom_tiles:	;ed3b
 ;;	1E:A675:4C 65 EE  JMP $EE65	@ $3d:a666	? (load menu)
 ;;	1F:EC88:4C 65 EE  JMP $EE65 @ $3f:ec83 field::show_off_message_window
 ;;	1F:EC90:20 65 EE  JSR $EE65 @ $3f:ec8b field::show_message_window
-field_stream_string_in_window:
+field.stream_string_in_window:
 ;; patch out callers external to this implementation {
 	FIX_ADDR_ON_CALLER $3c,$9109+1
 	FIX_ADDR_ON_CALLER $3d,$a675+1
@@ -826,12 +826,12 @@ field_stream_string_in_window:
 .window_height = $3d
 .offset_x = $97
 .offset_y = $98
-	jsr field_load_and_draw_string	;$ee9a.
+	jsr field.load_and_draw_string	;$ee9a.
 	;; on exit from above, carry has a boolean value.
 	;; 1: more to draw, 0: completed drawing.
 	bcc .do_return	
 	.paging:
-		jsr field_await_and_get_next_input
+		jsr field.await_and_get_next_input
 		lda <.window_height
 		clc
 		adc #1	;round up to next mod 2
@@ -841,14 +841,14 @@ field_stream_string_in_window:
 		sbc #1
 		pha	;# of text lines available to draw
 		lda #0
-		sta <field_frame_counter
+		sta <field.frame_counter
 		.delay_loop:
-			jsr field_advance_frame_and_set_bank	;$ecd8
-			lda <field_frame_counter
+			jsr field.advance_frame_and_set_bank	;$ecd8
+			lda <field.frame_counter
 			and #FIELD_WINDOW_SCROLL_FRAMES	;;originally 1
 			bne .delay_loop
-		jsr field_seek_string_to_next_line	;$eba9
-		jsr field_draw_string_in_window		;$eec0
+		jsr field.seek_string_to_next_line	;$eba9
+		jsr field.draw_string_in_window		;$eec0
 		;; on exit from above, carry has a boolean value.
 		;; 1: more to draw, 0: completed drawing.
 		pla	;# of text lines available to draw
@@ -866,10 +866,10 @@ field_stream_string_in_window:
 ;//	[in] u8 $3a : x offset
 ;//	[in] u8 $3b : y
 	INIT_PATCH $3f,$f40a,$f435
-field_setVramAddrForWindow:
+field.setVramAddrForWindow:
 .offsetX = $3a
 	ldy <.offsetX
-field_setVramAddrForWindowEx:
+field.setVramAddrForWindowEx:
 ;[in] a : widthInCurrentBg
 ;[in] y : offsetX
 ;[out] y : (offsetX & #$20) ^ #$20
@@ -912,7 +912,7 @@ field_setVramAddrForWindowEx:
 ;;callers:
 ;;	1F:ECE9:20 70 F6  JSR field::calc_size_and_init_buff @ $3f:ece5 field::draw_window_top
 ;;	1F:EEDB:20 70 F6  JSR field::calc_size_and_init_buff @ $3f:eec0 field::draw_string_in_window
-field_calc_draw_width_and_init_window_tile_buffer:
+field.calc_draw_width_and_init_window_tile_buffer:
 ;; patch out callers {
 	FIX_ADDR_ON_CALLER $3f,$eedb+1
 ;; }
@@ -946,7 +946,7 @@ field_calc_draw_width_and_init_window_tile_buffer:
 ;;$3f:f683 field::init_window_tile_buffer:
 ;;caller:
 ;;	$3f:f692 field::draw_window_content
-field_init_window_tile_buffer:
+field.init_window_tile_buffer:
 ;;[in]
 .tiles_1st = $0780
 .tiles_2nd = $07a0
@@ -995,7 +995,7 @@ field_init_window_tile_buffer:
 ;;	1F:EF49:20 92 F6  JSR field::draw_window_content @ $3f:eefa field::decode_and_draw_string
 ;;	1F:EFDE:20 92 F6  JSR field::draw_window_content @ ? (sub routine of $eefa)
 ;;	1F:F48E:20 92 F6  JSR field::draw_window_content @ 
-field_draw_window_content:
+field.draw_window_content:
 ;; patch out external callers {
 	FIX_ADDR_ON_CALLER $3f,$eee9+1
 	FIX_ADDR_ON_CALLER $3f,$ef49+1
@@ -1004,16 +1004,16 @@ field_draw_window_content:
 ;;}
 	pha
 	jsr waitNmiBySetHandler	;ff00
-	inc <field_frame_counter
+	inc <field.frame_counter
 	pla
-	jsr field_upload_window_content	;f6aa
-	;jsr field_sync_ppu_scroll	;ede1
-	;jsr field_callSoundDriver	;c750
-	jsr field_X_end_ppu_update	;sync_ppu_scroll+call_sound_driver
+	jsr field.upload_window_content	;f6aa
+	;jsr field.sync_ppu_scroll	;ede1
+	;jsr field.callSoundDriver	;c750
+	jsr field_x.end_ppu_update	;sync_ppu_scroll+call_sound_driver
 	;lda <.string_bank
 	;jsr call_switch_2banks		;ff03
-	jsr field_X_set_bank_for_window_content_string
-	jmp field_init_window_tile_buffer	;f683
+	jsr field_x.set_bank_for_window_content_string
+	jmp field.init_window_tile_buffer	;f683
 
 	;VERIFY_PC $f6aa
 	.endif	;FAST_FIELD_WINDOW
@@ -1036,7 +1036,7 @@ field_draw_window_content:
 ;;callers:
 ;;	$3f:edc6 field::draw_window_row
 ;;	$3f:f692 field::draw_window_content
-field_upload_window_content:
+field.upload_window_content:
 ;[in]
 .left = $38
 .width = $3c
@@ -1090,7 +1090,7 @@ field_upload_window_content:
 .putTiles:
 	pha
 
-	jsr field_setVramAddrForWindowEx
+	jsr field.setVramAddrForWindowEx
 .beginOffset = .offsetString
 .endOffset = .beginOffset
 	pla	;widthInCurrentBg
@@ -1132,11 +1132,11 @@ field_upload_window_content:
 
 	rts
 	;VERIFY_PC $f727
-field_X_shrink_window_metrics:
-.left = $38	;loaded by field_getWindowMetrics
-.top = $39	;loaded by field_getWindowMetrics
-.width = $3c	;loaded by field_getWindowMetrics
-.height = $3d	;loaded by field_getWindowMetrics
+field_x.shrink_window_metrics:
+.left = $38	;loaded by field.getWindowMetrics
+.top = $39	;loaded by field.getWindowMetrics
+.width = $3c	;loaded by field.getWindowMetrics
+.height = $3d	;loaded by field.getWindowMetrics
 	inc <.left
 	inc <.top
 	dec <.width

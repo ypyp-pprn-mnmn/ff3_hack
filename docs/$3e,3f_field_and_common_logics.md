@@ -626,7 +626,7 @@ ________________________________________________________________________________
 		$86 = $3c >> 1;
 		$2d = 1;
 		//return setPalette();	//$cab1();
-		retur field::merge_bg_attr_with_buff
+		return field.merge_bg_attr_with_buff();
 	}
 $c9a9:
 }
@@ -3016,10 +3016,10 @@ ________________________________________________________________________________
 	$c98f();	//field::cacheWindowPalette
 	waitNmiBySetHandler();	//$ff00();
 	$4014 = 2;
-	field::upload_window_content();	//putWindowTiles();	//$f6aa();
-	field::setWindowPalette();	//$c9a9();
-	field::sync_ppu_scroll();	//$ede1();
-	return field::callSoundDriver();
+	field.upload_window_content();	//putWindowTiles();	//$f6aa();
+	field.set_bg_attr_for_window();	//$c9a9();
+	field.sync_ppu_scroll();	//$ede1();
+	return field.callSoundDriver();
 $ede1:
 }
 ```
