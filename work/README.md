@@ -33,4 +33,19 @@ nesasmはシンボルの文字としてunderscore(_)とdot(.)を許可してい�
 				goto error;
 			if (!push_val(T_SYMBOL))
 				return (0);
+				
+```
+```C
+	/* get the symbol, stop to the first 'non symbol' char */
+	while (valid) {
+		c = *expr;
+		if (isalpha(c) || c == '_' || c == '.' || (isdigit(c) && i >= 1)) {
+			if (i < SBOLSZ - 1)
+				symbol[++i] = c;
+			expr++;
+		}
+		else {
+			valid = 0;
+		}
+}
 ```
