@@ -13,7 +13,8 @@ FIELD_WINDOW_SCROLL_FRAMES = $01
 	.ifdef FAST_FIELD_WINDOW
 
 ;------------------------------------------------------------------------------------------------------
-	INIT_PATCH $3f, $ec0c, $ec83
+	;INIT_PATCH $3f, $ec0c, $ec83
+	INIT_PATCH $3f, $ec0c, $ee9a
 ;;# $3f:ec0c field::show_sprites_on_lower_half_screen
 ;;<details>
 ;;
@@ -128,10 +129,9 @@ field.showhide_sprites_by_region:
 .region_bounds.height:
 	DB $4d,$4d,$4d,$1d,$20,$4d,$6d	;height
 
-	VERIFY_PC $ec83
+	;VERIFY_PC $ec83
 ;------------------------------------------------------------------------------------------------------
-	;INIT_PATCH $3f,$ec83,$ed02
-	INIT_PATCH $3f,$ec83,$ee9a
+	;INIT_PATCH $3f,$ec83,$ee9a
 
 ;;$3f:ec83 field::show_message_UNKNOWN:
 ;; 1F:EC83:A9 00     LDA #$00
@@ -160,7 +160,7 @@ field.show_message_window:
 ;;	u8 A : window_type
 field.show_window:
 ;;patch out external callers {
-	FIX_ADDR_ON_CALLER $3e,$e264+1
+	FIX_ADDR_ON_CALLER $3f,$e264+1
 ;;}
 .field.pad1_inputs = $20
 	;jsr field.draw_inplace_window		;$ecfa
