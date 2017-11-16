@@ -35,7 +35,7 @@ field.show_sprites_on_region7:
 ;; --- fixup address on callers
 	FIX_ADDR_ON_CALLER $3e,$c9c1+1
 ;; --- begin
-	ldx #7
+	ldx #7	;;invalid region type. seems to be a bug.
 field.show_sprites_by_region:
 	lda #1
 	bne	field.showhide_sprites_by_region
@@ -81,23 +81,28 @@ field.showhide_sprites_by_region:
 .sprite_buffer.y = $0200
 .sprite_buffer.attr = $0202
 	sta <.is_to_show
-	ldy #$40	;don't change player and cursor anyways
+	ldy #$40	;don't change player and cursor (stored at before $0240) anyways
+
 	.for_each_sprites:
 		;; if (x < left || right <= x) { continue; }
 		lda .sprite_buffer.x, y
-		cmp .region_bounds.left, x
-		bcc .next
+		;cmp .region_bounds.left, x
+		;bcc .next
+		sec
+		sbc .region_bounds.left, x
 		cmp .region_bounds.right, x
 		bcs .next
 		;; if (y < top || bottom <= y) { continue; }
 		lda .sprite_buffer.y, y
-		cmp .region_bounds.top, x
-		bcc .next
+		;cmp .region_bounds.top, x
+		;bcc .next
+		;;here carry is always clear
+		sbc .region_bounds.top, x
 		cmp .region_bounds.bottom, x
 		bcs .next
 		lda .sprite_buffer.attr, y
 		and #$df	;bit 5 <- 0: sprite in front of BG
-		bit .is_to_show
+		bit <.is_to_show
 		bne .update
 			ora #$20	;bit 5 <- 1: sprite behind BG
 	.update:
@@ -111,12 +116,17 @@ field.showhide_sprites_by_region:
 	rts
 .region_bounds.left:	;$ec67 left (inclusive)
 	DB $0A,$0A,$0A,$8A,$0A,$0A,$0A
-.region_bounds.right:	;$ec6e right (inclusive)
-	DB $EF,$4F,$EF,$EF,$EF,$EF,$EF	
+.region_bounds.right:	;$ec6e right (excludive, out of the box)
+	;DB $EF,$4F,$EF,$EF,$EF,$EF,$EF	
+.region_bounds.width:
+	DB $E5,$45,$E5,$65,$E5,$E5,$E5	;width
 .region_bounds.top:		;$ec75 top (inclusive)
-	DB $0A,$8A,$8A,$6A,$0A,$0A,$6A
-.region_bounds.bottom:	;$ec7c bottom (inclusive)
-	DB $57,$D7,$D7,$87,$2A,$57,$D7	
+	;DB $0A,$8A,$8A,$6A,$0A,$0A,$6A
+	DB $09,$89,$89,$69,$09,$09,$69	;top - 1.(accounted for optimization)
+.region_bounds.bottom:	;$ec7c bottom (exclusive)
+	;DB $57,$D7,$D7,$87,$2A,$57,$D7	
+.region_bounds.height:
+	DB $4d,$4d,$4d,$1d,$20,$4d,$6d	;height
 
 	VERIFY_PC $ec83
 ;------------------------------------------------------------------------------------------------------
