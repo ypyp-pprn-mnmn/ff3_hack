@@ -41,6 +41,97 @@ field.show_sprites_by_region:
 	lda #1
 	bne	field.showhide_sprites_by_region
 ;------------------------------------------------------------------------------------------------------
+;$3f:ed61 field::get_window_metrics
+;//[in]
+;// u8 $37: skipAttrUpdate
+;// u8 X: window_type (0...4)
+;//		0: object's message?
+;//		1: choose dialog (Yes/No) (can be checked at INN)
+;//		2: use item to object
+;//		3: Gil (can be checked at INN)
+;//		4: floor name
+	;INIT_PATCH $3f,$ed61,$edc6
+;;$3f:ed61 field::get_window_region
+;;callers:
+;;	$3f:ed02 field::draw_window_box
+;;NOTEs:
+;; 1) to reflect changes in screen those made by 'field.hide_sprites_around_window',
+;;	which is called within this function,
+;;	caller must update sprite attr such as:
+;;	lda #2
+;;	sta $4014	;DMA
+;; 2) this logic is very simlar to $3d:aabc field::get_menu_window_metrics.
+;;	the difference is:
+;;		A) this logic takes care of wrap-around unlike the other one, which does not.
+;;		B) target window and the address of table where the corresponding metrics defined at
+field.get_window_region:
+;[in]
+.viewport_left = $29	;in 16x16 unit
+.viewport_top = $2f	;in 16x16 unit
+.skip_attr_update = $37
+;[out]
+.left = $38	;in 8x8 unit
+.top = $39	;in 8x8 unit
+.width = $3c
+.height = $3d
+.offset_x = $97
+.offset_y = $98
+.internal_top = $b5
+.internal_left = $b6
+.internal_bottom = $b7
+.internal_right = $b8
+
+	lda <.skip_attr_update
+	bne field_x.rts_1	;rts (original: bne $ed60)
+	;; calculate left coordinates
+	lda field.window_attr_table_x,x
+	sta <.internal_left
+	sta <.offset_x
+	dec <.offset_x
+	lda <.viewport_left	;assert(.object_x < 0x80)
+	asl a
+	adc <.internal_left
+	and #$3f
+	sta <.left
+	;; calculate top coordinates
+	lda field.window_attr_table_y,x
+	;clc ;here always clear
+	adc #2
+	sta <.offset_y
+	sta <.internal_top
+	dec <.internal_top
+	lda <.viewport_top
+	asl a
+	adc field.window_attr_table_y,x
+	cmp #$1e
+	bcc .no_wrap
+	;sec ;here always set
+	sbc #$1e
+.no_wrap:
+	sta <.top
+	
+	;; calculate right coordinates
+	lda field.window_attr_table_width,x
+	sta <.width
+	clc
+	adc <.internal_left
+	sta <.internal_right
+	dec <.internal_right
+	;; calculate bottom coordinates
+	lda field.window_attr_table_height,x
+	sta <.height
+	clc
+	adc <.internal_top
+	;sec	;here always clear
+	sbc #2	;effectively -3
+	sta <.internal_bottom
+	;; done calcs
+	;; here X must have window_type (as an argument to the call below)
+	;jmp field.hide_sprites_under_window	;$ec18
+	;rts
+	;VERIFY_PC $edb2
+
+;------------------------------------------------------------------------------------------------------
 ;;# $3f:ec18 field::hide_sprites_under_window
 ;;<details>
 ;;
@@ -88,14 +179,14 @@ field.showhide_sprites_by_region:
 		;; if (x < left || right <= x) { continue; }
 		lda .sprite_buffer.x, y
 		sec
-		sbc .region_bounds.left, x
-		cmp .region_bounds.right, x
+		sbc field.region_bounds.left, x
+		cmp field.region_bounds.right, x
 		bcs .next
 			;; if (y < top || bottom <= y) { continue; }
 			lda .sprite_buffer.y, y
 			;;here carry is always clear
-			sbc .region_bounds.top, x	;;top is adjusted to account carry
-			cmp .region_bounds.bottom, x
+			sbc field.region_bounds.top, x	;;top is adjusted to account carry
+			cmp field.region_bounds.bottom, x
 			bcs .next
 				lda .sprite_buffer.attr, y
 				and #$df	;bit 5 <- 0: sprite in front of BG
@@ -110,22 +201,35 @@ field.showhide_sprites_by_region:
 		iny
 		iny 
 		bne .for_each_sprites
+field_x.rts_1
 	rts
-.region_bounds.left:	;$ec67 left (inclusive)
+field.region_bounds.left:	;$ec67 left (inclusive)
 	DB $0A,$0A,$0A,$8A,$0A,$0A,$0A
-.region_bounds.right:	;$ec6e right (excludive, out of the box)
+field.region_bounds.right:	;$ec6e right (excludive, out of the box)
 	;DB $EF,$4F,$EF,$EF,$EF,$EF,$EF	
-.region_bounds.width:
+field.region_bounds.width:
 	DB $E5,$45,$E5,$65,$E5,$E5,$E5	;width
-.region_bounds.top:		;$ec75 top (inclusive)
+field.region_bounds.top:		;$ec75 top (inclusive)
 	;DB $0A,$8A,$8A,$6A,$0A,$0A,$6A
 	DB $09,$89,$89,$69,$09,$09,$69	;top - 1.(accounted for optimization)
-.region_bounds.bottom:	;$ec7c bottom (exclusive)
+field.region_bounds.bottom:	;$ec7c bottom (exclusive)
 	;DB $57,$D7,$D7,$87,$2A,$57,$D7	
 .region_bounds.height:
 	DB $4d,$4d,$4d,$1d,$20,$4d,$6d	;height
 
 	;VERIFY_PC $ec83
+;------------------------------------------------------------------------------------------------------
+	;.org $edb2
+field.window_attr_table_x:	; = $edb2
+	.db $02, $02, $02, $12, $02
+field.window_attr_table_y:	; = $edb7
+	.db $02, $12, $12, $0e, $02
+field.window_attr_table_width:	; = $edbc
+	.db $1c, $08, $1c, $0c, $1c
+field.window_attr_table_height:	; = $edc1
+	.db $0a, $0a, $0a, $04, $04
+
+	;VERIFY_PC $edc6
 ;------------------------------------------------------------------------------------------------------
 	;INIT_PATCH $3f,$ec83,$ee9a
 
@@ -298,7 +402,7 @@ field.draw_inplace_window:
 	;;originally fall through to $3f:ed02 field::draw_window_box
 	;;jmp field.draw_window_box
 
-	VERIFY_PC $ed02
+	;VERIFY_PC $ed02
 ;------------------------------------------------------------------------------------------------------
 	;INIT_PATCH $3f,$ed02,$ed56
 	;INIT_PATCH $3f,$ed02,$ee9a
@@ -564,111 +668,12 @@ field.init_window_attr_buffer:
 	sta .window_attr_buffer,x
 	dex
 	bpl .fill
-field.window_rts_1:
 	rts
 
 	;VERIFY_PC $ed61
-;------------------------------------------------------------------------------------------------------
-;$3f:ed61 field::get_window_metrics
-;//[in]
-;// u8 $37: skipAttrUpdate
-;// u8 X: window_type (0...4)
-;//		0: object's message?
-;//		1: choose dialog (Yes/No) (can be checked at INN)
-;//		2: use item to object
-;//		3: Gil (can be checked at INN)
-;//		4: floor name
-	;INIT_PATCH $3f,$ed61,$edc6
-;;$3f:ed61 field::get_window_region
-;;callers:
-;;	$3f:ed02 field::draw_window_box
-;;NOTEs:
-;; 1) to reflect changes in screen those made by 'field.hide_sprites_around_window',
-;;	which is called within this function,
-;;	caller must update sprite attr such as:
-;;	lda #2
-;;	sta $4014	;DMA
-;; 2) this logic is very simlar to $3d:aabc field::get_menu_window_metrics.
-;;	the difference is:
-;;		A) this logic takes care of wrap-around unlike the other one, which does not.
-;;		B) target window and the address of table where the corresponding metrics defined at
-field.get_window_region:
-;[in]
-.viewport_left = $29	;in 16x16 unit
-.viewport_top = $2f	;in 16x16 unit
-.skip_attr_update = $37
-;[out]
-.left = $38	;in 8x8 unit
-.top = $39	;in 8x8 unit
-.width = $3c
-.height = $3d
-.offset_x = $97
-.offset_y = $98
-.internal_top = $b5
-.internal_left = $b6
-.internal_bottom = $b7
-.internal_right = $b8
 
-	lda <.skip_attr_update
-	bne field.window_rts_1	;rts (original: bne $ed60)
-	;; calculate left coordinates
-	lda .window_attr_table_x,x
-	sta <.internal_left
-	sta <.offset_x
-	dec <.offset_x
-	lda <.viewport_left	;assert(.object_x < 0x80)
-	asl a
-	adc <.internal_left
-	and #$3f
-	sta <.left
-	;; calculate top coordinates
-	lda .window_attr_table_y,x
-	;clc ;here always clear
-	adc #2
-	sta <.offset_y
-	sta <.internal_top
-	dec <.internal_top
-	lda <.viewport_top
-	asl a
-	adc .window_attr_table_y,x
-	cmp #$1e
-	bcc .no_wrap
-	;sec ;here always set
-	sbc #$1e
-.no_wrap:
-	sta <.top
-	
-	;; calculate right coordinates
-	lda .window_attr_table_width,x
-	sta <.width
-	clc
-	adc <.internal_left
-	sta <.internal_right
-	dec <.internal_right
-	;; calculate bottom coordinates
-	lda .window_attr_table_height,x
-	sta <.height
-	clc
-	adc <.internal_top
-	;sec	;here always clear
-	sbc #2	;effectively -3
-	sta <.internal_bottom
-	;; done calcs
-	;; here X must have window_type (as an argument to the call below)
-	jmp field.hide_sprites_under_window	;$ec18
-	;rts
-	;VERIFY_PC $edb2
-	;.org $edb2
-.window_attr_table_x:	; = $edb2
-	.db $02, $02, $02, $12, $02
-.window_attr_table_y:	; = $edb7
-	.db $02, $12, $12, $0e, $02
-.window_attr_table_width:	; = $edbc
-	.db $1c, $08, $1c, $0c, $1c
-.window_attr_table_height:	; = $edc1
-	.db $0a, $0a, $0a, $04, $04
-
-	;VERIFY_PC $edc6
+;;for optimzation,
+;;$3f$ed61 field.get_window_metrics is relocated to nearby $3f$ec1a field.showhide_sprites_by_region
 
 ;------------------------------------------------------------------------------------------------------
 ;$3f:edc6 field::drawWindowLine
