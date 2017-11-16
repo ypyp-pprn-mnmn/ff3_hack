@@ -9,29 +9,29 @@
 	.include "ff3_32-33.h"
 	.include "ff3_34-35.h"
 ;$3e-3f
-field_callSoundDriver		= $c750
-field_updateTileAttrCache	= $c98f	;field_update_window_attr_buff = $c98f
-field_setTileAttrForWindow	= $c9a9
-field_merge_bg_attr_with_buffer = $cab1
-field_update_vram_by_07d0	= $cb6b	;[in] $07d0[16]: vram address low, $07e0[16]: vram high, $07f0[16]: vram value
-field_get_input				= $d281	;$3e:d281 field::get_input
+field.callSoundDriver			= $c750
+field.update_window_attr_buff	= $c98f
+field.set_bg_attr_for_window	= $c9a9
+field.merge_bg_attr_with_buffer = $cab1
+field.update_vram_by_07d0	= $cb6b	;[in] $07d0[16]: vram address low, $07e0[16]: vram high, $07f0[16]: vram value
+field.get_input				= $d281	;$3e:d281 field::get_input
 ;;
-field_sync_ppu_scroll_with_player	= $e571
-field_seek_string_to_next_line = $eba9
-;field_hide_sprites_under_window = $ec18
-;field_await_and_get_next_input	= $ecab
-;field_advance_frame_with_sound	= $ecd8	;[in] $93 : bank, [in,out] $f0: frame_counter
-;field_restore_bank			= $ecf5	;[in] $57: bank
-;field_draw_inplace_window	= $ecfa	;fall through to field_draw_window_box
-;field_init_window_attr_buffer	= $ed56	
-;field_get_window_metrics	= $ed61	;[in] u8 $96: window_id / [out] $38, $39, $3c, $3d
-;field_sync_ppu_scroll		= $ede1
-;field_stream_string_in_window	= $ee65
-field_load_and_draw_string	= $ee9a
-field_draw_string_in_window	= $eec0
-;field_calc_draw_width_and_init_window_tile_buffer = $f670
-;field_init_window_tile_buffer = $f683 ;fill 0780..79d/07c0..7dd with 0xFF
-;field_upload_window_content	= $f6aa	;impl replaced but stay at the original addr
+field.sync_ppu_scroll_with_player	= $e571
+field.seek_string_to_next_line = $eba9
+;field.hide_sprites_under_window = $ec18
+;field.await_and_get_next_input	= $ecab
+;field.advance_frame_with_sound	= $ecd8	;[in] $93 : bank, [in,out] $f0: frame_counter
+;field.restore_bank			= $ecf5	;[in] $57: bank
+;field.draw_inplace_window	= $ecfa	;fall through to field.draw_window_box
+;field.init_window_attr_buffer	= $ed56	
+;field.get_window_metrics	= $ed61	;[in] u8 $96: window_id / [out] $38, $39, $3c, $3d
+;field.sync_ppu_scroll		= $ede1
+;field.stream_string_in_window	= $ee65
+field.load_and_draw_string	= $ee9a
+field.draw_string_in_window	= $eec0
+;field.calc_draw_width_and_init_window_tile_buffer = $f670
+;field.init_window_tile_buffer = $f683 ;fill 0780..79d/07c0..7dd with 0xFF
+;field.upload_window_content	= $f6aa	;impl replaced but stay at the original addr
 ;;
 switchBanksTo3c3d			= $f727
 do_sprite_dma_from_0200		= $f8aa
@@ -82,7 +82,7 @@ scrollXSetOnIrq		= $10
 scrollYSetOnIrq		= $11
 inputBits			= $12	;used in battle phase. see also getPad1Input($3f:fbaa)
 ;bit7< A B select start up down left right >bit0
-field_pad1_bits		= $20	;order of bits averse to those in battle ($12). see also field::get_input($3e:d281).
+field.pad1_bits		= $20	;order of bits averse to those in battle ($12). see also field::get_input($3e:d281).
 selectTarget_behavior		= $b3	;param of presentSceneFunction10($2e:9d53)
 selectTarget_selectedBits	= $b4
 selectTarget_targetFlag		= $b5
@@ -92,10 +92,10 @@ playSoundEffect		= $c9	;1=play
 soundEffectId		= $ca	; played on irq if $c9 != 0
 targetStatusCache	= $e0	;in process battle phase
 actorStatusCache	= $f0	;
-field_frame_counter	= $f0	;
-field_ppu_ctrl_cache= $ff	;
-field_sprite_attr_cache		= $0200
-field_bg_attr_table_cache	= $0300	;128bytes. exactly the same format as what stored in PPU
+field.frame_counter	= $f0	;
+field.ppu_ctrl_cache= $ff	;
+field.sprite_attr_cache		= $0200	;first $40bytes contains player and cursor sprites
+field.bg_attr_table_cache	= $0300	;128bytes. exactly the same format as what stored in PPU
 presentActionParams	= $78d5	;?,actor,action,targetflag,effectmsg,messages
 battleProcessType	= $78d5
 actionName			= $78d7
