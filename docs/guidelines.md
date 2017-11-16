@@ -15,7 +15,7 @@ It should be utf-8. It is considered to be most interoperable.
 For most part, the code should have javascript-like syntax.
 Each function (or routine, whatever you call it) documentation consists of
 3 sections of description.
-Those 3 sections should be marked up with Markdown,
+Those 3 sections are encouraged to be marked up with Markdown,
 so that it gets more pretty if it is rendered as html,
 without sacrificing readability of the raw text.
 
@@ -73,7 +73,7 @@ The 6502 registers will have the same name in the (pseudo-)code.
 So the following one character variables represent these:
     `A, X, Y, P, S`.
 #### processor flags
-While `P` is available as a whole processor flags,
+While `P` is available as a whole processor flags register,
 it may be more convenient to define its individual flags separately, like:
     `carry, zero, overflow` etc.
 #### other variables
