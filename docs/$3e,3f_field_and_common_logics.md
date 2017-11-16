@@ -625,8 +625,7 @@ ________________________________________________________________________________
 		$30 = $3b >> 1;
 		$86 = $3c >> 1;
 		$2d = 1;
-		//return setPalette();	//$cab1();
-		return field.merge_bg_attr_with_buff();
+		return field.merge_bg_attr_with_buff();	//$cab1();
 	}
 $c9a9:
 }
@@ -2603,9 +2602,10 @@ ________________________________________________________________________________
 +	u8 $83: region boundary in pixels, bottom, exclusive.
 +	u8 $84: show/hide flag
 ## notes:
-region_type 7 seems to be INVALID.
-Static data referred to by this function consists of
-4 parallel arrays, of which has 7 entries in each.
+-	"サロニア その1" is convenient location to test this function as there are various object and floor levels
+-	region_type 7 (i.e., 8th entry) seems to be INVALID.
+	Static data referred to by this function consists of
+	4 parallel arrays, of which has only 7 entries in each.
 ## code:
 ```js
 {
@@ -3013,10 +3013,10 @@ ________________________________________________________________________________
 ```js
 {
 	$90 = $3c;
-	$c98f();	//field::cacheWindowPalette
+	field.update_window_attr_buff();	//$c98f();
 	waitNmiBySetHandler();	//$ff00();
 	$4014 = 2;
-	field.upload_window_content();	//putWindowTiles();	//$f6aa();
+	field.upload_window_content();	//$f6aa();
 	field.set_bg_attr_for_window();	//$c9a9();
 	field.sync_ppu_scroll();	//$ede1();
 	return field.callSoundDriver();
