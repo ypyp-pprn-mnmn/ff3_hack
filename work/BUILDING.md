@@ -122,6 +122,7 @@ GIVE_FIGHTER_RAID
 	戦士が「ふみこむ」を使えるようになります
 
 GIVE_HUNTER_DISORDERED_SHOT
+-------------------------------------------------
 	狩人が「みだれうち」を使えるようになります
 
 GIVE_VIKING_PROVOKE
