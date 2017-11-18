@@ -13,33 +13,10 @@ FIELD_WINDOW_SCROLL_FRAMES = $01
 	.ifdef FAST_FIELD_WINDOW
 
 ;------------------------------------------------------------------------------------------------------
-	;INIT_PATCH $3f, $ec0c, $ec83
 	INIT_PATCH $3f, $ec0c, $ee9a
+;;below 2 logics are moved for space optimization:
 ;;# $3f:ec0c field::show_sprites_on_lower_half_screen
-;;<details>
-;;
-;;## callers:
-;;+	`1F:C9B6:20 0C EC  JSR field.show_sprites_on_region6`
-field.show_sprites_on_lower_half_screen:
-;; --- fixup address on callers
-	FIX_ADDR_ON_CALLER $3e,$c9b6+1
-;; ---
-	ldx #6
-	bne	field.show_sprites_by_region
-;------------------------------------------------------------------------------------------------------
 ;;# $3f:ec12 field::show_sprites_on_region7 (bug?)
-;;<details>
-;;
-;;## callers:
-;;+	`1F:C9C1:20 12 EC  JSR field.show_sprites_on_region7`
-field.show_sprites_on_region7:
-;; --- fixup address on callers
-	FIX_ADDR_ON_CALLER $3e,$c9c1+1
-;; --- begin
-	ldx #7	;;invalid region type. seems to be a bug.
-field.show_sprites_by_region:
-	lda #1
-	bne	field.showhide_sprites_by_region
 ;------------------------------------------------------------------------------------------------------
 ;$3f:ed61 field::get_window_metrics
 ;//[in]
@@ -201,8 +178,34 @@ field.showhide_sprites_by_region:
 		iny
 		iny 
 		bne .for_each_sprites
-field_x.rts_1
+field_x.rts_1:
 	rts
+;;# $3f:ec0c field::show_sprites_on_lower_half_screen
+;;<details>
+;;
+;;## callers:
+;;+	`1F:C9B6:20 0C EC  JSR field.show_sprites_on_region6`
+field.show_sprites_on_lower_half_screen:
+;; --- fixup address on callers
+	FIX_ADDR_ON_CALLER $3e,$c9b6+1
+;; ---
+	ldx #6
+	bne	field.show_sprites_by_region
+;------------------------------------------------------------------------------------------------------
+;;# $3f:ec12 field::show_sprites_on_region7 (bug?)
+;;<details>
+;;
+;;## callers:
+;;+	`1F:C9C1:20 12 EC  JSR field.show_sprites_on_region7`
+field.show_sprites_on_region7:
+;; --- fixup address on callers
+	FIX_ADDR_ON_CALLER $3e,$c9c1+1
+;; --- begin
+	ldx #7	;;invalid region type. seems to be a bug.
+field.show_sprites_by_region:
+	lda #1
+	bne	field.showhide_sprites_by_region
+
 field.region_bounds.left:	;$ec67 left (inclusive)
 	DB $0A,$0A,$0A,$8A,$0A,$0A,$0A
 field.region_bounds.right:	;$ec6e right (excludive, out of the box)
@@ -361,7 +364,7 @@ field.draw_window_top:
 	lda <.window_top
 	sta <.window_row_in_drawing
 	jsr field.calc_draw_width_and_init_window_tile_buffer
-	;jsr field.init_window_attr_buffer
+	;jsr field.init_window_attr_buffer	;;unnecessary
 	jsr field.get_window_top_tiles
 	jsr field.draw_window_row
 	;; fall through (into $ecf5: field.restore_bank)
@@ -676,18 +679,6 @@ field.init_window_attr_buffer:
 ;;$3f$ed61 field.get_window_metrics is relocated to nearby $3f$ec1a field.showhide_sprites_by_region
 
 ;------------------------------------------------------------------------------------------------------
-;$3f:edc6 field::drawWindowLine
-;{
-;	$90 = $3c;
-;	$c98f();	//field::loadWindowPalette?
-;	waitNmiBySetHandler();	//$ff00();
-;	$4014 = 2;
-;	putWindowTiles();	//$f6aa();
-;	field::setWindowPalette();	//$c9a9();
-;	field::sync_ppu_scroll();	//$ede1();
-;	return field::callSoundDriver();
-;$ede1:
-;}
 	;INIT_PATCH $3f,$edc6,$ede1
 field.draw_window_row:	;;$3f:edc6 field::draw_window_row
 ;;callers:
