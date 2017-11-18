@@ -13,7 +13,127 @@ FIELD_WINDOW_SCROLL_FRAMES = $01
 	.ifdef FAST_FIELD_WINDOW
 
 ;--------------------------------------------------------------------------------------------------
-	INIT_PATCH $3f, $ec0c, $ee9a
+	INIT_PATCH $3f, $eba9, $ee9a
+;;
+;;# $3f:eba9 field::seek_text_to_next_line
+;;<details>
+;;
+;;## args:
+;;+	[in,out] ptr $1c: pointer to text to seek with
+;;+	[out] ptr $3e: pointer to the text, pointing the beginning of next line
+;;## callers:
+;;+	`1F:EB5E:20 A9 EB  JSR field::seek_to_next_line`
+;;+	$3f:ee65 field::stream_string_in_window
+;;## code:
+field_x.seek_text_to_next:
+.p_text = $1c
+	IS_PRINTABLE_CHAR
+	bcs field.seek_text_to_next_line	;printable.
+	;: skip operand value of the replacement char
+		inc <.p_text
+		bne field.seek_text_to_next_line
+			inc <.p_text+1
+
+	FALL_THROUGH_TO field.seek_text_to_next_line
+
+field.seek_text_to_next_line:
+;; fixup callers
+	FIX_ADDR_ON_CALLER $3f,$eb5e+1
+;; ---
+	ldy #0
+field_x.find_next_eol:
+.p_text = $1c
+.p_out = $3e
+;; ---
+;.loop:
+	lda [.p_text],y
+	;; p_text++
+	inc <.p_text
+	bne .low_only
+		inc <.p_text+1
+.low_only:
+	cmp #CHAR.EOL
+	bne field_x.seek_text_to_next
+.found:
+	lda <.p_text
+	sta <.p_out
+	lda <.p_text+1
+	sta <.p_out+1
+	rts
+
+;field_x.seek_window_text:
+;; on exit, zero is always cleared
+;; as either low byte of ptr or high byte has non-zero value after increment
+;.p_text = $1c
+;	inc <.p_text
+;	bne .return
+;		inc <.p_text+1
+;.return
+;	rts
+
+;--------------------------------------------------------------------------------------------------
+;;# $3f:ebd1 field::unseek_text_to_line_beginning
+;;<details>
+;;
+;;## args:
+;;+	[in,out] ptr $1c: pointer to text to seek with
+;;+	[out] ptr $3e: pointer to the text, pointing the beginning of line
+;;## callers:
+;;+	`1F:EB81:20 D1 EB  JSR field.unseek_to_line_beginning`
+;;## notes:
+;;used to scroll back texts, in particular when a cursor moved up in item window.
+;;
+field.unseek_text_to_line_beginning:	;;$3f:ebd1
+;; fixup callers:
+	FIX_ADDR_ON_CALLER $3f,$eb81+1
+;; ---
+;;note: in this logic this points to the byte immeditely preceding the current position
+.p_text = $1c
+.p_out = $3e
+;; --- 
+.loop:
+		jsr field_x.unseek_window_text
+		ldy #0
+		lda [.p_text],y
+		;; checking if the char at right before the pointer
+		;; is a replacement code
+		;jsr field_x.is_printable_char
+		IS_PRINTABLE_CHAR
+		bcs .printable_char	;printable.
+			;; if it is, then seek back 2 chars to skip operand byte.
+			;; this is bit tricky however it works.
+			jsr field_x.unseek_window_text
+			bne .loop	;always set
+.printable_char:
+		;; if the
+		iny
+		lda [.p_text],y
+		lsr A
+		bne .loop	;char is neither CHAR.NULL or CHAR.EOL
+.found:
+	;$3c <- ($1c + 2)
+	lda #2
+	clc
+	adc <.p_text
+	sta <.p_out
+	ldy <.p_text+1
+	bcc .return
+		iny
+.return:
+	sty <.p_out+1
+	rts
+
+field_x.unseek_window_text:
+.p_text = $1c
+	lda <.p_text
+	bne .low_byte_only
+		dec <.p_text+1
+.low_byte_only:
+	dec <.p_text
+	rts
+
+	;VERIFY_PC $ec0c
+	;INIT_PATCH $3f, $ec0c, $ee9a
 ;------------------------------------------------------------------------------------------------------
 ;;below 2 logics are moved for space optimization:
 ;;# $3f:ec0c field::show_sprites_on_lower_half_screen
@@ -855,7 +975,7 @@ field.stream_string_in_window:
 			lda <field.frame_counter
 			and #FIELD_WINDOW_SCROLL_FRAMES	;;originally 1
 			bne .delay_loop
-		jsr field.seek_string_to_next_line	;$eba9
+		jsr field.seek_text_to_next_line	;$eba9
 		jsr field.draw_string_in_window		;$eec0
 		;; on exit from above, carry has a boolean value.
 		;; 1: more to draw, 0: completed drawing.
