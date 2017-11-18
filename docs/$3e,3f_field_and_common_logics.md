@@ -2481,11 +2481,6 @@ ________________________________________________________________________________
 ## notes:
 used to scroll back texts, in particular when a cursor moved up in item window.
 
-unless the pointer given by caller is pointing to reverse-order text,
-the result of this function seems not reliable
-due to the incorrect handling of 2-bytes opcodes (0x10 to 0x28).
-however this isn't the case (caller passes normal string).
-this seems to be a bug, but yet to be confirmed.
 ## code:
 ```js
 {

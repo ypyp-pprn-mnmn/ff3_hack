@@ -8,6 +8,7 @@ CHAR.REPLACEMENT_BEGIN = $10    ;inclusive
 CHAR.REPLACEMENT_END = $28      ;exclusive. ($28 = space)
 CHAR.SPACE = $28
 
+;; =======================================================
 ;; --  00 01 02 03 04 05 06 07    08 09 0a 0b 0c 0d 0e 0f
 ;; 00  \0 \n \t .. .. .. .. ..    .. .. .. .. .. .. .. ..
 ;; 10  .. .. .. .. .. .. .. ..    .. .. .. .. .. .. .. ..
@@ -25,3 +26,16 @@ CHAR.SPACE = $28
 ;; d0  キ ク ケ コ サ シ ス セ     ソ タ チ ツ テ ト ナ ニ
 ;; e0  ヌ ネ ノ ハ ヒ フ 「 ホ     マ ミ ム メ モ ヤ ユ ヨ
 ;; f0  ラ リ ル レ ロ ワ ン ┏     ━ ┓ ┃ ┃ ┗ ━ ┛ __
+;; =======================================================
+
+IS_PRINTABLE_CHAR   .macro 
+    .is_printable_char_\@:
+    ;;[in]
+    ;;	u8 A: charcode, destructed on exit
+    ;;[out]
+    ;;	bool carry: 1 = printable (not a replacement char), 0 = replacement.
+        sec
+        sbc #CHAR.REPLACEMENT_BEGIN
+        cmp #(CHAR.REPLACEMENT_END - CHAR.REPLACEMENT_BEGIN)
+    ;;  rts
+    .endm   ;IS_PRINTABLE_CHAR 

@@ -21,7 +21,7 @@ field.update_vram_by_07d0	= $cb6b	;[in] $07d0[16]: vram address low, $07e0[16]: 
 field.get_input				= $d281	;$3e:d281 field::get_input
 ;;
 field.sync_ppu_scroll_with_player	= $e571
-field.seek_string_to_next_line = $eba9
+;field.seek_text_to_next_line = $eba9
 ;field.hide_sprites_under_window = $ec18
 ;field.await_and_get_next_input	= $ecab
 ;field.advance_frame_with_sound	= $ecd8	;[in] $93 : bank, [in,out] $f0: frame_counter
