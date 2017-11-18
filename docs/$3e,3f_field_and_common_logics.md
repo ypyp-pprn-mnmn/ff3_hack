@@ -2424,7 +2424,7 @@ ________________________________________________________________________________
 +	[in,out] ptr $3e: pointer to text
 +	[in] u8 $93: bank number of the text
 +	[in] u8 $a3: ?
-+	[out] u8 $b4: ? (= 0x40 or unchanged)
++	[out] u8 $b4: ? (= 0x40(if aborted) or 0xC0(if scrolled))
 +	[in,out] u16 ($79f0,$79f2): ?
 +	[out] bool carry: 1: scroll aborted, 0: otherwise
 ## callers:
@@ -2502,14 +2502,14 @@ ________________________________________________________________________________
 
 **fall through**
 ________________________________________________________________________________
-# $3f$eb61 field.update_item_window
+# $3f$eb61 field.reflect_item_window_scroll
 <details>
 
 ## args:
 +	[in] u8 $57: bank number to restore
 +	[out] bool carry: always 0. (= scroll successful)
 ## callers:
-+	`1F:EB9F:4C 61 EB  JMP field.update_item_window` @ $3f$eb69 field.scrollup_item_window
++	`1F:EB9F:4C 61 EB  JMP field.reflect_item_window_scroll` @ $3f$eb69 field.scrollup_item_window
 ## code:
 ```js
 {
@@ -2530,7 +2530,7 @@ ________________________________________________________________________________
 +	[in,out] ptr $1c: pointer to text
 +	[in] u8 $93: bank number of the text
 +	[in] u8 $a3: ?
-+	[out] u8 $b4: ? (= 0xc0 or 0x80)
++	[out] u8 $b4: ? (= 0xc0 if scrolled, or 0x80 if aborted)
 +	[in,out] u16 ($79f0,$79f2): ?
 +	[out] bool carry: 1: scroll aborted, 0: scroll successful
 ## callers:
@@ -2564,7 +2564,7 @@ ________________________________________________________________________________
  1F:EB97:AD F2 79  LDA $79F2 = #$1E
  1F:EB9A:69 00     ADC #$00
  1F:EB9C:8D F2 79  STA $79F2 = #$1E
- 1F:EB9F:4C 61 EB  JMP field.update_item_window
+ 1F:EB9F:4C 61 EB  JMP field.reflect_item_window_scroll
  1F:EBA2:A9 80     LDA #$80
  1F:EBA4:85 B4     STA $00B4 = #$80
  1F:EBA6:4C 3C EB  JMP field.abort_item_window_scroll
