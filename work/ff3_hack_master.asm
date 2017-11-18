@@ -22,7 +22,7 @@
 	.else
 		.incbin	"base-binary/ff3_hack_base.nes.noheader"	;header must be stripped
 	.endif	;BALANCED_VERSION
-	.include "ff3_asm.h"
+	.include "ff3.h.asm"
 	.bank	$00
 	.org	$8000
 	.include "ff3_string.asm"
