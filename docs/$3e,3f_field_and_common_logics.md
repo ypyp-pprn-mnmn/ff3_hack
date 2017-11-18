@@ -2437,6 +2437,9 @@ ________________________________________________________________________________
 ## args:
 +	[in,out] ptr $1c: pointer to text to seek with
 +	[out] ptr $3e: pointer to the text, pointing the beginning of next line
+## callers:
++	`1F:EB5E:20 A9 EB  JSR field::seek_to_next_line`
++	$3f:ee65 field::stream_string_in_window
 ## code:
 ```js
 {
