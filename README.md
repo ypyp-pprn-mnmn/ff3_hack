@@ -46,7 +46,7 @@ DSがない…せや!ファミコンですればええんや!
 + ### 当面はROM容量512k, マッパーMMC3 を想定したコードにしておきます
   + 家を建てるにはまず基礎工事が必要です
 
-## 開発
+## 開発の進め方
 ToDoは[githubのissues](https://github.com/ypyp-pprn-mnmn/ff3_hack/issues)で管理しています。
 
 ### パッチの開発は大まかに次のステップのサイクルです
@@ -59,7 +59,7 @@ ToDoは[githubのissues](https://github.com/ypyp-pprn-mnmn/ff3_hack/issues)で�
   5. ips/bps作成
       + 最近は[flips](https://github.com/Alcaro/Flips)を利用しています。
 
-## Contribution
+## Contributing
 (　ﾟдﾟ) ・・・
 　
 (つд⊂)ｺﾞｼｺﾞｼ
