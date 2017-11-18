@@ -2544,7 +2544,6 @@ this seems to be a bug, but yet to be confirmed.
 	$3e = ptr + 2;
 	return;
 $ec0c:
-*/
 }
 ```
 </details>
