@@ -2410,22 +2410,165 @@ ________________________________________________________________________________
 ```js
 {
 	return call_switch1stBank(a = #3c);
+$eb2d:
 }
 ```
 </details>
 
 ________________________________________________________________________________
-# $3f:eb61 field::drawEncodedStringInWindowAndRestoreBanks
+# $3f:eb2d field.scrolldown_item_window
 <details>
 
+## args:
++	[in,out] ptr $1c: pointer to text
++	[in,out] ptr $3e: pointer to text
++	[in] u8 $93: bank number of the text
++	[in] u8 $a3: ?
++	[out] u8 $b4: ? (= 0x40 or unchanged)
++	[in,out] u16 ($79f0,$79f2): ?
++	[out] bool carry: 1: scroll aborted, 0: otherwise
+## callers:
++	'1E:9255:20 2D EB  JSR field.scrolldown_item_window' @ ?
 ## code:
 ```js
 {
-	field::drawEncodedStringInWindow();	//$eec0
+/*
+ 1F:EB2D:A0 00     LDY #$00
+ 1F:EB2F:A5 93     LDA field.window_text_bank = #$1B
+ 1F:EB31:20 03 FF  JSR call_switch_2banks
+ 1F:EB34:B1 3E     LDA ($3E),Y @ $86FB = #$17
+ 1F:EB36:D0 0B     BNE field.do_scrolldown_item_window
+ 1F:EB38:A9 40     LDA #$40
+ 1F:EB3A:85 B4     STA $00B4 = #$C0
+*/
+$eb3c:
+}
+```
+</details>
+
+**fall through**
+________________________________________________________________________________
+# $3f$eb3c field.abort_item_window_scroll
+<details>
+
+## args:
++	[in] u8 $57: bank number to restore
++	[out] bool carry: always 1. (scroll aborted)
+## callers:
++	`1F:EBA6:4C 3C EB  JMP field.abort_item_window_scroll` @ $3f$eb69 field.scrollup_item_window
+## code:
+```js
+{
+/*
+ 1F:EB3C:A5 57     LDA $0057 = #$3C
+ 1F:EB3E:20 03 FF  JSR call_switch_2banks
+ 1F:EB41:38        SEC
+ 1F:EB42:60        RTS
+*/
+$eb43:
+}
+```
+</details>
+
+________________________________________________________________________________
+# $3f$eb43 field.do_scrolldown_item_window
+<details>
+
+## args:
++	[out] bool carry: always 0. (= scroll successful)
+## callers:
++	`1F:EB36:D0 0B     BNE field.scrolldown_item_window` @ $3f$eb2d field.scrolldown_item_window
+## code:
+```js
+{
+/*
+ 1F:EB43:A9 C0     LDA #$C0
+ 1F:EB45:85 B4     STA $00B4 = #$00
+ 1F:EB47:A5 A3     LDA $00A3 = #$00
+ 1F:EB49:C9 02     CMP #$02
+ 1F:EB4B:D0 11     BNE $EB5E
+ 1F:EB4D:AD F0 79  LDA $79F0 = #$00
+ 1F:EB50:38        SEC
+ 1F:EB51:E9 08     SBC #$08
+ 1F:EB53:8D F0 79  STA $79F0 = #$00
+ 1F:EB56:AD F2 79  LDA $79F2 = #$1E
+ 1F:EB59:E9 00     SBC #$00
+ 1F:EB5B:8D F2 79  STA $79F2 = #$1E
+ 1F:EB5E:20 A9 EB  JSR field::seek_to_next_line
+*/
+}
+```
+</details>
+
+**fall through**
+________________________________________________________________________________
+# $3f$eb61 field.update_item_window
+<details>
+
+## args:
++	[in] u8 $57: bank number to restore
++	[out] bool carry: always 0. (= scroll successful)
+## callers:
++	`1F:EB9F:4C 61 EB  JMP field.update_item_window` @ $3f$eb69 field.scrollup_item_window
+## code:
+```js
+{
+	field.draw_string_in_window();	//$eec0
 	resotreBanksBy$57();	//$ecf5();
-	clc;
+	clc;	//successfully scrolled the item window
 	return;
 $eb69:
+}
+```
+</details>
+
+________________________________________________________________________________
+# $3f$eb69 field.scrollup_item_window
+<details>
+
+## args:
++	[in,out] ptr $1c: pointer to text
++	[in] u8 $93: bank number of the text
++	[in] u8 $a3: ?
++	[out] u8 $b4: ? (= 0xc0 or 0x80)
++	[in,out] u16 ($79f0,$79f2): ?
++	[out] bool carry: 1: scroll aborted, 0: scroll successful
+## callers:
++	`1E:9233:20 69 EB  JSR field.scrollup_item_window` @ ?
+## code:
+```js
+{
+/*
+ 1F:EB69:A5 1C     LDA $001C = #$FA
+ 1F:EB6B:38        SEC
+ 1F:EB6C:E9 02     SBC #$02
+ 1F:EB6E:85 1C     STA $001C = #$FA
+ 1F:EB70:A5 1D     LDA $001D = #$85
+ 1F:EB72:E9 00     SBC #$00
+ 1F:EB74:85 1D     STA $001D = #$85
+ 1F:EB76:A5 93     LDA field.window_text_bank = #$1B
+ 1F:EB78:20 03 FF  JSR call_switch_2banks
+ 1F:EB7B:A0 01     LDY #$01
+ 1F:EB7D:B1 1C     LDA ($1C),Y @ $85FB = #$00
+ 1F:EB7F:F0 21     BEQ $EBA2
+ 1F:EB81:20 D1 EB  JSR field.unseek_to_line_beginning
+ 1F:EB84:A9 C0     LDA #$C0
+ 1F:EB86:85 B4     STA $00B4 = #$80
+ 1F:EB88:A5 A3     LDA $00A3 = #$00
+ 1F:EB8A:C9 02     CMP #$02
+ 1F:EB8C:D0 11     BNE $EB9F
+ 1F:EB8E:AD F0 79  LDA $79F0 = #$00
+ 1F:EB91:18        CLC
+ 1F:EB92:69 08     ADC #$08
+ 1F:EB94:8D F0 79  STA $79F0 = #$00
+ 1F:EB97:AD F2 79  LDA $79F2 = #$1E
+ 1F:EB9A:69 00     ADC #$00
+ 1F:EB9C:8D F2 79  STA $79F2 = #$1E
+ 1F:EB9F:4C 61 EB  JMP field.update_item_window
+ 1F:EBA2:A9 80     LDA #$80
+ 1F:EBA4:85 B4     STA $00B4 = #$80
+ 1F:EBA6:4C 3C EB  JMP field.abort_item_window_scroll
+*/
 }
 ```
 </details>
@@ -2866,8 +3009,8 @@ ________________________________________________________________________________
 <details>
 
 ## callers:
-+	`1F:EB64:20 F5 EC  JSR field::restore_bank` (in $3f:eb61 field::drawEncodedStringInWindowAndRestoreBanks)
-+	`1F:F49E:4C F5 EC  JMP field::restore_bank`
++	`1F:EB64:20 F5 EC  JSR field::restore_bank` @ $3f$eb61 field.update_item_window
++	`1F:F49E:4C F5 EC  JMP field::restore_bank` @ ?
 +	field::draw_window_top (by falling thourgh)
 +	field::draw_window_box
 ## code:
@@ -3172,6 +3315,7 @@ ________________________________________________________________________________
 ## code:
 ```js
 {
+/*
  1F:EE65:20 9A EE  JSR field::load_and_draw_string
  1F:EE68:90 2F     BCC $EE99
 	$ee6a:
@@ -3205,6 +3349,7 @@ $ee8f:
 	 1F:EE97:90 D1     BCC $EE6A
 $ee99:
  1F:EE99:60        RTS
+*/
 }
 ```
 </details>
@@ -3214,8 +3359,16 @@ ________________________________________________________________________________
 <details>
 
 ## args:
+### in:
++	u8 $92: string_id
++	ptr $94: offset to string ptr table
 ### out:
 +	bool carry: more_to_draw	//flagged cases could be tested at サロニアの図書館(オーエンのほん1)
++	ptr $3e: offset to the string, assuming the bank it to be loaded is at 1st page (starting at $8000)
++	u8 $93: bank number which the string would be loaded from
+## callers:
++	`1F:C036:20 9A EE  JSR field::load_and_draw_string`
++	`1F:EE65:20 9A EE  JSR field::load_and_draw_string` @ $3f:ee65 field::stream_string_in_window
 ## code:
 ```js
 {
