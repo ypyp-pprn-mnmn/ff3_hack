@@ -265,6 +265,16 @@ FIX_ADDR_ON_CALLER	.macro
 	__patch_addr_\@:
 	.bank \1
 	.org \2
+	;;sanity checks
+	.if ((\2 >> 13) & 1) != (\1 & 1)
+		.fail	;even banks would fall in address ranges starting at $8000 or $c000, and for odd ones it would be $a000 or $e000.
+	.endif;
+	;;ok
 	.dw __patch_addr_\@
 	RESTORE_PC __patch_addr_\@
 	.endm
+
+FALL_THROUGH_TO	.macro
+	__fall_through_\1:
+	.endm	;FALL_THROUGH_TO
+
