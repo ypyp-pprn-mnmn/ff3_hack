@@ -132,6 +132,7 @@ effect_enemyStatus	= $7ec4
 indexToGroupMap		= $7ecd	;*8
 battleMode			= $7ed8	; 80:boss? 20:fireCannon(invincible) 10:disallowEnlarge 08:? 01:disallowEscape
 play_protectionTargetBits = $7edf
+effect.protection_causal_bits = $7ee0
 play_segmentedGroup = $7ee1
 
 soundDriver_playingMusicId = $7f40
