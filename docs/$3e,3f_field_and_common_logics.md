@@ -2988,6 +2988,8 @@ ________________________________________________________________________________
 # $3f:ece5 field::draw_window_top
 <details>
 
+## callers:
++	`1E:AAA3:4C E5 EC  JMP field::draw_window_top` @ ?
 ## notes:
 called when executed an exchange of position in item window from menu
 ## code:
@@ -3005,14 +3007,14 @@ called when executed an exchange of position in item window from menu
 
 **fall through**
 ________________________________________________________________________________
-# $3f:ecf5 restoreBanksBy$57
+# $3f:ecf5 restore_banks_by_$57
 <details>
 
 ## callers:
 +	`1F:EB64:20 F5 EC  JSR field::restore_bank` @ $3f$eb61 field.update_item_window
-+	`1F:F49E:4C F5 EC  JMP field::restore_bank` @ ?
 +	field::draw_window_top (by falling thourgh)
-+	field::draw_window_box
++	`1F:ED53:4C F5 EC  JMP field::restore_bank_by_$57` @ field::draw_window_box
++	`1F:F49E:4C F5 EC  JMP field::restore_bank` @ ?
 ## code:
 ```js
 {
