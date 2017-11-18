@@ -5,7 +5,7 @@
 ;	implements 'counter attack' feature
 ;
 ;version:
-;	0.08 (2006-11-10)
+;	0.09 (2017-11-18)
 ;
 ;======================================================================================================
 ff3_command_04_begin:
@@ -23,6 +23,7 @@ command_fight:
 .pActor = $6e
 .pTarget = $70
 .nearlyDeadFlag = $7cec	;probably (not yet confirmed)
+.protector_original_formation = $7cea
 
 	jsr getActor2C	;a42e
 	;bpl .actor_is_player_char
@@ -97,14 +98,14 @@ command_fight:
 				;jsr flagTargetBit	;fd20
 				jsr flagSingleTarget
 				
-				sta $7e99
+				sta play_castTargetBits		;$7e99
 				sta play_protectionTargetBits	;$7edf
 				
 				ldx <.actorIndex
 				;lda #0
 				;jsr flagTargetBit
 				jsr flagSingleTarget
-				sta $7ee0
+				sta effect.protection_causal_bits	;$7ee0
 				
 				lda <.playerOffset
 				clc
@@ -116,7 +117,12 @@ command_fight:
 				
 				ldy #$33
 				lda [.pTarget],y
-				sta $7ce3	;save
+				;;
+				;; fix:
+				;;	the temporary variable for Knight's formation flag (@ offset 0x33) is at $7cea,
+				;;	not at $7ce3. (which is 'battle background id' or 'current terrain'. see $35:aac3 getCurrentTerrain)
+				;;
+				sta .protector_original_formation	;$7cea
 				and #$fe	;clear 'at backline' flag
 				sta [.pTarget],y
 .finish_protect_check:
@@ -135,6 +141,7 @@ command_fight_doCalc:
 .iPlayer = $52
 .pActor = $6e
 .pTarget = $70
+.protector_original_formation = $7cea
 	jsr dispatchBattleFunction_03	;801e
 
 	lda play_protectionTargetBits
@@ -142,7 +149,7 @@ command_fight_doCalc:
 		lda #$52	;"ナイトが みをていして かばった！"
 		jsr addBattleMessage
 
-		lda $7cea
+		lda .protector_original_formation	;$7cea
 		ldy #$33
 		sta [.pTarget],y
 
