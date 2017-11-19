@@ -1,3 +1,4 @@
+; encoding: utf-8
 ; ff3_field_window.asm
 ;
 ; description:
@@ -5,13 +6,166 @@
 ;
 ; version:
 ;	0.2.0
-;======================================================================================================
+;==================================================================================================
 ff3_field_window_begin:
 ;;# of frames waited before text lines scolled up
 FIELD_WINDOW_SCROLL_FRAMES = $01
 
 	.ifdef FAST_FIELD_WINDOW
 
+;--------------------------------------------------------------------------------------------------
+	INIT_PATCH $3f, $eb2d, $eba9
+
+;;# $3f:eb2d field.scrolldown_item_window
+;;<details>
+;;
+;;## args:
+;;+	[in,out] ptr $1c: pointer to text
+;;+	[in,out] ptr $3e: pointer to text
+;;+	[in] u8 $93: bank number of the text
+;;+	[in] u8 $a3: ?
+;;+	[out] u8 $b4: ? (= 0x40(if aborted) or 0xC0(if scrolled))
+;;+	[in,out] u16 ($79f0,$79f2): ?
+;;+	[out] bool carry: 1: scroll aborted, 0: otherwise
+;;## callers:
+;;+	`1E:9255:20 2D EB  JSR field.scrolldown_item_window` @ ?
+field.scrolldown_item_window:	;;$3f:eb2d
+;; fixups
+	FIX_ADDR_ON_CALLER $3c,$9255+1
+;; ---
+.text_bank = $93
+.p_text = $1c
+.p_text_end = $3e
+	lda <.text_bank
+	jsr call_switch_2banks
+	ldy #0
+	lda [.p_text_end],y
+	bne field.do_scrolldown_item_window
+		lda #$40
+
+	FALL_THROUGH_TO field.abort_item_window_scroll
+;--------------------------------------------------------------------------------------------------
+;;# $3f$eb3c field.abort_item_window_scroll
+;;<details>
+;;
+;;## args:
+;;+	[in] u8 $57: bank number to restore
+;;+	[out] bool carry: always 1. (scroll aborted)
+;;## callers:
+;;+	`1F:EBA6:4C 3C EB  JMP field.abort_item_window_scroll` @ $3f$eb69 field.scrollup_item_window
+;;## code:
+field.abort_item_window_scroll:	;;$3f$eb3c
+;; fixups
+;; ---
+	sta <$b4
+	sec	;;aborted scrolinng item window
+field_x.restore_bank_with_status:
+	php
+	jsr field.restore_bank	;;note: here original implementation calls $ff03, not $ecf5
+	plp
+	rts
+
+;--------------------------------------------------------------------------------------------------
+;;# $3f$eb43 field.do_scrolldown_item_window
+;;<details>
+;;
+;;## args:
+;;+	[out] bool carry: always 0. (= scroll successful)
+;;## callers:
+;;+	`1F:EB36:D0 0B     BNE field.scrolldown_item_window` @ $3f$eb2d field.scrolldown_item_window
+field.do_scrolldown_item_window:	;;$3f$eb43
+	lda <$a3
+	cmp #2
+	bne .by_line
+		;; ($79f0,$79f2) -= 8
+		sec
+		lda $79f0
+		sbc #8
+		sta $79f0
+		bcs .low_byte_only
+			dec $79f2
+	.low_byte_only:
+.by_line:
+	jsr field.seek_text_to_next_line
+
+field_x.reflect_item_window_scroll:
+	lda #$c0
+	sta <$b4
+
+	FALL_THROUGH_TO field.reflect_window_scroll
+;--------------------------------------------------------------------------------------------------
+;;# $3f$eb61 field.reflect_window_scroll
+;;<details>
+;;
+;;## args:
+;;+	[in] u8 $57: bank number to restore
+;;+	[out] bool carry: always 0. (= scroll successful)
+;;## callers:
+;;+	`1E:9F92:20 61 EB  JSR field.reflect_item_window_scro`
+;;+	`1E:A889:4C 61 EB  JMP field.reflect_item_window_scro`
+;;+	`1E:B436:20 61 EB  JSR field.reflect_item_window_scro`
+;;+	`1E:B616:4C 61 EB  JMP field.reflect_item_window_scro`
+;;+	`1E:B624:4C 61 EB  JMP field.reflect_item_window_scro`
+;;+	`1E:BC0F:4C 61 EB  JMP field.reflect_item_window_scro`
+;;+	`1F:EB9F:4C 61 EB  JMP field.reflect_item_window_scroll` @ $3f$eb69 field.scrollup_item_window
+field.reflect_window_scroll:	;;$3f$eb61
+;; fixups:
+	FIX_ADDR_ON_CALLER $3c,$9f92+1
+	FIX_ADDR_ON_CALLER $3d,$a889+1
+	FIX_ADDR_ON_CALLER $3d,$b436+1
+	FIX_ADDR_ON_CALLER $3d,$b616+1
+	FIX_ADDR_ON_CALLER $3d,$b624+1
+	FIX_ADDR_ON_CALLER $3d,$bc0f+1
+;; ---
+	jsr field.draw_string_in_window	;$eec0
+	clc	;successfully scrolled the item window
+	bcc field_x.restore_bank_with_status
+
+;--------------------------------------------------------------------------------------------------
+;;# $3f$eb69 field.scrollup_item_window
+;;<details>
+;;
+;;## args:
+;;+	[in,out] ptr $1c: pointer to text
+;;+	[in] u8 $93: bank number of the text
+;;+	[in] u8 $a3: ?
+;;+	[out] u8 $b4: ? (= 0xc0 if scrolled, or 0x80 if aborted)
+;;+	[in,out] u16 ($79f0,$79f2): ?
+;;+	[out] bool carry: 1: scroll aborted, 0: scroll successful
+;;## callers:
+;;+	`1E:9233:20 69 EB  JSR field.scrollup_item_window` @ ?
+field.scrollup_item_window:	;;$3f$eb69
+;; fixups:
+	FIX_ADDR_ON_CALLER $3c,$9233+1
+;; ---
+.p_text = $1c
+.p_text_end = $3e
+.text_bank = $93
+;; ---
+	jsr field_x.unseek_window_text
+	jsr field_x.unseek_window_text
+	lda <.text_bank
+	jsr call_switch_2banks
+	ldy #1
+	lda [.p_text],y
+	beq .abort_scroll
+		jsr field.unseek_text_to_line_beginning
+		lda <$a3
+		cmp #2
+		bne field_x.reflect_item_window_scroll
+			;; ($79f0,$79f2) += 8
+			lda $79f0
+			clc
+			adc #8
+			sta $79f0
+			bcc field_x.reflect_item_window_scroll
+				inc $79f2
+				bcs field_x.reflect_item_window_scroll
+.abort_scroll:	;$eba2
+	lda #$80
+	bne field.abort_item_window_scroll
+
+	VERIFY_PC $eba9
 ;--------------------------------------------------------------------------------------------------
 	INIT_PATCH $3f, $eba9, $ee9a
 ;;
@@ -38,7 +192,7 @@ field_x.seek_text_to_next:
 
 field.seek_text_to_next_line:
 ;; fixup callers
-	FIX_ADDR_ON_CALLER $3f,$eb5e+1
+	;FIX_ADDR_ON_CALLER $3f,$eb5e+1
 ;; ---
 	ldy #0
 field_x.find_next_eol:
@@ -617,7 +771,7 @@ field.draw_window_top:
 ;;	field::draw_window_box
 field.restore_bank:
 ;; patch out external callers {
-	FIX_ADDR_ON_CALLER $3f,$eb64+1
+	;FIX_ADDR_ON_CALLER $3f,$eb64+1
 	FIX_ADDR_ON_CALLER $3f,$f49e+1
 ;;}
 .program_bank = $57
