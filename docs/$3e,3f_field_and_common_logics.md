@@ -2428,7 +2428,7 @@ ________________________________________________________________________________
 +	[in,out] u16 ($79f0,$79f2): ?
 +	[out] bool carry: 1: scroll aborted, 0: otherwise
 ## callers:
-+	'1E:9255:20 2D EB  JSR field.scrolldown_item_window' @ ?
++	`1E:9255:20 2D EB  JSR field.scrolldown_item_window` @ ?
 ## code:
 ```js
 {
@@ -2502,13 +2502,19 @@ ________________________________________________________________________________
 
 **fall through**
 ________________________________________________________________________________
-# $3f$eb61 field.reflect_item_window_scroll
+# $3f$eb61 field.reflect_window_scroll
 <details>
 
 ## args:
 +	[in] u8 $57: bank number to restore
 +	[out] bool carry: always 0. (= scroll successful)
 ## callers:
++	`1E:9F92:20 61 EB  JSR field.reflect_item_window_scro`
++	`1E:A889:4C 61 EB  JMP field.reflect_item_window_scro`
++	`1E:B436:20 61 EB  JSR field.reflect_item_window_scro`
++	`1E:B616:4C 61 EB  JMP field.reflect_item_window_scro`
++	`1E:B624:4C 61 EB  JMP field.reflect_item_window_scro`
++	`1E:BC0F:4C 61 EB  JMP field.reflect_item_window_scro`
 +	`1F:EB9F:4C 61 EB  JMP field.reflect_item_window_scroll` @ $3f$eb69 field.scrollup_item_window
 ## code:
 ```js
@@ -3507,7 +3513,7 @@ ________________________________________________________________________________
 +	[in] string * $3e
 +	[out] u8 $90 : next dest offset
 ## notes:
-[10...28) defined as opcodes, given that the codes have followed by additional one bytes for parmeter
+[10...28) defined as opcodes (or 'replacement'), given that the codes have followed by additional one byte for parameter
 ### code meanings:
 +	15-17 : left-align text by paramter,increment menu-item count by 4
 +	1e : get job name
