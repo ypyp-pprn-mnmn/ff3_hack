@@ -34,11 +34,10 @@ field.scrolldown_item_window:	;;$3f:eb2d
 ;; fixups
 	FIX_ADDR_ON_CALLER $3c,$9255+1
 ;; ---
-.text_bank = $93
+;.text_bank = $93
 .p_text = $1c
 .p_text_end = $3e
-	lda <.text_bank
-	jsr call_switch_2banks
+	jsr field_x.switch_to_text_bank
 	ldy #0
 	lda [.p_text_end],y
 	bne field.do_scrolldown_item_window
@@ -141,12 +140,11 @@ field.scrollup_item_window:	;;$3f$eb69
 ;; ---
 .p_text = $1c
 .p_text_end = $3e
-.text_bank = $93
+;.text_bank = $93
 ;; ---
 	jsr field_x.unseek_window_text
 	jsr field_x.unseek_window_text
-	lda <.text_bank
-	jsr call_switch_2banks
+	jsr field_x.switch_to_text_bank
 	ldy #1
 	lda [.p_text],y
 	beq .abort_scroll
@@ -702,17 +700,17 @@ field.get_next_input_in_this_frame:
 	beq field.get_next_input
 ;;$eccf
 	sta <.field.input_cache
-	bne field_x.set_bank_for_window_content_string
+	bne field_x.switch_to_text_bank
 ;------------------------------------------------------------------------------------------------------
 ;;$3f:ecd8 field::advance_frame_with_sound
 ;;callers:
 ;;	 1F:EE74:20 D8 EC  JSR field::advance_frame_w_sound ($3f:ee65 field::stream_string_in_window)
 field.advance_frame_and_set_bank:
 	jsr field_x.advance_frame
-	;;jmp field_x.set_bank_for_window_content_string
-	FALL_THROUGH_TO field_x.set_bank_for_window_content_string
+	;;jmp field_x.switch_to_text_bank
+	FALL_THROUGH_TO field_x.switch_to_text_bank
 ;------------------------------------------------------------------------------------------------------
-field_x.set_bank_for_window_content_string:
+field_x.switch_to_text_bank:
 .content_string_bank = $93
 	lda <.content_string_bank
 	jmp call_switch_2banks
@@ -1295,7 +1293,7 @@ field.draw_window_content:
 	jsr field_x.end_ppu_update	;sync_ppu_scroll+call_sound_driver
 	;lda <.string_bank
 	;jsr call_switch_2banks		;ff03
-	jsr field_x.set_bank_for_window_content_string
+	jsr field_x.switch_to_text_bank
 	jmp field.init_window_tile_buffer	;f683
 
 	;VERIFY_PC $f6aa
