@@ -1032,7 +1032,6 @@ field_x.update_ppu_attr_table:
 		bne .loop
 	rts
 
-	.if 1
 field_x.render_borders:
 .in_menu_mode = $37
 .left = $38
@@ -1043,16 +1042,16 @@ field_x.render_borders:
 .width = $3c
 .height = $3d
 .generated_code_base = $0780
-.vram_addr_high = $07d0
-.vram_addr_low = $07e0
-.draw_flags = $07f0
-.HAS_CORNER = %10000000
-.PPU_VERTICAL = %00000100	;; PPUCTRL:2 = increment mode
-.PPU_HORIZONTAL = 0
-.LEFT_TOP = 0
-.RIGHT_TOP = 1
-.LEFT_BOTTOM = 2
-.RIGHT_BOTTOM = 3
+;.vram_addr_high = $07d0
+;.vram_addr_low = $07e0
+;.widths = $07d0
+;.heights = $07e0
+;.draw_flags = $07f0
+.widths = $80
+.heights = $82
+.code_offset = $84
+
+
 	jsr field_x.generate_uploader_code
 	;; draw strategy:
 	;; 1: left-top to right-top, not including rightmost
@@ -1063,18 +1062,63 @@ field_x.render_borders:
 	;; to achieve this, here needs 5-tuple info the below. 
 	;; (vram addr, length, direction, 1st tile, nth tile)
 	;; left top ---> right top ---> right bottom
-	ldy #0
-	sty <.draw_info_index	
-	;; --- 1. left-top
+	;; --- calc widths
+	jsr field_x.calc_window_width_in_bg
+	;pha	;width 1n 1st bg
+	sta <.widths
+	eor #$ff
+	sec
+	adc <.width
+	;pha ;width in 2nd bg
+	sta <.widths+1
+	;; --- calc heights
+	lda <.height
+	pha	;height for upper
+	clc
+	adc <.top
+	cmp #30
+	pla
+	bcc .no_wrap_y
+		lda #30
+		sbc <.top
+.no_wrap_y:
+	sta <.heights
+	eor #$ff
+	sec
+	adc <.height
+	sta <.heights+1
+;---
+	;lda #0
+	;sta <.draw_info_index
 	ldx <.left
 	lda <.top
+	jsr field_x.begin_ppu_update
+.loop:
+	
 	jsr field_x.map_coords_to_vram
-	lda .HAS_CORNER | .PPU_HORIZONTAL | .LEFT_TOP
-	sta .draw_flags,y
-	inc <.draw_info_index
+	;sta $2006
+	;stx $2006
+;---
+	;ldx <.draw_info_index
+	lda #$1f
+	sec
+	;sbc <.widths,x
+	sbc <.widths
+	sta <.code_offset
+	asl A
+	adc <.code_offset
+	sta .generated_code_base+1
 	;; ---
-	rts
+	;lda #$f7
+	;sta $2007
+	;lda #$f8
+	lda #$72
+	;jsr .generated_code_base
+;---
+	jmp field_x.end_ppu_update
 
+;in: A = offset Y, X = offset X
+;out: A = vram high, X = vram low
 field_x.map_coords_to_vram:
 ;@see $3f:f40a setVramAddrForWindow
 .y_to_addr_low = $f4a1
@@ -1085,7 +1129,7 @@ field_x.map_coords_to_vram:
 .vram_addr_low = $07e0
 	cmp #30
 	bcc .no_wrap_y
-		sbc #29	;here carry is always set	
+		sbc #30	;here carry is always set	
 	.no_wrap_y:
 	tay
 	txa
@@ -1099,10 +1143,10 @@ field_x.map_coords_to_vram:
 .bg_2nd:
 		ora #4
 .bg_1st:
-	ldy <.draw_info_index
-	sta .vram_addr_high,y
-	txa
-	sta .vram_addr_low,y
+	;ldy <.draw_info_index
+	;sta .vram_addr_high,y
+	;txa
+	;sta .vram_addr_low,y
 	rts
 	
 field_x.generate_uploader_code:
@@ -1131,7 +1175,6 @@ field_x.store_PPUDATA = $f7b0
 	sta (.generated_code_base)
 	rts
 
-	.endif ;0
 
 	.ifdef TEST_BLACKOUT_ON_WINDOW
 field_x.blackout_1frame:
@@ -1197,25 +1240,9 @@ field.setVramAddrForWindowEx:
 	;INIT_PATCH $3f,$f670,$f692
 	INIT_PATCH $3f,$f670,$f727
 
-;;callers:
-;;	1F:ECE9:20 70 F6  JSR field::calc_size_and_init_buff @ $3f:ece5 field::draw_window_top
-;;	1F:EEDB:20 70 F6  JSR field::calc_size_and_init_buff @ $3f:eec0 field::draw_string_in_window
-field.calc_draw_width_and_init_window_tile_buffer:
-;; patch out callers {
-	FIX_ADDR_ON_CALLER $3f,$eedb+1
-;; }
-;;[in]
+field_x.calc_window_width_in_bg:
 .left = $38
 .width = $3c
-.width_for_current_bg = $91
-;$3f:f670
-;{
-;	$91 = $3c;
-;	if ( ($38 & #1f) ^ #1f + 1 < $3c) {
-;		$91 = a;
-;	}
-;$f683:
-;}
 	;; if window across BG boundary (left + width >= 0x20)
 	;; then adjust the width to fit just enough to the BG
 	lda <.left
@@ -1227,6 +1254,29 @@ field.calc_draw_width_and_init_window_tile_buffer:
 	bcc .store_result
 		;; there is enough space to draw entirely
 		lda <.width
+.store_result:
+	rts
+
+;;callers:
+;;	1F:ECE9:20 70 F6  JSR field::calc_size_and_init_buff @ $3f:ece5 field::draw_window_top
+;;	1F:EEDB:20 70 F6  JSR field::calc_size_and_init_buff @ $3f:eec0 field::draw_string_in_window
+field.calc_draw_width_and_init_window_tile_buffer:
+;; patch out callers {
+	FIX_ADDR_ON_CALLER $3f,$eedb+1
+;; }
+;;[in]
+;.left = $38
+;.width = $3c
+.width_for_current_bg = $91
+;$3f:f670
+;{
+;	$91 = $3c;
+;	if ( ($38 & #1f) ^ #1f + 1 < $3c) {
+;		$91 = a;
+;	}
+;$f683:
+;}
+	jsr field_x.calc_window_width_in_bg
 .store_result:
 	sta <.width_for_current_bg
 	;; fall through into $3f:f683 field::init_window_tile_buffer
@@ -1432,6 +1482,7 @@ field_x.shrink_window_metrics:
 	dec <.height
 	dec <.height
 	rts
+
 	VERIFY_PC $f727
 ;======================================================================================================
 	RESTORE_PC ff3_field_window_begin
