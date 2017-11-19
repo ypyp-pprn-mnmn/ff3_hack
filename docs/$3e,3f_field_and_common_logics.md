@@ -2343,7 +2343,7 @@ $ea09:
 
 **fall through**
 ________________________________________________________________________________
-# $3f:ea1b
+# $3f:ea1b floor.cache_event_script
 <details>
 
 ## code:
@@ -2390,26 +2390,37 @@ $ea56:
 </details>
 
 ________________________________________________________________________________
-# $3f:eb23 switch1stBankTo2C
+# $3f:eb23 switch_to_object_params_bank
 <details>
+
+## notes:
+bank $2c stores various parameters for map objects, such as:
+-	$2c:8000:	table of offsets (from $2c:8000) to object placement definitions
+-	$2c:8200:	table of offsets (from $2c:8000) to event script 
+-	$2c:8600:	event parameters
+	
+see also $3f:ea04 floor::loadEventScriptStream.
 
 ## code:
 ```js
 {
-	return call_switch1stBank(a = #2c);
+	return call_switch_2pages(a = 0x2c);	//jmp $ff03
 }
 ```
 
 </details>
 
 ________________________________________________________________________________
-# $3f:eb28 switch1stBankTo3C
+# $3f:eb28 switch_to_floor_logics_bank
 <details>
+
+## notes:
+bank $3c stores codes implementing logics around floor/menu.
 
 ## code:
 ```js
 {
-	return call_switch1stBank(a = #3c);
+	return call_switch_2pages(a = 0x3c);	//jmp $ff03
 $eb2d:
 }
 ```
