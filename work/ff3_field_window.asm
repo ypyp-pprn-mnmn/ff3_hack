@@ -14,7 +14,8 @@ FIELD_WINDOW_SCROLL_FRAMES = $01
 	.ifdef FAST_FIELD_WINDOW
 
 ;--------------------------------------------------------------------------------------------------
-	INIT_PATCH $3f, $eb2d, $eba9
+	;INIT_PATCH $3f, $eb2d, $eba9
+	INIT_PATCH $3f, $eb2d, $ee9a
 
 ;;# $3f:eb2d field.scrolldown_item_window
 ;;<details>
@@ -165,9 +166,9 @@ field.scrollup_item_window:	;;$3f$eb69
 	lda #$80
 	bne field.abort_item_window_scroll
 
-	VERIFY_PC $eba9
+	;VERIFY_PC $eba9
 ;--------------------------------------------------------------------------------------------------
-	INIT_PATCH $3f, $eba9, $ee9a
+	;INIT_PATCH $3f, $eba9, $ee9a
 ;;
 ;;# $3f:eba9 field::seek_text_to_next_line
 ;;<details>
