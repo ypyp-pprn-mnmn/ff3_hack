@@ -905,8 +905,8 @@ field_x.get_window_tiles:
 field_x.window_parts:
 	db $f7, $f8, $f9
 	db $fa, $ff, $fb
-	db $fc, $fd, $fe
 	.ifdef IMPL_BORDER_LOADER
+	db $fc, $fd, $fe
 ;;$3f:ee1d field::getWindowTilesForMiddle
 ;;callers:
 ;;	$3f:ed02 field::draw_window_box
@@ -1037,7 +1037,7 @@ field_x.render_borders:
 .left = $38
 .top = $39
 .offset_x = $3a
-.draw_info_index = $3a
+;.draw_info_index = $3a
 .offset_y = $3b
 .width = $3c
 .height = $3d
@@ -1050,9 +1050,31 @@ field_x.render_borders:
 .widths = $80
 .heights = $82
 .code_offset = $84
+	;; ------------------------------------------------------------------------
+	;; generate code to upload vram.
+field_x.store_PPUDATA = $f7b0
+.generated_code_base = $0780
+.SIZE_OF_CODE = 3
+.UNROLLED_BYTES = $1f*.SIZE_OF_CODE
+	ldy #-.UNROLLED_BYTES	;dest
+.wrap_x:
+		ldx #-.SIZE_OF_CODE	;src
+.generate_loop:
+		;lda .template_code_start-$0100+.SIZE_OF_CODE,x
+		lda (field_x.store_PPUDATA)-$0100+.SIZE_OF_CODE,x
+		sta (2+.generated_code_base)-($0100-.UNROLLED_BYTES),y
+		iny
+		beq .generate_epilog
+		inx
+		beq .wrap_x
+		bne .generate_loop
+.generate_epilog:
+	lda #$60	;rts
+	sta (2+.generated_code_base)+.UNROLLED_BYTES
+	lda #$D0	;bne
+	sta (.generated_code_base)
 
-
-	jsr field_x.generate_uploader_code
+	;; ------------------------------------------------------------------------
 	;; draw strategy:
 	;; 1: left-top to right-top, not including rightmost
 	;; 2: right-top to right-bottom, not including bottom most
@@ -1065,12 +1087,12 @@ field_x.render_borders:
 	;; --- calc widths
 	jsr field_x.calc_window_width_in_bg
 	;pha	;width 1n 1st bg
-	sta <.widths
+	sta <.widths+1
 	eor #$ff
 	sec
 	adc <.width
 	;pha ;width in 2nd bg
-	sta <.widths+1
+	sta <.widths
 	;; --- calc heights
 	lda <.height
 	pha	;height for upper
@@ -1082,41 +1104,59 @@ field_x.render_borders:
 		lda #30
 		sbc <.top
 .no_wrap_y:
-	sta <.heights
+	sta <.heights+1
 	eor #$ff
 	sec
 	adc <.height
-	sta <.heights+1
+	sta <.heights
 ;---
-	;lda #0
-	;sta <.draw_info_index
-	ldx <.left
+	lda <.left
+	sta <.offset_x
 	lda <.top
+	sta <.offset_y
+
 	jsr field_x.begin_ppu_update
+	ldx #1
 .loop:
-	
-	jsr field_x.map_coords_to_vram
-	;sta $2006
-	;stx $2006
+	txa
+	pha
 ;---
-	;ldx <.draw_info_index
-	lda #$1f
-	sec
-	;sbc <.widths,x
-	sbc <.widths
-	sta <.code_offset
-	asl A
-	adc <.code_offset
-	sta .generated_code_base+1
-	;; ---
-	;lda #$f7
-	;sta $2007
-	;lda #$f8
-	lda #$72
-	;jsr .generated_code_base
+	lda <.widths,x
+	beq .skip_draw
+	;---
+		pha
+		jsr field.setVramAddrForWindow
+		pla
+		pha
+		eor #$ff
+		sec
+		adc #$20	;;note: generated code has only $1f STA's. this is done for accounting 1st byte
+
+		sta <.code_offset
+		asl A
+		adc <.code_offset
+		sta .generated_code_base+1		
+		;update
+		pla
+		;clc
+		adc <.offset_x
+		sta <.offset_x
+	;---
+		;; ---
+		lda #$f7
+		sta $2007
+		;lda #$f8
+		lda #$72
+		jsr .generated_code_base
+.skip_draw:
+	pla
+	tax
+	dex
+	bpl .loop
 ;---
 	jmp field_x.end_ppu_update
 
+	.if 0
 ;in: A = offset Y, X = offset X
 ;out: A = vram high, X = vram low
 field_x.map_coords_to_vram:
@@ -1148,33 +1188,7 @@ field_x.map_coords_to_vram:
 	;txa
 	;sta .vram_addr_low,y
 	rts
-	
-field_x.generate_uploader_code:
-;.template_code_start = field_x.update_ppu_attr_table_end - 8	
-;.template_code_end = field_x.update_ppu_attr_table_end - 5
-field_x.store_PPUDATA = $f7b0
-.generated_code_base = $0780
-.SIZE_OF_CODE = 3
-.UNROLLED_BYTES = $1f*.SIZE_OF_CODE
-	ldy #-.UNROLLED_BYTES	;dest
-.wrap_x:
-		ldx #-.SIZE_OF_CODE	;src
-.generate_loop:
-		;lda .template_code_start-$0100+.SIZE_OF_CODE,x
-		lda (field_x.store_PPUDATA)-$0100+.SIZE_OF_CODE,x
-		sta (2+.generated_code_base)-($0100-.UNROLLED_BYTES),y
-		iny
-		beq .generate_epilog
-		inx
-		beq .wrap_x
-		bne .generate_loop
-.generate_epilog:
-	lda #$60	;rts
-	sta (2+.generated_code_base)+.UNROLLED_BYTES
-	lda #$D0	;bne
-	sta (.generated_code_base)
-	rts
-
+	.endif	;field_x.map_coords_to_vram
 
 	.ifdef TEST_BLACKOUT_ON_WINDOW
 field_x.blackout_1frame:
