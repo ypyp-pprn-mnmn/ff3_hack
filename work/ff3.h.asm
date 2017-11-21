@@ -166,5 +166,5 @@ commandEffectHandlers	= $6843e
 commandWindowHandlers	= $69a16
 commandHandlers			= $69fac
 ;------------------------------------------------------------------------------------------------------
-TEMP_RAM = $7900	;we cannot use stack regeon due to dugeon's floor save
+TEMP_RAM = $7900	;we cannot use stack regein due to dugeon's floor save
 ;------------------------------------------------------------------------------------------------------
