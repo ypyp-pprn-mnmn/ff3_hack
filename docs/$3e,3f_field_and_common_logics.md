@@ -2415,11 +2415,21 @@ ________________________________________________________________________________
 <details>
 
 ## notes:
-bank $3c stores codes implementing logics around floor/menu.
+Bank $3c stores codes implementing logics around floor/menu.
+This logic's implementation is identical to `$3f:f727 switch_to_character_logics_bank`.
 
 ## code:
 ```js
 {
+	/*
+	switch_to_floor_logic_bank:
+	; bank $3c
+ 	1F:EB28:A9 3C     LDA #$3C
+ 	1F:EB2A:4C 03 FF  JMP call_switch_2banks
+
+	1F:F727:A9 3C     LDA #$3C
+ 	1F:F729:4C 03 FF  JMP call_switch_2banks
+ 	*/
 	return call_switch_2pages(a = 0x3c);	//jmp $ff03
 $eb2d:
 }
@@ -3456,12 +3466,13 @@ ________________________________________________________________________________
 ## code:
 ```js
 {
+$eefa:
 	for (;;) {
 		y = 0;
 		if ((a = $3e[y]) == 0) {
 			//beq $eef1.
 $eef1:
-			clc;
+			clc;	//reached end of string. no further rendering required.
 			return;
 		}
 
@@ -3471,6 +3482,7 @@ $ef04:
 		}
 $ef06:
 		if (a >= 0x28) { //bcc $ef3e;
+		//code represents printable character.
 			if (a >= 0x5c) { bcc $ef27;
 $ef0e:
 				//#5c <= a
@@ -3493,29 +3505,109 @@ $ef27:				//#28 <= a < #5c : 濁音 or 半濁音
 				$07a0.y = $f4e1.x;	//char code to tile index (lower row)
 				$90++;
 			}
-		} else {
-$ef3e:			//a < #28 (control code)
-			if (a >= 0x10) { //bcc ef45
-				return field.string.eval_replacement() //$f02a
-			}
-$ef45:
-			if (a == 1) {//bne ef5b
-			//01=\n
-				field.draw_window_content();	//$f692();
-				
-				$1f += 2;
-				if ($1f >= $3d) { //bcc ef58
-					sec;	//reached window bottom with remaining string
-					return;
-				}
-$ef58:
-				//goto field::decodeString;	//eefa
-			}
-$ef5b:
-			if (a == 2) { //bne ef6a
+			continue;	//jmp $eefa
 		}
-	}
+$ef3e:	//a < #28 (control code)
+		if (a >= 0x10) { //bcc ef45
+			//char code:= [0x10...0x28)
+			return field.string.eval_replacement(); //$f02a
+		}
+$ef45:
+		swtich (a) {
+		case 0x01:	//bne ef5b
+			//01=\n
+			field.draw_window_content();	//$f692();
+			$1f++;
+$ef4e:
+			$1f++;
+			if ($1f >= $3d) { //bcc ef58
+				sec;	//reached window bottom with remaining string
+				return;
+			}
+$ef58:
+			break;	//jmp $eefa (just go back to beginning of the loop)
+$ef5b:
+		case 0x02: //bne ef6a
+			$84 = $bb;
+			$b9 = 0;
+			return $f09d();
+$ef6a:
+		case 0x03:	//bne ef7c
+			switch_to_character_logics_bank();	//$f727();
+			$f5ca(X = $bb);
+			$3c$8b78();
+			/*
+			1F:F291:A5 93     LDA field.window_text_bank = #$1B
+ 			1F:F293:20 03 FF  JSR call_switch_2banks
+ 			1F:F296:4C FA EE  JMP field.eval_and_draw_string
+			*/
+			return $f291();
+$ef7c:
+		case 0x04:	//bne ef95
+			$80 = $61;
+			$81 = $62;
+			$82 = $63;
+			switch_to_character_logics_bank();	//$f727();
+			$3c$8b78();
+			return $f291();
+$ef95:
+		case 0x05:	//bne efa2
+			switch_to_character_logics_bank();	//$f727();
+			$3c$8b03();
+			return $f291();
+$efa2:
+		case 0x06:	//bne efa9
+			break;	//jmp $eefa
+$efa9:
+		case 0x07:	//bne efbb
+			if (0 == (a = $600b)) {
+				break;	//bne $efa6
+			}
+			a += (-1 + 0xf8);
+			return $f2d8();
+$efbb:
+		case 0x08:	//bne efda
+			$80 = $601b;	//capacity?
+			$81 = 0;
+			switch_to_character_logics_bank();	//$f727();
+			$3c$8b57();
+			x = $90++;
+			$07a0.x = 0x5c;	//'C'
+			return $f291();
+$efda:
+		case 0x09:	//bne efe4
+			field.draw_window_content();	//$f692
+			return $ef4e();	//in this function.
+$efe4:
+		case 0x0a:	//bne efec
+			a = 0x09;
+			return;
+$efec:
+		case 0x0b:	//bne eff0
+			//fall through.
+$eff0:
+		case 0x0c:	//bne effa
+			x = $600e;
+			return $f316();
+$effa:
+		case 0x0d:	//bne f007
+			switch_to_character_logics_bank();	//$f727();
+			$3c$8B34();
+			return $f291();
+$f007:
+		case 0x0f:	//bne f027 note: 0xF. not 0xE.
+			x = $90;
+			$0780.x = a = 0x58;	// ごみばこ(左上)
+			$07a0.x = a = 0x59;	// ごみばこ(左下)
+			$0781.x = a = 0x5a; // ごみばこ(右上)
+			$07a1.x = a = 0x5b; // ごみばこ(右下)
+			$90 = (a = x) + 2;
+$f027:
+		default:
+			break;	//jmp $eefa (just go back to beginning of the loop)
+	}	//parse loop
 }
+$f02a:
 ```
 
 </details>
@@ -3576,7 +3668,8 @@ $f086:
 		$80[++y] = $98 + $1f;
 		$80[++y] = $82;
 		$80[++y] = $83;
-		return field::decodeString();	//jmp eefa
+		//tail recursion. equivalent to just go back to beginning of the loop.
+		//return field.eval_and_draw_string();	//jmp eefa
 	}
 $f09b:	//#18 <= a < #28
 	if (a == #18) { //bne f0f0
@@ -3613,38 +3706,39 @@ $f19a:
 </details>
 
 ________________________________________________________________________________
-# $3f:f239 field::decodeString::OnCode10_13
+# $3f:f239 field.string.eval_code_10_13
 <details>
 
 ## code:
 ```js
 {
-	$67 = ((a & 3) << 6) & #c0; //lsr ror ror
-	if ($84 >= #0) { //bcc f299
-		if ($84 == #ff) { //bne f289
+	$67 = ((a & 3) << 6) & 0xc0; //lsr ror ror
+	if ($84 >= 0) { //bcc f299
+		if ($84 == 0xff) { //bne f289
 $f24a:
 			x = $67;
-			if ($6101.x < #62) { //bcs f291
+			if ($6101.x < 0x62) { //bcs f291
 $f253:
 				$80 = a; //lv
 				$84,85 = #8000 + (a << 1 + $80); //lv*3
-				call_switch1stbank(per8:a = #39); //ff06
+				call_switch1stbank(per8:a = 0x39); //ff06
 $f268:
-				$80,81,82 = $84[y = #b0,b1,b2] - $6103,6104,6105;
-				switchBanksTo3c3d(); //f727
-				$8b78();
+				$80,81,82 = $84[y = 0xb0,0xb1,0xb2] - $6103,6104,6105;	//EXP?
+				switch_to_character_logics_bank();	$f727
+				$3c$8b78();
 				//jmp f291
 			}
 		} else {
 $f289:
-			push a; //a = lv
-			switchBanksTo3c3d(); //f727
-			pop a;
-			$8998();
+			push(a); //a = lv
+			switch_to_character_logics_bank();	//switchBanksTo3c3d(); //f727
+			A = pop();
+			$3c$8998();
 		}
-$f291:
+$f291:	//switch_to_string_bank
 		call_switchFirst2banks(per8base:a = $93);
-		return $eefa();
+		//tail recursion. identical to just go back to beginning of the loop.
+		//return field.eval_and_draw_string();	//$eefa();
 	}
 $f299:
 }
@@ -3742,9 +3836,9 @@ $f56d:
 			$81 = #14;	//20
 		}
 $f571:
-		switchBanksTo3c3d();	//$f727();
+		switch_to_character_logics_bank();	//$f727();
 		$bb = $80;
-		$3c:937e();
+		floor.searchSpaceForItem();	//$3c$937e();
 		if (!carry) { //bcs f5af
 			$60c0.x = $80;
 			a = $81 + $60e0.x;
@@ -3929,7 +4023,7 @@ $f692:
 </details>
 
 ________________________________________________________________________________
-# $3f:f692 field.drawStringInWindow
+# $3f:f692 field.draw_window_content
 <details>
 
 ## code:
@@ -4007,13 +4101,26 @@ $f715:
 </details>
 
 ________________________________________________________________________________
-# $3f:f727 switchBanksTo3c3d
+# $3f:f727 switch_to_character_logics_bank
 <details>
 
+## notes:
+This logic's implementation is identical to `$3f:eb28 switch_to_floor_logics_bank`.
+It might not be a bug, as how the banks are arranged to place the logic is completely physical matter,
+hence it is irrevant to programmers' original intention. 
 ## code:
 ```js
 {
-	call_switchFirst2banks(per8kBase:a = #3c); //ff03
+	/*
+	switch_to_floor_logic_bank:
+	; bank $3c
+ 	1F:EB28:A9 3C     LDA #$3C
+ 	1F:EB2A:4C 03 FF  JMP call_switch_2banks
+
+	1F:F727:A9 3C     LDA #$3C
+ 	1F:F729:4C 03 FF  JMP call_switch_2banks
+ 	*/
+	call_switch_2banks({per8kBase:a = 0x3c}); //ff03
 }
 ```
 </details>
