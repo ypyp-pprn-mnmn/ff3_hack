@@ -9,9 +9,9 @@ $md.Length;
 $codes | ForEach-Object {
 	$matched = ($_ -match "\# ?\$`([0-9a-z]{2}).([0-9a-z]{4}) (.*?)\n");
 	if ($matched) {
-		#$matches[0];
 		$bank =	$matches[1];
 		$addr = $matches[2];
+		## sanitize symbols as it will be part of filename.
 		$sym = (($matches[3] -split " |\t")[0] -replace "::",".") -replace "[\:\(\)\[\]\?\{\} \t]","";
 		$out = "$(pwd)/${bank}/`$${bank}`$${addr}-${sym}.md";
 		## make it!
@@ -25,6 +25,5 @@ $codes | ForEach-Object {
 		} catch {
 			Write-Host -ForegroundColor DarkRed "ERR: $out";
 		}
-		#$_;
 	}
 }
