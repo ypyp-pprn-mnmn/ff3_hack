@@ -4724,6 +4724,7 @@ $fb89:
 	return switch_16k_synchronized_nocache();	//fall through.
 }
 ```
+</details>
 
 **fall through**
 ________________________________________________________________________________
