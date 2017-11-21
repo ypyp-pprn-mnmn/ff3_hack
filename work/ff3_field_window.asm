@@ -58,11 +58,12 @@ field.abort_item_window_scroll:	;;$3f$eb3c
 ;; fixups
 ;; ---
 	sta <$b4
-	sec	;;aborted scrolinng item window
+	;sec	;;aborted scrolinng item window
 field_x.restore_bank_with_status:
-	php
+	;php
 	jsr field.restore_bank	;;note: here original implementation calls $ff03, not $ecf5
-	plp
+	;plp
+	sec	;;aborted scrolinng item window
 	rts
 
 ;--------------------------------------------------------------------------------------------------
@@ -118,8 +119,9 @@ field.reflect_window_scroll:	;;$3f$eb61
 	FIX_ADDR_ON_CALLER $3d,$bc0f+1
 ;; ---
 	jsr field.draw_string_in_window	;$eec0
-	clc	;successfully scrolled the item window
-	bcc field_x.restore_bank_with_status
+	;clc	;successfully scrolled the item window
+	;bcc field_x.restore_bank_with_status
+	jmp field.restore_bank	;carry will be cleared by this routine
 
 ;--------------------------------------------------------------------------------------------------
 ;;# $3f$eb69 field.scrollup_item_window
