@@ -13,7 +13,8 @@ $codes | ForEach-Object {
 		$addr = $matches[2];
 		## sanitize symbols as it will be part of filename.
 		$sym = (($matches[3] -split " |\t")[0] -replace "::",".") -replace "[\:\(\)\[\]\?\{\} \t]","";
-		$out = "$(pwd)/${bank}/`$${bank}`$${addr}-${sym}.md";
+		#$out = "$(pwd)/${bank}/`$${bank}`$${addr}-${sym}.md";
+		$out = "$(pwd)/${bank}/${bank}_${addr}-${sym}.md";
 		## make it!
 		if (-not (Test-Path $bank)) {
 			mkdir -Path $bank
