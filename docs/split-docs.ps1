@@ -12,7 +12,7 @@ $codes | ForEach-Object {
 		#$matches[0];
 		$bank =	$matches[1];
 		$addr = $matches[2];
-		$sym = (($matches[3] -split " |\t")[0] -replace "::",".") -replace "[\:\(\)\[\]\? \t]","";
+		$sym = (($matches[3] -split " |\t")[0] -replace "::",".") -replace "[\:\(\)\[\]\?\{\} \t]","";
 		$out = "$(pwd)/${bank}/`$${bank}`$${addr}-${sym}.md";
 		## make it!
 		if (-not (Test-Path $bank)) {
