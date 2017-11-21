@@ -3460,7 +3460,7 @@ ________________________________________________________________________________
 ## args:
 +	[in] $37: in_menu_mode (1: menu, 0: floor)
 +	[in, out] string* $3e: ptr to string
-+	[in, out] u8 $1f: current line (in 8x8 unit)
++	[in, out] u8 $1f: number of lines drawn (in 8x8 unit)
 +	[out] u8 $90: destOffset
 +	[out] bool carry: more_to_draw
 ## code:
@@ -3618,17 +3618,26 @@ ________________________________________________________________________________
 <details>
 
 ## args:
-+	[in] a : charcode
-+	[in] y : current dest offset
-+	[in] string * $3e
-+	[out] u8 $90 : next dest offset
++	[in] a: charcode
++	[in] y: offset into the string pointed to by $3e.
++	[in, out] u8 $1f: number of lines drawn (in 8x8 unit)
++	[in] string * $3e: ptr to text to evaluate.
+	On entry, this will point to the parameter byte of replacement code.
++	[in,out] u8 $67: ?
++	[in,out] u8 $90: offset into the tile buffer ($0780/$07a0)
++	[out] u8 $0780[32]: tile (or name table) buffer for upper line
++	[out] u8 $07a0[32]: tile (or name table) buffer for lower line
+## local variables:
++	u8 $80,81,82,83: scratch.
++	u8 $84: parameter byte
++	u8 $97,98
 ## notes:
 charcodes ranged [10...28) are defined as opcodes (or 'replacement'),
 given that the codes have followed by additional one byte for parameter.
 ### code meanings:
-+	10 : name of playable character
-+	15-17 : left-align text by paramter,increment menu-item count by 4
-+	1e : get job name
++	10-13: status of a player character. lower 2-bits represents an index of character.
++	15-17: left-align text by paramter,increment menu-item count by 4
++	1e: get job name
 ## code:
 ```js
 {
@@ -3648,7 +3657,7 @@ $f046:
 		return field::decodeString();//jmp
 	}
 $f04f:
-	if (a < #18) { bcs f09b
+	if (a < #18) { //bcs f09b
 		$81 = a - #15 + #78;
 		$80 = 0;
 		$90 = $84;
@@ -3713,11 +3722,11 @@ ________________________________________________________________________________
 ```js
 {
 	$67 = ((a & 3) << 6) & 0xc0; //lsr ror ror
-	if ($84 >= 0) { //bcc f299
+	if ($84 > 0x30) { //bcc f299
 		if ($84 == 0xff) { //bne f289
 $f24a:
 			x = $67;
-			if ($6101.x < 0x62) { //bcs f291
+			if ((a = $6101.x) < 0x62) { //bcs f291
 $f253:
 				$80 = a; //lv
 				$84,85 = #8000 + (a << 1 + $80); //lv*3
