@@ -3669,7 +3669,7 @@ $f086:
 		$80[++y] = $82;
 		$80[++y] = $83;
 		//tail recursion. equivalent to just go back to beginning of the loop.
-		//return field.eval_and_draw_string();	//jmp eefa
+		return field.eval_and_draw_string();	//jmp eefa
 	}
 $f09b:	//#18 <= a < #28
 	if (a == #18) { //bne f0f0
@@ -3738,7 +3738,7 @@ $f289:
 $f291:	//switch_to_string_bank
 		call_switchFirst2banks(per8base:a = $93);
 		//tail recursion. identical to just go back to beginning of the loop.
-		//return field.eval_and_draw_string();	//$eefa();
+		return field.eval_and_draw_string();	//$eefa();
 	}
 $f299:
 }
@@ -4029,15 +4029,15 @@ ________________________________________________________________________________
 ## code:
 ```js
 {
-	push a;
+	push(a);
 	waitNmiBySetHandler();	//$ff00
 	$f0++;
-	pop a;
-	field::upload_window_content();	//putWindowTiles();	//$f6aa
-	field::sync_ppu_scroll();	//$ede1();
-	field::callSoundDriver();
+	a = pop();
+	field.upload_window_content();	//putWindowTiles();	//$f6aa
+	field.sync_ppu_scroll();	//$ede1();
+	field.callSoundDriver();
 	call_switchFirst2Banks(per8kbank:a = $93);	//$ff03
-	return $f683();	//??? a= ($93+1)
+	return field.init_window_tile_buffer();	//$f683()
 $f6aa:
 }
 ```
