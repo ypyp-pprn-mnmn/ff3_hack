@@ -3407,7 +3407,7 @@ $eec0:
 
 **fall through**
 ________________________________________________________________________________
-# $3f:eec0 field::draw_string_in_window
+# $3f:eec0 field.draw_string_in_window
 <details>
 
 ## args:
@@ -3426,9 +3426,9 @@ $eed1:
 	$3b = $39;
 	$f670();	//field_calc_draw_width_and_init_window_tile_buffer
 	$1f = $90 = #0;
-	field::decodeStringAndDrawInWindow();	//$eefa();
+	field.eval_and_draw_string();	//$eefa();
 	if (!carry) { //eef3
-		field::draw_window_content();	//$f692();
+		field.draw_window_content();	//$f692();
 		call_switchFirst2Banks(per8k:a = $57);
 $eef1:
 		clc;
@@ -3444,40 +3444,47 @@ $eef3:
 </details>
 
 ________________________________________________________________________________
-# $3f:eefa field::decodeStringAndDrawInWindow
+# $3f:eefa field.eval_and_draw_string
 <details>
 
 ## args:
-+	[in, out] string* $3e : ptr to string
-+	[out] u8 $90 : destOffset
++	[in] $37: in_menu_mode (1: menu, 0: floor)
++	[in, out] string* $3e: ptr to string
++	[in, out] u8 $1f: current line (in 8x8 unit)
++	[out] u8 $90: destOffset
 +	[out] bool carry: more_to_draw
 ## code:
 ```js
 {
 	for (;;) {
 		y = 0;
-		if ((a = $3e[y]) == 0) return $eef1();// //beq
+		if ((a = $3e[y]) == 0) {
+			//beq $eef1.
+$eef1:
+			clc;
+			return;
+		}
 
 		if (++$3e == 0) { //bne ef06
 $ef04:
 			$3f++;
 		}
 $ef06:
-		if (a >= #28) { //bcc $ef3e;
-			if (a >= #5c) { bcc $ef27;
+		if (a >= 0x28) { //bcc $ef3e;
+			if (a >= 0x5c) { bcc $ef27;
 $ef0e:
 				//#5c <= a
 				y = $90;
 				if ( ((x = $37) == 0) //bne ef1a
-					&& (a < #70)) //bcs ef1a
+					&& (a < 0x70)) //bcs ef1a
 				{
 				//a := [5c,70) C,G,L,V,装備アイコン
 $ef18:
-					a = #ff;	
+					a = 0xff;	
 				}
 $ef1a:
 				$07a0.y = a;
-				$0780.y = #ff;
+				$0780.y = 0xff;
 				$90++;
 			} else {
 $ef27:				//#28 <= a < #5c : 濁音 or 半濁音
@@ -3488,13 +3495,13 @@ $ef27:				//#28 <= a < #5c : 濁音 or 半濁音
 			}
 		} else {
 $ef3e:			//a < #28 (control code)
-			if (a >= #10) { //bcc ef45
-				return field::decodeString::OnCode10_28() //$f02a
+			if (a >= 0x10) { //bcc ef45
+				return field.string.eval_replacement() //$f02a
 			}
 $ef45:
 			if (a == 1) {//bne ef5b
 			//01=\n
-				field::draw_window_content();	//$f692();
+				field.draw_window_content();	//$f692();
 				
 				$1f += 2;
 				if ($1f >= $3d) { //bcc ef58
@@ -3502,7 +3509,7 @@ $ef45:
 					return;
 				}
 $ef58:
-				goto field::decodeString;	//eefa
+				//goto field::decodeString;	//eefa
 			}
 $ef5b:
 			if (a == 2) { //bne ef6a
@@ -3515,7 +3522,7 @@ $ef5b:
 
 ________________________________________________________________________________
 
-# $3f:f02a field::decodeString::OnCode10_28
+# $3f:f02a field.string.eval_replacement
 <details>
 
 ## args:
@@ -3524,8 +3531,10 @@ ________________________________________________________________________________
 +	[in] string * $3e
 +	[out] u8 $90 : next dest offset
 ## notes:
-[10...28) defined as opcodes (or 'replacement'), given that the codes have followed by additional one byte for parameter
+charcodes ranged [10...28) are defined as opcodes (or 'replacement'),
+given that the codes have followed by additional one byte for parameter.
 ### code meanings:
++	10 : name of playable character
 +	15-17 : left-align text by paramter,increment menu-item count by 4
 +	1e : get job name
 ## code:
@@ -3836,7 +3845,7 @@ caller expects y has been unchanged
 </details>
 
 ________________________________________________________________________________
-# $3f:f5ff incrementGil
+# $3f:f5ff increment_gil
 <details>
 
 ## args:
@@ -3859,7 +3868,7 @@ $f63f:
 </details>
 
 ________________________________________________________________________________
-# $3f:f640 invertTreasureGotFlag
+# $3f:f640 invert_treasure_loot_flag
 <details>
 
 ## code:
@@ -3883,7 +3892,7 @@ $f668:
 </details>
 
 ________________________________________________________________________________
-# $3f:f670 field::calc_draw_width_and_init_window_tile_buffer
+# $3f:f670 field.calc_draw_width_and_init_window_tile_buffer
 <details>
 
 ## code:
@@ -3900,7 +3909,7 @@ $f683:
 
 **fall through**
 ________________________________________________________________________________
-# $3f:f683 field::init_window_tile_buffer
+# $3f:f683 field.init_window_tile_buffer
 <details>
 
 ## code:
@@ -3920,7 +3929,7 @@ $f692:
 </details>
 
 ________________________________________________________________________________
-# $3f:f692 field::drawStringInWindow
+# $3f:f692 field.drawStringInWindow
 <details>
 
 ## code:
@@ -3939,11 +3948,10 @@ $f6aa:
 }
 ```
 
-//$3f:f6aa putWindowTiles
 </details>
 
 ________________________________________________________________________________
-# $3f:f6aa field::upload_window_content
+# $3f:f6aa field.upload_window_content
 <details>
 
 ## args:
@@ -4032,8 +4040,7 @@ ________________________________________________________________________________
 	push a;
 	push (x = a);
 	saveFieldVars();	//$fb17();
-	a = #1a
-	switchFirst2Banks();	//$fb87();
+	switch_16k_synchronized({bank: a = 0x1a});	//$fb87();
 	x = pop a;
 	pop a;
 	return;
@@ -4070,15 +4077,15 @@ ________________________________________________________________________________
 ```js
 {
 	$96 = a; $97 = x;
-	push (a = x);
-	push (a = $7cf6);
-	$7cf6 = a = #19;
-	switchFirst2Banks(a);	//fb87
+	push(a = x);
+	push(a = $7cf6);
+	$7cf6 = a = 0x19;
+	switch_16k_synchronized(a);	//fb87
 	a = $96; x = $97;
 	$32:8000();
-	$7cf6 = pop a;
-	switchFirst2Banks(a);	//fb87
-	x = pop a;
+	$7cf6 = pop();
+	switch_16k_synchronized(a);	//fb87
+	x = pop();
 }
 ```
 
@@ -4231,13 +4238,13 @@ ________________________________________________________________________________
 ## code:
 ```js
 {
-	switchFirst2Banks(a = $84);
+	switch_16k_synchronized(a = $84);	//$fb87
 	for ($82,y = 0;$82 != 0;$82--,y++) {
 $f936:		$80[y] = $7e[y];
 	}
 //jmp $f891
 $f891:
-	return switchFirst2Banks(a = $7cf6);
+	return switch_16k_synchronized(a = $7cf6);	//$fb87
 }
 ```
 </details>
@@ -4298,7 +4305,7 @@ ________________________________________________________________________________
 	$83 = $82 & 3;
 	$82 >>= 2;
 	for ($82;$82 != 0;$82--) {
-$f97a:		switchFirst2Banks(a = $84);//fb87
+$f97a:		switch_16k_synchronized(a = $84);//fb87
 		a = $7cf3;
 		if (0 != 0) waitNmi();	//fb80
 $f987:	
@@ -4367,11 +4374,11 @@ ________________________________________________________________________________
 ## code:
 ```js
 {
-	push a;
-	switchFirst2Banks(a = #17);
-	pop a;
-	$2e:9d53();
-	switchFirst2Banks(a = #1a); //jmp 3f:fb87
+	push(a);
+	switch_16k_synchronized({bank: a = 0x17});
+	a = pop();
+	$2e$9d53();
+	switch_16k_synchronized({bank: a = 0x1a}); //jmp 3f:fb87
 }
 ```
 </details>
@@ -4408,16 +4415,16 @@ ________________________________________________________________________________
 	$a9 = a; //=0
 	saveFieldVars(); //$fb17();
 	saveNmiIrqHandlerAndSetHandlerForBattle();	//$fab5();
-	switchFirst2BanksNoSave(per16kbank:a = #17);	//$fb87()
+	switch_16k_synchronized({bank:a = 0x17});	//$fb87()
 	initBattle();	//$2e:9d56();	//load encounter data?
-	switchFirst2BanksNoSave(per16kbank:a = #1a);	//$fb87()
+	switch_16k_synchronized({bank:a = 0x1a});	//$fb87()
 $fa47:
-	$34:8003();
-	switchFirst2BanksNoSave(per16kbank:a = #17);	//$fb87()
+	$34$8003();
+	switch_16k_synchronized({bank:a = 0x17});	//$fb87()
 $fa4f:
-	$2e:9d50();	//set music & load patterns
+	$2e$9d50();	//set music & load patterns
 	cli;
-	switchFirst2BanksNoSave(per16kbank:a = #1a);	//$fb87()
+	switch_16k_synchronized({bank:a = 0x1a});	//$fb87()
 $fa58:
 	call_battleLoop();	//$34:8000
 	for ($b6 = 0;$b6 != 20;$b6++) {
@@ -4479,15 +4486,15 @@ ________________________________________________________________________________
 ## code:
 ```js
 {
-	push (a = x);
-	push (a = y);
+	push(a = x);
+	push(a = y);
 	if ((a = $c9) != 0) { //beq $fb05
 		$7f49 = $ca | #80;
 		$c9 = 0;
 	}
-	switchFirst2BanksNoSave(a = #1b);	//$3f:fb89;
-	$36:8003;	//sound?
-	switchFirst2BanksNoSave(a = $ab);		//$ab : last $fb87 param (=last bank no)
+	switch_16k_synchronized_nocache({bank:a = 0x1b});	//$3f:fb89;
+	$36$8003;	//sound?
+	switch_16k_synchronized_nocache({bank:a = $ab});		//$ab : last $fb87 param (=last bank no)
 	y = pop a;
 	x = pop a;
 	return;
@@ -4517,8 +4524,11 @@ ________________________________________________________________________________
 # $3f:fb30 irq_handler
 <details>
 
+## args:
+-	[in,out] u8
 ## notes:
-戦闘中のハンドラ
+戦闘中のハンドラ。
+バンク変更中を考慮している。
 ## code:
 ```js
 {
@@ -4545,13 +4555,15 @@ ________________________________________________________________________________
 # $3f:fb57 nmi_handler
 <details>
 
+## args:
+-	[in,out] u8 $05: nmi_lock (@see `$3f:fb80 waitNmi`)
 ## notes:
 戦闘中のハンドラ
 ## code:
 ```js
 {
-	push a;
-	push (a = x);
+	push(a);
+	push(a = x);
 	a = $7cf3;	//sprite0 hitflag?
 	if (a != 0) {
 		updatePpuScrollNoWait(); //$3f:f8cb();
@@ -4562,8 +4574,8 @@ ________________________________________________________________________________
 	}
 $fb71:
 	$05 = 0;
-	x = pop a;
-	pop a;
+	x = a = pop();
+	a = pop();
 }
 ```
 </details>
@@ -4582,33 +4594,49 @@ ________________________________________________________________________________
 </details>
 
 ________________________________________________________________________________
-# $3f:fb87 switchFirst2Banks()
+# $3f$fb87 switch_16k_synchronized
 <details>
 
 ## args:
-+	[in] u8 A : bankNo? (per16k unit)
-## uses:
-+	u8 $ab : per16kBankNo
-+	u8 $a9 : lock? (コマンド発行中のみincr)
++	[in] u8 A : bankNo (per _16k_ unit)
++	[out] u8 $ab : per16kBankNo
 ## code:
 ```js
 {
 	$ab = a;
-$fb89:	push (a << 1);
+$fb89:
+	return switch_16k_synchronized_nocache();	//fall through.
+}
+```
+
+**fall through**
+________________________________________________________________________________
+# $3f$fb89 switch_16k_synchronized_nocache
+<details>
+
+## args:
++	[in] u8 A : bankNo (per _16k_ unit)
++	[out] u8 $ab : per16kBankNo
+## local variables:
++	u8 $a9 : page_lock (コマンド発行中のみincr)
+@see `$3f$fb87 switch_16k_synchronized`
+
+```js
+{
+$fb89:
+	push(a << 1);
 	a = #06;
 	$a9++;
-	$8000 = a;	//commandId
-	pop a;
-	$8001 = a;	//per8k bankNo
+	$8000 = a;	//commandId	pop(a);
+	$8001 = pop();	//per8k bankNo
 	$a9--;
 	a++;
 $fb9b:
-	push (a);
+	push(a);
 	a = #07;
 	$a9++;
 	$8000 = a;
-	pop a;
-	$8001 = a;
+	$8001 = pop();
 	$a9--;
 }
 ```	
@@ -4706,12 +4734,12 @@ ________________________________________________________________________________
 </details>
 
 ________________________________________________________________________________
-# $3f:fc27(file:7fc37) initBattleRandom
+# $3f:fc27 initBattleRandom
 <details>
 
 	$fc34 29 02	and #$02
 	$fc36 18	clc
-	$fc37 69 03	adc #$03	//#3(FC版オリジナル)だとドロップテーブル3番までしか落とさない
+	$fc37 69 03	adc #$03	;;#3(FC版オリジナル)だとドロップテーブル3番までしか落とさない
 	$fc39 85 22	sta $22
 	$fc3b a9 01
 	
@@ -4940,12 +4968,12 @@ ________________________________________________________________________________
 ## code:
 ```js
 {
-	switchFirst2Banks(a = #0c);	//$3f:fb87();
+	switch_16k_synchronized(a = 0x0c);	//$3f:fb87();
 	$1b = 0;
 	$1a,1b <<= 1;
 	$1a,1b += $18,19;
 	$18,19 = *($1a,1b);
-	switchFirst2Banks(a = #1a);
+	switch_16k_synchronized(a = 0x1a);
 }
 ```
 
@@ -5014,11 +5042,11 @@ ________________________________________________________________________________
 ## code:
 ```js
 {
-	switchFirst2Banks();	//jsr $3f:fb87()
+	switch_16k_synchronized();	//jsr $3f:fb87()
 	for (x = 0,y = 0;x < $4b;x++,y++) {
 		$7400,x = $46[y];	//$46 = $bb1a + job*5
 	}
-	return switchFirst2Banks(a = $4a); //jmp $3f:fb87
+	return switch_16k_synchronized({bank: a = $4a}); //jmp $3f:fb87
 }
 ```
 </details>

@@ -835,8 +835,8 @@ field_x.begin_ppu_update:
 	;INIT_PATCH $3f,$ede1,$edf6
 ;;$3f:ede1 field::sync_ppu_scroll
 ;;callers:
-;;	$3f:edc6 field::draw_window_row
-;;	$3f:f692 field::draw_window_content
+;;	$3f:edc6 field.draw_window_row
+;;	$3f:f692 field.draw_window_content
 field.sync_ppu_scroll:
 .skip_attr_update = $37
 .ppu_ctrl_cache = $ff
@@ -1297,7 +1297,7 @@ field.calc_draw_width_and_init_window_tile_buffer:
 ;------------------------------------------------------------------------------------------------------
 ;;$3f:f683 field::init_window_tile_buffer:
 ;;caller:
-;;	$3f:f692 field::draw_window_content
+;;	$3f:f692 field.draw_window_content
 field.init_window_tile_buffer:
 ;;[in]
 .tiles_1st = $0780
@@ -1343,8 +1343,8 @@ field.init_window_tile_buffer:
 ;;	u8 $f0: frame_counter
 ;;	u8 $93: per8k bank
 ;;callers:
-;;	1F:EEE9:20 92 F6  JSR field::draw_window_content @ $3f:eec0 field::draw_string_in_window
-;;	1F:EF49:20 92 F6  JSR field::draw_window_content @ $3f:eefa field::decode_and_draw_string
+;;	1F:EEE9:20 92 F6  JSR field::draw_window_content @ $3f:eec0 field.draw_string_in_window
+;;	1F:EF49:20 92 F6  JSR field::draw_window_content @ $3f:eefa field.eval_and_draw_string
 ;;	1F:EFDE:20 92 F6  JSR field::draw_window_content @ ? (sub routine of $eefa)
 ;;	1F:F48E:20 92 F6  JSR field::draw_window_content @ 
 field.draw_window_content:
@@ -1379,15 +1379,15 @@ field.draw_window_content:
 ;//	[in,out] u8 $3b : offset y (wrap-around)
 ;; call tree:
 ;;	$eb43: ?
-;;		$eec0: field::drawEncodedStringInWindow
-;;			$eefa: field::decodeStringAndDrawInWindow
-;;				$f692: field::drawStingInWindow
+;;		$eec0: field.draw_string_in_window
+;;			$eefa: field.eval_and_draw_string
+;;				$f692: field.draw_window_content
 ;;	
-;;	$ed02: field::drawWindowBox
-;;		$edc6: field::drawWindowLine
+;;	$ed02: field.draw_window_box
+;;		$edc6: field.draw_window_row
 ;;callers:
-;;	$3f:edc6 field::draw_window_row
-;;	$3f:f692 field::draw_window_content
+;;	$3f:edc6 field.draw_window_row
+;;	$3f:f692 field.draw_window_content
 field.upload_window_content:
 ;[in]
 .left = $38
