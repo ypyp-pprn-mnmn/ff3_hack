@@ -1,10 +1,10 @@
 Param(
 	[string] $target
 )
-$md = (Get-Content $target -Encoding UTF8) -join "`n";
-$codes = $md -split "^_{5,}$", 0, "Multiline"
+$markdown = (Get-Content $target -Encoding UTF8) -join "`n";
+$codes = $markdown -split "^_{5,}$", 0, "Multiline"
 $codes.Length;
-$md.Length;
+$markdown.Length;
 
 $codes | ForEach-Object {
 	$matched = ($_ -match "\# ?\$`([0-9a-z]{2}).([0-9a-z]{4}) (.*?)\n");
