@@ -29,7 +29,7 @@ followed by the line at 1st level heading with the syntax below.
 
 ```md
 ______________________________________
-# $<bank>$<address> <namespace>.<name>
+# $<bank>:<address> <namespace>.<name>
 ```
 Where:
 -   bank: per 8k-byte bank page number.
