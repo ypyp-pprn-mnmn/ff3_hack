@@ -6,6 +6,7 @@ Param(
 	[switch] $all = $false,
 	[switch] $overwrite = $false
 )
+$drafts_dir = "./codes/_drafts";
 $outdir = "$(Get-Location)/codes";
 function split_docs($outdir, $target) {
 	$markdown = (Get-Content $target -Encoding UTF8) -join "`n";
@@ -53,7 +54,7 @@ function split_docs($outdir, $target) {
 }
 
 if ($all) {
-	Get-ChildItem -Filter "*.md" -Path "./codes/drafts" | ForEach-Object {
+	Get-ChildItem -Filter "*.md" -Path $drafts_dir | ForEach-Object {
 		split_docs "${outdir}" $_.FullName;
 	};
 } else {

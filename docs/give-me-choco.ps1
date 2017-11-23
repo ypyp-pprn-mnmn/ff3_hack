@@ -1,4 +1,4 @@
-## give-me-choko.ps
+## give-me-choco.ps
 ##	gives you a mindful healing chocolate:
 ##		searches the address for existing documentation
 ##		and if there isn't it,
@@ -11,7 +11,7 @@ Param(
 		[string] $bank_and_address
 )
 ## const.
-$draft_dir = "./codes/drafts";
+$draft_dir = "./codes/_drafts";
 $published_dir = "./codes";
 $template = "./codes/_template.md";
 ## parse command line arguments
@@ -85,7 +85,7 @@ function make_me_happy($bank, $addr, $tuple) {
 			}
 			throw;
 		}
-		Write-Host -ForegroundColor DarkBlue "created new file for drafting!: ${outpath}";
+		Write-Host -ForegroundColor DarkBlue "HERE YOU GO! created new file for drafting!: ${outpath}";
 	} else {
 		## there is existing documentation for the addr.
 		## just point it out.
