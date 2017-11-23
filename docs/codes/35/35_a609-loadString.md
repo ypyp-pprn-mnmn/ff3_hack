@@ -1,16 +1,18 @@
 ﻿
 # $35:a609 loadString
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u16 $18 : tableBase
 + [in] u8 A : index
 + [in,out] u8 X : destOffset
-## notes:
+
+### notes:
 テーブルに入ってる値は$18:0000(file30000)からのリニアな16bitオフセット
 対象のデータがあるbankを常に$8000-$bfffにマップするので注意
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$1a = a;

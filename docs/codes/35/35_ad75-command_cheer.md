@@ -1,11 +1,15 @@
 ﻿
 # $35:ad75 command_cheer
 
-<summary>12: おうえん</summary>
 
-## notes:
+
+>12: おうえん
+
+
+### notes:
 右手攻撃力+10
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$78d5 = 1;

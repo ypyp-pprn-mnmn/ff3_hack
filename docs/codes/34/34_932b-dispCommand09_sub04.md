@@ -1,9 +1,9 @@
 ﻿
 # $34:932b dispCommand09_sub04
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	loadStatusMessage();	//$34:9245();

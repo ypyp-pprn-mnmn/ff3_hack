@@ -2,10 +2,11 @@
 # $3e:c9a9 field::set_bg_attr_for_window
 
 
-## args:
+### args:
 +	[in] u8 $37 :
 +	[in] u8 $3c : palette entry count * 2
-## code:
+
+### code:
 ```js
 {
 	if ($37 == 0) { //bne c9b5

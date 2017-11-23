@@ -2,10 +2,11 @@
 # $3f:e1dc dungeon::mainLoop
 
 
-## args:
+### args:
 	least value of S = $1e = $20 - 2
 +	[in] u8 $48 : warpId
-## code:
+
+### code:
 ```js
 {
 	a = #0;

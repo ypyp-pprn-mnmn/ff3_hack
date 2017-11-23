@@ -2,7 +2,7 @@
 # $3f:ff2a nmi_handler_01
 
 
-## code:
+### code:
 ```js
 {
 	$2002;

@@ -1,11 +1,12 @@
 ﻿
 # $34:9a42 rewindCharacterIndex
 
-<summary></summary>
 
-## notes:
+
+### notes:
 	//backToPrevChar
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 }

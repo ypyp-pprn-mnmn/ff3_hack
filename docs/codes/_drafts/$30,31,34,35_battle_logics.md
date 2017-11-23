@@ -3,9 +3,10 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $4c : functionId
-## notes:
+
+### notes:
 //	least value of S = $12 = $20 - ($0a + $06) (original:$14)
 //		(dungeon_mainLoop - dungeon_mainLoop - beginBattle - call_doBattle - battleLoop)
 //			+(presentBattle - pb_disorderedShot)
@@ -17,7 +18,8 @@ ____________________
 //		3 then たたかう
 //		5 then recalcBattleParams (OnCloseItemWindow etc)
 //		7 then calcDataAddress($31:be9d) (OnExecuteAction)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = $4c << 1;
@@ -33,9 +35,12 @@ $9e76:
 
 ____________________
 # $30:9e8a doFight
-<details><summary>たたかう</summary>
+<details><summary>
 
-## notes:
+>たたかう
+</summary>
+
+### notes:
 //dispId : 3
 //	指定された攻撃側と防御側のパラメータを元に打撃の計算処理を行う
 //	二刀流の場合はそれぞれ別個に計算し最後に足し合わせる
@@ -53,10 +58,12 @@ ____________________
 //			暗闇: 回避率半減
 //			防御中: 防御力2倍(精度8bit，128以上なら255)
 //			後列: 防御成功回数1回増加
-## args:
+
+### args:
 +	[in] u16 $6e : attackerPtr
 +	[in] u16 $70 : targetPtr
-## local variables:
+
+### local variables:
 +	u8 $7c : hit count (1st)
 +	u8 $7d : hit count (2nd/temp)
 +	u8 $bb : total hit count
@@ -68,7 +75,8 @@ ____________________
 +	u8 $7ce4[4] : target defend flag (1=defending)
 +	u8 $78ee : in-battle event queue count ?
 +	u8 $78da[] : in-battle event queue ?
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	cacheStatus();//$31:a2ba();
@@ -473,11 +481,12 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u16 $6e : actorPtr
 + [out] u8 A : target.+2c
 + [out] u8 Y : #2c 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = $6e[y = #2c];
@@ -490,7 +499,7 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u16 $6e : actorPtr?
 + [in] u16 $70 : targetPtr?
 + [out] u8 $(e0+id*2)[2] : status of $70
@@ -499,7 +508,8 @@ ____________________
 + [out] u8 $64 : ? ($70.#2c & 7) * 2
 + [out] u8 $66 : $6e.#2c & 7)
 + [out] u8 $68 : $70.#2c & 7)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$66 = a = getActor2C() & 7;
@@ -518,14 +528,16 @@ ____________________
 <details>
 <summary></summary>
 
-## notes:
+### notes:
 //battleFunction06
-## args:
+
+### args:
 + [in] BattleChar *$5b : player party base
 + [in] u8 $5f : player offset (in bytes)
 + [out] BattleChar *$6e : current player
 + [out] BattleChar *$70 : randomly selected target
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$22,23 = #7675;
@@ -542,13 +554,14 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] a : maximum index (inclusive)
 + [in] ptr $22 : pTargetSideBase (= $7575 or $7675)
 + [in] BattleChar* $6e : actor
 + [out] $69 : failed (01=failed)
 + [out] BattleChar* $70 : selected target
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$4a = a;
@@ -591,10 +604,11 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 +	[in,out] u16 $6a,6b : resultDamage
 +	[in] u16 $78 : damageToAdd
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	clc;
@@ -609,7 +623,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$25,2b += $6e[y],0;
@@ -622,14 +636,16 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $741e : isDouble
 + [in] u8 $741f : countOfWeaponHand
 + [out] bool carry : ranged
-## notes:
+
+### notes:
 竪琴フラグがどちらかの手に立っているか
 装備武器のidが3f,40,41ならtrue
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$52 = a & 7
@@ -676,12 +692,13 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u16 $5b : playerPtr
 + [in] u16 $5d : enemyPtr?
 //uses:
 //	u8 $5f : offset
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	//for (x = 3;x > 0;x--) {
@@ -738,7 +755,7 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $52 : playerIndex
 + [in] u8 $5f : offset
 + [out] u8 A : jobParam.+4 (of this player)
@@ -750,7 +767,8 @@ ____________________
 + [out] u8 $40[4] : jobParam.+0~3
 + [out] u8 $44 : = $0052
 + [out] u8 $46[2] : 0
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	//jsr $31:be90 { $5f = a = $52 << 6 }
@@ -784,11 +802,12 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 A : groupNo?
 + [in] u8 Y : enemyNo
 + [in] u8 $7d6b.x : enemyIds
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	u16 base (=$30:8000)
@@ -841,9 +860,12 @@ ____________________
 ____________________
 # $31:a65e useItem
 <details>
-<summary>dispid:04 [battleFunction04]</summary>
+<summary>
 
-## (pseudo-)code:
+>dispid:04 [battleFunction04]
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	$78d5 = #1;
@@ -923,18 +945,23 @@ $a722:
 ____________________
 # $31:a732 decideEnemyAction
 <details>
-<summary>dispid:2 [battleFunction02]</summary>
+<summary>
 
-## args:
+>dispid:2 [battleFunction02]
+</summary>
+
+### args:
 + [in,out] u8 $78b7 : special sequence
 + [in] u8 $7be2 : some  flag (checked to do barrier-change)
 + [in] u8 $7d6b : group to id map
 + [in] u8 $7da7 : index to group map
 + [in] u8 $7ed8 : battle mode ? (<0 = use specials sequencially)
-## local variables:
+
+### local variables:
 +	u8 $53 : confused flag
 +	ptr $24 : current enemy
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$69 = 0;
@@ -1080,7 +1107,7 @@ ____________________
 <summary></summary>
 //or $24_2c
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	return a = $24[y = #2c];
@@ -1096,9 +1123,10 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] BattleChar *$24
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$24[y = #30] = #80;
@@ -1118,10 +1146,11 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] x : index of target
 + [in] BattleChar* $24
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	x = a;
@@ -1138,7 +1167,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$46 = a;
@@ -1234,10 +1263,11 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 a : targetIndex
 + [out] bool zero : (1:valid, 0:invalid(dead|stone|jumping) )
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$18 = a;
@@ -1256,11 +1286,12 @@ ____________________
 # $31:aca2
 <details><summary></summary>
 
-## args:
+### args:
 + [in] u16 $57 : playerBasePtr ($6100)
 + [in] u16 $59 : playerEquipBasePtr ($6200)
 + [in] u16 $5b : battleParamBasePtr ($7575)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 $31:aeed
@@ -1296,7 +1327,7 @@ ____________________
 <details>
 <summary></summary>
 
-## notes:
+### notes:
 dispatchId : 5
 //	$52 = 
 //	アイテムをキャンセルした場合	: 該当キャラ
@@ -1305,19 +1336,22 @@ dispatchId : 5
 //		(もし4番目のキャラの場合4,有効なindexは00-03hなのでバグだが
 //		運よく各構造体のサイズが40hのため1番目のキャラのアドレスにループする)
 //	属性ボーナスが適用されないのはこの関数が正しくフラグを設定しないせい
-## args:
+
+### args:
 + [in] u16 $57 : playerBaseParam(=$6100)
 + [in] u16 $59 : playerEquips(=$6200)
 + [in] u16 $5b : playerBattleParam(=$7575)
 + [in] u8 $52 : playerIndex
-## local variabless:
+
+### local variabless:
 + u8 $24[5] : equips (head,body,wrest,right,left)
 + u8 $7433[5] : equips
 + u8 $2c[5] : baseParams (str,agi,vit,int,men)
 + u8 $7400[8][5] : equipParams ( head, body, accessory, right, left )
 + WeaponType $48[2] : {right, left}
 	(80:盾 08:竪琴 04:矢(弓装備時) 02:弓(矢装備時)  01:片手武器 00:それ以外)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	y = updateBaseOffset();	//$31:be90(); //$5f = a = $52 << 6
@@ -1569,10 +1603,11 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 A : bonusFlag
 + [in,out] u8 $2c[5] : params
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	for (x = 0;x != 5;x++) {
@@ -1590,22 +1625,28 @@ ____________________
 ____________________
 # $31:af77 doSpecialAction
 <details>
-<summary>battleFunction00</summary>
+<summary>
 
-## notes:
+>battleFunction00
+</summary>
+
+### notes:
 //dispId : 0
-## args:
+
+### args:
 + [in] u16 $6e : actorPtr
 + [in] u8 $cc : skipSealedCheck (item=1,although item flag directs to skip too)
 + [in] u8 $7e99 : selected targets (actor.+2F)
-## local variables:
+
+### local variables:
 +	u8 $62 : Index 
 +	u8 $7e88 : actionId
 +	u8 $7e9d : actionParam[6]
-## callers:
+
+### callers:
 +	dispatchBattleCommand(0)
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$54 = 0;
@@ -1779,10 +1820,11 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 +	[in] u8 $7404 : handlerType (from actionParam[4])
 	-	分裂=11
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$18,19 = ($7404 << 1) + #ba9c;
@@ -1796,11 +1838,14 @@ $b17c:
 ____________________
 # $31:b17c handleDamageMagic
 <details>
-<summary>specialHandler00: ダメージ魔法</summary>
+<summary>
 
-## notes:
+>specialHandler00: ダメージ魔法
+</summary>
 
-## (pseudo-)code:
+### notes:
+
+### (pseudo-)code:
 ```js
 {
 	if ($70[y = #26] != 0) { //beq b185
@@ -1869,11 +1914,14 @@ $b232:
 ____________________
 # $31:b233 handleHealingMagic	
 <details>
-<summary>specialHandler01: 回復魔法</summary>
+<summary>
 
-## notes:
+>specialHandler01: 回復魔法
+</summary>
 
-## (pseudo-)code:
+### notes:
+
+### (pseudo-)code:
 ```js
 {
 	isTargetWeakToHoly();	//$bbe2();
@@ -1908,11 +1956,14 @@ $b276:
 ____________________
 # $31:b30c handleStatusMagic
 <details>
-<summary>specialHandler04: バステ魔法</summary>
+<summary>
 
-## notes:
+>specialHandler04: バステ魔法
+</summary>
 
-## (pseudo-)code:
+### notes:
+
+### (pseudo-)code:
 ```js
 {
 	if (isTargetWeakToHoly() ) { //$bbe2(); bcc b31f
@@ -1973,9 +2024,12 @@ $b379:
 ____________________
 # $31:b3f1 handleToadMinimum
 <details>
-<summary>specialHandler07: トード・ミニマム</summary>
+<summary>
 
-## (pseudo-)code:
+>specialHandler07: トード・ミニマム
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	if ( (getActor2C() < 0)  //a2b5 bmi b3fa
@@ -2027,9 +2081,12 @@ $b473:
 ____________________
 # $31:b474 handleProtect
 <details>
-<summary>specialHandler08: プロテス</summary>
+<summary>
 
-## (pseudo-)code:
+>specialHandler08: プロテス
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	clearEffectTargetIfMiss(); //b921
@@ -2046,9 +2103,12 @@ $b47f:
 ____________________
 # $31:b480 handleHaste
 <details>
-<summary>specialHandler09: ヘイスト</summary>
+<summary>
 
-## (pseudo-)code:
+>specialHandler09: ヘイスト
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	clearEffectTargetIfMiss(); //b921
@@ -2065,9 +2125,12 @@ $b48b:
 ____________________
 # $31:b49b handleErase
 <details>
-<summary>specialHandler0B: イレース</summary>
+<summary>
 
-## (pseudo-)code:
+>specialHandler0B: イレース
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	calcMagicHitCountAndClearTargetIfMiss();	//$b8e7();
@@ -2091,9 +2154,12 @@ $b4b8:
 ____________________
 # $31:b4d4 handleSegmentation
 <details>
-<summary>specialHandler11: 分裂</summary>
+<summary>
 
-## (pseudo-)code:
+>specialHandler11: 分裂
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	//if ($6e[y = 3] != $6e[y = 5])	//bne $b4eb
@@ -2113,9 +2179,12 @@ $b4eb:
 ____________________
 # $31:b51f handleSuicidalExplosion
 <details>
-<summary>自爆</summary>
+<summary>
 
-## (pseudo-)code:
+>自爆
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	$18,19 = $6e[3,4];
@@ -2141,7 +2210,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$28,29,2b = 0;
@@ -2162,7 +2231,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	if ( ($70[y = #23] != #ff)  //bne b714
@@ -2188,7 +2257,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$78,79 = #ff;
@@ -2203,7 +2272,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	if ($70[y = #19] != #ff) //beq b7c1
@@ -2238,10 +2307,11 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 status
 + [out] bool carry : (1=yes)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	clearEffectTargetIfMiss();	//$b921();
@@ -2261,7 +2331,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	if ((getActor2C() < 0)  //$a2b5(); bmi b8f4
@@ -2301,11 +2371,12 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 +	[in] u8 $7c : hitCount
 +	[in,out] u8 $7e9b : playEffectTargetBit
 +	[in] u8 $7ec1 : targetIndex
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if ($007c == 0)  //bne b932
@@ -2319,7 +2390,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$7e9b = clearTargetBit(a = $7e9b, target:x = $7ec1); //fd2c  $7e9b &= ~(#80 >> x)
@@ -2333,13 +2404,17 @@ $b932:
 ____________________
 # $31:b9ab segmentate
 <details>
-<summary>分裂</summary>
+<summary>
 
-## args:
+>分裂
+</summary>
+
+### args:
 + [in] u8 $18 : enemyIdOfSegmentating
 + [in] u8 $1c : enemyIdOfTargetSpace
 + [out] ptr $20 : pNewlyGeneratedEnemy
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$1e,1f = #7675 + mul_8x8(a = $18,x = #40);	//fcd6
@@ -2361,12 +2436,13 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $24 : countToTry ?
 + [in] u8 $25 : percentSuccess
 + [out] u8 $30 : resultCount
 + [out] u8 A : resultCount
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$30 = 0;
@@ -2387,9 +2463,10 @@ ____________________
 <details>
 <summary></summary>
 
-## notes:
+### notes:
 $1c,1d = ((($25*(1.0~1.5)*($27/2)+$28*$29)-$26)*$7c)/$2a
-## args:
+
+### args:
 +	[in] u16 $25,2b : attack power?
 +	[in] u8 $26 : defence power?
 +	[in] u8 $27 : attr multiplier
@@ -2398,7 +2475,8 @@ $1c,1d = ((($25*(1.0~1.5)*($27/2)+$28*$29)-$26)*$7c)/$2a
 +	[in] u8 $2a : damage divider (target count)
 +	[in] u8 $007c : damage multiplier (hit count)
 +	[out] u16 $1c : final damage (0-9999)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = $25,2b >>= 1;	//hibyte:2b
@@ -2445,10 +2523,11 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 +	[out] bool carry : 1=yes 0=no
 +	[out] u8 $27 : 2=yes 0=no
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if ($70[y = #12] <= 0) { //bbef
@@ -2470,14 +2549,15 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $24 : status to apply
 + [in,out] u8 $e0 : applied status
 + [in,out] u8 $78ee : queue index?
 + [out] u8 $78d9 : status index?
 + [out] u8 $78da~ : battle event queue?
 + [out] u8 a : $70[0x2c]
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	x = a = (get$70_2C() & 7) << 1;	//bc25()
@@ -2581,10 +2661,11 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 +	[in] u16 $70 : targetPtr
 +	[out] u8 a : $70[#2c]
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = $70[y = #2c];
@@ -2597,15 +2678,16 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 +	[in] u16 $78 : damage
 +	[in] u16 $24 : targetPtrToApply
 +	[out] u8 $7573 : deathCounter?
 +	[out] bool carry : isTargetAlive
-## notes:
+
+### notes:
 //$31:bced processKill
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	if ($78,79 == 0) return;
@@ -2631,10 +2713,11 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in,out] u16 $78,79 : [in] healAmount [out] actuallyHealedAmount
 + [in] ptr $24 : healTarget
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$1a,1b = $24[3,4];
@@ -2656,13 +2739,16 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
-### in:
+### args:
+
+#### in:
 +	u16 $78,79 : damage
-### out:
+
+#### out:
 +	u8 $26 : dead flag (00:both alive 01:target dead 81:actor dead)
 +	u8 $42 : undead flag
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$26 = 0;
@@ -2707,7 +2793,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$78,79 >>= 2;
@@ -2721,7 +2807,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$24,25 = $6e,$6f;
@@ -2734,7 +2820,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$24,25 = $70,71;
@@ -2747,9 +2833,10 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 A : sideToCheck (0=player 1=mob)?
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	push a;push a;
@@ -2800,13 +2887,14 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $742c : physical evade
 + [in] u8 $742e : status resist
 + [in] u8 $7442 : hit
 + [in] u8 $7444 : status to apply
 + [in] u8 $7c : hit count
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$25 = $7444;	//=$6e[#1a]
@@ -2836,7 +2924,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	return $5f = a = $52 << 6;
@@ -2849,11 +2937,12 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 a : memberOffsetToSet
 + [in] u8 $5f : basePtr
 + [out] u8 a,y : resultOffsetFromBasePtr
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 { 
 	y = a + $5f;
@@ -2864,14 +2953,18 @@ ____________________
 ____________________
 # $31:be9d calcDataAddress
 <details>
-<summary>battleFunction07</summary>
+<summary>
 
-## args:
+>battleFunction07
+</summary>
+
+### args:
 + [in] u8 $18 size (in bytes)
 + [in] u8 $1a index	
 + [in] u16 $20 baseAddr 
 + [out] u16 $1c dataAddr
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$1c = $20 + $18*$1a
@@ -2883,9 +2976,12 @@ ____________________
 ____________________
 # $31:bebf rebuildBackpackItems 
 <details>
-<summary>battleFunction08</summary>
+<summary>
 
-## (pseudo-)code:
+>battleFunction08
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	a = 0;x = 0;
@@ -2935,17 +3031,22 @@ $bf13:
 ____________________
 # $31:bf53 checkSegmentation	
 <details>
-<summary>分裂判定</summary>
+<summary>
 
-## args:
+>分裂判定
+</summary>
+
+### args:
 + [in] u8 $7da7 : indexToIdMap
 + [out] u8 $7ee1 : segmenated enemy's id
-## notes:
+
+### notes:
 使用技リストの1個目が#$4fの敵に
 暗黒属性以外の攻撃が1回以上命中した場合
 分裂処理を行う
 なお二刀流の場合は命中した手がどちらかによらず両手が暗黒でないと分裂する
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$18 = 0;
@@ -3005,7 +3106,7 @@ ____________________
 # $34:8000 
 <details>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	return battleLoop();	//$8074;
@@ -3017,7 +3118,7 @@ ____________________
 # $34:8003 
 <details>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 { return $9ce3; }
 ```
@@ -3027,7 +3128,7 @@ ____________________
 # $34:8006 
 <details>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 { return $803d; }
 ```
@@ -3037,7 +3138,7 @@ ____________________
 # $34:8009 
 <details>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 { return $8043; }	//フィールドの装備メニューから呼ばれる
 ```
@@ -3047,7 +3148,7 @@ ____________________
 # $34:800c 
 <details>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 { return strToTileArray(); //$966a; }
 ```
@@ -3057,7 +3158,7 @@ ____________________
 # $34:800f 
 <details>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 { return loadString(); //$a609; }
 ```
@@ -3068,7 +3169,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	a = 0; goto $8038; //ex.ほのお
@@ -3093,7 +3194,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$806c();
@@ -3107,7 +3208,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	a = $18;
@@ -3134,7 +3235,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$52 = a >> 6; //fd43
@@ -3148,7 +3249,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	prize(); //bb49
@@ -3176,7 +3277,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	push a;	push (a = y); push (a = x);
@@ -3195,7 +3296,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	a = #ff;
@@ -3228,10 +3329,11 @@ ___________________
 # $34:8271 battle.increment_number_of_command_selection
 <details>
 
-## notes:
+### notes:
 there seems to be a bug checking conditions not to increment the selection count:
 @see http://966-yyff.cocolog-nifty.com/blog/2013/06/ff3-d544.html
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
  1A:8271:A2 00     LDX #$00
@@ -3261,7 +3363,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	for ($52 = 0;$52 != 4;$52++) {
@@ -3309,7 +3411,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$74 = 0;
@@ -3339,11 +3441,12 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $7e9a :	action side flag (80:actor enemy 40:target enemy)
 + [in] u8 $7ec2 : effectType; set by commandHandler, usually commandId
 + [in] u8 $7ec3 : (0 or 1?)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = $7e9a;
@@ -3385,9 +3488,10 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $7ee1 : segmentated enemy id (ff: none)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	showDamage();	//$34:868a();
@@ -3405,7 +3509,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	if ($7e9a >= 0) {
@@ -3424,7 +3528,7 @@ ____________________
 # $34:8481
 <details>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	for (x= 0;x != 8;x++) {
@@ -3443,10 +3547,11 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $7da7[8] : indexToGroup
 + [in] u8 $7ec4[8] : enemyStatus
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	for (x = 0;x != 8; x++) {
@@ -3486,7 +3591,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	if ($7e9a >= 0) { //bmi 84e6
@@ -3512,7 +3617,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	call_2e_9d53(a = #24);	//jmp $fa0e
@@ -3525,7 +3630,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$84fd(a = #1b);	//here $84fd:
@@ -3538,7 +3643,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	push a;
@@ -3554,7 +3659,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	a = #1a;
@@ -3568,9 +3673,10 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $7e93 : effectFlag (1=ためすぎ 0=通常)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	set52toActorIndexFromEffectBit();	//$8532
@@ -3585,7 +3691,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	set52toActorIndexFromEffectBit();//$8532
@@ -3602,7 +3708,7 @@ ____________________
 # $34$8528 effect06
 <details>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	a = #15;
@@ -3615,7 +3721,7 @@ ____________________
 # $34$852d effect07
 <details>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	a = #18;
@@ -3629,7 +3735,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	targetBitToCharIndex(x = #0);	//$34:86ab();
@@ -3643,7 +3749,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$84fd(a = #4);	//jmp
@@ -3656,7 +3762,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$84fd(a = #3);	//jmp
@@ -3669,7 +3775,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$7e8f = $7e98;
@@ -3684,7 +3790,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	return;
@@ -3697,16 +3803,18 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $7e88 : actionId
 + [in] u8 $7e98 : actors char bit?
 + [in] u8 $7e99 : selected targets ($6e[#2f])
 + [in] u8 $7e9a :	effect side
 + [in] u8 $7e9d : actionParam[6]; see $31:af77
-## local variables:
+
+### local variables:
 +	$00c9 : playSoundFlag
 +	$00ca : soundEffectId
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	y = $7e88;
@@ -3751,14 +3859,18 @@ $85ec:
 ____________________
 # $34:8613 playEffect_00
 <details>
-<summary>たたかう・うたう</summary>
+<summary>
 
-## args:
+>たたかう・うたう
+</summary>
+
+### args:
 + [in] u8 $7e6f : targetside (0 = player)
 + [in] u8 $7e9a : effectSideFlags
 + [in] u8 $7e9b : targetBit
 + [in] u8 $bb,bc : hitCount
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$7e96 = x = 0;
@@ -3817,7 +3929,7 @@ ____________________
 # $34:8689 doNothing_8689
 <details>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 { return; }
 ```
@@ -3828,7 +3940,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	call_2e_9d53(a = #1c);
@@ -3848,11 +3960,13 @@ ____________________
 <summary></summary>
 
 //find$7e98_x_In$fd24
-## args:
+
+### args:
 + [in] u8 $7e98.x : ?
 + [in] u8 X : side
 + [out] u8 Y : result index 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	y = 0;
@@ -3871,7 +3985,7 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 +   [in] u8 $7ed8 : battle_mode (situation)
 	- bit7 : boss
 	- bit6 : magic forbidden
@@ -3880,7 +3994,8 @@ ____________________
 	- bit0 : escape forbidden
 +   [out] u8 $78ba :
 +	[out] u8 $78c3 : battle_mode
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
     // omitted..
@@ -3934,7 +4049,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$57,58 = #6100;
@@ -3951,16 +4066,18 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] $1a : destIndex (spriteIndex)
 + [out] $0220 : sprites[4]
-## local variables:
+
+### local variables:
 + 	$891e(file:6892e) [4][4] = {
 //		F0 5A 03 F0  F0 59 03 F0
 //		F0 5C 03 F0  F0 5B 03 F0
 //	} : cursor sprites
 //
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$4a,4b = #0220;
@@ -3978,13 +4095,14 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $1a : spriteIndex
 + [in] u8 $1c : top
 + [in] u8 $1d : right
 + [out] u8 X : $1a << 4
 + [out] u8 $0220,$0223,$0224,$0227,$022b : ?
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	x = $1a << 4; //fd3e()
@@ -4008,14 +4126,15 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $1a : destIndex (spriteIndex)
 + [in] u8 $55 : cursorPositioningType
 + [in] u16 $34:8afa(file:68b0a) : initCursorParamPtrs { right,top }
 + [out] u8 $22,23,0050,0051 : 0
 + [out] u8 $0220+(destIndex*4) : cursorSprites
 + [out] u8 X : destOffset
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$55,56 = #8afa + ($55 << 1);
@@ -4037,7 +4156,7 @@ ____________________
 # $34:8990
 <details>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$1c = $55[y = 0];
@@ -4054,15 +4173,17 @@ ____________________
 各種入力ウインドウにおいて、パッド入力を取得し対応する動作を行う(十字キーなら音ともに移動・ABなら音を鳴らして戻る)
 </summary>
 
-## args:
+### args:
 + [in] u8 $1a : cursorId
 + [in] u8 $1b : rightend (with this value not included)
 + [in,out] u8 $22 : col
 + [in,out] u8 $23 : row
 + [out] u8 $50[$1a] : inputBits (only a,b,left,right;otherwise unchanged)
-## notes:
+
+### notes:
 //[commandWindow_dispatchInput]
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$1e,1f = #8acf;
@@ -4094,7 +4215,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$0050.(x = $1a) = #02;
@@ -4108,7 +4229,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$0050.(x = $1a) = #01;
@@ -4122,7 +4243,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	if ((a = $23) != 0) $8a0a
@@ -4150,7 +4271,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	if ((a = $22) != 0) { //beq $8a95
@@ -4169,7 +4290,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	if ($22 != $1b) { //beq $8ab4
@@ -4188,7 +4309,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	return $34:8990();	//jmp
@@ -4201,7 +4322,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$1c = $55[y = 0];
@@ -4223,7 +4344,8 @@ ____________________
 <summary></summary>
 
 //fill0x10byteAt$0220with0xF0
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 + [in] u8 $18 : sprite index
@@ -4246,12 +4368,13 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $18 : left (border incl)
 + [in] u8 $19 : right (border incl)
 + [in] u8 $1a : behavior[xxxxxxba] (a:put left-border,b:put right-border)
 + [in] u16 $7ac0 : ptr to charTileArray ()
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	push(a = $19);
@@ -4329,9 +4452,10 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in,out] u8 $1b : side (1:left 0:right)  (toggled on each call)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$1c = #fa;	//左枠線
@@ -4358,14 +4482,15 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $1a : behavior [xxxxxxba] (a:put left-corner b:put right-corner)
 + [in,out] u8 $1e : vertical-side (1:top 0:bottom) ; toggled on each call
 + [in,out] u16 $2a : vramAddr
 + [in,out] u16 $2c : vramAddrForExtra
 + [in] u8 $78b8 : width (without border)
 + [in] u8 $78b9 : extraWidth
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$1d = #f7;	//border-topleft 
@@ -4412,7 +4537,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	bit $2002;
@@ -4431,15 +4556,18 @@ ____________________
 vramの指定位置にcx文字がちょうど収まる大きさの1行ウインドウを描画する
 </summary>
 
-## args:
+### args:
 + [in] u8 A : windowId
 + [in] u16 $7ac0 : stringPtr
-## local variables:
+
+### local variables:
 +	Draw1LineWinowParam $8e33.x
-## notes:
+
+### notes:
 描画の際描画前の画像(タイル番号)を指定の場所に保存する
 対象文字列の長さは特に考慮しない
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$18 = a;
@@ -4497,13 +4625,14 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $78b8 : midCharLength
 + [in] u8 $1a : leftMostChar
 + [in] u8 $1b : middleChar
 + [in] u8 $1d : rightMostChar
 + [in,out] u16 $60,61 : vramAddr (32bytes/row)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	presentCharacter();	//$34:8185();
@@ -4527,7 +4656,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$18 = #2380;
@@ -4557,7 +4686,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$18,19 = #2380;
@@ -4582,12 +4711,13 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $1a : base?
 + [in] ptr $1c : keys
 + [in] ptr $1e : result indices
 + [in] u8 $22 : len
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	push (a = $22);
@@ -4610,7 +4740,7 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 a : end
 + [in] u8 $1a : begin
 + [in] ptr $1c : keys
@@ -4620,9 +4750,11 @@ ____________________
 +	u8 $1a : firstLesserKeyIndexInFront
 +	u8 $1b : firstGreaterKeyIndexInBack
 +	u8 $20 : pivot (key of begin)
-## notes:
+
+### notes:
 sorts descending (greater key first)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$1b = a;	//len? or end?
@@ -4692,20 +4824,22 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $7ec2 : set by commandHandler; usually commandId
 	- prizeMessage = 2
 	- toadCastsToad = 18	
 + [in] u8 $78d5 : commandChianId
 	- (0-5: 0=attack 1=action 2,4=prize)
 + [in] u8 $78da[] : message id queue?
-## local variables:
+
+### local variables:
 +	u16 $34:950d[<0x20] : dispCommandListPtrTable
 +	u16 $34:954d[?] : dispCommandHandlerTable
 +	u8 $7ad7[0x14] : string
 +	u16 $62 : dispCommandListPtr
 +	u8 $64 : currentDispCommandIndex
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = $7ec2;
@@ -4757,12 +4891,13 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u16 $57 : playerPtr
 + [in] u8 $78d6 : charIndex
 + [in] u8 $7ecd[] : enemy group id?
 + [in] u8 $7d6b[4] : enemy ids
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if ((a = $78d6) < 0) {
@@ -4796,10 +4931,11 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $72 : isEquipmentUsed
 + [in] u8 $78d7 : messageId (#ff : no display,#80> : specialAction)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = $72;
@@ -4871,12 +5007,13 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u16 $57 : playerPtr
 + [in] u8 $78d8 : targetCharIndex
 + [in] u8 $7ecd[] : enemy group id?
 + [in] u8 $7d6b[4] : enemy ids?
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = $78d8;
@@ -4917,7 +5054,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	return $78d8 = a = #ff;
@@ -4931,9 +5068,10 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $78d9 : effect id? (#ff = display nothing)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = $78d9;
@@ -4953,13 +5091,13 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $78da.x : message queue?(item=message id;#ff = display nothing)
 + [in] u16 $78e4.x : message params
 + [in] u8 $78ee : queue index?
 + [in] u8 $78ef : message param index?
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$18 = 0; 
@@ -4992,7 +5130,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	loadStatusMessage();	//$34:9245();
@@ -5006,9 +5144,12 @@ $9245:
 ____________________
 # $34:9245 loadStatusMessage?
 <details>
-<summary>load string using table $18:8c40</summary>
+<summary>
 
-## (pseudo-)code:
+>load string using table $18:8c40
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	setTableAddrTo$8c40();	//$34:95c6();
@@ -5024,7 +5165,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	strToTileArray($18 = #11); //$34:966a();
@@ -5039,7 +5180,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	loadStatusMessage();	//$34:9245();
@@ -5055,7 +5196,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	do {
@@ -5070,7 +5211,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	a = #c5;	//'?'
@@ -5099,7 +5240,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	x = $78ef;
@@ -5125,7 +5266,8 @@ ____________________
 <summary></summary>
 
 can be thought as exactly like %u%s
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	x = $78ef;
@@ -5160,7 +5302,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	loadStatusMessage();	//$34:9245();
@@ -5180,7 +5322,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	playEffect();	//$34:8411();
@@ -5194,7 +5336,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$7ec2 = #17;
@@ -5209,9 +5351,10 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $78d3 : ?
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = $78d3 & 2;
@@ -5265,7 +5408,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	setTableBaseAddrTo$00e0();	//$34:95cf();
@@ -5281,7 +5424,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	for ($52 = 0;$52 != 4;$52++) {
@@ -5318,12 +5461,14 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u16 $18 : ptr to status to apply
 + [out] u8 $7ec4[8] : status
-## local variables:
+
+### local variables:
 +	u16 $1e : enemyptr
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$1c = 0;
@@ -5357,10 +5502,11 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $6010 : ?
 //
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = 8 - $6010;	//user option:message speed?
@@ -5384,19 +5530,24 @@ $9474:
 ____________________
 # $34:94d6 dispCommand_00010204_closeWindow
 <details>
-<summary>現在のコマンド番号に対応するウインドウを消す</summary>
+<summary>
 
-## args:
+>現在のコマンド番号に対応するウインドウを消す
+</summary>
+
+### args:
 + [in] u8 $78d6[] : dispCommandParams
 + [in] u8 $4b : currentDispCommand
-## notes:
+
+### notes:
 コマンド番号:
 + 00:行動者
 + 01:行動名
 + 02:効果対象
 + 03:追加効果 
 + 04:メッセージ
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	x = $4b;
@@ -5418,13 +5569,14 @@ ____________________
 なければメッセージ用ウインドウ(左下の奴)を消す
 </summary>
 
-## args:
+### args:
 + [in] u8 $78d5 : commandChainId
 + [in] u8 $78da[] : dispCommandParams (for message window)
 + [in] u8 $78ee : current queue index
-## notes:
 
-## (pseudo-)code:
+### notes:
+
+### (pseudo-)code:
 ```js
 {
 	x = $78ee;
@@ -5455,7 +5607,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$18,19 = #8a40;
@@ -5468,7 +5620,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$18,19 = #8c40;
@@ -5481,7 +5633,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$18,19 = #00e0;
@@ -5494,7 +5646,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$18,19 = #00f0;
@@ -5507,10 +5659,11 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in]	u16 $18 : value
 + [out]	u8 $1a[5] : tileArray (higher digit first)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	for (a = #80,x = 3;x >= 0;x--) {
@@ -5537,9 +5690,10 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u16 $20 : decrementBy
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	x++;
@@ -5557,13 +5711,17 @@ $966a:
 ____________________
 # $34:966a strToTileArray
 <details>
-<summary>文字列をキャラクタ番号の配列に変換する(濁点、半濁点、改行などを処理)</summary>
+<summary>
 
-## args:
+>文字列をキャラクタ番号の配列に変換する(濁点、半濁点、改行などを処理)
+</summary>
+
+### args:
 + [in] u8 $18 : cchLine
 + [in] u8 $4e : destCharPtr
 + [in] u8 $7ad7[] : string (zero terminated)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	offset$4e_16(a = $18);	//$35:a558();
@@ -5610,7 +5768,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	push (a = y);
@@ -5628,9 +5786,10 @@ ____________________
 <details>
 <summary></summary>
 
-## notes:
+### notes:
 //P-sound mark
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	push (a = y);
@@ -5648,7 +5807,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$1d = a = y;
@@ -5665,7 +5824,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	offsetTilePtr(len:a = $18);	//a558
@@ -5683,7 +5842,8 @@ ____________________
 <summary></summary>
 
 //tab(space run)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	x++;
@@ -5702,7 +5862,8 @@ ____________________
 
 //fill_7200to73ff_ff
 + [out] u16 $4e,$7ac0 : #7200
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$7ac0 = $18 = $4e = #$7200;
@@ -5715,16 +5876,21 @@ $9777:
 ____________________
 # $34:9777 calcActionOrder
 <details>
-<summary>行動順を決める</summary>
+<summary>
 
-## args:
+>行動順を決める
+</summary>
+
+### args:
 + [out] u8 $7acb[#c+1] : ordered indices (#ff:last)
 + 	u8 $7400[2][#c] : weight values
-## notes:
+
+### notes:
 まず乱数を12個生成しその大きい順にindexを並び替える
 次にプレイヤーキャラのagiを乱数により1~3倍し大きい順にindexを並び替える
 12個の乱数値のうちindex9-12のある場所をプレイヤーキャラの大きかった順に埋めていく
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	for (y = 0;y != #c;y++) {
@@ -5806,13 +5972,15 @@ ____________________
 <details>
 <summary></summary>
 
-## notes:
+### notes:
 //[processPlayerCommandInput]
-## args:
+
+### args:
 + [in]	u8 $52 : playerIndex
 + [in]	u8 $7ed8 : battleMode? (20:invincible)
 + u16 $5b : playerPtr
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 //コマンドハンドラが1を返したらここまで
@@ -5999,9 +6167,10 @@ ____________________
 <details>
 <summary></summary>
 
-## notes:
+### notes:
 	//backToPrevChar
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 }
@@ -6012,9 +6181,12 @@ ____________________
 ____________________
 # $34:9a68 commandWindow_OnCommand0001090a13
 <details>
-<summary>未使用command</summary>
+<summary>
 
-## (pseudo-)code:
+>未使用command
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	return;
@@ -6027,12 +6199,13 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $5f : playerOffset
 + [in] u8 $78ba : begginingFlag (surpriseAttack/backAttack)
 + [out] u8 $7400[6] : commandIdList (index=cursor pos)
 //	
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = $78ba;
@@ -6083,7 +6256,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$18 = a;
@@ -6122,7 +6295,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	a = #18; goto $9b83;	//papa	(move sound)
@@ -6141,7 +6314,7 @@ ____________________
 <details>
 <summary></summary>
 
-## code:
+### code:
 ```js
 {
 	return y = a = ($5f + a);
@@ -6154,9 +6327,10 @@ ____________________
 <details>
 <summary></summary>
 
-## notes:
+### notes:
 //03 = EXP or lefthand or HP
-## code:
+
+### code:
 ```js
 {
 	return y = a = #03 + $5f;
@@ -6169,9 +6343,10 @@ ____________________
 <details>
 <summary></summary>
 
-## notes:
+### notes:
 //2F = target indicator bits
-## code:
+
+### code:
 ```js
 {
 	return y = a = #2f + $5f;
@@ -6184,9 +6359,10 @@ ____________________
 <details>
 <summary></summary>
 
-## notes:
+### notes:
 2E = action id
-## code:
+
+### code:
 ```js
 {
 	return y = a = #2e + $5f;
@@ -6200,7 +6376,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	if ((a = $7ceb) != 0) {
@@ -6299,7 +6475,7 @@ ____________________
 # $34:9ce3
 <details>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 }
@@ -6311,7 +6487,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	y = $5f;
@@ -6373,10 +6549,11 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $7dce[4] : group id
 + [in] u8 $7d6b[4] : enemy id
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	initTileArrayStorage();	//$34:9754();
@@ -6403,13 +6580,14 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $7ac2 : currentActorIndex(action order)
 + [in] u8 $7acb[0xc?] : ordinalToBattleCharIndexMap
 + [in] u8 $7ca7[4] : 選択魔法Lv (index=player)
 + [in] u8 $7ced : encounter id
 + [in] u8 $7cee : encounter flag (or high bits of encounter id?)
-## local variables:
+
+### local variables:
 + u8 $1a : actionId
 + u16 $6e : actorPtr
 + u16 $70 : firstTargetPtr
@@ -6419,7 +6597,8 @@ ____________________
 + u8 $7e99,7e9b : targetIndicatorFlag
 + u8 $7e9a : sideFlag(actorEnemy:80 targetEnemy:40)
 + u8 $7ec2 : handlerId
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	x = $7ac2; a = $7acb.x;
@@ -6561,7 +6740,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$6e[y = #2e] = a;
@@ -6577,10 +6756,11 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in,out] $6e[#2f] : target indicator bits
 + u8 $fd24.x : bitmask for target
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	push (a = getActor2C() );	//$a42e
@@ -6600,7 +6780,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {	//未使用id
 	$7ceb++;
@@ -6621,7 +6801,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$7e93 = 0;
@@ -6717,13 +6897,18 @@ $a104:
 ____________________
 # $35:a104 command_fight
 <details>
-<summary>04: たたかう</summary>
+<summary>
 
-## args:
+>04: たたかう
+</summary>
+
+### args:
 + [out] u8 $7edf : protectionTargetBit
-## notes:
+
+### notes:
 //$35:a29e
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if (getActor2C() < 0) {	//$35:a42e()敵ならマイナス(bit7=1)
@@ -6934,15 +7119,18 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u16 $1a[4] : values
 + [in] u8 $24[8] : associated indices
 + [out] u8 $52 : index
 + [out] u8 x : index
 + [out] u8 $5f : offset to player of result index 
-## notes:
-## (pseudo-)code:
-### logic:
+
+### notes:
+
+### (pseudo-)code:
+
+#### logic:
 	for (var i = 1;i < 4;i++) {
 		var val = values[i];
 		if ( val > values[0] ) {
@@ -6976,11 +7164,12 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 A : hand (right=4, left=6)
 + [in] ptr $59 : equips
 + [out] u8 $24 : recalcRequired (consumed item count reached 0)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	setYtoOffsetOf(a);	//$9b88();
@@ -7000,7 +7189,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	a = $1a;	//actionid
@@ -7052,7 +7241,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	push (a = $1a);
@@ -7076,7 +7265,7 @@ ____________________
 # $35:a3d7
 <details>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 }
@@ -7088,7 +7277,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	return a = $6e[y = #2c];
@@ -7101,7 +7290,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	push (a = $52);
@@ -7125,7 +7314,7 @@ ____________________
 # $35:a44e
 <details>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	x = $52 << 1;
@@ -7139,9 +7328,10 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [out] u8 $78d3 : 80=all dead, 40=($7dd2 == 0)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = $78d3 & 2
@@ -7173,7 +7363,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	call_2d_9e53(a = #f);	//$fa0e
@@ -7200,11 +7390,12 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $52 : playerIndexs
 + [out] u8 $5f : offset
 + [out] u8 A : offset
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	//a = $52; 
@@ -7220,9 +7411,10 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 x : count
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	while (x >= 0) {
@@ -7239,9 +7431,10 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 A : offset
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$4e,4f += a;
@@ -7256,7 +7449,8 @@ ____________________
 <summary></summary>
 
 	[in] u8 A : max )
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$21 = 1; x = 0
@@ -7270,12 +7464,13 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $7e88 : (invokedActionId)
 + [in] u8 $7e9b : effect target bits
 + [in] u8 $54 : (fight/special = 0)
 + [in] u8 $35:a5fd : hasActionMessage (bit array,higher bit = lower id)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$24 = a = $7e88;
@@ -7339,14 +7534,16 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u16 $18 : tableBase
 + [in] u8 A : index
 + [in,out] u8 X : destOffset
-## notes:
+
+### notes:
 テーブルに入ってる値は$18:0000(file30000)からのリニアな16bitオフセット
 対象のデータがあるbankを常に$8000-$bfffにマップするので注意
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$1a = a;
@@ -7380,7 +7577,8 @@ $a66c:
 
 ____________________
 # $35:a66c
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	y = $5f + 2;
@@ -7401,9 +7599,12 @@ $a67e:
 ____________________
 # $35:a71c commandWindow_OnForwardSelected
 <details>
-<summary>02: ぜんしん</summary>
+<summary>
 
-## (pseudo-)code:
+>02: ぜんしん
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	setYtoOffsetOf(a = #f);	//9b88
@@ -7431,9 +7632,12 @@ $a750:
 ____________________
 # $35:a750 commandWindow_OnBack
 <details>
-<summary>03: こうたい</summary>
+<summary>
 
-## (pseudo-)code:
+>03: こうたい
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	setYtoOffsetOf(a = #0f);
@@ -7461,7 +7665,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	if (($78ba & #08) != 0) { //beq a7a4
@@ -7503,7 +7707,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	return getCommandInput_next(preventRedraw:a = 1);	//jmp 99fd
@@ -7516,7 +7720,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	init4SpritesAt$0220(index:$18 = 0);	//8adf
@@ -7531,9 +7735,12 @@ $a7df:
 ____________________
 # $35:a7df command_forward
 <details>
-<summary>04: ぜんしん</summary>
+<summary>
 
-## (pseudo-)code:
+>04: ぜんしん
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	$78d7 = #3b;
@@ -7546,9 +7753,12 @@ ____________________
 ____________________
 # $35:a7ea command_back
 <details>
-<summary>03: こうたい</summary>
+<summary>
 
-## (pseudo-)code:
+>03: こうたい
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	$78d7 = #3c;
@@ -7574,10 +7784,11 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [out] $18 : inverted line flag
 + [out] a : flag
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	push a;
@@ -7605,9 +7816,12 @@ ____________________
 ____________________
 # $35:a843 commandWindow_OnAttackSelected
 <details>
-<summary>04: たたかう</summary>
+<summary>
 
-## (pseudo-)code:
+>04: たたかう
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	a = #04;
@@ -7621,7 +7835,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$54 = a;
@@ -7647,9 +7861,12 @@ $a86c:
 ____________________
 # $35:a877 commandWindow_OnGuard
 <details>
-<summary>05: ぼうぎょ</summary>
+<summary>
 
-## (pseudo-)code:
+>05: ぼうぎょ
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	setYtoOffset2e();	//9b9b
@@ -7663,9 +7880,12 @@ $a881:
 ____________________
 # $35:a881 command_guard
 <details>
-<summary>05: ぼうぎょ</summary>
+<summary>
 
-## (pseudo-)code:
+>05: ぼうぎょ
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	$78d7 = #3e;
@@ -7690,9 +7910,12 @@ $a8ab:
 ____________________
 # $35:a8ab commandWindow_OnEscapeSelected
 <details>
-<summary>06: にげる</summary>
+<summary>
 
-## (pseudo-)code:
+>06: にげる
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	setYtoOffset2E();	//$9b9b
@@ -7705,9 +7928,12 @@ ____________________
 ____________________
 # $35:a8b5 commandWindow_OnSneakAway
 <details>
-<summary>07: とんずら</summary>
+<summary>
 
-## (pseudo-)code:
+>07: とんずら
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	setYtoOffset2E();	//9b9b
@@ -7721,9 +7947,12 @@ $a8bc:
 ____________________
 # $35:a8bf command_escape
 <details>
-<summary>06: にげる</summary>
+<summary>
 
-## (pseudo-)code:
+>06: にげる
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	$78d5 = 1;	//listid
@@ -7769,9 +7998,12 @@ $a93b:
 ____________________
 # $35:a93b command_sneakAway
 <details>
-<summary>07: とんずら</summary>
+<summary>
 
-## code:
+>07: とんずら
+</summary>
+
+### code:
 ```js
 {
 	$78d5 = 1;
@@ -7818,9 +8050,12 @@ $a9ab:
 ____________________
 # $35:a9ab commandWindow_OnJump
 <details>
-<summary>08: ジャンプ</summary>
+<summary>
 
-## (pseudo-)code:
+>08: ジャンプ
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	$b3 = 0;	//single
@@ -7848,9 +8083,12 @@ $a9d8:
 ____________________
 # $35:a9d8 command_jump
 <details>
-<summary>08: ジャンプ</summary>
+<summary>
 
-## (pseudo-)code:
+>08: ジャンプ
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	$78d5 = 1;	//listId
@@ -7877,9 +8115,12 @@ $aa10:
 ____________________
 # $35:aa11 command_09_landing
 <details>
-<summary>09: (着地)</summary>
+<summary>
 
-## (pseudo-)code:
+>09: (着地)
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	$6e[y = #2] &= #fe;
@@ -7894,9 +8135,12 @@ $aa22:
 ____________________
 # $35:aa22 commandWindow_0b_geomance
 <details>
-<summary>0b: ちけい</summary>
+<summary>
 
-## (pseudo-)code:
+>0b: ちけい
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	setYtoOffset2E();	//9b9b
@@ -7934,7 +8178,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$52++;
@@ -7948,9 +8192,12 @@ $aa5d:
 ____________________
 # $35:aa5d command_0b
 <details>
-<summary>0b: ちけい</summary>
+<summary>
 
-## (pseudo-)code:
+>0b: ちけい
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	$6e[y] = getActor2c() | #10;	//a42e
@@ -7989,9 +8236,10 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $74c8 : = field $48; warpId
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = $7ce3;
@@ -8031,9 +8279,12 @@ ____________________
 ____________________
 # $35:ab07 commandWindow_OnDetect
 <details>
-<summary>0d: みやぶる</summary>
+<summary>
 
-## (pseudo-)code:
+>0d: みやぶる
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	a = #0d;
@@ -8046,9 +8297,12 @@ $ab0c:
 ____________________
 # $35:ab0c command_detect
 <details>
-<summary>0d: みやぶる</summary>
+<summary>
 
-## (pseudo-)code:
+>0d: みやぶる
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	setEffectHandlerTo18();	//ab66
@@ -8100,10 +8354,10 @@ ____________________
 <details>
 <summary></summary>
 
-## notes:
+### notes:
 called by 3 routines
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$7ec2 = #18;
@@ -8117,9 +8371,12 @@ $ab6e:
 ____________________
 # $35:ab6e commandWindow_OnInspect 
 <details>
-<summary>0c: しらべる</summary>
+<summary>
 
-## (pseudo-)code:
+>0c: しらべる
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	a = #0c;
@@ -8131,9 +8388,12 @@ ____________________
 ____________________
 # $35:ab73 command_inspect
 <details>
-<summary>0c: しらべる</summary>
+<summary>
 
-## (pseudo-)code:
+>0c: しらべる
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	setEffectHandlerTo18();	//ab66
@@ -8159,9 +8419,12 @@ $ab9f:
 ____________________
 # $35:ab9f commandWindow_OnSteal	
 <details>
-<summary>0E: ぬすむ</summary>
+<summary>
 
-## (pseudo-)code:
+>0E: ぬすむ
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	a = #0e;
@@ -8173,9 +8436,12 @@ ____________________
 ____________________
 # $35:aba4 command_steal
 <details>
-<summary>0E: ぬすむ</summary>
+<summary>
 
-## (pseudo-)code:
+>0E: ぬすむ
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	setEffectHandlerTo18();	//ab66
@@ -8243,9 +8509,12 @@ $ac64:	return;
 ____________________
 # $35:ac65 commandWindow_OnChargeSelected
 <details>
-<summary>0F: ためる</summary>
+<summary>
 
-## (pseudo-)code:
+>0F: ためる
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	setYtoOffset2E();	//$34:9b9b();
@@ -8259,9 +8528,12 @@ $ac6f:
 ____________________
 # $35:ac6f command_charge
 <details>
-<summary>0F: ためる</summary>
+<summary>
 
-## (pseudo-)code:
+>0F: ためる
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	$78d7 = #48;	//actionName
@@ -8300,9 +8572,12 @@ $acca:	//蛙か小人
 ____________________
 # $35:acd0 commandWindow_OnSing	
 <details>
-<summary>10: うたう</summary>
+<summary>
 
-## (pseudo-)code:
+>10: うたう
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	a = #10
@@ -8314,9 +8589,12 @@ ____________________
 ____________________
 # $35:acd5 command_sing
 <details>
-<summary>10: うたう</summary>
+<summary>
 
-## (pseudo-)code:
+>10: うたう
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	$52 = getActor2c() & 7;	//$a42e()
@@ -8345,9 +8623,12 @@ $acfc:
 ____________________
 # $35:ad0c commandWindow_OnIntimidate
 <details>
-<summary>11: おどかす</summary>
+<summary>
 
-## (pseudo-)code:
+>11: おどかす
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	setYtoOffset2E();	//9b9b
@@ -8361,9 +8642,12 @@ $ad16:
 ____________________
 # $35:ad16 command_intimidate
 <details>
-<summary>11: おどかす</summary>
+<summary>
 
-## (pseudo-)code:
+>11: おどかす
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	$78d5 = 1;
@@ -8401,9 +8685,12 @@ $ad6b:
 ____________________
 # $35:ad6b commandWindow_OnCheer
 <details>
-<summary>12: おうえん</summary>
+<summary>
 
-## (pseudo-)code:
+>12: おうえん
+</summary>
+
+### (pseudo-)code:
 ```js
 {
 	setYtoOffset2E();	//$9b9b
@@ -8416,11 +8703,15 @@ ____________________
 ____________________
 # $35:ad75 command_cheer
 <details>
-<summary>12: おうえん</summary>
+<summary>
 
-## notes:
+>12: おうえん
+</summary>
+
+### notes:
 右手攻撃力+10
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$78d5 = 1;
@@ -8447,11 +8738,15 @@ $adaf:
 ____________________
 # $35:adaf commandWindow_OnItemSelected()
 <details>
-<summary>14: アイテム</summary>
+<summary>
 
-## args:
+>14: アイテム
+</summary>
+
+### args:
 + [in,out] u8 $52 : playerIndex
-## local variables:
+
+### local variables:
 +	u8 $62 : cursor row index (0-3), init : 0
 +	u8 $63 : cursor col index (0-7), init : 1
 +	u8 $65 : background no (used in scrolling function), init : 0
@@ -8461,7 +8756,8 @@ ____________________
 +	u8 $69 : col index of 1st selection
 +	u8 $7afd[0x40] : items {id,count}
 +	u8 $7b3d[0x40] : equipflags (0 = cannot use/equip,mark 'x' next to name)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	updatePpuDmaScrollSyncNmi();	//$3f:f8c5();
@@ -8597,7 +8893,7 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in,out] u8 $1d : cursor.x
 + [in,out] u8 $52 : currentPlayerIndex
 + [in] u16 $59 : playerEquipsPtr
@@ -8607,7 +8903,8 @@ ____________________
 + [in,out] u8 $68,69 : lastSelection {row,col}
 + [in] u8 $7af5[2][0x20+4] : items {id,count}
 + [in] u8 $7b3d[0x20+4] : isEquipmentForHand?
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if (0 == (a = $67)) {
@@ -8782,9 +9079,10 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in,out] u8 $67 : mode (0 = 1st,1=2nd selection)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if (0 != (a = $67)) {
@@ -8805,7 +9103,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	eraseWindow();	//$34:8eb0();
@@ -8829,10 +9127,11 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $34[2][4] : items
 + [in] u16 $43 : ptrToDestTileArray
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	initTileArrayStorage();	//$34:9754();
@@ -8871,13 +9170,14 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] itemid $3e : toRemove
 + [in] itemid $40 : toEquip
 + [in] itemid $7af5 : righthand
 + [in] itemid $7af9 : lefthand
 + [out] bool carry : 0:ok 1:bad combination
-## notes:
+
+### notes:
 外そうとしている手の逆に着けてるものと着けようとしている物の組み合わせを調べる
 		素手	片手	竪琴	弓	矢	盾	防具その他
 	(id)	00	01	46	4a	4f	58	(62-)
@@ -8888,7 +9188,8 @@ ____________________
 	4a-4e 				x	o	x
 	4f-57 					x	x
 	58-64						o
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$1d = $40;	//着けようとしてるもの
@@ -8937,12 +9238,13 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in,out] u8 $65 : background no
 + [in,out] u8 $66 : left(colIndex,0-7)
 + [in] u8 $69 : col index of 1st selection (if avail)
 + [in] u8 $67 : mode
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if ((a = $66) < 6) { //bcs  $b2ea
@@ -9013,13 +9315,14 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in,out] u8 $10 : windowX
 + [in,out] u8 $65 : background no
 + [in,out] u8 $66 : left(colIndex,0-7)
 + [in] u8 $69 : col index of 1st selection (if avail)
 + [in] u8 $67 : mode
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if ((a = $66) >= 2) { //bcc $b3a3
@@ -9088,10 +9391,11 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u16 $59 : ptrToEquips ($6200)
 + [in] bool $7573 : eraseFlag 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	for (x = 7;x >= 0;x--) {
@@ -9126,9 +9430,10 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in,out] u8 $3d : firstItemOffset, incremented by 8 per call
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	for (x = 7;x >= 0;x--) { $7400.x = 1; }
@@ -9160,10 +9465,11 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 +	[in] u8 $62 : cursor row index (0-3)
 +	[in] u8 $63 : cursor col index (0-7)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = #a8;
@@ -9186,12 +9492,14 @@ ____________________
 <details>
 <summary></summary>
 
-## local variables:
+### local variables:
 +	u8 $26 : offsetToSelectedItem
 +	u8 $27 : idOfSelectedItem
-## notes:
+
+### notes:
 (see also itemWindow_OnA)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 $b4f7:
@@ -9289,7 +9597,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$7573 = a = #ff;
@@ -9304,11 +9612,13 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 x : col
-## local variables:
+
+### local variables:
 +	$35:b636: windowInitParams[8]
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$3d = a = (--x) << 3;//$fd3f
@@ -9331,7 +9641,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	a = $7ed8 & #40;
@@ -9480,7 +9790,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	if ((a = $24) == 0) return;	//beq $b874
@@ -9499,7 +9809,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	if ((a = $24) == 7) return;	//beq $b874
@@ -9520,7 +9830,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	if ((a = $26) == 0) return;	//beq $b874
@@ -9536,7 +9846,7 @@ ____________________
 <details>
 <summary></summary>
 
-## code:
+### code:
 ```
 {
 	if ((a = $26) == 2) return;	//beq $b874
@@ -9551,7 +9861,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	return;	//jmp $b7b8
@@ -9564,7 +9874,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$18 = a = $24;
@@ -9623,7 +9933,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	init4SpritesAt$0220(index:$18 = 0);	//$34:8adf();
@@ -9638,12 +9948,13 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $18 : itemid
 + [in] u16 $20 : ? itemDataBase = #$9400
 + [out] u8 $1c : allowed (1:ok 0:not)
 + [out] u8 $7478[8] : itemParams
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	loadTo7400FromBank30(id:$18, size:$1a = #8, dest:x = #78);	//$ba3a();
@@ -9673,7 +9984,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 + [in] a=jobindex
@@ -9695,7 +10006,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	//sec
@@ -9720,11 +10031,13 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 $7478[8] : itemparam
-## local variables:
+
+### local variables:
 +	u8 $b3 : selectTargetFlag (01:allowMulti 02:defaultPlayerSide)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if (0 == (a = ($747d & #18)) ) { //bne b983
@@ -9794,7 +10107,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	77 B8 EE B8 74 B8 74 B8 F9 B7 2A B8 63 B8 6C B8
@@ -9808,11 +10121,13 @@ ____________________
 <summary></summary>
 
 //(bank=$30)
-## args:
+
+### args:
 + [in] $1a : itemDataSize
 + [in] $18 : itemid (if magic,itemid-#$30)
 + [in] x : destOffset
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	return loadTo7400Ex(bank:a = #18,restore:y = #1a);
@@ -9825,7 +10140,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	a = #ff;
@@ -9877,7 +10192,7 @@ ____________________
 <details>
 <summary></summary>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	a = x = $28[y = #01];
@@ -9904,7 +10219,7 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u16 $57 : playerParamBasePtr (=$6100)
 + [in] u16 $5b : playerBattleParamBasePtr (=$7575)
 + [in] u8 $78f0[4][4] : playerActionCounts
@@ -9916,9 +10231,11 @@ ____________________
 +	u8 $53 : alivePlayerCount
 +	u16 $5f : playerOffset
 +	u8 $7570 : enemyGroupNo
-## local variables:
+
+### local variables:
 +	BattlePrizeInfo $7400 : enemyInfo
-## dependencies:
+
+### dependencies:
 +	$34:8ff7 : presentBattle
 +	$34:9b88 : setYtoOffsetOf
 +	$34:9b8d : setYtoOffset03 (03:exp)
@@ -9934,7 +10251,8 @@ ____________________
 +	$3f:fd3c~41 : shiftLeftN
 +	$3f:fd43~48 : shiftRightN
 +	$3f:fda6 : loadTo7400Ex
-## notes:
+
+### notes:
 	struct BattlePrizeInfo { //@ram7400
 		u8  ? $10:9c80		//00
 		u16 exp; 		//01 from $10:9d80
@@ -9943,7 +10261,8 @@ ____________________
 		u16 gil;		//1b from $30:9c58
 		u8 capacity; 		//1d from $39:b2ae
 	}
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	call_2e_9d53(a = #0f);	//$3f:fa0e();
@@ -10198,11 +10517,12 @@ ____________________
 # $35:bf7c battle.grow_player
 <details>
 
-## args:
+### args:
 + [in] u8 A: lvupInfo
 + [in] u16 $57 : playerParamBasePtr
 + [in] u8 $5f : playerOffsetBase
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$19 = a;
@@ -10236,10 +10556,11 @@ ____________________
 <details>
 <summary></summary>
 
-## args:
+### args:
 + [in] u8 a : itemid
 + [out] bool carry : succeeded (1)
-## notes:
+
+### notes:
 	指定されたidをもつitemの数を1個増やす
 	同じidのitemがなければ空欄を見つけてそこに置く
 	もしみつからなければcarryをクリアして戻る
@@ -10250,7 +10571,7 @@ ____________________
 	(item欄ならitemid,最後のitemなら先頭のキャラのjob)
 	
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$18 = a;
@@ -10292,7 +10613,7 @@ ____________________
 # $34:8074 battleLoop 
 <details>
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 //	least value of S = $18 = $20 - 8(call_doBattle,beginBattle,dungeon_mainLoop,dungeon_mainLoop)

@@ -2,11 +2,12 @@
 # $3b:b51a getObjectFlag
 
 
-## args:
+### args:
 +	[in] u8 a : objectId?
 +	[in] u8 $78 : world
 +	[in] $6080[2][0x20] : flags (1bit per id)
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	$80 = a;

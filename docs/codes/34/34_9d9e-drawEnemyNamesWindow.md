@@ -1,12 +1,13 @@
 ﻿
 # $34:9d9e drawEnemyNamesWindow
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $7dce[4] : group id
 + [in] u8 $7d6b[4] : enemy id
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	initTileArrayStorage();	//$34:9754();

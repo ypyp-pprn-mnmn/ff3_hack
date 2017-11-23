@@ -2,11 +2,12 @@
 # $3e:df41 floor::loadObjectPattern
 
 
-## args:
+### args:
 +	[in] u8 $8a : vramoffset high (base = #1200)
 +	[in] u8 $8b : objectOffset
 +	[in] ptr $8c : objectIdToPatternIndexMap ($00:9400-)
-## code:
+
+### code:
 ```js
 {
 	if ((a = $700a.(x = $8b)) == 0) return; //beq df40

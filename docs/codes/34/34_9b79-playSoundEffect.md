@@ -1,9 +1,9 @@
 ﻿
 # $34:9b79 playSoundEffect	//[set$ca_and_increment_$c9]
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = #18; goto $9b83;	//papa	(move sound)

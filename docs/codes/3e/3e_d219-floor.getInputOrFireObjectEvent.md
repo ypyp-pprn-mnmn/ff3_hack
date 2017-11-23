@@ -2,9 +2,10 @@
 # $3e:d219 floor::getInputOrFireObjectEvent
 
 
-## args:
+### args:
 +	[in] ptr $72 : object event param ptr
-## code:
+
+### code:
 ```js
 {
 	if ($6c == 0) return field::getAndMaskInput(); //$d27a;

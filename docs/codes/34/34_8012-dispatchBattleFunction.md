@@ -1,9 +1,9 @@
 ﻿
 # $34:8012 dispatchBattleFunction
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = 0; goto $8038; //ex.ほのお

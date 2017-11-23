@@ -2,14 +2,15 @@
 # $3b:b34e floor::loadObject
 
 
-## args:
+### args:
 +	[in] u8 $78 : world
 +	[in] u8 a : objectId? (= $8c[0] )
 +	[in,out] ptr $8a : ? ( = #7100) [out] += #10
 +	[in] ObjectParam* $8c : from $2c:8000 + [ $2c:8000[ $0784] ]
 +	[in,out] RuntimeObject* $8e : ( = #7000) [out] += #10
 +	$01:9e00[0x200] : [aaaabbbb] a:? ->$7103 b:? ->$7102
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	y = $8e[y = #0a] = a;

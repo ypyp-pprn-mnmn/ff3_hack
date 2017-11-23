@@ -2,13 +2,13 @@
 # $36:8925 updateMusicStream
 
 
-## args:
+### args:
 +	[in] u8 $7f40 : soundIdPlayingOn? | #80
 +	[in] u8 $7f41 : lastPlayedMusic?
 +	[in] u8 $7f42 : controlFlag 01:playNew 02:playLast 04:stopMusic 40:delayedStop 80:playOn
 +	[in] u8 $7f43 : soundIdToPlay?
 
-## code:
+### code:
 ```js
 {
 	switch2ndBankToSoundDataBank($7f43);	//$899f();

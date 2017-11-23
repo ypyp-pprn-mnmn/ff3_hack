@@ -1,13 +1,17 @@
 ﻿
 # $31:b9ab segmentate
 
-<summary>分裂</summary>
 
-## args:
+
+>分裂
+
+
+### args:
 + [in] u8 $18 : enemyIdOfSegmentating
 + [in] u8 $1c : enemyIdOfTargetSpace
 + [out] ptr $20 : pNewlyGeneratedEnemy
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$1e,1f = #7675 + mul_8x8(a = $18,x = #40);	//fcd6

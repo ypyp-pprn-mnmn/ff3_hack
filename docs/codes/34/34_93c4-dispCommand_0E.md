@@ -1,9 +1,9 @@
 ﻿
 # $34:93c4 dispCommand_0E
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	setTableBaseAddrTo$00e0();	//$34:95cf();

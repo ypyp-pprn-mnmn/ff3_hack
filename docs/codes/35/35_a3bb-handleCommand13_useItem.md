@@ -1,9 +1,9 @@
 ﻿
 # $35:a3bb handleCommand13_useItem
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	push (a = $1a);

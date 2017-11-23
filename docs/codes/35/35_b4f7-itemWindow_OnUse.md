@@ -1,14 +1,16 @@
 ﻿
 # $35:b4f7 itemWindow_OnUse
 
-<summary></summary>
 
-## local variables:
+
+### local variables:
 +	u8 $26 : offsetToSelectedItem
 +	u8 $27 : idOfSelectedItem
-## notes:
+
+### notes:
 (see also itemWindow_OnA)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 $b4f7:

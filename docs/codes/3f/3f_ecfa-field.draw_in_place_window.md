@@ -2,9 +2,10 @@
 # $3f:ecfa field::draw_in_place_window
 
 
-## args:
+### args:
 +	[in] u8 A: window_type
-## code:
+
+### code:
 ```js
 {
 //1F:ECFA:85 96     STA window_id = #$00

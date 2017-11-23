@@ -2,7 +2,7 @@
 # $3d:a2df checkmagic
 
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	a = $a20c,y //y=magicid (00-37)

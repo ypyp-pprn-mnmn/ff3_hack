@@ -1,9 +1,9 @@
 ﻿
 # $34:8eb0 eraseWindow
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$18 = #2380;

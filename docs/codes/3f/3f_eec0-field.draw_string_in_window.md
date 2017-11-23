@@ -2,11 +2,12 @@
 # $3f:eec0 field.draw_string_in_window
 
 
-## args:
+### args:
 +	[in] ptr $3e : string offset
 +	[in] u8 $93 : string bank
 +	[out] bool carry: more_to_draw
-## code:
+
+### code:
 ```js
 {
 	call_switchFirst2Banks(per8k:a = $93);

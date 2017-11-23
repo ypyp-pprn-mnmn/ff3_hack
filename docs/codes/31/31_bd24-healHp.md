@@ -1,12 +1,13 @@
 ﻿
 # $31:bd24 healHp
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in,out] u16 $78,79 : [in] healAmount [out] actuallyHealedAmount
 + [in] ptr $24 : healTarget
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$1a,1b = $24[3,4];

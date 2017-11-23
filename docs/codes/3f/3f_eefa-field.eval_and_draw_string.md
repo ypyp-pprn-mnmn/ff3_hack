@@ -2,13 +2,14 @@
 # $3f:eefa field.eval_and_draw_string
 
 
-## args:
+### args:
 +	[in] $37: in_menu_mode (1: menu, 0: floor)
 +	[in, out] string* $3e: ptr to string
 +	[in, out] u8 $1f: number of lines drawn (in 8x8 unit)
 +	[out] u8 $90: destOffset
 +	[out] bool carry: more_to_draw
-## code:
+
+### code:
 ```js
 {
 $eefa:

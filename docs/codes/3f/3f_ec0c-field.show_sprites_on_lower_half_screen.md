@@ -2,9 +2,10 @@
 # $3f:ec0c field::show_sprites_on_lower_half_screen
 
 
-## callers:
+### callers:
 +	`1F:C9B6:20 0C EC  JSR field.show_sprites_on_region6`
-## code:
+
+### code:
 ```js
 {
 /*

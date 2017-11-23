@@ -1,13 +1,14 @@
 ﻿
 # $31:a4f6 loadMobParam
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 A : groupNo?
 + [in] u8 Y : enemyNo
 + [in] u8 $7d6b.x : enemyIds
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	u16 base (=$30:8000)

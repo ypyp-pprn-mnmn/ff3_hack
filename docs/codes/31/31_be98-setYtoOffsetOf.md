@@ -1,13 +1,14 @@
 ﻿
 # $31:be98 setYtoOffsetOf
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 a : memberOffsetToSet
 + [in] u8 $5f : basePtr
 + [out] u8 a,y : resultOffsetFromBasePtr
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 { 
 	y = a + $5f;

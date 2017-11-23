@@ -2,12 +2,14 @@
 # $36:8003 soundDriverEntry
 
 
-## args:
+### args:
 +	[in] u8 $7f43 : ?
 +	[in] u8 $7f49 : soundId ( =$ca | #80); #40 = playLast?
-## callers:
+
+### callers:
 +	$3f:faf2(irq worker)
-## code:
+
+### code:
 ```js
 {
 	if ($7f43 == #37) { //bne $8011

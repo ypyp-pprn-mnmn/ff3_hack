@@ -1,12 +1,13 @@
 ﻿
 # $31:b875 isTargetNotResistable
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 status
 + [out] bool carry : (1=yes)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	clearEffectTargetIfMiss();	//$b921();

@@ -1,12 +1,13 @@
 ﻿
 # $34:9f87 setActionTargetToSelf //setActionTargetBitAndFlags
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in,out] $6e[#2f] : target indicator bits
 + u8 $fd24.x : bitmask for target
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	push (a = getActor2C() );	//$a42e

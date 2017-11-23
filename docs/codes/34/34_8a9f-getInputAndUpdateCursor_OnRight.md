@@ -1,9 +1,9 @@
 ﻿
 # $34:8a9f getInputAndUpdateCursor_OnRight
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if ($22 != $1b) { //beq $8ab4

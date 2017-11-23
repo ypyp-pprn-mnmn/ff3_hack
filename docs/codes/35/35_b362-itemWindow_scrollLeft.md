@@ -1,15 +1,16 @@
 ﻿
 # $35:b362 itemWindow_scrollLeft
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in,out] u8 $10 : windowX
 + [in,out] u8 $65 : background no
 + [in,out] u8 $66 : left(colIndex,0-7)
 + [in] u8 $69 : col index of 1st selection (if avail)
 + [in] u8 $67 : mode
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if ((a = $66) >= 2) { //bcc $b3a3

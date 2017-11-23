@@ -1,11 +1,12 @@
 ﻿
 # $35:b198 itemWindow_OnB
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in,out] u8 $67 : mode (0 = 1st,1=2nd selection)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if (0 != (a = $67)) {

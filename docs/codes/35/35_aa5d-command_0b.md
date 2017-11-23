@@ -1,9 +1,12 @@
 ﻿
 # $35:aa5d command_0b
 
-<summary>0b: ちけい</summary>
 
-## (pseudo-)code:
+
+>0b: ちけい
+
+
+### (pseudo-)code:
 ```js
 {
 	$6e[y] = getActor2c() | #10;	//a42e

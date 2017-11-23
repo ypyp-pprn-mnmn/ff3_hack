@@ -2,7 +2,7 @@
 # $3f:faf2
 
 
-## code:
+### code:
 ```js
 {
 	push(a = x);

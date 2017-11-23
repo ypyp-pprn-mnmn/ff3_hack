@@ -2,7 +2,7 @@
 # $3f:fda6 loadTo7400Ex
 
 
-## args:
+### args:
 +	[in] u8 $18 : index
 +	[in] u8 $1a : dataSize
 +	[in] u16 $20 : baseAddr //-> $fcf5
@@ -10,7 +10,8 @@
 +	[in,out] u8 X : destOffset
 +	[in] u8 Y : bankToRestore
 +	[out sizeis($1a)] $7400.x loadedParam
-## code:
+
+### code:
 ```js
 {
 	switchFirst2Banks(a);

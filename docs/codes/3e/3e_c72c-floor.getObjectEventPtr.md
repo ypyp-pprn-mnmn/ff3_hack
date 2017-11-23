@@ -2,10 +2,11 @@
 # $3e:c72c floor::getObjectEventPtr
 
 
-## args:
+### args:
 +	[in] u8 a : index (= $6c)
 +	[out] ptr $72 : = $2c:8600[index]
-## code:
+
+### code:
 ```js
 {
 	y = a << 1;

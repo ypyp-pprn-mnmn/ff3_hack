@@ -1,9 +1,9 @@
 ﻿
 # $35:badc getPoisonDamage
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = x = $28[y = #01];

@@ -2,13 +2,15 @@
 # $3f:fa26 doBattle
 
 
-## args:
+### args:
 +	[in] a : encounter id
 +	[in] x : backgroound sight graphics
 +	[in] y : battleMode?
-## notes:
+
+### notes:
 	least value of S = $1a = $20 - 6
-## code:
+
+### code:
 ```js
 {
 	$7ced = a;

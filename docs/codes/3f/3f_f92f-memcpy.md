@@ -2,14 +2,15 @@
 # $3f:f92f memcpy
 
 
-## args:
+### args:
 +	[in] u16 $7e : sourceAddr
 +	[in] u16 $80 : destAddr
 +	[in] u8 $82 : len
 +	[in] u8 $84 : sourceBank (per16k)
 +	[in] u8 $7cf6 : currentBank (bankToRestore)
 +	[out] u8 $82 : 0
-## code:
+
+### code:
 ```js
 {
 	switch_16k_synchronized(a = $84);	//$fb87

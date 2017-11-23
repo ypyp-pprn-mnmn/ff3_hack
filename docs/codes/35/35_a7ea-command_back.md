@@ -1,9 +1,12 @@
 ﻿
 # $35:a7ea command_back
 
-<summary>03: こうたい</summary>
 
-## (pseudo-)code:
+
+>03: こうたい
+
+
+### (pseudo-)code:
 ```js
 {
 	$78d7 = #3c;

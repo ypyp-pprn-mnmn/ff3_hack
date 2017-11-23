@@ -1,9 +1,9 @@
 ﻿
 # $35:b877 magicWindow_OnA 
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$18 = a = $24;

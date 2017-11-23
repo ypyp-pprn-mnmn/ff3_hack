@@ -2,12 +2,13 @@
 # $3e:c4fc field::OnMove
 
 
-## args:
+### args:
 +	[in] u8 $42 : vehicle 
 	-	(0-歩行、1-チョコボ、2-カヌー 3-船、4-飛空艇、5-シドの飛空艇
 		6-ノーチラス、7-インビンシブル) 未確認
 +	[in] u8 a : input
-## code:
+
+### code:
 ```js
 {
 	if ((x = $42) < 2) { //bcs $c52b

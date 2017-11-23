@@ -3,11 +3,13 @@
 # $3f:ec8d field::show_window:
 
 
-## callers:
+### callers:
 +	`1F:E264:20 8D EC  JSR $EC8D`
-## args:
+
+### args:
 +	u8 A : window_type
-## code:
+
+### code:
 ```js
 {
 /*

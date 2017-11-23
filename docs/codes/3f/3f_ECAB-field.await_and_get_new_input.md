@@ -2,11 +2,12 @@
 # $3f:ECAB field::await_and_get_new_input:
 
 
-## callers:
+### callers:
 +	 `1F:EC93:20 AB EC  JSR field::await_and_get_new_input` ($3f:ec8b field::show_message_window)
 +	 `1F:ECBA:4C AB EC  JMP field::await_and_get_new_input` (tail recursion)
 +	 `1F:EE6A:20 AB EC  JSR field::await_and_get_new_input` ($3f:ee65 field::stream_string_in_window)
-## code:
+
+### code:
 ```js
 {
 /*

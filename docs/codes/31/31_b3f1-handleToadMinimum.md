@@ -1,9 +1,12 @@
 ﻿
 # $31:b3f1 handleToadMinimum
 
-<summary>specialHandler07: トード・ミニマム</summary>
 
-## (pseudo-)code:
+
+>specialHandler07: トード・ミニマム
+
+
+### (pseudo-)code:
 ```js
 {
 	if ( (getActor2C() < 0)  //a2b5 bmi b3fa

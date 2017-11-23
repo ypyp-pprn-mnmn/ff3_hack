@@ -2,7 +2,7 @@
 # $3e:d381 loadPalette
 
 
-## code:
+### code:
 ```js
 {
 	$2002;

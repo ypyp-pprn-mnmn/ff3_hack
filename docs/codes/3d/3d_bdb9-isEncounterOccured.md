@@ -2,10 +2,11 @@
 # $3d:bdb9 isEncounterOccured
 
 
-## args:
+### args:
 +	[in] u8 $48 : warpId
 +	[in] u8 $f8 : bound
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	if ($6c != 0) bdb8;

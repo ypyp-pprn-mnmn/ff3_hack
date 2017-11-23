@@ -2,9 +2,10 @@
 # $3b:a12b floor::object::dispatchEvent
 
 
-## args:
+### args:
 +	[in] u8 $70 : eventId
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	a = $70;

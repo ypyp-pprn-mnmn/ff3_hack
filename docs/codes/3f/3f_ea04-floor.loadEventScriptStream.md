@@ -2,12 +2,13 @@
 # $3f:ea04 floor::loadEventScriptStream
 
 
-## args:
+### args:
 +	[in] u8 a : scriptId (= runtimeobject.+00)
 +	[in] u8 x : ptr address high ($78 == 0 then #82, otherwise #84)
 +	[out] $7b00 : scripts (40h bytes)
 +	ptr $82 : = $2c:8200[scriptId]
-## code:
+
+### code:
 ```js
 {
 	y = a << 1;

@@ -2,12 +2,14 @@
 # $3f:edf6 field::getWindowTilesForTop
 
 
-## args:
+### args:
 +	[in] u8 $3c : width (border incl)
-## callers:
+
+### callers:
 +	$3f:ecef
 +	$3f:ed17
-## code:
+
+### code:
 ```js
 {
 	x = 1;

@@ -1,11 +1,12 @@
 ﻿
 # $34:9648 countAndDecrementUntil0
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u16 $20 : decrementBy
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	x++;

@@ -1,9 +1,12 @@
 ﻿
 # $35:acd5 command_sing
 
-<summary>10: うたう</summary>
 
-## (pseudo-)code:
+
+>10: うたう
+
+
+### (pseudo-)code:
 ```js
 {
 	$52 = getActor2c() & 7;	//$a42e()

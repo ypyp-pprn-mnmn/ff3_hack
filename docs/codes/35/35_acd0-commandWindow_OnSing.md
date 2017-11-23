@@ -1,9 +1,12 @@
 ﻿
 # $35:acd0 commandWindow_OnSing	
 
-<summary>10: うたう</summary>
 
-## (pseudo-)code:
+
+>10: うたう
+
+
+### (pseudo-)code:
 ```js
 {
 	a = #10

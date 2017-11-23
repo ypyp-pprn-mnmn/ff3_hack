@@ -1,10 +1,10 @@
 ﻿
 # $31:a8c8 getEffectTarget2C
 
-<summary></summary>
+
 //or $24_2c
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	return a = $24[y = #2c];

@@ -1,11 +1,12 @@
 ﻿
 # $35:b48b loadTileArrayForItemWindowColumn()
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in,out] u8 $3d : firstItemOffset, incremented by 8 per call
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	for (x = 7;x >= 0;x--) { $7400.x = 1; }

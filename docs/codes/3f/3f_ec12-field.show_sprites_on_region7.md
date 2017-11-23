@@ -2,11 +2,13 @@
 # $3f:ec12 field::show_sprites_on_region7 (bug?)
 
 
-## callers:
+### callers:
 +	`1F:C9C1:20 12 EC  JSR field.show_sprites_on_region7`
-## notes:
+
+### notes:
 called when choose item dialog (window_type=2) is about to close
-## code:
+
+### code:
 ```js
 {
 /*

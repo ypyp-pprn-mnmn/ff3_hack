@@ -2,22 +2,25 @@
 # $3f:ec1a field::showhide_sprites_by_region
 
 
-## args:
+### args:
 +	[in]	u8 A: show/hide.
 	+	1: show
 	+	0: hide
 +	[in]	u8 X: region_type (0..6; with 0 to 4 being shared with window_type)
-## callers:
+
+### callers:
 +	$3f:ec0c field::show_sprites_on_lower_half_screen
 +	$3f:ec12 field::show_sprites_on_region7 (with X set to 7)
 +	$3f:ec18 field::showhide_sprites_by_window_region
-## local variables:
+
+### local variables:
 +	u8 $80: region boundary in pixels, left, inclusive.
 +	u8 $81: region boundary in pixels, right, exclusive.
 +	u8 $82: region boundary in pixels, top, inclusive.
 +	u8 $83: region boundary in pixels, bottom, exclusive.
 +	u8 $84: show/hide flag
-## notes:
+
+### notes:
 -	"サロニア その1" (floor_id: $07) would be convenient location
 	to test this function as there are various objects and floor levels.
 
@@ -25,7 +28,8 @@
 -	region_type 7 (i.e., 8th entry) seems to be INVALID.
 	Static data referred to by this function consists of
 	4 parallel arrays, of which has only 7 entries in each.
-## code:
+
+### code:
 ```js
 {
 /*

@@ -1,9 +1,9 @@
 ﻿
 # $34:8545 dispatchPresentScene_1f
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$7e8f = $7e98;

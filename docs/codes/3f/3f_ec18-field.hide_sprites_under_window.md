@@ -2,11 +2,13 @@
 # $3f:ec18 field::hide_sprites_under_window
 
 
-## args:
+### args:
 +	[in]	u8 X: window_type (0...4)
-## callers:
+
+### callers:
 +	$3f$ed61 field::get_window_region
-## code:
+
+### code:
 ```js
 {
 // 1F:EC18:A9 00     LDA #$00

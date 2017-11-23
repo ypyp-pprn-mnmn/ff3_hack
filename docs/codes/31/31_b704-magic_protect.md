@@ -1,9 +1,9 @@
 ﻿
 # $31:b704 magic_protect
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if ( ($70[y = #23] != #ff)  //bne b714

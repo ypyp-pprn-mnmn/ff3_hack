@@ -1,9 +1,12 @@
 ﻿
 # $35:a750 commandWindow_OnBack
 
-<summary>03: こうたい</summary>
 
-## (pseudo-)code:
+
+>03: こうたい
+
+
+### (pseudo-)code:
 ```js
 {
 	setYtoOffsetOf(a = #0f);

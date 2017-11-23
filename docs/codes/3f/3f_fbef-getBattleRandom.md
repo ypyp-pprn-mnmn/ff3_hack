@@ -1,14 +1,18 @@
 ﻿
 # $3f:fbef getBattleRandom
 
-<summary>指定した乱数系列から乱数値を一つ取得する</summary>
 
-## args:
+
+>指定した乱数系列から乱数値を一つ取得する
+
+
+### args:
 +	[in] u8 A : max?
 +	[in] u8 X : min?
 +	[in] u8 $21 : randSystemIndex?
 +	[out] u8 A : rand  [x-a] の乱数値 上限も含む
-## notes:
+
+### notes:
 	上位8bitを$21で指定した系列から取得した乱数(0x00-0xFF),下位8bitを0x80とした16bit値(A)と最大と最小の差分(8bit)(B)を掛けて
 	結果のbit16-23の8bitを乱数の基本値として採用する。
 	結果のbit8-15=(diff*baseRand + diff>>1)が
@@ -17,7 +21,7 @@
 	繰上げの処理により最小値と最大値だけ出る確率が他の約半分
 	(中央二人が狙われやすいのもそのせい?)
 
-## code:
+### code:
 ```js
 { 
 	$20 = x;

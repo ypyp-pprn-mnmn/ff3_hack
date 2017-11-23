@@ -1,13 +1,14 @@
 ﻿
 # $35:a353 consumeEquippedItem
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 A : hand (right=4, left=6)
 + [in] ptr $59 : equips
 + [out] u8 $24 : recalcRequired (consumed item count reached 0)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	setYtoOffsetOf(a);	//$9b88();

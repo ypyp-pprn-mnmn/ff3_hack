@@ -1,9 +1,9 @@
 ﻿
 # $35:ba41 processPoison
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = #ff;

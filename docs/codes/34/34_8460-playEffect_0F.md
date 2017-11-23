@@ -1,11 +1,12 @@
 ﻿
 # $34:8460 playEffect_0F
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $7ee1 : segmentated enemy id (ff: none)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	showDamage();	//$34:868a();

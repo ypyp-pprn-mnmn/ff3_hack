@@ -1,18 +1,20 @@
 ﻿
 # $34:8577 playEffect_01 
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $7e88 : actionId
 + [in] u8 $7e98 : actors char bit?
 + [in] u8 $7e99 : selected targets ($6e[#2f])
 + [in] u8 $7e9a :	effect side
 + [in] u8 $7e9d : actionParam[6]; see $31:af77
-## local variables:
+
+### local variables:
 +	$00c9 : playSoundFlag
 +	$00ca : soundEffectId
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	y = $7e88;

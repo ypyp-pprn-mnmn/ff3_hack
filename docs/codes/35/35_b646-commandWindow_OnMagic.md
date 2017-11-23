@@ -1,9 +1,9 @@
 ﻿
 # $35:b646 commandWindow_OnMagic
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = $7ed8 & #40;

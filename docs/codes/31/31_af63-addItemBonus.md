@@ -1,12 +1,13 @@
 ﻿
 # $31:af63 addItemBonus
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 A : bonusFlag
 + [in,out] u8 $2c[5] : params
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	for (x = 0;x != 5;x++) {

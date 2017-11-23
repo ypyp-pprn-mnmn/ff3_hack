@@ -3,7 +3,7 @@
 # $3f:ff1f switch_2nd_page
 
 
-## code:
+### code:
 ```js
 {
 	push a;

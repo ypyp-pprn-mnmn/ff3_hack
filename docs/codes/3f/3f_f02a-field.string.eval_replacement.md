@@ -3,7 +3,7 @@
 # $3f:f02a field.string.eval_replacement
 
 
-## args:
+### args:
 +	[in] a: charcode
 +	[in] y: offset into the string pointed to by $3e.
 +	[in, out] u8 $1f: number of lines drawn (in 8x8 unit)
@@ -13,18 +13,22 @@
 +	[in,out] u8 $90: offset into the tile buffer ($0780/$07a0)
 +	[out] u8 $0780[32]: tile (or name table) buffer for upper line
 +	[out] u8 $07a0[32]: tile (or name table) buffer for lower line
-## local variables:
+
+### local variables:
 +	u8 $80,81,82,83: scratch.
 +	u8 $84: parameter byte
 +	u8 $97,98
-## notes:
+
+### notes:
 charcodes ranged [10...28) are defined as opcodes (or 'replacement'),
 given that the codes have followed by additional one byte for parameter.
-### code meanings:
+
+#### code meanings:
 +	10-13: status of a player character. lower 2-bits represents an index of character.
 +	15-17: left-align text by paramter,increment menu-item count by 4
 +	1e: get job name
-## code:
+
+### code:
 ```js
 {
 	push a;

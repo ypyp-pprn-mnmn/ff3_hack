@@ -2,7 +2,7 @@
 # $3f:f970 copyToVram
 
 
-## args:
+### args:
 +	[in] u16 $7e : sourceBuffer
 +	[in] u16 $80 : destVramAddr
 +	[in] u8 $82 : length (in per 8x8pixel. = per 0x10bytes)
@@ -10,7 +10,8 @@
 +	[in] u8 $92 : use_palette (1: yes, 0: no)
 +	[in] u8 $7300[] : palette (used if $92 != 0)
 +	[in] u8 $7cf3 : init_completed (1: yes, 0: no( still-initializing ))
-## code:
+
+### code:
 ```js
 {
 	$83 = $82 & 3;

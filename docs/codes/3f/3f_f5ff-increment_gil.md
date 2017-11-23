@@ -2,12 +2,14 @@
 # $3f:f5ff increment_gil
 
 
-## args:
+### args:
 +	[in] u24 $80 : gil
-## callers:
+
+### callers:
 +	$3d:b1c2 @ floor::shop::
 +	$3f:f5bb @ floor::getTreasure
-## code:
+
+### code:
 ```js
 {
 	$601c,$601d,$601e += $80,81,82;

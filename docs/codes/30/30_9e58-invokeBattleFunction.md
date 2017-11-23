@@ -1,11 +1,12 @@
 ﻿
 # $30:9e58 invokeBattleFunction
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $4c : functionId
-## notes:
+
+### notes:
 //	least value of S = $12 = $20 - ($0a + $06) (original:$14)
 //		(dungeon_mainLoop - dungeon_mainLoop - beginBattle - call_doBattle - battleLoop)
 //			+(presentBattle - pb_disorderedShot)
@@ -17,7 +18,8 @@
 //		3 then たたかう
 //		5 then recalcBattleParams (OnCloseItemWindow etc)
 //		7 then calcDataAddress($31:be9d) (OnExecuteAction)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = $4c << 1;

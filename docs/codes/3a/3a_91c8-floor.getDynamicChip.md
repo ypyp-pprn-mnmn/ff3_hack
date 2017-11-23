@@ -2,7 +2,7 @@
 # $3a:91c8 floor::getDynamicChip
 
 
-## args:
+### args:
 +	[in,out] a : chipId
 +	[out] $0500[ allocatedChipId ] : serial number 
 +	$921f(7521f) : チップ分類
@@ -14,7 +14,8 @@
 
 		f0 f4 f8 fc 00 00 00 00  00 00 00 00 00 00 00 00
 		80 90 a0 b0 c0 c4 c8 cc  e0 e4 e8 ec d0 00 00 00
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	x = a - #60;

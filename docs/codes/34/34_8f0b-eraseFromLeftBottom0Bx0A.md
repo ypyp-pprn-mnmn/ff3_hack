@@ -1,9 +1,9 @@
 ﻿
 # $34:8f0b eraseFromLeftBottom0Bx0A	//[eraseItemWindowColumn]
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$18,19 = #2380;

@@ -1,9 +1,12 @@
 ﻿
 # $35:a8ab commandWindow_OnEscapeSelected
 
-<summary>06: にげる</summary>
 
-## (pseudo-)code:
+
+>06: にげる
+
+
+### (pseudo-)code:
 ```js
 {
 	setYtoOffset2E();	//$9b9b

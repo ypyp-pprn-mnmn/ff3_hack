@@ -1,9 +1,9 @@
 ﻿
 # $34:92b5 printHp
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	x = $78ef;

@@ -1,9 +1,12 @@
 ﻿
 # $35:a843 commandWindow_OnAttackSelected
 
-<summary>04: たたかう</summary>
 
-## (pseudo-)code:
+
+>04: たたかう
+
+
+### (pseudo-)code:
 ```js
 {
 	a = #04;

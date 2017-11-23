@@ -1,9 +1,9 @@
 ﻿
 # $35:b1b0 endItemWindow
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	eraseWindow();	//$34:8eb0();

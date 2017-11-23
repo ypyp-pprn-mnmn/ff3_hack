@@ -1,12 +1,13 @@
 ﻿
 # $34:9450 dispCommand_0A_waitForAButtonDownOrMessageTimeOut
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $6010 : ?
 //
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = 8 - $6010;	//user option:message speed?

@@ -1,9 +1,9 @@
 ﻿
 # $34:91ce setNoTargetMessage
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	return $78d8 = a = #ff;

@@ -1,9 +1,9 @@
 ﻿
 # $34:926b waitPad1ADown
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	do {

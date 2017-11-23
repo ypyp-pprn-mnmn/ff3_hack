@@ -1,9 +1,12 @@
 ﻿
 # $35:ab07 commandWindow_OnDetect
 
-<summary>0d: みやぶる</summary>
 
-## (pseudo-)code:
+
+>0d: みやぶる
+
+
+### (pseudo-)code:
 ```js
 {
 	a = #0d;

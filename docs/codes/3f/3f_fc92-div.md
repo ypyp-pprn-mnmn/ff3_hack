@@ -1,13 +1,17 @@
 ﻿
 # $3f:fc92 div 
-<summary>筆算的に割り算</summary>
 
-## args:
+
+>筆算的に割り算
+
+
+### args:
 +	[in] u16 $18 dividend
 +	[in] u16 $1a divisor
 +	[out] u16 $1c quotient (result)
 +	[out] u16 $1e modulo (remainder)
-## code:
+
+### code:
 ```js
 {
 	$1c,1d,1e,1f = 0;

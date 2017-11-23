@@ -1,14 +1,16 @@
 ﻿
 # $34:86ab targetBitToCharIndex
 
-<summary></summary>
+
 
 //find$7e98_x_In$fd24
-## args:
+
+### args:
 + [in] u8 $7e98.x : ?
 + [in] u8 X : side
 + [out] u8 Y : result index 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	y = 0;

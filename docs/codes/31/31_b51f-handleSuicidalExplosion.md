@@ -1,9 +1,12 @@
 ﻿
 # $31:b51f handleSuicidalExplosion
 
-<summary>自爆</summary>
 
-## (pseudo-)code:
+
+>自爆
+
+
+### (pseudo-)code:
 ```js
 {
 	$18,19 = $6e[3,4];

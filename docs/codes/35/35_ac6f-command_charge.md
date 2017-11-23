@@ -1,9 +1,12 @@
 ﻿
 # $35:ac6f command_charge
 
-<summary>0F: ためる</summary>
 
-## (pseudo-)code:
+
+>0F: ためる
+
+
+### (pseudo-)code:
 ```js
 {
 	$78d7 = #48;	//actionName

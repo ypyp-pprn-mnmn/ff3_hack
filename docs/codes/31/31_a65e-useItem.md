@@ -1,9 +1,12 @@
 ﻿
 # $31:a65e useItem
 
-<summary>dispid:04 [battleFunction04]</summary>
 
-## (pseudo-)code:
+
+>dispid:04 [battleFunction04]
+
+
+### (pseudo-)code:
 ```js
 {
 	$78d5 = #1;

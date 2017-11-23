@@ -1,11 +1,12 @@
 ﻿
 # $31:a8cd setRandomTargetFromEnemyParty
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] BattleChar *$24
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$24[y = #30] = #80;

@@ -1,9 +1,9 @@
 ﻿
 # $35:aa56 getCommandInput_goNextCharacter
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$52++;

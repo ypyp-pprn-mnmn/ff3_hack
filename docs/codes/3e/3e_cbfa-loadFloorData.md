@@ -1,12 +1,16 @@
 ﻿
 # $3e:cbfa loadFloorData
-<summary>32x32のフロアデータを読み込む</summary>
 
-## args:
+
+>32x32のフロアデータを読み込む
+
+
+### args:
 +	[in] y : initial offset
 +	[in] ptr $80 : src
 +	[in] ptr $82 : dest (7400)
-## code:
+
+### code:
 ```js
 {
 		if ((a = $80[y] ) < 0) { //bpl cc2a

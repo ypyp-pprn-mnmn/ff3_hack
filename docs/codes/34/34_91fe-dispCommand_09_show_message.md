@@ -1,15 +1,15 @@
 ﻿
 # $34:91fe dispCommand_09_show_message
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $78da.x : message queue?(item=message id;#ff = display nothing)
 + [in] u16 $78e4.x : message params
 + [in] u8 $78ee : queue index?
 + [in] u8 $78ef : message param index?
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$18 = 0; 

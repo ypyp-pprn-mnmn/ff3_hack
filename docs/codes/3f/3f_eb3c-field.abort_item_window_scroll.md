@@ -2,12 +2,14 @@
 # $3f$eb3c field.abort_item_window_scroll
 
 
-## args:
+### args:
 +	[in] u8 $57: bank number to restore
 +	[out] bool carry: always 1. (scroll aborted)
-## callers:
+
+### callers:
 +	`1F:EBA6:4C 3C EB  JMP field.abort_item_window_scroll` @ $3f$eb69 field.scrollup_item_window
-## code:
+
+### code:
 ```js
 {
 /*

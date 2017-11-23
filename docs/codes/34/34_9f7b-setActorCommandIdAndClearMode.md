@@ -1,9 +1,9 @@
 ﻿
 # $34:9f7b setActorCommandIdAndClearMode 
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$6e[y = #2e] = a;

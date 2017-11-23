@@ -1,11 +1,15 @@
 ﻿
 # $35:adaf commandWindow_OnItemSelected()
 
-<summary>14: アイテム</summary>
 
-## args:
+
+>14: アイテム
+
+
+### args:
 + [in,out] u8 $52 : playerIndex
-## local variables:
+
+### local variables:
 +	u8 $62 : cursor row index (0-3), init : 0
 +	u8 $63 : cursor col index (0-7), init : 1
 +	u8 $65 : background no (used in scrolling function), init : 0
@@ -15,7 +19,8 @@
 +	u8 $69 : col index of 1st selection
 +	u8 $7afd[0x40] : items {id,count}
 +	u8 $7b3d[0x40] : equipflags (0 = cannot use/equip,mark 'x' next to name)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	updatePpuDmaScrollSyncNmi();	//$3f:f8c5();

@@ -1,9 +1,9 @@
 ﻿
 # $34:9735 strToTileArray_OnLinefeed
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	offsetTilePtr(len:a = $18);	//a558

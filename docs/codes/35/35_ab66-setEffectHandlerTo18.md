@@ -1,12 +1,12 @@
 ﻿
 # $35:ab66 setEffectHandlerTo18
 
-<summary></summary>
 
-## notes:
+
+### notes:
 called by 3 routines
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$7ec2 = #18;

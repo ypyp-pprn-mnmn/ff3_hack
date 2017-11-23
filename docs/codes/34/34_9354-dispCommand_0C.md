@@ -1,9 +1,9 @@
 ﻿
 # $34:9354 dispCommand_0C
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$7ec2 = #17;

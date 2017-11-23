@@ -1,14 +1,15 @@
 ﻿
 # $31:a400 loadBattlePlayers 
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u16 $5b : playerPtr
 + [in] u16 $5d : enemyPtr?
 //uses:
 //	u8 $5f : offset
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	//for (x = 3;x > 0;x--) {

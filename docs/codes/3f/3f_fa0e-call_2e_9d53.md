@@ -2,11 +2,13 @@
 # $3f:fa0e call_2e_9d53
 
 
-## args:
+### args:
 +	[in] u8 A : 9d53_param
-## notes:
+
+### notes:
 各種ゲームシーン表示系のルーチンから呼ばれる
-## code:
+
+### code:
 ```js
 {
 	push(a);

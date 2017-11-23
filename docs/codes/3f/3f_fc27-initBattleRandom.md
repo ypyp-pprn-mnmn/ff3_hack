@@ -8,7 +8,8 @@
 	$fc39 85 22	sta $22
 	$fc3b a9 01
 	
-## code:
+
+### code:
 ```js
 {
 	for ( x = 0;x < 256;x++) a += $00.x;

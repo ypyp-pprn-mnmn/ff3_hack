@@ -1,11 +1,14 @@
 ﻿
 # $31:b233 handleHealingMagic	
 
-<summary>specialHandler01: 回復魔法</summary>
 
-## notes:
 
-## (pseudo-)code:
+>specialHandler01: 回復魔法
+
+
+### notes:
+
+### (pseudo-)code:
 ```js
 {
 	isTargetWeakToHoly();	//$bbe2();

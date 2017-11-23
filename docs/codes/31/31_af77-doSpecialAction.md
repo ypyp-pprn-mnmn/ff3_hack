@@ -1,22 +1,28 @@
 ﻿
 # $31:af77 doSpecialAction
 
-<summary>battleFunction00</summary>
 
-## notes:
+
+>battleFunction00
+
+
+### notes:
 //dispId : 0
-## args:
+
+### args:
 + [in] u16 $6e : actorPtr
 + [in] u8 $cc : skipSealedCheck (item=1,although item flag directs to skip too)
 + [in] u8 $7e99 : selected targets (actor.+2F)
-## local variables:
+
+### local variables:
 +	u8 $62 : Index 
 +	u8 $7e88 : actionId
 +	u8 $7e9d : actionParam[6]
-## callers:
+
+### callers:
 +	dispatchBattleCommand(0)
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$54 = 0;

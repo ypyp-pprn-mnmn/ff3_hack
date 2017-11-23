@@ -1,19 +1,21 @@
 ﻿
 # $34:899e getInputAndUpdateCursorWithSound
 
-<summary>
-各種入力ウインドウにおいて、パッド入力を取得し対応する動作を行う(十字キーなら音ともに移動・ABなら音を鳴らして戻る)
-</summary>
 
-## args:
+各種入力ウインドウにおいて、パッド入力を取得し対応する動作を行う(十字キーなら音ともに移動・ABなら音を鳴らして戻る)
+
+
+### args:
 + [in] u8 $1a : cursorId
 + [in] u8 $1b : rightend (with this value not included)
 + [in,out] u8 $22 : col
 + [in,out] u8 $23 : row
 + [out] u8 $50[$1a] : inputBits (only a,b,left,right;otherwise unchanged)
-## notes:
+
+### notes:
 //[commandWindow_dispatchInput]
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$1e,1f = #8acf;

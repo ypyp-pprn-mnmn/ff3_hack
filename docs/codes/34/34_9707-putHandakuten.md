@@ -1,11 +1,12 @@
 ﻿
 # $34:9707 putHandakuten
 
-<summary></summary>
 
-## notes:
+
+### notes:
 //P-sound mark
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	push (a = y);

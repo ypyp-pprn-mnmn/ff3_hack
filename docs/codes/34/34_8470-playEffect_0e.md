@@ -1,9 +1,9 @@
 ﻿
 # $34:8470 playEffect_0e
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if ($7e9a >= 0) {

@@ -1,9 +1,9 @@
 ﻿
 # $34:8160 endBattle
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	prize(); //bb49

@@ -1,9 +1,9 @@
 ﻿
 # $31:b74b setResultDamageInvalid
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$78,79 = #ff;

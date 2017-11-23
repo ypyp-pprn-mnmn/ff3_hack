@@ -1,9 +1,12 @@
 ﻿
 # $31:b474 handleProtect
 
-<summary>specialHandler08: プロテス</summary>
 
-## (pseudo-)code:
+
+>specialHandler08: プロテス
+
+
+### (pseudo-)code:
 ```js
 {
 	clearEffectTargetIfMiss(); //b921

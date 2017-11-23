@@ -1,11 +1,12 @@
 ﻿
 # $31:bdc5 checkForEffectTargetDeath
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 A : sideToCheck (0=player 1=mob)?
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	push a;push a;

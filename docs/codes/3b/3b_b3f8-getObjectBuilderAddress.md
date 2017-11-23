@@ -2,14 +2,15 @@
 # $3b:b3f8 getObjectBuilderAddress
 
 
-## args:
+### args:
 +	[in] u8 $86 : = ObjectParam.+03
 +	[out] a,x = 
 	+	$86 == 0 : #b43a
 	+	$86 == 1 : #b44a
 	+	$86 == 2 : #b42a
 	+	$86 == 3 : #b41a
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	switch ( $86 & #03) {

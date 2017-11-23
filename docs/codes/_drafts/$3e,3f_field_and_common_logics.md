@@ -2,7 +2,7 @@ ________________________________________________________________________________
 # $3f:fff0 hardware_vectors
 <details>
 
-## code:
+### code:
 ```js
 {
 	()	FF D6 
@@ -23,13 +23,15 @@ ________________________________________________________________________________
 # $3e:c049 beginBattle
 <details>
 
-## args:
+### args:
 +	[in] $6a : encounter id
 +	[in] $6b : background view (00-step 01-sand 07-mountain)
 +	[in] $78 : world (00:"floating land")
-## notes:
+
+### notes:
 least value of S = $1c = $20 - 4
-## code:
+
+### code:
 ```js
 {
 	switchToBank3C();	//$c98a();
@@ -54,7 +56,7 @@ ________________________________________________________________________________
 # $3e:c0ed
 <details>
 
-## code:
+### code:
 ```js
 {
 	$c859();
@@ -95,9 +97,10 @@ ________________________________________________________________________________
 # $3e:c1bb field::enterDungeon
 <details>
 
-## args:
+### args:
 +	[in] u8 $78 : world (00:floating land)
-## code:
+
+### code:
 ```js
 {
 	$7f49 = #93;	//SE
@@ -125,7 +128,7 @@ ________________________________________________________________________________
 # $3e:c1f2
 <details>
 
-## code:
+### code:
 ```js
 {
 	if ($23 != 0) $c269;	//start
@@ -143,7 +146,7 @@ ________________________________________________________________________________
 # $3e:c243 field::dispatchInput
 <details>
 
-## code:
+### code:
 ```js
 {
 	if ($a9 == 0) { //bne c252
@@ -167,7 +170,7 @@ ________________________________________________________________________________
 # $3e:c269 field_OnStart
 <details>
 
-## code:
+### code:
 ```js
 {
 	$23 = 0;
@@ -186,7 +189,7 @@ ________________________________________________________________________________
 # $3e:c389 field_doScroll
 <details>
 
-## code:
+### code:
 ```js
 {
 	if ($34 != 0) { //beq c398
@@ -206,7 +209,7 @@ ________________________________________________________________________________
 # $3e:c398 field_setScroll
 <details>
 
-## code:
+### code:
 ```js
 {
 	$2001 = #1e;
@@ -224,7 +227,7 @@ ________________________________________________________________________________
 # $3e:c3be
 <details>
 
-## code:
+### code:
 ```js
 {
 	if ($32 != 0) {
@@ -255,7 +258,7 @@ ________________________________________________________________________________
 # $3e:c416
 <details>
 
-## code:
+### code:
 ```js
 {
 }
@@ -273,7 +276,7 @@ ________________________________________________________________________________
 # $3e:c4e6
 <details>
 
-## code:
+### code:
 ```js
 {
 	$44 = $43; return;
@@ -286,7 +289,7 @@ ________________________________________________________________________________
 # $3e:c4eb
 <details>
 
-## code:
+### code:
 ```js
 {
 	$44 = $43;
@@ -306,12 +309,13 @@ ________________________________________________________________________________
 # $3e:c4fc field::OnMove
 <details>
 
-## args:
+### args:
 +	[in] u8 $42 : vehicle 
 	-	(0-歩行、1-チョコボ、2-カヌー 3-船、4-飛空艇、5-シドの飛空艇
 		6-ノーチラス、7-インビンシブル) 未確認
 +	[in] u8 a : input
-## code:
+
+### code:
 ```js
 {
 	if ((x = $42) < 2) { //bcs $c52b
@@ -396,11 +400,12 @@ ________________________________________________________________________________
 # $3e:c65d
 <details>
 
-## args:
+### args:
 +	[in] u8 a : inputBits (see $3e:d281 field::getInput)
 +	[in] u8 $27 : screen left (not character pos)
 +	[in] u8 $28 : screen top ()
-## code:
+
+### code:
 ```js
 {
 	a >>= 1;
@@ -450,10 +455,12 @@ ________________________________________________________________________________
 <details>
 
 //	$44 < 0 && $45 >= 0
-## args:
+
+### args:
 +	[in] u8 $42 : vehicle?
 +	[in] u8 $78 : world
-## code:
+
+### code:
 ```js
 {
 	if ( ($78 != #04)  //beq c6cb
@@ -476,7 +483,7 @@ ________________________________________________________________________________
 # $3e:c6d5 field::OnCharacterMoved
 <details>
 
-## code:
+### code:
 ```js
 {
 	if ((a = $44) >= 0) { //bmi c6df
@@ -505,7 +512,7 @@ ________________________________________________________________________________
 # $3e:c711 field::getRandom
 <details>
 
-## code:
+### code:
 ```js
 {
 	if ($f6 >= 0) { //bmi c71b
@@ -531,10 +538,11 @@ ________________________________________________________________________________
 # $3e:c72c floor::getObjectEventPtr
 <details>
 
-## args:
+### args:
 +	[in] u8 a : index (= $6c)
 +	[out] ptr $72 : = $2c:8600[index]
-## code:
+
+### code:
 ```js
 {
 	y = a << 1;
@@ -558,7 +566,7 @@ ________________________________________________________________________________
 # $3e:c750 field::callSoundDriver
 <details>
 
-## code:
+### code:
 ```js
 {
 	call_switchFirst2Banks(per8kBank:a = #36); //ff03
@@ -572,7 +580,7 @@ ________________________________________________________________________________
 # $3e:c966
 <details>
 
-## code:
+### code:
 ```js
 {
 	if ( ($82 == #20) //bne c987
@@ -598,7 +606,7 @@ ________________________________________________________________________________
 # $3e:c98a switchToBank3C
 <details>
 
-## code:
+### code:
 ```js
 {
 	return switchFirst2Banks(per8kBank:a = #3c); //jmp ff03
@@ -611,13 +619,15 @@ ________________________________________________________________________________
 # $3e:c98f field::update_window_attr_buff
 <details>
 
-## args:
+### args:
+
 ###
 +	in u8 $37: skip_window_attr_update
 +	in u8 $38: window_left (in 8x8)
 +	in u8 $3b: window_row_in_draw (in 8x8)
 +	in u8 $3c: window_width (in 8x8)
-## code:
+
+### code:
 ```js
 {
 	if ($37 == 0) { //bne c9b5
@@ -637,10 +647,11 @@ ________________________________________________________________________________
 # $3e:c9a9 field::set_bg_attr_for_window
 <details>
 
-## args:
+### args:
 +	[in] u8 $37 :
 +	[in] u8 $3c : palette entry count * 2
-## code:
+
+### code:
 ```js
 {
 	if ($37 == 0) { //bne c9b5
@@ -659,7 +670,7 @@ ________________________________________________________________________________
 # $3e:ca67
 <details>
 
-## code:
+### code:
 ```js
 {
 	a = $2d >> 1;
@@ -682,7 +693,7 @@ ________________________________________________________________________________
 # $3e:cab1 field::merge_bg_attributes_with_buffer
 <details>
 
-## args:
+### args:
 +	[in] u8 $2d : ??? (1 if caller is: $3e:c98f field::update_window_attr_buff)
 +	[in] u8 $30 : tile.y (in 16x16) (== $3b >> 1)
 +	[in] u8 $31 : tile.x (in 16x16) (== $38 >> 1)
@@ -692,7 +703,8 @@ ________________________________________________________________________________
 +	[out] u8 $07d0[0x10] : vram addr high
 +	[out] u8 $07e0[0x10] : vram addr low
 +	[out] u8 $07f0[0x10] : attr value
-## code:
+
+### code:
 ```js
 {
 	push ($31);
@@ -773,9 +785,10 @@ ________________________________________________________________________________
 # $3e:cb6b field::copyToVramWith_07d0
 <details>
 
-## args:
+### args:
 +	[in] x : last entry (max = #0f)
-## code:
+
+### code:
 ```js
 {
 	$2002;
@@ -796,13 +809,14 @@ ________________________________________________________________________________
 # $3e:cba4 field::loadWarpDestinationFloor
 <details>
 
-## args:
+### args:
 +	[in] u8 $48 : warpId
 +	[in] u8 $78 : world
 //	u8 $00:8a00[0x100] : warp id => floor id for "floating land"
 //	u8 $00:8b00[0x100] : warp id => floor id for "under world"
 //	u16 $11:8000[0x100] : linear offset from $11:8000
-## code:
+
+### code:
 ```js
 {
 	call_switch1stBank(per8k;a = 00);	//ff06
@@ -846,13 +860,17 @@ $cbf2:
 
 ________________________________________________________________________________
 # $3e:cbfa loadFloorData
-<details><summary>32x32のフロアデータを読み込む</summary>
+<details><summary>
 
-## args:
+>32x32のフロアデータを読み込む
+</summary>
+
+### args:
 +	[in] y : initial offset
 +	[in] ptr $80 : src
 +	[in] ptr $82 : dest (7400)
-## code:
+
+### code:
 ```js
 {
 		if ((a = $80[y] ) < 0) { //bpl cc2a
@@ -894,7 +912,7 @@ ________________________________________________________________________________
 # $3e:cc47 field::loadMapRow
 <details>
 
-## code:
+### code:
 ```js
 {
 	field::getMapDataPointers();	//$ccbb();
@@ -933,7 +951,7 @@ ________________________________________________________________________________
 # $3e:ccbb field::getMapDataPointers
 <details>
 
-## args:
+### args:
 +	[out] ptr $82 : pDest
 +	[out] ptr $80 : pSrc
 +	[in] u8 $2c : y?
@@ -941,7 +959,8 @@ ________________________________________________________________________________
 +	u16 $06:9000[0x400] : linear offset from $06:9000( 0d000 )
 	cc42: 90 90 92 94 96
 +	u8 $78 : world (浮遊大陸//浮上前/浮上後/海中)
-## code:
+
+### code:
 ```js
 {
 	call_switch1stBank(per8k:a = #06);	//ff06
@@ -973,7 +992,7 @@ ________________________________________________________________________________
 # $3e:cd76 vehicleSpeeds[] =
 <details>
 
-## code:
+### code:
 ```js
 {
 	01 02 01 02 04 02 08 02
@@ -986,12 +1005,13 @@ ________________________________________________________________________________
 # $3e:cd7e getVehicleSpeed
 <details>
 
-## args:
+### args:
 +	[in] u8 $42 : vehicle
 +	[in] u8 $78 : world
 +	[out] u8 $34 : speed (pixel per frame)
 +	[in,out] u8 $4e : apply delay (0=yes)
-## code:
+
+### code:
 ```js
 {
 	if ($78 >= 4) { //bcc cd88
@@ -1024,9 +1044,10 @@ ________________________________________________________________________________
 # $3e:ce7a getTileParamsVertical
 <details>
 
-## args:
+### args:
 +	[in] ptr $80 : pMapData (7000-7eff)
-## code:
+
+### code:
 ```js
 {
 	for (x;x < #10;x++) {
@@ -1047,11 +1068,12 @@ ________________________________________________________________________________
 # $3e:d1b1 field::loadString
 <details>
 
-## args:
+### args:
 +	[in] a : string id (ptrTable = $30200)
 +	[out] u8 $7b00 : = 0
 +	[out] string $7b01
-## code:
+
+### code:
 ```js
 {
 	push a;
@@ -1098,9 +1120,10 @@ ________________________________________________________________________________
 # $3e:d219 floor::getInputOrFireObjectEvent
 <details>
 
-## args:
+### args:
 +	[in] ptr $72 : object event param ptr
-## code:
+
+### code:
 ```js
 {
 	if ($6c == 0) return field::getAndMaskInput(); //$d27a;
@@ -1141,7 +1164,7 @@ ________________________________________________________________________________
 # $3e:d27a field::getAndMaskInput
 <details>
 
-## code:
+### code:
 ```js
 {
 	field::getInput();	//d281
@@ -1157,11 +1180,13 @@ ________________________________________________________________________________
 # $3e:d281 field::get_input
 <details>
 
-## args:
+### args:
 +	[out] u8 $20 : inputBits (bit7< A B select start up down left right >bit0)
-## notes:
+
+### notes:
 bitの配置が戦闘中のルーチンと逆
-## code:
+
+### code:
 ```js
 {
 	$4016 = 1; $4016 = 0;
@@ -1181,7 +1206,7 @@ ________________________________________________________________________________
 # $3e:d29a field_maskInput
 <details>
 
-## code:
+### code:
 ```js
 {
 	if ( ($20 & 3) != 0) { //beq d2a2
@@ -1236,7 +1261,7 @@ ________________________________________________________________________________
 # $3e:d308
 <details>
 
-## code:
+### code:
 ```js
 {
 }
@@ -1248,7 +1273,7 @@ ________________________________________________________________________________
 # $3e:d381 loadPalette
 <details>
 
-## code:
+### code:
 ```js
 {
 	$2002;
@@ -1272,7 +1297,7 @@ ________________________________________________________________________________
 # $3e:d4a2
 <details>
 
-## code:
+### code:
 ```js
 {
 	if (($8c & 4) != 0) { //beq d4bb
@@ -1301,9 +1326,10 @@ ________________________________________________________________________________
 # $3e:d83c
 <details>
 
-## args:
+### args:
 +	[in] u8 $42 : vehicle
-## code:
+
+### code:
 ```js
 {
 	y = $42
@@ -1318,9 +1344,10 @@ ________________________________________________________________________________
 # $3e:d85a
 <details>
 
-## args:
+### args:
 +	[in] u8 $78 : world
-## code:
+
+### code:
 ```js
 {
 	//...
@@ -1335,7 +1362,7 @@ ________________________________________________________________________________
 # $3e:da3a floor::loadObjectSprite
 <details>
 
-## args:
+### args:
 +	[in] ptr $80 : building info (= $700e.x,$700f.x + 0|8 + $7105.x)
 	++	$700e.x :
 			objparam.+03 & 3 == 0 : #b43a
@@ -1346,7 +1373,8 @@ ________________________________________________________________________________
 			(objparam.+03 << 4) & #c0
 +	[in,out] u8 $26 : sprite offset
 +	[in] u8 $82 : tile index offset
-## code:
+
+### code:
 ```js
 {
 	y = 0;
@@ -1375,7 +1403,7 @@ ________________________________________________________________________________
 # $3e:dd06
 <details>
 
-## code:
+### code:
 ```js
 {
 	$dfd6();
@@ -1390,7 +1418,7 @@ ________________________________________________________________________________
 # $3d:ddc6
 <details>
 
-## code:
+### code:
 ```js
 {
 	call_switch2Banks(per8k:a = #0a); //ff03
@@ -1420,9 +1448,10 @@ ________________________________________________________________________________
 # $3e:de0f loadPatternToVramEx
 <details>
 
-## args:
+### args:
 +	[in] u8 a : vramAddrHigh (low=00)
-## code:
+
+### code:
 ```js
 {
 	bit $2002;
@@ -1436,10 +1465,11 @@ ________________________________________________________________________________
 # $3e:de1a loadPatternToVram
 <details>
 
-## args:
+### args:
 +	[in] u8 x : len (per256bytes)
 +	[in] ptr $80 : pPattern
-## code:
+
+### code:
 ```js
 {
 	y = 0;
@@ -1460,11 +1490,12 @@ ________________________________________________________________________________
 # $3e:de2a loadSmallPatternToVram
 <details>
 
-## args:
+### args:
 +	[in] ptr $80 : pattern
 +	[in] u8 x : len
 +	[in] u8 y : offset
-## code:
+
+### code:
 ```js
 {
 	do {
@@ -1480,12 +1511,13 @@ ________________________________________________________________________________
 # $3e:de5a floor::loadPatternForTiles
 <details>
 
-## args:
+### args:
 +	[in] u8 $48 : warpId
 +	[in] u8 $78 : world
 +	$00:8c00[2][0x100] : tileSetId (index = warpId)
 +	ptr $00:8e00[0x30][0x8] : pTilePattern (index = tileSetId)
-## code:
+
+### code:
 ```js
 {
 	call_switchFirst2Banks(per8k:a = 00); //ff03
@@ -1538,10 +1570,11 @@ ________________________________________________________________________________
 # $3e:deea loadTilePatternToVram
 <details>
 
-## args:
+### args:
 +	[in] x : tileCount
 +	[in] ptr $80 : pPattern
-## code:
+
+### code:
 ```js
 {
 	for (x;x != 0;x--) {
@@ -1566,7 +1599,7 @@ ________________________________________________________________________________
 # $3e:df00
 <details>
 
-## code:
+### code:
 ```js
 {
 	1a 08 08 0e  08 10 10 10
@@ -1578,9 +1611,10 @@ ________________________________________________________________________________
 # $3e:df08 floor::loadObjectPatterns
 <details>
 
-## args:
+### args:
 +	[in] u8 $78 : world
-## code:
+
+### code:
 ```js
 {
 	$8c,8d = #9400 + ($78 >= 2 ? #100 : 0);
@@ -1603,7 +1637,7 @@ ________________________________________________________________________________
 # $3e:df40
 <details>
 
-## code:
+### code:
 ```js
 {
 	return;
@@ -1615,11 +1649,12 @@ ________________________________________________________________________________
 # $3e:df41 floor::loadObjectPattern
 <details>
 
-## args:
+### args:
 +	[in] u8 $8a : vramoffset high (base = #1200)
 +	[in] u8 $8b : objectOffset
 +	[in] ptr $8c : objectIdToPatternIndexMap ($00:9400-)
-## code:
+
+### code:
 ```js
 {
 	if ((a = $700a.(x = $8b)) == 0) return; //beq df40
@@ -1669,7 +1704,7 @@ ________________________________________________________________________________
 # $3e:dfd6
 <details>
 
-## code:
+### code:
 ```js
 {
 	$ded6();
@@ -1693,10 +1728,11 @@ ________________________________________________________________________________
 # $3f:e1dc dungeon::mainLoop
 <details>
 
-## args:
+### args:
 	least value of S = $1e = $20 - 2
 +	[in] u8 $48 : warpId
-## code:
+
+### code:
 ```js
 {
 	a = #0;
@@ -1806,7 +1842,7 @@ ________________________________________________________________________________
 # $3f:e2f8 floor::getInputAndHandleEvent
 <details>
 
-## code:
+### code:
 ```js
 {
 	if ($50 != 0) { //beq e32e
@@ -1870,9 +1906,10 @@ ________________________________________________________________________________
 # $3f:e396 floor::fireOnMove
 <details>
 
-## args:
+### args:
 +	[out] bool carry : ?
-## code:
+
+### code:
 ```js
 {
 	floor::getEventSourceCoodinates(); //$e4e9();
@@ -1930,11 +1967,12 @@ ________________________________________________________________________________
 # $3f:e4e9 floor::getEventSourceCoodinates
 <details>
 
-## args:
+### args:
 +	[in] a : input bits?
 +	[out] $84 : mapX
 +	[out] $85 : mapY
-## code:
+
+### code:
 ```js
 {
 	a >>= 1;
@@ -1963,12 +2001,13 @@ ________________________________________________________________________________
 # $3f:e51c floor::getChipEvent
 <details>
 
-## args:
+### args:
 +	[in] u8 $84,$85 : chip position(x,y)
 +	[ou] y : chipId
 +	[out] u8 $44 : chip attributes (80:event 40:encountable? 08:damage)
 +	[out] u8 $45 : [hhhhiiii] h : eventId(index of handler), i: eventParam(serial number)
-## code:
+
+### code:
 ```js
 {
 	y = $4c;
@@ -1993,7 +2032,7 @@ ________________________________________________________________________________
 # $3f:e695
 <details>
 
-## code:
+### code:
 ```js
 {
 	$ab = #80;	//80:warp forward
@@ -2008,7 +2047,7 @@ ________________________________________________________________________________
 # $3f:e69b floor::event05? //[warp?]
 <details>
 
-## code:
+### code:
 ```js
 {
 	$7f49 = #83;	//7f49:soundDriver_effectId
@@ -2024,7 +2063,7 @@ ________________________________________________________________________________
 # $3f:e6be floor::event07
 <details>
 
-## code:
+### code:
 ```js
 {
 	x = $45 & #0f;
@@ -2052,7 +2091,7 @@ ________________________________________________________________________________
 # $3f:e6f2
 <details>
 
-## code:
+### code:
 ```js
 {
 	$0d = a;
@@ -2082,7 +2121,7 @@ ________________________________________________________________________________
 # $3f:e7ec dungeon::loadFloor
 <details>
 
-## code:
+### code:
 ```js
 {
 	dungeon::loadFloorData();	//$e803();
@@ -2100,7 +2139,7 @@ ________________________________________________________________________________
 # $3f:e803 dungeon::loadFloorData
 <details>
 
-## code:
+### code:
 ```js
 {
 	$aa = a;
@@ -2116,7 +2155,7 @@ ________________________________________________________________________________
 # $3f:e811
 <details>
 
-## code:
+### code:
 ```js
 {
 	call_switch2ndBank(per8k:a = #3b);	//ff09
@@ -2131,7 +2170,7 @@ ________________________________________________________________________________
 # $3f:e81b
 <details>
 
-## code:
+### code:
 ```js
 {
 	$37 = 0;
@@ -2153,9 +2192,10 @@ ________________________________________________________________________________
 # $3f:e8a5
 <details>
 
-## args:
+### args:
 +	[out] u8 $f8 : encounter bound
-## code:
+
+### code:
 ```js
 {
 	//...
@@ -2178,11 +2218,12 @@ ________________________________________________________________________________
 # $3f:e917 floor::processChipEvent
 <details>
 
-## args:
+### args:
 +	[in] u8 $49 : warpparam.+01 & 0x20
 +	[out] bool carry : event fired (1=yes)
 +	[out] u8 a : message id?
-## code:
+
+### code:
 ```js
 {
 	floor::getChipEvent();	//$e51c();
@@ -2235,9 +2276,10 @@ ________________________________________________________________________________
 # $3f:e982 OnTreasure
 <details>
 
-## args:
+### args:
 +	[in] u8 $ba : 00: chipId=d0-df ff:chipId=e0-ef
-## code:
+
+### code:
 ```js
 {
 	$7f49 = #bf;
@@ -2273,9 +2315,10 @@ ________________________________________________________________________________
 # $3f:e9bb floor::getObjectEvent
 <details>
 
-## args:
+### args:
 +	[in] u8 x : object offset
-## code:
+
+### code:
 ```js
 {
 	$44 = $43;
@@ -2320,12 +2363,13 @@ ________________________________________________________________________________
 # $3f:ea04 floor::loadEventScriptStream
 <details>
 
-## args:
+### args:
 +	[in] u8 a : scriptId (= runtimeobject.+00)
 +	[in] u8 x : ptr address high ($78 == 0 then #82, otherwise #84)
 +	[out] $7b00 : scripts (40h bytes)
 +	ptr $82 : = $2c:8200[scriptId]
-## code:
+
+### code:
 ```js
 {
 	y = a << 1;
@@ -2346,7 +2390,7 @@ ________________________________________________________________________________
 # $3f:ea1b floor.cache_event_script
 <details>
 
-## code:
+### code:
 ```js
 {
 	for (y = #3f;y >= 0;y--) {
@@ -2362,7 +2406,7 @@ ________________________________________________________________________________
 # $3f:ea26 floor::getEvent?
 <details>
 
-## code:
+### code:
 ```js
 {
 	$24 = 0;
@@ -2393,7 +2437,7 @@ ________________________________________________________________________________
 # $3f:eb23 switch_to_object_params_bank
 <details>
 
-## notes:
+### notes:
 bank $2c stores various parameters for map objects, such as:
 -	$2c:8000:	table of offsets (from $2c:8000) to object placement definitions
 -	$2c:8200:	table of offsets (from $2c:8000) to event script 
@@ -2401,7 +2445,7 @@ bank $2c stores various parameters for map objects, such as:
 	
 see also $3f:ea04 floor::loadEventScriptStream.
 
-## code:
+### code:
 ```js
 {
 	return call_switch_2pages(a = 0x2c);	//jmp $ff03
@@ -2414,11 +2458,11 @@ ________________________________________________________________________________
 # $3f:eb28 switch_to_floor_logics_bank
 <details>
 
-## notes:
+### notes:
 Bank $3c stores codes implementing logics around floor/menu.
 This logic's implementation is identical to `$3f:f727 switch_to_character_logics_bank`.
 
-## code:
+### code:
 ```js
 {
 	/*
@@ -2440,7 +2484,7 @@ ________________________________________________________________________________
 # $3f:eb2d field.scrolldown_item_window
 <details>
 
-## args:
+### args:
 +	[in,out] ptr $1c: pointer to text
 +	[in,out] ptr $3e: pointer to text
 +	[in] u8 $93: bank number of the text
@@ -2448,9 +2492,11 @@ ________________________________________________________________________________
 +	[out] u8 $b4: ? (= 0x40(if aborted) or 0xC0(if scrolled))
 +	[in,out] u16 ($79f0,$79f2): ?
 +	[out] bool carry: 1: scroll aborted, 0: otherwise
-## callers:
+
+### callers:
 +	`1E:9255:20 2D EB  JSR field.scrolldown_item_window` @ ?
-## code:
+
+### code:
 ```js
 {
 /*
@@ -2472,12 +2518,14 @@ ________________________________________________________________________________
 # $3f$eb3c field.abort_item_window_scroll
 <details>
 
-## args:
+### args:
 +	[in] u8 $57: bank number to restore
 +	[out] bool carry: always 1. (scroll aborted)
-## callers:
+
+### callers:
 +	`1F:EBA6:4C 3C EB  JMP field.abort_item_window_scroll` @ $3f$eb69 field.scrollup_item_window
-## code:
+
+### code:
 ```js
 {
 /*
@@ -2495,11 +2543,13 @@ ________________________________________________________________________________
 # $3f$eb43 field.do_scrolldown_item_window
 <details>
 
-## args:
+### args:
 +	[out] bool carry: always 0. (= scroll successful)
-## callers:
+
+### callers:
 +	`1F:EB36:D0 0B     BNE field.scrolldown_item_window` @ $3f$eb2d field.scrolldown_item_window
-## code:
+
+### code:
 ```js
 {
 /*
@@ -2526,10 +2576,11 @@ ________________________________________________________________________________
 # $3f$eb61 field.reflect_window_scroll
 <details>
 
-## args:
+### args:
 +	[in] u8 $57: bank number to restore
 +	[out] bool carry: always 0. (= scroll successful)
-## callers:
+
+### callers:
 +	`1E:9F92:20 61 EB  JSR field.reflect_item_window_scro`
 +	`1E:A889:4C 61 EB  JMP field.reflect_item_window_scro`
 +	`1E:B436:20 61 EB  JSR field.reflect_item_window_scro`
@@ -2537,7 +2588,8 @@ ________________________________________________________________________________
 +	`1E:B624:4C 61 EB  JMP field.reflect_item_window_scro`
 +	`1E:BC0F:4C 61 EB  JMP field.reflect_item_window_scro`
 +	`1F:EB9F:4C 61 EB  JMP field.reflect_item_window_scroll` @ $3f$eb69 field.scrollup_item_window
-## code:
+
+### code:
 ```js
 {
 	field.draw_string_in_window();	//$eec0
@@ -2553,16 +2605,18 @@ ________________________________________________________________________________
 # $3f$eb69 field.scrollup_item_window
 <details>
 
-## args:
+### args:
 +	[in,out] ptr $1c: pointer to text
 +	[in] u8 $93: bank number of the text
 +	[in] u8 $a3: ?
 +	[out] u8 $b4: ? (= 0xc0 if scrolled, or 0x80 if aborted)
 +	[in,out] u16 ($79f0,$79f2): ?
 +	[out] bool carry: 1: scroll aborted, 0: scroll successful
-## callers:
+
+### callers:
 +	`1E:9233:20 69 EB  JSR field.scrollup_item_window` @ ?
-## code:
+
+### code:
 ```js
 {
 /*
@@ -2604,13 +2658,15 @@ ________________________________________________________________________________
 # $3f:eba9 field::seek_text_to_next_line
 <details>
 
-## args:
+### args:
 +	[in,out] ptr $1c: pointer to text to seek with
 +	[out] ptr $3e: pointer to the text, pointing the beginning of next line
-## callers:
+
+### callers:
 +	`1F:EB5E:20 A9 EB  JSR field::seek_to_next_line`
 +	$3f:ee65 field::stream_string_in_window
-## code:
+
+### code:
 ```js
 {
 /*
@@ -2643,15 +2699,17 @@ ________________________________________________________________________________
 # $3f:ebd1 field::unseek_text_to_line_beginning
 <details>
 
-## args:
+### args:
 +	[in,out] ptr $1c: pointer to text to seek with
 +	[out] ptr $3e: pointer to the text, pointing the beginning of line
-## callers:
+
+### callers:
 +	`1F:EB81:20 D1 EB  JSR field.unseek_to_line_beginning`
-## notes:
+
+### notes:
 used to scroll back texts, in particular when a cursor moved up in item window.
 
-## code:
+### code:
 ```js
 {
 	var ptr = $1c - 1;
@@ -2720,9 +2778,10 @@ ________________________________________________________________________________
 # $3f:ec0c field::show_sprites_on_lower_half_screen
 <details>
 
-## callers:
+### callers:
 +	`1F:C9B6:20 0C EC  JSR field.show_sprites_on_region6`
-## code:
+
+### code:
 ```js
 {
 /*
@@ -2739,11 +2798,13 @@ ________________________________________________________________________________
 # $3f:ec12 field::show_sprites_on_region7 (bug?)
 <details>
 
-## callers:
+### callers:
 +	`1F:C9C1:20 12 EC  JSR field.show_sprites_on_region7`
-## notes:
+
+### notes:
 called when choose item dialog (window_type=2) is about to close
-## code:
+
+### code:
 ```js
 {
 /*
@@ -2760,11 +2821,13 @@ ________________________________________________________________________________
 # $3f:ec18 field::hide_sprites_under_window
 <details>
 
-## args:
+### args:
 +	[in]	u8 X: window_type (0...4)
-## callers:
+
+### callers:
 +	$3f$ed61 field::get_window_region
-## code:
+
+### code:
 ```js
 {
 // 1F:EC18:A9 00     LDA #$00
@@ -2778,22 +2841,25 @@ ________________________________________________________________________________
 # $3f:ec1a field::showhide_sprites_by_region
 <details>
 
-## args:
+### args:
 +	[in]	u8 A: show/hide.
 	+	1: show
 	+	0: hide
 +	[in]	u8 X: region_type (0..6; with 0 to 4 being shared with window_type)
-## callers:
+
+### callers:
 +	$3f:ec0c field::show_sprites_on_lower_half_screen
 +	$3f:ec12 field::show_sprites_on_region7 (with X set to 7)
 +	$3f:ec18 field::showhide_sprites_by_window_region
-## local variables:
+
+### local variables:
 +	u8 $80: region boundary in pixels, left, inclusive.
 +	u8 $81: region boundary in pixels, right, exclusive.
 +	u8 $82: region boundary in pixels, top, inclusive.
 +	u8 $83: region boundary in pixels, bottom, exclusive.
 +	u8 $84: show/hide flag
-## notes:
+
+### notes:
 -	"サロニア その1" (floor_id: $07) would be convenient location
 	to test this function as there are various objects and floor levels.
 
@@ -2801,7 +2867,8 @@ ________________________________________________________________________________
 -	region_type 7 (i.e., 8th entry) seems to be INVALID.
 	Static data referred to by this function consists of
 	4 parallel arrays, of which has only 7 entries in each.
-## code:
+
+### code:
 ```js
 {
 /*
@@ -2883,9 +2950,10 @@ ________________________________________________________________________________
 # $3f:ec8b field::show_message_window
 <details>
 
-## callers:
+### callers:
 +	`1F:E237:20 8B EC  JSR field::show_message_window`
-## code:
+
+### code:
 ```js
 {
 /*
@@ -2901,11 +2969,13 @@ ________________________________________________________________________________
 # $3f:ec8d field::show_window:
 <details>
 
-## callers:
+### callers:
 +	`1F:E264:20 8D EC  JSR $EC8D`
-## args:
+
+### args:
 +	u8 A : window_type
-## code:
+
+### code:
 ```js
 {
 /*
@@ -2931,11 +3001,12 @@ ________________________________________________________________________________
 # $3f:ECAB field::await_and_get_new_input:
 <details>
 
-## callers:
+### callers:
 +	 `1F:EC93:20 AB EC  JSR field::await_and_get_new_input` ($3f:ec8b field::show_message_window)
 +	 `1F:ECBA:4C AB EC  JMP field::await_and_get_new_input` (tail recursion)
 +	 `1F:EE6A:20 AB EC  JSR field::await_and_get_new_input` ($3f:ee65 field::stream_string_in_window)
-## code:
+
+### code:
 ```js
 {
 /*
@@ -2955,7 +3026,7 @@ ________________________________________________________________________________
 # $3f:ECbd field::get_next_input: 
 <details>
 
-## code:
+### code:
 ```js
 {
 /*
@@ -2971,9 +3042,10 @@ ________________________________________________________________________________
 # $3f:ECC4 field::get_next_input:
 <details>
 
-## callers:
+### callers:
 +	`1F:EC9E:20 C4 EC  JSR field::get_next_input`
-## code:
+
+### code:
 ```js
 {
 /*
@@ -2994,9 +3066,10 @@ ________________________________________________________________________________
 # $3f:ecd8 field::advance_frame_with_sound
 <details>
 
-## callers:
+### callers:
 +	 `1F:EE74:20 D8 EC  JSR field::advance_frame_w_sound` ($3f:ee65 field::stream_string_in_window)
-## code:
+
+### code:
 ```js
 {
 //field::advance_frame_w_sound:
@@ -3015,11 +3088,13 @@ ________________________________________________________________________________
 # $3f:ece5 field::draw_window_top
 <details>
 
-## callers:
+### callers:
 +	`1E:AAA3:4C E5 EC  JMP field::draw_window_top` @ ?
-## notes:
+
+### notes:
 called when executed an exchange of position in item window from menu
-## code:
+
+### code:
 ```js
 {
 //1F:ECE5:A5 39     LDA window_top = #$02
@@ -3037,12 +3112,13 @@ ________________________________________________________________________________
 # $3f:ecf5 restore_banks_by_$57
 <details>
 
-## callers:
+### callers:
 +	`1F:EB64:20 F5 EC  JSR field::restore_bank` @ $3f$eb61 field.update_item_window
 +	field::draw_window_top (by falling thourgh)
 +	`1F:ED53:4C F5 EC  JMP field::restore_bank_by_$57` @ field::draw_window_box
 +	`1F:F49E:4C F5 EC  JMP field::restore_bank` @ ?
-## code:
+
+### code:
 ```js
 {
 	return call_switchFirst2Banks(per8k:a = $57);
@@ -3054,9 +3130,10 @@ ________________________________________________________________________________
 # $3f:ecfa field::draw_in_place_window
 <details>
 
-## args:
+### args:
 +	[in] u8 A: window_type
-## code:
+
+### code:
 ```js
 {
 //1F:ECFA:85 96     STA window_id = #$00
@@ -3072,23 +3149,27 @@ ________________________________________________________________________________
 # $3f:ed02 field::draw_window_box
 <details>
 
-## args:
-### in:
+### args:
+
+#### in:
 +	u8 $37 : in_menu_mode (1: yes; skip some initializations)
-### out:
+
+#### out:
 +	u8 $38 : window_left (in 8x8 tile unit)
 +	u8 $39 : window_top
 +	u8 $3a : offset_x (or column in drawing)
 +	u8 $3b : offset_y (or row in drawing)
 +	u8 $3c : window_width (border excl.)
 +	u8 $3d : window_height (border excl.)
-## callers:
+
+### callers:
 +	$3c:8efd
 +	$3c:8f0e
 +	$3c:8fd5
 +	$3c:90b1
 +	$3d:aaf4 (jmp)
-## code:
+
+### code:
 ```js
 {
 	x = $96;
@@ -3136,7 +3217,7 @@ ________________________________________________________________________________
 # $3f:ed56 field::init_window_attr_buffer
 <details>
 
-## code:
+### code:
 ```js
 {
 	for (x = #f;x >= 0;x--) {
@@ -3153,12 +3234,14 @@ ________________________________________________________________________________
 # $3f:ed61 field::get_window_region
 <details>
 <summary>
-マップのスクロールも考慮して、ウインドウの描画に用いる各種値(座標etc)を取得する。
-あわせて、ウインドウ領域の内外に基づいてオブジェクトの属性を変更する。
+
+>マップのスクロールも考慮して、ウインドウの描画に用いる各種値(座標etc)を取得する。
+>あわせて、ウインドウ領域の内外に基づいてオブジェクトの属性を変更する。
 </summary>
 
-## args:
-### in:
+### args:
+
+#### in:
 +	u8 X: window_type (0...4)
 	-	0: object's message?
 	-	1: choose dialog (Yes/No) (can be checked at INN)
@@ -3168,7 +3251,8 @@ ________________________________________________________________________________
 +	u8 $29: floor_scroll_x (in 16x16 unit)
 +	u8 $2f: floor_scroll_y (in 16x16 unit)
 +	u8 $37: in_menu_mode
-### out:
+
+#### out:
 +	u8 $38: window_left (border included)
 +	u8 $39: window_top (border included)
 +	u8 $3c: window_width (border included)
@@ -3179,9 +3263,11 @@ ________________________________________________________________________________
 +	u8 $b6:
 +	u8 $b7:
 +	u8 $b8:
-## callers:
+
+### callers:
 +	$3f:ed02 field::draw_window_box
-## notes:
+
+### notes:
 1.	to reflect changes in screen those made by `field.hide_sprites_under_window`,
 	which is called from within this function,
 	caller must upload sprite attr onto OAM, such as:
@@ -3192,7 +3278,8 @@ ________________________________________________________________________________
 	the difference is:
 	-	A) this logic takes care of wrap-around unlike the other one, which does not.
 	-	B) target window and the address of table where the corresponding metrics defined at
-## code:
+
+### code:
 ```js
 {
 	if ($37 == 0) { //bne edb1
@@ -3219,7 +3306,7 @@ ________________________________________________________________________________
 # $3f:edc6 field::draw_window_row
 <details>
 
-## code:
+### code:
 ```js
 {
 	$90 = $3c;
@@ -3239,7 +3326,7 @@ ________________________________________________________________________________
 # $3f:ede1 field::sync_ppu_scroll
 <details>
 
-## code:
+### code:
 ```js
 {
 	if ($37 == 0) { //bne ede8
@@ -3257,12 +3344,14 @@ ________________________________________________________________________________
 # $3f:edf6 field::getWindowTilesForTop
 <details>
 
-## args:
+### args:
 +	[in] u8 $3c : width (border incl)
-## callers:
+
+### callers:
 +	$3f:ecef
 +	$3f:ed17
-## code:
+
+### code:
 ```js
 {
 	x = 1;
@@ -3286,9 +3375,10 @@ ________________________________________________________________________________
 # $3f:ee1d field::getWindowTilesForMiddle
 <details>
 
-## callers:
+### callers:
 +	field::drawWindow
-## code:
+
+### code:
 ```js
 {
 	x = 1;
@@ -3310,9 +3400,10 @@ ________________________________________________________________________________
 # $3f:ee3e field::getWindowTilesForBottom
 <details>
 
-## callers:
+### callers:
 +	$3f:ed3b
-## code:
+
+### code:
 ```js
 {
 	x = 1;
@@ -3336,12 +3427,13 @@ ________________________________________________________________________________
 # $3f:ee65 field::stream_string_in_window:
 <details>
 
-## callers:
+### callers:
 +	$3c:90ff	? 1E:9109:4C 65 EE  JMP $EE65
 +	$3d:a666	? 1E:A675:4C 65 EE  JMP $EE65
 +	$3f:ec83	? 1F:EC88:4C 65 EE  JMP $EE65
 +	$3f:ec8b	? 1F:EC90:20 65 EE  JSR $EE65
-## code:
+
+### code:
 ```js
 {
 /*
@@ -3387,18 +3479,22 @@ ________________________________________________________________________________
 # $3f:ee9a field::load_and_draw_string:
 <details>
 
-## args:
-### in:
+### args:
+
+#### in:
 +	u8 $92: string_id
 +	ptr $94: offset to string ptr table
-### out:
+
+#### out:
 +	bool carry: more_to_draw	//flagged cases could be tested at サロニアの図書館(オーエンのほん1)
 +	ptr $3e: offset to the string, assuming the bank it to be loaded is at 1st page (starting at $8000)
 +	u8 $93: bank number which the string would be loaded from
-## callers:
+
+### callers:
 +	`1F:C036:20 9A EE  JSR field::load_and_draw_string`
 +	`1F:EE65:20 9A EE  JSR field::load_and_draw_string` @ $3f:ee65 field::stream_string_in_window
-## code:
+
+### code:
 ```js
 {
 	call_switch1stBank(per8k:a = #18); //ff06
@@ -3420,11 +3516,12 @@ ________________________________________________________________________________
 # $3f:eec0 field.draw_string_in_window
 <details>
 
-## args:
+### args:
 +	[in] ptr $3e : string offset
 +	[in] u8 $93 : string bank
 +	[out] bool carry: more_to_draw
-## code:
+
+### code:
 ```js
 {
 	call_switchFirst2Banks(per8k:a = $93);
@@ -3457,13 +3554,14 @@ ________________________________________________________________________________
 # $3f:eefa field.eval_and_draw_string
 <details>
 
-## args:
+### args:
 +	[in] $37: in_menu_mode (1: menu, 0: floor)
 +	[in, out] string* $3e: ptr to string
 +	[in, out] u8 $1f: number of lines drawn (in 8x8 unit)
 +	[out] u8 $90: destOffset
 +	[out] bool carry: more_to_draw
-## code:
+
+### code:
 ```js
 {
 $eefa:
@@ -3617,7 +3715,7 @@ ________________________________________________________________________________
 # $3f:f02a field.string.eval_replacement
 <details>
 
-## args:
+### args:
 +	[in] a: charcode
 +	[in] y: offset into the string pointed to by $3e.
 +	[in, out] u8 $1f: number of lines drawn (in 8x8 unit)
@@ -3627,18 +3725,22 @@ ________________________________________________________________________________
 +	[in,out] u8 $90: offset into the tile buffer ($0780/$07a0)
 +	[out] u8 $0780[32]: tile (or name table) buffer for upper line
 +	[out] u8 $07a0[32]: tile (or name table) buffer for lower line
-## local variables:
+
+### local variables:
 +	u8 $80,81,82,83: scratch.
 +	u8 $84: parameter byte
 +	u8 $97,98
-## notes:
+
+### notes:
 charcodes ranged [10...28) are defined as opcodes (or 'replacement'),
 given that the codes have followed by additional one byte for parameter.
-### code meanings:
+
+#### code meanings:
 +	10-13: status of a player character. lower 2-bits represents an index of character.
 +	15-17: left-align text by paramter,increment menu-item count by 4
 +	1e: get job name
-## code:
+
+### code:
 ```js
 {
 	push a;
@@ -3718,7 +3820,7 @@ ________________________________________________________________________________
 # $3f:f239 field.string.eval_code_10_13
 <details>
 
-## code:
+### code:
 ```js
 {
 	$67 = ((a & 3) << 6) & 0xc0; //lsr ror ror
@@ -3758,7 +3860,7 @@ ________________________________________________________________________________
 # $3f:f38a getLastValidJobId
 <details>
 
-## code:
+### code:
 ```js
 {
 	a = $6021 & #1f;
@@ -3789,10 +3891,11 @@ ________________________________________________________________________________
 # $3f:f40a setVramAddrForWindow
 <details>
 
-## args:
+### args:
 +	[in] u8 $3a : x offset
 +	[in] u8 $3b : y
-## code:
+
+### code:
 ```js
 {
 	a = $2002;
@@ -3817,7 +3920,7 @@ ________________________________________________________________________________
 # $3f:f549 getTreasure
 <details>
 
-## args:
+### args:
 +	[in] u8 $0710[0x10] : treasureIds
 +	[in] u8 $45 : eventParam
 +	[in] u8 $49 : warpparam.+01 & 0x20
@@ -3826,7 +3929,8 @@ ________________________________________________________________________________
 	-	FF: chipId=e0-ef
 	-	chipId:D0-DF = staticChipId:7C(宝箱)
 +	[out] a : messageId
-## code:
+
+### code:
 ```js
 {
 	x = $45 & #0f;
@@ -3894,11 +3998,12 @@ ________________________________________________________________________________
 # $3f:f5c4 getTreasureItemId //getTreasureParam
 <details>
 
-## args:
+### args:
 +	[in] x : treasureId
 +	[out] a : itemId
 +	$01:9c00 u8 param[0x200]
-## code:
+
+### code:
 ```js
 {
 	call_switch1stBank(per8k:a = #01); //ff06
@@ -3917,17 +4022,20 @@ ________________________________________________________________________________
 # $3f:f5d4 getItemValue //getTreasureGil
 <details>
 
-## args:
+### args:
 +	[in] x : itemid
 +	[out] u24 $80 : = $10:9e00[x]
-## callers:
+
+### callers:
 +	$3d:b230 @ floor::shop::getItemValues
 +	$3d:b271 @ floor::shop::getItemValue
 +	$3f:ef73 @ field::decodeString 
 +	$3f:f5b8 @ floor::getTreasure
-## notes:
+
+### notes:
 caller expects y has been unchanged
-## code:
+
+### code:
 ```js
 {
 	call_switch1stBank(per8k:a = #10); //ff06
@@ -3951,12 +4059,14 @@ ________________________________________________________________________________
 # $3f:f5ff increment_gil
 <details>
 
-## args:
+### args:
 +	[in] u24 $80 : gil
-## callers:
+
+### callers:
 +	$3d:b1c2 @ floor::shop::
 +	$3f:f5bb @ floor::getTreasure
-## code:
+
+### code:
 ```js
 {
 	$601c,$601d,$601e += $80,81,82;
@@ -3974,7 +4084,7 @@ ________________________________________________________________________________
 # $3f:f640 invert_treasure_loot_flag
 <details>
 
-## code:
+### code:
 ```js
 {
 	x = $45 & #0f;
@@ -3998,7 +4108,7 @@ ________________________________________________________________________________
 # $3f:f670 field.calc_draw_width_and_init_window_tile_buffer
 <details>
 
-## code:
+### code:
 ```js
 {
 	$91 = $3c;
@@ -4015,7 +4125,7 @@ ________________________________________________________________________________
 # $3f:f683 field.init_window_tile_buffer
 <details>
 
-## code:
+### code:
 ```js
 {
 	a = #ff
@@ -4035,7 +4145,7 @@ ________________________________________________________________________________
 # $3f:f692 field.draw_window_content
 <details>
 
-## code:
+### code:
 ```js
 {
 	push(a);
@@ -4057,11 +4167,12 @@ ________________________________________________________________________________
 # $3f:f6aa field.upload_window_content
 <details>
 
-## args:
+### args:
 +	[in] u8 $38 : offset x
 +	[in] u8 $39 : offset per 2 line
 +	[in,out] u8 $3b : offset y (wrap-around)
-## code:
+
+### code:
 ```js
 {
 	if (a != 9) { //beq f6e5
@@ -4113,11 +4224,12 @@ ________________________________________________________________________________
 # $3f:f727 switch_to_character_logics_bank
 <details>
 
-## notes:
+### notes:
 This logic's implementation is identical to `$3f:eb28 switch_to_floor_logics_bank`.
 It might not be a bug, as how the banks are arranged to place the logic is completely physical matter,
 hence it is irrevant to programmers' original intention. 
-## code:
+
+### code:
 ```js
 {
 	/*
@@ -4138,7 +4250,7 @@ ________________________________________________________________________________
 # $3f:f800 call_doBattle
 <details>
 
-## code:
+### code:
 ```js
 {
 	return doBattle();	//fa26
@@ -4150,7 +4262,7 @@ ________________________________________________________________________________
 # $3f:f82c
 <details>
 
-## code:
+### code:
 ```js
 {
 	push a;
@@ -4169,7 +4281,7 @@ ________________________________________________________________________________
 # $3f:f83b restoreFieldVariables
 <details>
 
-## code:
+### code:
 ```js
 {
 	for (x = 0;x != #d0;x++) {
@@ -4186,10 +4298,11 @@ ________________________________________________________________________________
 # $3f:f854 call_32_8000
 <details>
 
-## args:
+### args:
 +	[in] u8 a,x : param
 +	[in] u8 $7cf6 : currentBank (bankToRestore)
-## code:
+
+### code:
 ```js
 {
 	$96 = a; $97 = x;
@@ -4211,7 +4324,7 @@ ________________________________________________________________________________
 # $3f:f897 loadPalette
 <details>
 
-## code:
+### code:
 ```js
 {
 	setVramAddr(high:a = #3f, low:x = #0);	//f8e0
@@ -4228,7 +4341,7 @@ ________________________________________________________________________________
 # $3f:f8aa do_sprite_dma_from_0200
 <details>
 
-## code:
+### code:
 ```js
 {
 	$4014 = #02; //sprite DMA source addr
@@ -4242,7 +4355,7 @@ ________________________________________________________________________________
 # $3f:f8b0 updatePpuDmaScrollSyncNmiEx
 <details>
 
-## code:
+### code:
 ```js
 {
 	waitNmi();	//$3f:fb80();
@@ -4257,7 +4370,7 @@ ________________________________________________________________________________
 # $3f:f8c5 updatePpuDmaScrollSyncNmi
 <details>
 
-## code:
+### code:
 ```js
 {
 	waitNmi();
@@ -4271,7 +4384,7 @@ ________________________________________________________________________________
 # $3f:f8cb updatePpuScrollNoWait
 <details>
 
-## code:
+### code:
 ```js
 {
 	$2000 = $06;	//PPU ctrl1
@@ -4286,10 +4399,11 @@ ________________________________________________________________________________
 # $3f:f8e0 setVramAddr {
 <details>
 
-## args:
+### args:
 +	[in] u8 a : addr(high byte)
 +	[in] u8 x : addr(low byte)
-## code:
+
+### code:
 ```js
 {
 	bit $2002;	//PPU status
@@ -4303,11 +4417,12 @@ ________________________________________________________________________________
 # $3f:f8ea mul8x8_reg
 <details>
 
-## args:
+### args:
 +	[in] u8 a : multicand
 +	[in] u8 x : multiplier
 +	[out] u16 a,x : result
-## code:
+
+### code:
 ```js
 {
 	mul8x8();	//$3f:fcd6()
@@ -4320,7 +4435,7 @@ ________________________________________________________________________________
 # $3f:f8f2 offset$7e_16 
 <details>
 
-## code:
+### code:
 ```js
 {
 	$7e,7f += a;
@@ -4332,7 +4447,7 @@ ________________________________________________________________________________
 # $3f:f8fe offset$80_16
 <details>
 
-## code:
+### code:
 ```js
 {
 	$80,81 += a;
@@ -4344,14 +4459,15 @@ ________________________________________________________________________________
 # $3f:f92f memcpy
 <details>
 
-## args:
+### args:
 +	[in] u16 $7e : sourceAddr
 +	[in] u16 $80 : destAddr
 +	[in] u8 $82 : len
 +	[in] u8 $84 : sourceBank (per16k)
 +	[in] u8 $7cf6 : currentBank (bankToRestore)
 +	[out] u8 $82 : 0
-## code:
+
+### code:
 ```js
 {
 	switch_16k_synchronized(a = $84);	//$fb87
@@ -4369,7 +4485,7 @@ ________________________________________________________________________________
 # $3f:f942 copy_to_vram_with_encounter_mode
 <details>
 
-## code:
+### code:
 ```js
 {
     if ( $78c3 != 0x88 ) {
@@ -4394,7 +4510,7 @@ ________________________________________________________________________________
 # $3f:f969 copyToVramDirect
 <details>
 
-## code:
+### code:
 ```js
 {
 	$92 = 0;   // 0: 参照マップを使用しない
@@ -4407,7 +4523,7 @@ ________________________________________________________________________________
 # $3f:f970 copyToVram
 <details>
 
-## args:
+### args:
 +	[in] u16 $7e : sourceBuffer
 +	[in] u16 $80 : destVramAddr
 +	[in] u8 $82 : length (in per 8x8pixel. = per 0x10bytes)
@@ -4415,7 +4531,8 @@ ________________________________________________________________________________
 +	[in] u8 $92 : use_palette (1: yes, 0: no)
 +	[in] u8 $7300[] : palette (used if $92 != 0)
 +	[in] u8 $7cf3 : init_completed (1: yes, 0: no( still-initializing ))
-## code:
+
+### code:
 ```js
 {
 	$83 = $82 & 3;
@@ -4483,11 +4600,13 @@ ________________________________________________________________________________
 # $3f:fa0e call_2e_9d53
 <details>
 
-## args:
+### args:
 +	[in] u8 A : 9d53_param
-## notes:
+
+### notes:
 各種ゲームシーン表示系のルーチンから呼ばれる
-## code:
+
+### code:
 ```js
 {
 	push(a);
@@ -4503,7 +4622,7 @@ ________________________________________________________________________________
 # $3f:fa1d blackOutScreen
 <details>
 
-## code:
+### code:
 ```js
 {
 	$2001 = $2000 = 0;
@@ -4515,13 +4634,15 @@ ________________________________________________________________________________
 # $3f:fa26 doBattle
 <details>
 
-## args:
+### args:
 +	[in] a : encounter id
 +	[in] x : backgroound sight graphics
 +	[in] y : battleMode?
-## notes:
+
+### notes:
 	least value of S = $1a = $20 - 6
-## code:
+
+### code:
 ```js
 {
 	$7ced = a;
@@ -4568,7 +4689,7 @@ ________________________________________________________________________________
 # $3f:fab5 saveNmiIrqHandlerAndSetHandlerForBattle
 <details>
 
-## code:
+### code:
 ```js
 {
 	for (x = 6;x != 0;x--) {
@@ -4585,7 +4706,7 @@ ________________________________________________________________________________
 # $3f:fadd restoreIrqHandlerAndNmiHandler
 <details>
 
-## code:
+### code:
 ```js
 {
 	for (x = 6;x != 0;x--) {
@@ -4599,7 +4720,7 @@ ________________________________________________________________________________
 # $3f:faf2
 <details>
 
-## code:
+### code:
 ```js
 {
 	push(a = x);
@@ -4622,7 +4743,7 @@ ________________________________________________________________________________
 # $3f:fb17 saveFieldVars
 <details>
 
-## code:
+### code:
 ```js
 {
 	for (x = 0;x != #d0;x++) {
@@ -4640,12 +4761,14 @@ ________________________________________________________________________________
 # $3f:fb30 irq_handler
 <details>
 
-## args:
+### args:
 -	[in,out] u8
-## notes:
+
+### notes:
 戦闘中のハンドラ。
 バンク変更中を考慮している。
-## code:
+
+### code:
 ```js
 {
 	push a;
@@ -4671,11 +4794,13 @@ ________________________________________________________________________________
 # $3f:fb57 nmi_handler
 <details>
 
-## args:
+### args:
 -	[in,out] u8 $05: nmi_lock (@see `$3f:fb80 waitNmi`)
-## notes:
+
+### notes:
 戦闘中のハンドラ
-## code:
+
+### code:
 ```js
 {
 	push(a);
@@ -4700,7 +4825,7 @@ ________________________________________________________________________________
 # $3f:fb80 waitNmi
 <details>
 
-## code:
+### code:
 ```js
 {
 	$05++;
@@ -4713,10 +4838,11 @@ ________________________________________________________________________________
 # $3f$fb87 switch_16k_synchronized
 <details>
 
-## args:
+### args:
 +	[in] u8 A : bankNo (per _16k_ unit)
 +	[out] u8 $ab : per16kBankNo
-## code:
+
+### code:
 ```js
 {
 	$ab = a;
@@ -4731,10 +4857,11 @@ ________________________________________________________________________________
 # $3f$fb89 switch_16k_synchronized_nocache
 <details>
 
-## args:
+### args:
 +	[in] u8 A : bankNo (per _16k_ unit)
 +	[out] u8 $ab : per16kBankNo
-## local variables:
+
+### local variables:
 +	u8 $a9 : page_lock (コマンド発行中のみincr)
 @see `$3f$fb87 switch_16k_synchronized`
 
@@ -4763,11 +4890,12 @@ ________________________________________________________________________________
 # $3f:fbaa getPad1Input()
 <details>
 
-## args:
+### args:
 +	[in] u8 $13 : inputMask?
 +	[out] u8 $12 : inputFlag(bit7 > < v ^ st sel b a bit0)
 +	[out] u8 $14 : ?
-## code:
+
+### code:
 ```js
 {
 	$12 = $13;
@@ -4806,14 +4934,18 @@ $fbe2:
 ________________________________________________________________________________
 # $3f:fbef getBattleRandom
 <details>
-<summary>指定した乱数系列から乱数値を一つ取得する</summary>
+<summary>
 
-## args:
+>指定した乱数系列から乱数値を一つ取得する
+</summary>
+
+### args:
 +	[in] u8 A : max?
 +	[in] u8 X : min?
 +	[in] u8 $21 : randSystemIndex?
 +	[out] u8 A : rand  [x-a] の乱数値 上限も含む
-## notes:
+
+### notes:
 	上位8bitを$21で指定した系列から取得した乱数(0x00-0xFF),下位8bitを0x80とした16bit値(A)と最大と最小の差分(8bit)(B)を掛けて
 	結果のbit16-23の8bitを乱数の基本値として採用する。
 	結果のbit8-15=(diff*baseRand + diff>>1)が
@@ -4822,7 +4954,7 @@ ________________________________________________________________________________
 	繰上げの処理により最小値と最大値だけ出る確率が他の約半分
 	(中央二人が狙われやすいのもそのせい?)
 
-## code:
+### code:
 ```js
 { 
 	$20 = x;
@@ -4860,7 +4992,8 @@ ________________________________________________________________________________
 	$fc39 85 22	sta $22
 	$fc3b a9 01
 	
-## code:
+
+### code:
 ```js
 {
 	for ( x = 0;x < 256;x++) a += $00.x;
@@ -4894,14 +5027,18 @@ $fc34:
 
 ________________________________________________________________________________
 # $3f:fc92 div 
-<details><summary>筆算的に割り算</summary>
+<details><summary>
 
-## args:
+>筆算的に割り算
+</summary>
+
+### args:
 +	[in] u16 $18 dividend
 +	[in] u16 $1a divisor
 +	[out] u16 $1c quotient (result)
 +	[out] u16 $1e modulo (remainder)
-## code:
+
+### code:
 ```js
 {
 	$1c,1d,1e,1f = 0;
@@ -4930,13 +5067,17 @@ ________________________________________________________________________________
 
 ________________________________________________________________________________
 # $3f:fcd6 mul8x8
-<details><summary>筆算的掛け算(8bit*8bit)</summary>
+<details><summary>
 
-## args:
+>筆算的掛け算(8bit*8bit)
+</summary>
+
+### args:
 +	[in] u8 a : multicand
 +	[in] u8 x : multiplier
 +	[out] u16 $1a : product
-## code:
+
+### code:
 ```js
 {
 	$18 = a;
@@ -4956,13 +5097,17 @@ ________________________________________________________________________________
 
 ________________________________________________________________________________
 # $3f:fcf5 mul16x16
-<details><summary>筆算の要領で掛け算をする(16bit*16bit)</summary>
+<details><summary>
 
-## args:
+>筆算の要領で掛け算をする(16bit*16bit)
+</summary>
+
+### args:
 +	[in] u16 $18 multicand
 +	[in] u16 $1a multiplier
 +	[out] u32 $1c = $18 * $1a
-## code:
+
+### code:
 ```js
 { 
 	$1c,1d,1e,1f=0;
@@ -4993,7 +5138,7 @@ ________________________________________________________________________________
 # $3f:fd2c clearTargetBit //[andNotBitX]
 <details>
 
-## code:
+### code:
 ```js
 {
 	a &= $fd30.x;
@@ -5006,7 +5151,7 @@ ________________________________________________________________________________
 # $3f:fd38 maskTargetBit //[andBitX]
 <details>
 
-## code:
+### code:
 ```js
 {
 	a &= $fd24.x;
@@ -5018,7 +5163,7 @@ ________________________________________________________________________________
 # $3f:fd3c shiftLeftN
 <details>
 
-## code:
+### code:
 ```js
 {
 	a <<= 1;
@@ -5035,7 +5180,7 @@ ________________________________________________________________________________
 # $3f:fd43 shiftRightN
 <details>
 
-## code:
+### code:
 ```js
 {
 	a >>= 1;
@@ -5052,13 +5197,14 @@ ________________________________________________________________________________
 # $3f:fd4a copyTo_$7ad7_x_Until0
 <details>
 
-## args:
+### args:
 +	[in] u8 A : sourceBank(per16k)
 +	[in,out] u8 X : destOffset
 +	[in] u16 $18 : ptr
 +	[out] u8 $7ad7[] : dest
 +	[out] u8 Y : len
-## code:
+
+### code:
 ```js
 {
 	switchFirst2Banks(a);
@@ -5078,11 +5224,12 @@ ________________________________________________________________________________
 # $3f:fd60 get2byteAtBank18
 <details>
 
-## args:
+### args:
 +	[in] u16 $18 : baseOffset
 +	[in] u8 $1a : index
 +	[out] u16 $18 : 2byte-value
-## code:
+
+### code:
 ```js
 {
 	switch_16k_synchronized(a = 0x0c);	//$3f:fb87();
@@ -5100,9 +5247,10 @@ ________________________________________________________________________________
 # $3f:fd8b
 <details>
 
-## args:
+### args:
 +	[in] x : userTypeId (itemParam[7])
-## code:
+
+### code:
 ```js
 {
 	$3b,3c,3d = $00:8900,x
@@ -5114,7 +5262,7 @@ ________________________________________________________________________________
 # $3f:fda6 loadTo7400Ex
 <details>
 
-## args:
+### args:
 +	[in] u8 $18 : index
 +	[in] u8 $1a : dataSize
 +	[in] u16 $20 : baseAddr //-> $fcf5
@@ -5122,7 +5270,8 @@ ________________________________________________________________________________
 +	[in,out] u8 X : destOffset
 +	[in] u8 Y : bankToRestore
 +	[out sizeis($1a)] $7400.x loadedParam
-## code:
+
+### code:
 ```js
 {
 	switchFirst2Banks(a);
@@ -5150,13 +5299,14 @@ ________________________________________________________________________________
 # $3f:fddc copyTo7400
 <details>
 
-## args:
+### args:
 +	[in] u16 $46 : sourceBasePtr
 +	[in] u8 $4a : bankToRestore
 +	[in] u8 $4b : dataSize
 +	[in] u8 A : sourceBank (per16k)
 +	[out sizeis($4b) ] $7400 : destination
-## code:
+
+### code:
 ```js
 {
 	switch_16k_synchronized();	//jsr $3f:fb87()
@@ -5172,7 +5322,7 @@ ________________________________________________________________________________
 # $3f:fdf3 call_bank30_9e58()
 <details>
 
-## code:
+### code:
 ```js
 {
 	switchFirst2Banks(#18);
@@ -5186,7 +5336,7 @@ ________________________________________________________________________________
 # $3f:ff00 waitNmiBySetHandler
 <details>
 
-## code:
+### code:
 ```js
 {
 	return setNmiHandlerTo_ff2a_andWaitNmi();	//jmp $ff36();
@@ -5198,7 +5348,7 @@ ________________________________________________________________________________
 # $3f:ff03 call_switchFirst2Banks
 <details>
 
-## code:
+### code:
 ```js
 {
 	return switch_2pages();	//jmp ff17
@@ -5210,7 +5360,7 @@ ________________________________________________________________________________
 # $3f:ff06 call_switch1stBank
 <details>
 
-## code:
+### code:
 ```js
 {
 	return switch_1st_page();
@@ -5222,7 +5372,7 @@ ________________________________________________________________________________
 # $3f:ff09 call_switch2ndBank
 <details>
 
-## code:
+### code:
 ```js
 {
 	return switch_2nd_page();
@@ -5234,7 +5384,7 @@ ________________________________________________________________________________
 # $3f:ff0c switch_1st_page
 <details>
 
-## code:
+### code:
 ```js
 {
 	push a;
@@ -5247,17 +5397,21 @@ ________________________________________________________________________________
 
 ________________________________________________________________________________
 # $3f:ff17 switch_2pages
-<details><summary>Switches PRG banks mapped to first two 8k pages ($8000-$BFFF) to the given consecutive banks.</summary>
+<details><summary>
 
-## processor flags:
+>Switches PRG banks mapped to first two 8k pages ($8000-$BFFF) to the given consecutive banks.
+</summary>
+
+### processor flags:
 +	carry: usually 0. this is the result of addition (bank number + 1) performed in this logic. so as long as caller supplies valid bank number (00-3f), it is safe to assume this to be 0 as carry never happen in that range.
 +	zero: usually 0 as long as caller supplies valid bank number (00-3f).
 +	negative: depends on the bank number given, usually 0 as valid bank number fall in positibe range (00-3F.)
 rest are unaffected.
 
-## args:
+### args:
 +	[in] u8 a : basebank (per 8k)
-## code:
+
+### code:
 ```js
 {
 	push(a);
@@ -5276,7 +5430,7 @@ ________________________________________________________________________________
 # $3f:ff1f switch_2nd_page
 <details>
 
-## code:
+### code:
 ```js
 {
 	push a;
@@ -5292,7 +5446,7 @@ ________________________________________________________________________________
 # $3f:ff2a nmi_handler_01
 <details>
 
-## code:
+### code:
 ```js
 {
 	$2002;
@@ -5307,7 +5461,7 @@ ________________________________________________________________________________
 # $3f:ff36 setNmiHandlerTo_ff2a_andWaitNmi
 <details>
 
-## code:
+### code:
 ```js
 {
 	$0100,0101,0102 = #4c,#2a,#ff; //jmp $ff2a

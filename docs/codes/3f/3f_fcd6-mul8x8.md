@@ -1,12 +1,16 @@
 ﻿
 # $3f:fcd6 mul8x8
-<summary>筆算的掛け算(8bit*8bit)</summary>
 
-## args:
+
+>筆算的掛け算(8bit*8bit)
+
+
+### args:
 +	[in] u8 a : multicand
 +	[in] u8 x : multiplier
 +	[out] u16 $1a : product
-## code:
+
+### code:
 ```js
 {
 	$18 = a;

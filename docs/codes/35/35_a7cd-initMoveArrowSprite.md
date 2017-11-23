@@ -1,9 +1,9 @@
 ﻿
 # $35:a7cd initMoveArrowSprite
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	init4SpritesAt$0220(index:$18 = 0);	//8adf

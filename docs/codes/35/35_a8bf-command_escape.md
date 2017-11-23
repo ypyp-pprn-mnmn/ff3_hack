@@ -1,9 +1,12 @@
 ﻿
 # $35:a8bf command_escape
 
-<summary>06: にげる</summary>
 
-## (pseudo-)code:
+
+>06: にげる
+
+
+### (pseudo-)code:
 ```js
 {
 	$78d5 = 1;	//listid

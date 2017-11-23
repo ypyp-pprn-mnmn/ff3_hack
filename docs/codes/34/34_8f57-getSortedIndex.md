@@ -1,14 +1,15 @@
 ﻿
 # $34:8f57 getSortedIndex
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $1a : base?
 + [in] ptr $1c : keys
 + [in] ptr $1e : result indices
 + [in] u8 $22 : len
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	push (a = $22);

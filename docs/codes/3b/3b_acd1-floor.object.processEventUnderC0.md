@@ -2,11 +2,11 @@
 # $3b:acd1 floor::object::processEventUnderC0
 
 
-## args:
+### args:
 +	[in] u8 $70 : [iiiieeee] i:object index e:object event id
 +	[out] u8 $17 :
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	a = $700c.(x = $70 & #f0);

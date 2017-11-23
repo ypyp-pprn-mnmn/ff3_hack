@@ -1,9 +1,9 @@
 ﻿
 # $35:b93e flagJob
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 + [in] a=jobindex

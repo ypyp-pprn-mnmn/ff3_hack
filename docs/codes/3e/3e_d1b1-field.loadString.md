@@ -2,11 +2,12 @@
 # $3e:d1b1 field::loadString
 
 
-## args:
+### args:
 +	[in] a : string id (ptrTable = $30200)
 +	[out] u8 $7b00 : = 0
 +	[out] string $7b01
-## code:
+
+### code:
 ```js
 {
 	push a;

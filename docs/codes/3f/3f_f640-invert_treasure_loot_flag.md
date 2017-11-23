@@ -2,7 +2,7 @@
 # $3f:f640 invert_treasure_loot_flag
 
 
-## code:
+### code:
 ```js
 {
 	x = $45 & #0f;

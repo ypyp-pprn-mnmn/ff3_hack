@@ -1,9 +1,12 @@
 ﻿
 # $31:bebf rebuildBackpackItems 
 
-<summary>battleFunction08</summary>
 
-## (pseudo-)code:
+
+>battleFunction08
+
+
+### (pseudo-)code:
 ```js
 {
 	a = 0;x = 0;

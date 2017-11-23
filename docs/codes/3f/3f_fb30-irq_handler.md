@@ -2,12 +2,14 @@
 # $3f:fb30 irq_handler
 
 
-## args:
+### args:
 -	[in,out] u8
-## notes:
+
+### notes:
 戦闘中のハンドラ。
 バンク変更中を考慮している。
-## code:
+
+### code:
 ```js
 {
 	push a;

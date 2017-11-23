@@ -1,9 +1,9 @@
 ﻿
 # $35:b82a magicWindow_OnDown
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if ((a = $24) == 7) return;	//beq $b874

@@ -1,9 +1,12 @@
 ﻿
 # $31:b4d4 handleSegmentation
 
-<summary>specialHandler11: 分裂</summary>
 
-## (pseudo-)code:
+
+>specialHandler11: 分裂
+
+
+### (pseudo-)code:
 ```js
 {
 	//if ($6e[y = 3] != $6e[y = 5])	//bne $b4eb

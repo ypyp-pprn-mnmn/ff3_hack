@@ -2,23 +2,27 @@
 # $3f:ed02 field::draw_window_box
 
 
-## args:
-### in:
+### args:
+
+#### in:
 +	u8 $37 : in_menu_mode (1: yes; skip some initializations)
-### out:
+
+#### out:
 +	u8 $38 : window_left (in 8x8 tile unit)
 +	u8 $39 : window_top
 +	u8 $3a : offset_x (or column in drawing)
 +	u8 $3b : offset_y (or row in drawing)
 +	u8 $3c : window_width (border excl.)
 +	u8 $3d : window_height (border excl.)
-## callers:
+
+### callers:
 +	$3c:8efd
 +	$3c:8f0e
 +	$3c:8fd5
 +	$3c:90b1
 +	$3d:aaf4 (jmp)
-## code:
+
+### code:
 ```js
 {
 	x = $96;

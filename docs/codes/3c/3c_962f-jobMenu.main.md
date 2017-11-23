@@ -2,9 +2,10 @@
 # $3c:962f jobMenu::main
 
 
-## args:
+### args:
 +	[in] u8 $7f,x : character offset
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	$96ba();

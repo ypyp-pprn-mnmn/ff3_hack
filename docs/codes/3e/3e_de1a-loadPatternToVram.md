@@ -2,10 +2,11 @@
 # $3e:de1a loadPatternToVram
 
 
-## args:
+### args:
 +	[in] u8 x : len (per256bytes)
 +	[in] ptr $80 : pPattern
-## code:
+
+### code:
 ```js
 {
 	y = 0;

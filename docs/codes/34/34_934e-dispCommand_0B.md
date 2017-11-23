@@ -1,9 +1,9 @@
 ﻿
 # $34:934e dispCommand_0B
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	playEffect();	//$34:8411();

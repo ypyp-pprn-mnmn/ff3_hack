@@ -1,19 +1,24 @@
 ﻿
 # $34:94d6 dispCommand_00010204_closeWindow
 
-<summary>現在のコマンド番号に対応するウインドウを消す</summary>
 
-## args:
+
+>現在のコマンド番号に対応するウインドウを消す
+
+
+### args:
 + [in] u8 $78d6[] : dispCommandParams
 + [in] u8 $4b : currentDispCommand
-## notes:
+
+### notes:
 コマンド番号:
 + 00:行動者
 + 01:行動名
 + 02:効果対象
 + 03:追加効果 
 + 04:メッセージ
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	x = $4b;

@@ -1,9 +1,9 @@
 ﻿
 # $35:b953 setMagicTarget
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	//sec

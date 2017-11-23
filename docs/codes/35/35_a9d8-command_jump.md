@@ -1,9 +1,12 @@
 ﻿
 # $35:a9d8 command_jump
 
-<summary>08: ジャンプ</summary>
 
-## (pseudo-)code:
+
+>08: ジャンプ
+
+
+### (pseudo-)code:
 ```js
 {
 	$78d5 = 1;	//listId

@@ -1,15 +1,16 @@
 ﻿
 # $34:8de5 drawBorder
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $78b8 : midCharLength
 + [in] u8 $1a : leftMostChar
 + [in] u8 $1b : middleChar
 + [in] u8 $1d : rightMostChar
 + [in,out] u16 $60,61 : vramAddr (32bytes/row)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	presentCharacter();	//$34:8185();

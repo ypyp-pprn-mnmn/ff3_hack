@@ -2,9 +2,10 @@
 # $3e:de0f loadPatternToVramEx
 
 
-## args:
+### args:
 +	[in] u8 a : vramAddrHigh (low=00)
-## code:
+
+### code:
 ```js
 {
 	bit $2002;

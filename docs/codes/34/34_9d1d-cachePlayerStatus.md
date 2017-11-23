@@ -1,9 +1,9 @@
 ﻿
 # $34:9d1d cachePlayerStatus
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	y = $5f;

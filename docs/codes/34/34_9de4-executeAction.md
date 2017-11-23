@@ -1,15 +1,16 @@
 ﻿
 # $34:9de4 executeAction
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $7ac2 : currentActorIndex(action order)
 + [in] u8 $7acb[0xc?] : ordinalToBattleCharIndexMap
 + [in] u8 $7ca7[4] : 選択魔法Lv (index=player)
 + [in] u8 $7ced : encounter id
 + [in] u8 $7cee : encounter flag (or high bits of encounter id?)
-## local variables:
+
+### local variables:
 + u8 $1a : actionId
 + u16 $6e : actorPtr
 + u16 $70 : firstTargetPtr
@@ -19,7 +20,8 @@
 + u8 $7e99,7e9b : targetIndicatorFlag
 + u8 $7e9a : sideFlag(actorEnemy:80 targetEnemy:40)
 + u8 $7ec2 : handlerId
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	x = $7ac2; a = $7acb.x;

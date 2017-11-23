@@ -2,17 +2,20 @@
 # $3f:f5d4 getItemValue //getTreasureGil
 
 
-## args:
+### args:
 +	[in] x : itemid
 +	[out] u24 $80 : = $10:9e00[x]
-## callers:
+
+### callers:
 +	$3d:b230 @ floor::shop::getItemValues
 +	$3d:b271 @ floor::shop::getItemValue
 +	$3f:ef73 @ field::decodeString 
 +	$3f:f5b8 @ floor::getTreasure
-## notes:
+
+### notes:
 caller expects y has been unchanged
-## code:
+
+### code:
 ```js
 {
 	call_switch1stBank(per8k:a = #10); //ff06

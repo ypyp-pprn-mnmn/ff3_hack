@@ -1,9 +1,12 @@
 ﻿
 # $35:a93b command_sneakAway
 
-<summary>07: とんずら</summary>
 
-## code:
+
+>07: とんずら
+
+
+### code:
 ```js
 {
 	$78d5 = 1;

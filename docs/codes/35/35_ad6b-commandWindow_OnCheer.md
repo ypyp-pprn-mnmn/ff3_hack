@@ -1,9 +1,12 @@
 ﻿
 # $35:ad6b commandWindow_OnCheer
 
-<summary>12: おうえん</summary>
 
-## (pseudo-)code:
+
+>12: おうえん
+
+
+### (pseudo-)code:
 ```js
 {
 	setYtoOffset2E();	//$9b9b

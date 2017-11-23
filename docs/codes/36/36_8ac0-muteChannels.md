@@ -2,7 +2,7 @@
 # $36:8ac0 muteChannels
 
 
-## code
+### code
 ```js
 {
 	for (x = 3;x >= 0;x--) {

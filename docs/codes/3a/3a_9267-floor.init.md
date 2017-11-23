@@ -2,11 +2,12 @@
 # $3a:9267 floor::init
 
 
-## args:
+### args:
 +	ChipDef $01:a380(2380)[?][4][128]
 +	ChipToPalette $01:b100(03100)[8][128]
 +	ChipAttributes $01:b500(03500)[8][128] : chipAttributeTable { attributes, event }
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	call_switch2ndBank(per8k:a = #01);	//ff09

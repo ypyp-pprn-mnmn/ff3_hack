@@ -1,9 +1,9 @@
 ﻿
 # $34:87be set_encounter_mode
 
-<summary></summary>
 
-## args:
+
+### args:
 +   [in] u8 $7ed8 : battle_mode (situation)
 	- bit7 : boss
 	- bit6 : magic forbidden
@@ -12,7 +12,8 @@
 	- bit0 : escape forbidden
 +   [out] u8 $78ba :
 +	[out] u8 $78c3 : battle_mode
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
     // omitted..

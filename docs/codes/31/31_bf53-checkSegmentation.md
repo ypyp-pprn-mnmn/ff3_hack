@@ -1,17 +1,22 @@
 ﻿
 # $31:bf53 checkSegmentation	
 
-<summary>分裂判定</summary>
 
-## args:
+
+>分裂判定
+
+
+### args:
 + [in] u8 $7da7 : indexToIdMap
 + [out] u8 $7ee1 : segmenated enemy's id
-## notes:
+
+### notes:
 使用技リストの1個目が#$4fの敵に
 暗黒属性以外の攻撃が1回以上命中した場合
 分裂処理を行う
 なお二刀流の場合は命中した手がどちらかによらず両手が暗黒でないと分裂する
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$18 = 0;

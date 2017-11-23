@@ -1,12 +1,13 @@
 ﻿
 # $34:8496 buildEnemyDeadBits
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $7da7[8] : indexToGroup
 + [in] u8 $7ec4[8] : enemyStatus
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	for (x = 0;x != 8; x++) {

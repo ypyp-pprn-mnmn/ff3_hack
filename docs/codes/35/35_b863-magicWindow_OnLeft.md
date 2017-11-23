@@ -1,9 +1,9 @@
 ﻿
 # $35:b863 magicWindow_OnLeft
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if ((a = $26) == 0) return;	//beq $b874

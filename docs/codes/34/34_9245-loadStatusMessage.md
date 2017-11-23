@@ -1,9 +1,12 @@
 ﻿
 # $34:9245 loadStatusMessage?
 
-<summary>load string using table $18:8c40</summary>
 
-## (pseudo-)code:
+
+>load string using table $18:8c40
+
+
+### (pseudo-)code:
 ```js
 {
 	setTableAddrTo$8c40();	//$34:95c6();

@@ -1,9 +1,9 @@
 ﻿
 # $31:b8e7 calcMagicHitCountAndClearTargetIfMiss
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if ((getActor2C() < 0)  //$a2b5(); bmi b8f4

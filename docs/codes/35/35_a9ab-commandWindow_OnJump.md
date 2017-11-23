@@ -1,9 +1,12 @@
 ﻿
 # $35:a9ab commandWindow_OnJump
 
-<summary>08: ジャンプ</summary>
 
-## (pseudo-)code:
+
+>08: ジャンプ
+
+
+### (pseudo-)code:
 ```js
 {
 	$b3 = 0;	//single

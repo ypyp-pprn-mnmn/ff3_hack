@@ -1,9 +1,9 @@
 ﻿
 # $34:9ae7 putCanceledItem
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$18 = a;

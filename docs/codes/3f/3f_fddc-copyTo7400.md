@@ -2,13 +2,14 @@
 # $3f:fddc copyTo7400
 
 
-## args:
+### args:
 +	[in] u16 $46 : sourceBasePtr
 +	[in] u8 $4a : bankToRestore
 +	[in] u8 $4b : dataSize
 +	[in] u8 A : sourceBank (per16k)
 +	[out sizeis($4b) ] $7400 : destination
-## code:
+
+### code:
 ```js
 {
 	switch_16k_synchronized();	//jsr $3f:fb87()

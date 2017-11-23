@@ -1,9 +1,9 @@
 ﻿
 # $31:a2ba cacheStatus
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u16 $6e : actorPtr?
 + [in] u16 $70 : targetPtr?
 + [out] u8 $(e0+id*2)[2] : status of $70
@@ -12,7 +12,8 @@
 + [out] u8 $64 : ? ($70.#2c & 7) * 2
 + [out] u8 $66 : $6e.#2c & 7)
 + [out] u8 $68 : $70.#2c & 7)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$66 = a = getActor2C() & 7;

@@ -2,11 +2,12 @@
 # $3e:de2a loadSmallPatternToVram
 
 
-## args:
+### args:
 +	[in] ptr $80 : pattern
 +	[in] u8 x : len
 +	[in] u8 y : offset
-## code:
+
+### code:
 ```js
 {
 	do {

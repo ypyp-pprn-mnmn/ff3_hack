@@ -2,11 +2,12 @@
 # $3d:b248 floor::shop::getSellingPrice
 
 
-## args:
+### args:
 +	[out] u24 $61 : price
 +	[in] u8 $64 : bulk selling?
 +	[in] u8 $8e : selling item index
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	if ( $64 == 0 ) { //bne b257

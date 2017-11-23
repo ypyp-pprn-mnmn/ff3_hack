@@ -2,7 +2,7 @@
 # $3f:fadd restoreIrqHandlerAndNmiHandler
 
 
-## code:
+### code:
 ```js
 {
 	for (x = 6;x != 0;x--) {

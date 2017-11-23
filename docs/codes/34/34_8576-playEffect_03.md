@@ -1,9 +1,9 @@
 ﻿
 # $34:8576 playEffect_03
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	return;

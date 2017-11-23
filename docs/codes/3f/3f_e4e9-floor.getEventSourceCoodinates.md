@@ -2,11 +2,12 @@
 # $3f:e4e9 floor::getEventSourceCoodinates
 
 
-## args:
+### args:
 +	[in] a : input bits?
 +	[out] $84 : mapX
 +	[out] $85 : mapY
-## code:
+
+### code:
 ```js
 {
 	a >>= 1;

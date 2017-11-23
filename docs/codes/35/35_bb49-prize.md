@@ -1,9 +1,9 @@
 ﻿
 # $35:bb49 prize
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u16 $57 : playerParamBasePtr (=$6100)
 + [in] u16 $5b : playerBattleParamBasePtr (=$7575)
 + [in] u8 $78f0[4][4] : playerActionCounts
@@ -15,9 +15,11 @@
 +	u8 $53 : alivePlayerCount
 +	u16 $5f : playerOffset
 +	u8 $7570 : enemyGroupNo
-## local variables:
+
+### local variables:
 +	BattlePrizeInfo $7400 : enemyInfo
-## dependencies:
+
+### dependencies:
 +	$34:8ff7 : presentBattle
 +	$34:9b88 : setYtoOffsetOf
 +	$34:9b8d : setYtoOffset03 (03:exp)
@@ -33,7 +35,8 @@
 +	$3f:fd3c~41 : shiftLeftN
 +	$3f:fd43~48 : shiftRightN
 +	$3f:fda6 : loadTo7400Ex
-## notes:
+
+### notes:
 	struct BattlePrizeInfo { //@ram7400
 		u8  ? $10:9c80		//00
 		u16 exp; 		//01 from $10:9d80
@@ -42,7 +45,8 @@
 		u16 gil;		//1b from $30:9c58
 		u8 capacity; 		//1d from $39:b2ae
 	}
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	call_2e_9d53(a = #0f);	//$3f:fa0e();

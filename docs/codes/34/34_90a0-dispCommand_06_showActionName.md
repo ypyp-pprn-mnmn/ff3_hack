@@ -1,12 +1,13 @@
 ﻿
 # $34:90a0 dispCommand_06_showActionName
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $72 : isEquipmentUsed
 + [in] u8 $78d7 : messageId (#ff : no display,#80> : specialAction)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = $72;

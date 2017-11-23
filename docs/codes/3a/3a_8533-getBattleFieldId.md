@@ -2,9 +2,10 @@
 # $3a:8533 getBattleFieldId
 
 
-## args:
+### args:
 +	`[in] u8 $48 : warpId`
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	call_switch2ndBank(per8k:a = #39); //ff09

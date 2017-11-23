@@ -1,9 +1,9 @@
 ﻿
 # $31:a482 loadPlayer
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $52 : playerIndex
 + [in] u8 $5f : offset
 + [out] u8 A : jobParam.+4 (of this player)
@@ -15,7 +15,8 @@
 + [out] u8 $40[4] : jobParam.+0~3
 + [out] u8 $44 : = $0052
 + [out] u8 $46[2] : 0
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	//jsr $31:be90 { $5f = a = $52 << 6 }
