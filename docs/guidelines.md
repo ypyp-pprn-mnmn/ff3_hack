@@ -5,11 +5,15 @@ here defines some rules.
 These rules shouldn't never be treated as 'hard' rule anyways,
 as it could be continously evolved and
 sometimes good idea is delivered by a momentum inspiration during writing.
-However, it is still consindered to be useful to define here,
+However, it is still consindered to be useful to define them here,
 since it could be a reference for readers or be for helping future discussions.
 
 ## Character Encoding
-It should be utf-8. It is considered to be most interoperable.
+It should be `utf-8`. It is considered to be most interoperable.
+
+## File Format
+As of writing (2017-11-23), I have chosen to use pandoc dialect Markdown.
+The reason why not use GitHub-flavored one ('gfm') is just I wanted to have metadata (such as author or title) easily fed into pandoc to generate compiled documentation in html format.
 
 ## Pseudo-code Conventions
 For most part, the code should have javascript-like syntax.
@@ -53,10 +57,10 @@ Namespace are currently defined as follows, but it is fine to define new ones:
 -   util
 </details>
 
-## 2.   metadata
-Then, any additional metadata, typically argument definitions but not limited to those,
+## 2.   metadata and notes
+Then, any additional metadata, typically argument definitions but not limited to,
 should immediately follow the beginning of the declaration.
-Any metadata notation should have its own heading, which is at 2nd level.
+Any metadata notation should have its own heading, which is at 3rd level.
 
 ## 3.   code
 Once the declaration and metadata have completed, the code secion will follow.
