@@ -2,7 +2,7 @@
 # $3f:f942 copy_to_vram_with_encounter_mode
 
 
-## code:
+### code:
 ```js
 {
     if ( $78c3 != 0x88 ) {

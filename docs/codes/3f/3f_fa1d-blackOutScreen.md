@@ -2,7 +2,7 @@
 # $3f:fa1d blackOutScreen
 
 
-## code:
+### code:
 ```js
 {
 	$2001 = $2000 = 0;

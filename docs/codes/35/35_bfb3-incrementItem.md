@@ -1,12 +1,13 @@
 ﻿
 # $35:bfb3 incrementItem
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 a : itemid
 + [out] bool carry : succeeded (1)
-## notes:
+
+### notes:
 	指定されたidをもつitemの数を1個増やす
 	同じidのitemがなければ空欄を見つけてそこに置く
 	もしみつからなければcarryをクリアして戻る
@@ -17,7 +18,7 @@
 	(item欄ならitemid,最後のitemなら先頭のキャラのjob)
 	
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	$18 = a;

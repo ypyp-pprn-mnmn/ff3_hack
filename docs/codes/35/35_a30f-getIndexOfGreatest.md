@@ -1,17 +1,20 @@
 ﻿
 # $35:a30f getIndexOfGreatest
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u16 $1a[4] : values
 + [in] u8 $24[8] : associated indices
 + [out] u8 $52 : index
 + [out] u8 x : index
 + [out] u8 $5f : offset to player of result index 
-## notes:
-## (pseudo-)code:
-### logic:
+
+### notes:
+
+### (pseudo-)code:
+
+#### logic:
 	for (var i = 1;i < 4;i++) {
 		var val = values[i];
 		if ( val > values[0] ) {

@@ -1,11 +1,12 @@
 ﻿
 # $34:9b94 setYtoOffset2F
 
-<summary></summary>
 
-## notes:
+
+### notes:
 //2F = target indicator bits
-## code:
+
+### code:
 ```js
 {
 	return y = a = #2f + $5f;

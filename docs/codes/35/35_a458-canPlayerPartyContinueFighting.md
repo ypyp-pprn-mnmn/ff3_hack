@@ -1,11 +1,12 @@
 ﻿
 # $35:a458 canPlayerPartyContinueFighting
 
-<summary></summary>
 
-## args:
+
+### args:
 + [out] u8 $78d3 : 80=all dead, 40=($7dd2 == 0)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = $78d3 & 2

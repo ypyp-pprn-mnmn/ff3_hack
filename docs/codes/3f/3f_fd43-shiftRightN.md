@@ -2,7 +2,7 @@
 # $3f:fd43 shiftRightN
 
 
-## code:
+### code:
 ```js
 {
 	a >>= 1;

@@ -2,9 +2,10 @@ ________________________________________________________________________________
 # $3a:8533 getBattleFieldId
 <details>
 
-## args:
+### args:
 +	`[in] u8 $48 : warpId`
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	call_switch2ndBank(per8k:a = #39); //ff09
@@ -26,7 +27,7 @@ ________________________________________________________________________________
 # $3a:8f43 field::loadTileParams
 <details>
 
-## args:
+### args:
 +	[out] u8 $0500[64],0580[64],0600[64],0680[64] : 
 	static tile indices (shared by all maps)`
 +	[out] u8 $0700[64] :
@@ -35,7 +36,8 @@ ________________________________________________________________________________
 	dynamic tile indices (indiviual to each maps,also updated dynamically)
 +	[out] u8 $0740[64] :
 +	[out] TileEvent $0400[128]
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	call_switch2ndBank(per8k:a = #00); //ff09
@@ -83,12 +85,14 @@ ________________________________________________________________________________
 # $3a:9091 getPaletteEntriesForWorld
 <details>
 
-## args:
+### args:
 +	[in] u8 $78 : world
 +	u8 $00:b640[0x10] : paletteEntries for background
-## notes:
+
+### notes:
 フロアマップでも呼ばれる
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	y = ($78 & #06) << 3;
@@ -108,9 +112,10 @@ ________________________________________________________________________________
 # $3a:910b getPaletteEntriesForFloor
 <details>
 
-## args:
+### args:
 +	[in] WarpParam $0780
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	getPaletteEntries(offset:x = 1, paletteId:y = $0785);
@@ -132,11 +137,12 @@ ________________________________________________________________________________
 # $3a:914b getPaletteEntries
 <details>
 
-## args:
+### args:
 +	[in] x : dest offset
 +	[in] y : paletteId
 +	$00:b100[3][0x100] : colorIds
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	$03c0.x = $b100.y;
@@ -151,10 +157,11 @@ ________________________________________________________________________________
 # $3a:915e
 <details>
 
-## args:
+### args:
 +	[in] u8 $48 : warpId
 +	u8 $02:a000[0x10][0x100]
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	call_switch2ndBank(per8k:a = #02);	//ff09
@@ -201,7 +208,7 @@ ________________________________________________________________________________
 # $3a:91c8 floor::getDynamicChip
 <details>
 
-## args:
+### args:
 +	[in,out] a : chipId
 +	[out] $0500[ allocatedChipId ] : serial number 
 +	$921f(7521f) : チップ分類
@@ -213,7 +220,8 @@ ________________________________________________________________________________
 
 		f0 f4 f8 fc 00 00 00 00  00 00 00 00 00 00 00 00
 		80 90 a0 b0 c0 c4 c8 cc  e0 e4 e8 ec d0 00 00 00
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	x = a - #60;
@@ -254,11 +262,12 @@ ________________________________________________________________________________
 # $3a:9267 floor::init
 <details>
 
-## args:
+### args:
 +	ChipDef $01:a380(2380)[?][4][128]
 +	ChipToPalette $01:b100(03100)[8][128]
 +	ChipAttributes $01:b500(03500)[8][128] : chipAttributeTable { attributes, event }
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	call_switch2ndBank(per8k:a = #01);	//ff09
@@ -368,7 +377,7 @@ ________________________________________________________________________________
 # $3b:a067
 <details>
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	$24 = $25 = $23 = $22 = $20 = 0;
@@ -381,9 +390,10 @@ ________________________________________________________________________________
 # $3b:a12b floor::object::dispatchEvent
 <details>
 
-## args:
+### args:
 +	[in] u8 $70 : eventId
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	a = $70;
@@ -426,11 +436,11 @@ ________________________________________________________________________________
 # $3b:acd1 floor::object::processEventUnderC0
 <details>
 
-## args:
+### args:
 +	[in] u8 $70 : [iiiieeee] i:object index e:object event id
 +	[out] u8 $17 :
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	a = $700c.(x = $70 & #f0);
@@ -473,9 +483,10 @@ ________________________________________________________________________________
 # $3b:aead
 <details>
 
-## args:
+### args:
 +	[in] ptr $80 : $700e.x,$700f.x + 0|8
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	$80,81 += $7105.x;
@@ -488,13 +499,14 @@ ________________________________________________________________________________
 # $3b:b0c5 getChipIdAtObject
 <details>
 
-## args:
+### args:
 +	[in] u8 $4c : default chip id? (warpparam.+03 = $0783)
 +	[in] u8 $84 : object.x?
 +	[in] u8 $85 : object.y?
 +	[in] mapdata $7400[0x20*0x20]
 +	[in] chipattr $0400[0x100]
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	y = $4c;
@@ -530,7 +542,7 @@ ________________________________________________________________________________
 # $3b:b17c floor::object:
 <details>
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	if ($700d.x != 0) //bne b188
@@ -647,7 +659,8 @@ ________________________________________________________________________________
 <details>
 
 +	ptr $2c:8000[0x100] : index = $0784 (warpparam.+04)
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	do {
@@ -673,14 +686,15 @@ ________________________________________________________________________________
 # $3b:b34e floor::loadObject
 <details>
 
-## args:
+### args:
 +	[in] u8 $78 : world
 +	[in] u8 a : objectId? (= $8c[0] )
 +	[in,out] ptr $8a : ? ( = #7100) [out] += #10
 +	[in] ObjectParam* $8c : from $2c:8000 + [ $2c:8000[ $0784] ]
 +	[in,out] RuntimeObject* $8e : ( = #7000) [out] += #10
 +	$01:9e00[0x200] : [aaaabbbb] a:? ->$7103 b:? ->$7102
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	y = $8e[y = #0a] = a;
@@ -730,14 +744,15 @@ ________________________________________________________________________________
 # $3b:b3f8 getObjectBuilderAddress
 <details>
 
-## args:
+### args:
 +	[in] u8 $86 : = ObjectParam.+03
 +	[out] a,x = 
 	+	$86 == 0 : #b43a
 	+	$86 == 1 : #b44a
 	+	$86 == 2 : #b42a
 	+	$86 == 3 : #b41a
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	switch ( $86 & #03) {
@@ -761,11 +776,12 @@ ________________________________________________________________________________
 # $3b:b51a getObjectFlag
 <details>
 
-## args:
+### args:
 +	[in] u8 a : objectId?
 +	[in] u8 $78 : world
 +	[in] $6080[2][0x20] : flags (1bit per id)
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	$80 = a;
@@ -788,9 +804,10 @@ ________________________________________________________________________________
 # $3b:b53f floor::object::invokeEventAboveD0
 <details>
 
-## args:
+### args:
 +	[in] u8 a : event (d0-ff)
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	if (a >= #e4) { //bcc b555
@@ -824,10 +841,11 @@ ________________________________________________________________________________
 # $3b:b6bf floor::object::event::F0
 <details>
 
-## args:
+### args:
 +	[out] ptr $94 : string ptr
 +	[out] u8 $76 : string Id
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	$76 = $0740.(x = $71);
@@ -847,7 +865,7 @@ ________________________________________________________________________________
 # $3b:bec6 drawNextLineVertical
 <details>
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	$82 = #f - $30;
@@ -900,11 +918,12 @@ ________________________________________________________________________________
 # $3c:91a3 fieldMenu::updateCursorPos
 <details>
 
-## args:
+### args:
 +	[in] u8 a : cursorIncrement
 +	[in,out] u8 $78f0 : cursor
 +	[in] u8 $78f1 : rowSize
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	$06 = a;
@@ -940,7 +959,7 @@ ________________________________________________________________________________
 # $3c:92f3 floor::copyEventScriptStream
 <details>
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	x = 0;
@@ -986,7 +1005,7 @@ ________________________________________________________________________________
 # $3c:9344 getEventFlag?
 <details>
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	push (a & #7f);
@@ -1005,11 +1024,12 @@ ________________________________________________________________________________
 # $3c:937e floor::searchSpaceForItem
 <details>
 
-## args:
+### args:
 +	[in] u8 $80 : itemid
 +	[out] bool carry : item full
 +	[out] u8 x : index
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	for (x = 0;x < 0x20;x++) {
@@ -1049,9 +1069,10 @@ ________________________________________________________________________________
 # $3c:962f jobMenu::main
 <details>
 
-## args:
+### args:
 +	[in] u8 $7f,x : character offset
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	$96ba();
@@ -1103,7 +1124,7 @@ ________________________________________________________________________________
 # $3d:a52f fieldMenu::main
 <details>
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	$78f0 = 0;
@@ -1236,7 +1257,7 @@ ________________________________________________________________________________
 # $3d:a666
 <details>
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	
@@ -1249,7 +1270,7 @@ ________________________________________________________________________________
 # $3d:a66b
 <details>
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	$92 = a;
@@ -1263,11 +1284,13 @@ ________________________________________________________________________________
 # $3d:a6b4 fieldMenu::selectCharacter
 <details>
 
-## args:
-###	out:
+### args:
+
+####	out:
 +	bool carry : canceled
 +	u8 $7f : offset of selected character
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	//...
@@ -1279,7 +1302,7 @@ ________________________________________________________________________________
 # $3d:a87a field::loadAndDrawString
 <details>
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	field::loadString();	//$d1b1();
@@ -1295,7 +1318,7 @@ ________________________________________________________________________________
 # $3d:a88c saveMenu::close
 <details>
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	$8f74();
@@ -1309,10 +1332,10 @@ ________________________________________________________________________________
 # $3d:a897 fieldMenu::OnSaveSelected
 <details>
 
-## notes:
+### notes:
 $24:a $25:b
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	//...
@@ -1382,7 +1405,7 @@ ________________________________________________________________________________
 # $3d:aa67
 <details>
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	$a3 = $a2 = 0;
@@ -1405,7 +1428,7 @@ ________________________________________________________________________________
 # $3d:aaa6
 <details>
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	field::getWindowParam();	//aabc
@@ -1421,7 +1444,7 @@ ________________________________________________________________________________
 # $3d:aabc field::get_menu_window_metrics
 <details>
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	a = $38 = $b6 = $aaf7.x;
@@ -1441,9 +1464,10 @@ ________________________________________________________________________________
 # $3d:aaf1 field::draw_menu_window
 <details>
 
-## args:
+### args:
 +	[in] x : window id
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	field::getWindowParam();	//$aabc();
@@ -1457,7 +1481,7 @@ ________________________________________________________________________________
 # $3d:aaf7 field::menu_window_metrics
 <details>
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	//0x26 entries each for left, top, width, and height.
@@ -1480,9 +1504,10 @@ ________________________________________________________________________________
 # $3d:ad85 jobMenu::getCosts
 <details>
 
-## args:
+### args:
 +	[out] u8 $7200[0x17] : costs
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	for ($8f = 0; $8f < #17; $8f++) {
@@ -1518,12 +1543,13 @@ ________________________________________________________________________________
 # $3d:adf2 getJobParameter
 <details>
 
-## args:
+### args:
 +	[in] u8 $7f : offset of character
 +	[in] u8 $8f : jobId
 +	[out] JobBaseParam $7c00 : target job's
 +	[out] JobBaseParam $7c08 : current job's
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	call_switch1stBank(a = #39);	//ff06
@@ -1548,7 +1574,7 @@ ________________________________________________________________________________
 # $3d:aba3
 <details>
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	$6110-$6116 = targetjob baseparam
@@ -1563,9 +1589,10 @@ ________________________________________________________________________________
 # $3d:ac31
 <details>
 
-## args:
+### args:
 +	[in] $87 = lv
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	while (lv > 0) {
@@ -1587,7 +1614,7 @@ ________________________________________________________________________________
 # $3d:ad45
 <details>
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	A = A + $84;
@@ -1600,7 +1627,7 @@ ________________________________________________________________________________
 # $3d:a2df checkmagic
 <details>
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	a = $a20c,y //y=magicid (00-37)
@@ -1620,7 +1647,7 @@ ________________________________________________________________________________
 # $3d:b0eb floor::shop:
 <details>
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	//...
@@ -1649,7 +1676,7 @@ ________________________________________________________________________________
 # $3d:b220 floor::shop::getItemValues
 <details>
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	for (x = 7;x >= 0;x--) {
@@ -1673,11 +1700,12 @@ ________________________________________________________________________________
 # $3d:b248 floor::shop::getSellingPrice
 <details>
 
-## args:
+### args:
 +	[out] u24 $61 : price
 +	[in] u8 $64 : bulk selling?
 +	[in] u8 $8e : selling item index
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	if ( $64 == 0 ) { //bne b257
@@ -1703,10 +1731,11 @@ ________________________________________________________________________________
 # $3d:b270 floor::shop::getItemValue
 <details>
 
-## args:
+### args:
 +	[in] u8 a : itemid??
 +	[out] u24 $61 : gil?
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	floor::getTreasureGil( treasureParam:x = a ); //f5d4
@@ -1720,7 +1749,7 @@ ________________________________________________________________________________
 # $3d:b6da
 <details>
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	$e4 = $e3;
@@ -1760,7 +1789,7 @@ ________________________________________________________________________________
 # $3d:bc5b
 <details>
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	if (carry) {
@@ -1776,7 +1805,7 @@ ________________________________________________________________________________
 # $3d:bd4d getEncounterId
 <details>
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	//$81 = y = 0;
@@ -1807,10 +1836,11 @@ ________________________________________________________________________________
 # $3d:bdb9 isEncounterOccured
 <details>
 
-## args:
+### args:
 +	[in] u8 $48 : warpId
 +	[in] u8 $f8 : bound
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	if ($6c != 0) bdb8;

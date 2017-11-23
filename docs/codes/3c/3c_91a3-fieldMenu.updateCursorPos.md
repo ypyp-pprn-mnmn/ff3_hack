@@ -2,11 +2,12 @@
 # $3c:91a3 fieldMenu::updateCursorPos
 
 
-## args:
+### args:
 +	[in] u8 a : cursorIncrement
 +	[in,out] u8 $78f0 : cursor
 +	[in] u8 $78f1 : rowSize
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	$06 = a;

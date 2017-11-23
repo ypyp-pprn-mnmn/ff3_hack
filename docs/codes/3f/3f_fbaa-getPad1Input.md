@@ -2,11 +2,12 @@
 # $3f:fbaa getPad1Input()
 
 
-## args:
+### args:
 +	[in] u8 $13 : inputMask?
 +	[out] u8 $12 : inputFlag(bit7 > < v ^ st sel b a bit0)
 +	[out] u8 $14 : ?
-## code:
+
+### code:
 ```js
 {
 	$12 = $13;

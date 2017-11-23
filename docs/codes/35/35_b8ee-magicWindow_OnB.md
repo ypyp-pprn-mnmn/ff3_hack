@@ -1,9 +1,9 @@
 ﻿
 # $35:b8ee magicWindow_OnB 
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	init4SpritesAt$0220(index:$18 = 0);	//$34:8adf();

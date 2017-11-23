@@ -1,9 +1,9 @@
 ﻿
 # $35:b5f9 drawEquipWindowNoErase
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$7573 = a = #ff;

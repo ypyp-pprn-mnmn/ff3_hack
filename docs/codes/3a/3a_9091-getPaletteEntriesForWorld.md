@@ -2,12 +2,14 @@
 # $3a:9091 getPaletteEntriesForWorld
 
 
-## args:
+### args:
 +	[in] u8 $78 : world
 +	u8 $00:b640[0x10] : paletteEntries for background
-## notes:
+
+### notes:
 フロアマップでも呼ばれる
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	y = ($78 & #06) << 3;

@@ -1,14 +1,16 @@
 ﻿
 # $34:9408 updateEnemyStatus
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u16 $18 : ptr to status to apply
 + [out] u8 $7ec4[8] : status
-## local variables:
+
+### local variables:
 +	u16 $1e : enemyptr
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$1c = 0;

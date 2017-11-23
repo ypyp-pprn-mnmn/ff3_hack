@@ -1,14 +1,15 @@
 ﻿
 # $35:b2a7 itemWindow_scrollRight
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in,out] u8 $65 : background no
 + [in,out] u8 $66 : left(colIndex,0-7)
 + [in] u8 $69 : col index of 1st selection (if avail)
 + [in] u8 $67 : mode
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if ((a = $66) < 6) { //bcs  $b2ea

@@ -2,11 +2,12 @@
 # $3f:f8ea mul8x8_reg
 
 
-## args:
+### args:
 +	[in] u8 a : multicand
 +	[in] u8 x : multiplier
 +	[out] u16 a,x : result
-## code:
+
+### code:
 ```js
 {
 	mul8x8();	//$3f:fcd6()

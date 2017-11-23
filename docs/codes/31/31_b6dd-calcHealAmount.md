@@ -1,9 +1,9 @@
 ﻿
 # $31:b6dd calcHealAmount
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$28,29,2b = 0;

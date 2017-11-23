@@ -1,9 +1,12 @@
 ﻿
 # $35:ad0c commandWindow_OnIntimidate
 
-<summary>11: おどかす</summary>
 
-## (pseudo-)code:
+
+>11: おどかす
+
+
+### (pseudo-)code:
 ```js
 {
 	setYtoOffset2E();	//9b9b

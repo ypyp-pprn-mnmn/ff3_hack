@@ -1,9 +1,9 @@
 ﻿
 # $31:b752 doMagicHaste
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if ($70[y = #19] != #ff) //beq b7c1

@@ -1,13 +1,15 @@
 ﻿
 # $35:b601 redrawColumn
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 x : col
-## local variables:
+
+### local variables:
 +	$35:b636: windowInitParams[8]
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$3d = a = (--x) << 3;//$fd3f

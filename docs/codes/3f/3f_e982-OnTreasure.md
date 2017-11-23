@@ -2,9 +2,10 @@
 # $3f:e982 OnTreasure
 
 
-## args:
+### args:
 +	[in] u8 $ba : 00: chipId=d0-df ff:chipId=e0-ef
-## code:
+
+### code:
 ```js
 {
 	$7f49 = #bf;

@@ -2,12 +2,13 @@
 # $3e:cd7e getVehicleSpeed
 
 
-## args:
+### args:
 +	[in] u8 $42 : vehicle
 +	[in] u8 $78 : world
 +	[out] u8 $34 : speed (pixel per frame)
 +	[in,out] u8 $4e : apply delay (0=yes)
-## code:
+
+### code:
 ```js
 {
 	if ($78 >= 4) { //bcc cd88

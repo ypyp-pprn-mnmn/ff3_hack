@@ -1,9 +1,9 @@
 ﻿
 # $34:8ac1 getInputAndUpdateCursor_end
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$1c = $55[y = 0];

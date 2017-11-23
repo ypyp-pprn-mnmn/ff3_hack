@@ -2,7 +2,7 @@
 # $3f:fd2c clearTargetBit //[andNotBitX]
 
 
-## code:
+### code:
 ```js
 {
 	a &= $fd30.x;

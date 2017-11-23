@@ -2,7 +2,7 @@
 # $3f:eb2d field.scrolldown_item_window
 
 
-## args:
+### args:
 +	[in,out] ptr $1c: pointer to text
 +	[in,out] ptr $3e: pointer to text
 +	[in] u8 $93: bank number of the text
@@ -10,9 +10,11 @@
 +	[out] u8 $b4: ? (= 0x40(if aborted) or 0xC0(if scrolled))
 +	[in,out] u16 ($79f0,$79f2): ?
 +	[out] bool carry: 1: scroll aborted, 0: otherwise
-## callers:
+
+### callers:
 +	`1E:9255:20 2D EB  JSR field.scrolldown_item_window` @ ?
-## code:
+
+### code:
 ```js
 {
 /*

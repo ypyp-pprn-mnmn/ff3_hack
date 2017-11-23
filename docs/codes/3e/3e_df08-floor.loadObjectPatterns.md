@@ -2,9 +2,10 @@
 # $3e:df08 floor::loadObjectPatterns
 
 
-## args:
+### args:
 +	[in] u8 $78 : world
-## code:
+
+### code:
 ```js
 {
 	$8c,8d = #9400 + ($78 >= 2 ? #100 : 0);

@@ -1,9 +1,9 @@
 ﻿
 # $34:9b88 setYtoOffsetOf
 
-<summary></summary>
 
-## code:
+
+### code:
 ```js
 {
 	return y = a = ($5f + a);

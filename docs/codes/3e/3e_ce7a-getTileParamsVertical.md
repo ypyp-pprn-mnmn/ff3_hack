@@ -2,9 +2,10 @@
 # $3e:ce7a getTileParamsVertical
 
 
-## args:
+### args:
 +	[in] ptr $80 : pMapData (7000-7eff)
-## code:
+
+### code:
 ```js
 {
 	for (x;x < #10;x++) {

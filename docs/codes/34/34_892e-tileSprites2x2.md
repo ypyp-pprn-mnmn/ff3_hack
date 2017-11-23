@@ -1,15 +1,16 @@
 ﻿
 # $34:892e tileSprites2x2
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $1a : spriteIndex
 + [in] u8 $1c : top
 + [in] u8 $1d : right
 + [out] u8 X : $1a << 4
 + [out] u8 $0220,$0223,$0224,$0227,$022b : ?
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	x = $1a << 4; //fd3e()

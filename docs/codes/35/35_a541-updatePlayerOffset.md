@@ -1,13 +1,14 @@
 ﻿
 # $35:a541 updatePlayerOffset
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $52 : playerIndexs
 + [out] u8 $5f : offset
 + [out] u8 A : offset
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	//a = $52; 

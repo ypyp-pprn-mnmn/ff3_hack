@@ -1,11 +1,12 @@
 ﻿
 # $34:935f dispCommand_0D	//dying effect?
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $78d3 : ?
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = $78d3 & 2;

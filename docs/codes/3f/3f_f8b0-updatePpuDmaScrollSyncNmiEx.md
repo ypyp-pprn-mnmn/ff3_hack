@@ -2,7 +2,7 @@
 # $3f:f8b0 updatePpuDmaScrollSyncNmiEx
 
 
-## code:
+### code:
 ```js
 {
 	waitNmi();	//$3f:fb80();

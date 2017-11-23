@@ -1,13 +1,15 @@
 ﻿
 # $35:b979 setItemEffectTarget
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $7478[8] : itemparam
-## local variables:
+
+### local variables:
 +	u8 $b3 : selectTargetFlag (01:allowMulti 02:defaultPlayerSide)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if (0 == (a = ($747d & #18)) ) { //bne b983

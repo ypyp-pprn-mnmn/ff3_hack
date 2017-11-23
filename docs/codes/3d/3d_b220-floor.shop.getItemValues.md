@@ -2,7 +2,7 @@
 # $3d:b220 floor::shop::getItemValues
 
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	for (x = 7;x >= 0;x--) {

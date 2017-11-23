@@ -2,7 +2,7 @@
 # $3f:f800 call_doBattle
 
 
-## code:
+### code:
 ```js
 {
 	return doBattle();	//fa26

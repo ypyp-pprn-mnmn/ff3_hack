@@ -2,7 +2,7 @@
 # $3d:bd4d getEncounterId
 
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	//$81 = y = 0;

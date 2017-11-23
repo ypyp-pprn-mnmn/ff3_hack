@@ -1,13 +1,15 @@
 ﻿
 # $3f:ed61 field::get_window_region
 
-<summary>
-マップのスクロールも考慮して、ウインドウの描画に用いる各種値(座標etc)を取得する。
-あわせて、ウインドウ領域の内外に基づいてオブジェクトの属性を変更する。
-</summary>
 
-## args:
-### in:
+
+>マップのスクロールも考慮して、ウインドウの描画に用いる各種値(座標etc)を取得する。
+>あわせて、ウインドウ領域の内外に基づいてオブジェクトの属性を変更する。
+
+
+### args:
+
+#### in:
 +	u8 X: window_type (0...4)
 	-	0: object's message?
 	-	1: choose dialog (Yes/No) (can be checked at INN)
@@ -17,7 +19,8 @@
 +	u8 $29: floor_scroll_x (in 16x16 unit)
 +	u8 $2f: floor_scroll_y (in 16x16 unit)
 +	u8 $37: in_menu_mode
-### out:
+
+#### out:
 +	u8 $38: window_left (border included)
 +	u8 $39: window_top (border included)
 +	u8 $3c: window_width (border included)
@@ -28,9 +31,11 @@
 +	u8 $b6:
 +	u8 $b7:
 +	u8 $b8:
-## callers:
+
+### callers:
 +	$3f:ed02 field::draw_window_box
-## notes:
+
+### notes:
 1.	to reflect changes in screen those made by `field.hide_sprites_under_window`,
 	which is called from within this function,
 	caller must upload sprite attr onto OAM, such as:
@@ -41,7 +46,8 @@
 	the difference is:
 	-	A) this logic takes care of wrap-around unlike the other one, which does not.
 	-	B) target window and the address of table where the corresponding metrics defined at
-## code:
+
+### code:
 ```js
 {
 	if ($37 == 0) { //bne edb1

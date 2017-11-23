@@ -1,9 +1,9 @@
 ﻿
 # $34:88e1 setPlayerPtrs
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$57,58 = #6100;

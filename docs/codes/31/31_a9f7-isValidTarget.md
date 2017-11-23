@@ -1,12 +1,13 @@
 ﻿
 # $31:a9f7 isValidTarget
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 a : targetIndex
 + [out] bool zero : (1:valid, 0:invalid(dead|stone|jumping) )
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$18 = a;

@@ -1,8 +1,11 @@
 ﻿
 # $30:9e8a doFight
-<summary>たたかう</summary>
 
-## notes:
+
+>たたかう
+
+
+### notes:
 //dispId : 3
 //	指定された攻撃側と防御側のパラメータを元に打撃の計算処理を行う
 //	二刀流の場合はそれぞれ別個に計算し最後に足し合わせる
@@ -20,10 +23,12 @@
 //			暗闇: 回避率半減
 //			防御中: 防御力2倍(精度8bit，128以上なら255)
 //			後列: 防御成功回数1回増加
-## args:
+
+### args:
 +	[in] u16 $6e : attackerPtr
 +	[in] u16 $70 : targetPtr
-## local variables:
+
+### local variables:
 +	u8 $7c : hit count (1st)
 +	u8 $7d : hit count (2nd/temp)
 +	u8 $bb : total hit count
@@ -35,7 +40,8 @@
 +	u8 $7ce4[4] : target defend flag (1=defending)
 +	u8 $78ee : in-battle event queue count ?
 +	u8 $78da[] : in-battle event queue ?
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	cacheStatus();//$31:a2ba();

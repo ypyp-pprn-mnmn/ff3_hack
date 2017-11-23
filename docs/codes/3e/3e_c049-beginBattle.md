@@ -2,13 +2,15 @@
 # $3e:c049 beginBattle
 
 
-## args:
+### args:
 +	[in] $6a : encounter id
 +	[in] $6b : background view (00-step 01-sand 07-mountain)
 +	[in] $78 : world (00:"floating land")
-## notes:
+
+### notes:
 least value of S = $1c = $20 - 4
-## code:
+
+### code:
 ```js
 {
 	switchToBank3C();	//$c98a();

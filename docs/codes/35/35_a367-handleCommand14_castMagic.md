@@ -1,9 +1,9 @@
 ﻿
 # $35:a367 handleCommand14_castMagic
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = $1a;	//actionid

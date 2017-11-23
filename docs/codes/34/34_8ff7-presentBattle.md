@@ -1,22 +1,24 @@
 ﻿
 # $34:8ff7 presentBattle
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $7ec2 : set by commandHandler; usually commandId
 	- prizeMessage = 2
 	- toadCastsToad = 18	
 + [in] u8 $78d5 : commandChianId
 	- (0-5: 0=attack 1=action 2,4=prize)
 + [in] u8 $78da[] : message id queue?
-## local variables:
+
+### local variables:
 +	u16 $34:950d[<0x20] : dispCommandListPtrTable
 +	u16 $34:954d[?] : dispCommandHandlerTable
 +	u8 $7ad7[0x14] : string
 +	u16 $62 : dispCommandListPtr
 +	u8 $64 : currentDispCommandIndex
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = $7ec2;

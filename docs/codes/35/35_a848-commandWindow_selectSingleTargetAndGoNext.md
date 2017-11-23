@@ -1,9 +1,9 @@
 ﻿
 # $35:a848 commandWindow_selectSingleTargetAndGoNext
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$54 = a;

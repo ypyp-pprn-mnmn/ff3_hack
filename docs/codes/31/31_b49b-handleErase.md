@@ -1,9 +1,12 @@
 ﻿
 # $31:b49b handleErase
 
-<summary>specialHandler0B: イレース</summary>
 
-## (pseudo-)code:
+
+>specialHandler0B: イレース
+
+
+### (pseudo-)code:
 ```js
 {
 	calcMagicHitCountAndClearTargetIfMiss();	//$b8e7();

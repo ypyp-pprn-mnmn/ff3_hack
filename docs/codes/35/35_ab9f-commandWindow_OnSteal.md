@@ -1,9 +1,12 @@
 ﻿
 # $35:ab9f commandWindow_OnSteal	
 
-<summary>0E: ぬすむ</summary>
 
-## (pseudo-)code:
+
+>0E: ぬすむ
+
+
+### (pseudo-)code:
 ```js
 {
 	a = #0e;

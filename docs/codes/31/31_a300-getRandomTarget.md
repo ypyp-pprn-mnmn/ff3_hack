@@ -1,15 +1,16 @@
 ﻿
 # $31:a300 getRandomTarget
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] a : maximum index (inclusive)
 + [in] ptr $22 : pTargetSideBase (= $7575 or $7675)
 + [in] BattleChar* $6e : actor
 + [out] $69 : failed (01=failed)
 + [out] BattleChar* $70 : selected target
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$4a = a;

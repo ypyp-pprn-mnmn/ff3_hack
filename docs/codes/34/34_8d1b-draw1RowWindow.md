@@ -1,19 +1,22 @@
 ﻿
 # $34:8d1b draw1RowWindow
 
-<summary>
-vramの指定位置にcx文字がちょうど収まる大きさの1行ウインドウを描画する
-</summary>
 
-## args:
+vramの指定位置にcx文字がちょうど収まる大きさの1行ウインドウを描画する
+
+
+### args:
 + [in] u8 A : windowId
 + [in] u16 $7ac0 : stringPtr
-## local variables:
+
+### local variables:
 +	Draw1LineWinowParam $8e33.x
-## notes:
+
+### notes:
 描画の際描画前の画像(タイル番号)を指定の場所に保存する
 対象文字列の長さは特に考慮しない
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$18 = a;

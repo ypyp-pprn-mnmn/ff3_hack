@@ -1,14 +1,15 @@
 ﻿
 # $34:9177 dispCommand_07_showTargetName
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u16 $57 : playerPtr
 + [in] u8 $78d8 : targetCharIndex
 + [in] u8 $7ecd[] : enemy group id?
 + [in] u8 $7d6b[4] : enemy ids?
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = $78d8;

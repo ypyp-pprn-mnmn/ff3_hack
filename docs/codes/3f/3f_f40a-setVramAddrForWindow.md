@@ -2,10 +2,11 @@
 # $3f:f40a setVramAddrForWindow
 
 
-## args:
+### args:
 +	[in] u8 $3a : x offset
 +	[in] u8 $3b : y
-## code:
+
+### code:
 ```js
 {
 	a = $2002;

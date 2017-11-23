@@ -2,11 +2,13 @@
 # $3f:fb57 nmi_handler
 
 
-## args:
+### args:
 -	[in,out] u8 $05: nmi_lock (@see `$3f:fb80 waitNmi`)
-## notes:
+
+### notes:
 戦闘中のハンドラ
-## code:
+
+### code:
 ```js
 {
 	push(a);

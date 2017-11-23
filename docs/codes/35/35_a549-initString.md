@@ -1,11 +1,12 @@
 ﻿
 # $35:a549 initString
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 x : count
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	while (x >= 0) {

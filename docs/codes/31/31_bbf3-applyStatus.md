@@ -1,16 +1,17 @@
 ﻿
 # $31:bbf3 applyStatus
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $24 : status to apply
 + [in,out] u8 $e0 : applied status
 + [in,out] u8 $78ee : queue index?
 + [out] u8 $78d9 : status index?
 + [out] u8 $78da~ : battle event queue?
 + [out] u8 a : $70[0x2c]
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	x = a = (get$70_2C() & 7) << 1;	//bc25()

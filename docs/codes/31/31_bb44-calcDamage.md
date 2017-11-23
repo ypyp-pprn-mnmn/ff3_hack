@@ -1,11 +1,12 @@
 ﻿
 # $31:bb44 calcDamage
 
-<summary></summary>
 
-## notes:
+
+### notes:
 $1c,1d = ((($25*(1.0~1.5)*($27/2)+$28*$29)-$26)*$7c)/$2a
-## args:
+
+### args:
 +	[in] u16 $25,2b : attack power?
 +	[in] u8 $26 : defence power?
 +	[in] u8 $27 : attr multiplier
@@ -14,7 +15,8 @@ $1c,1d = ((($25*(1.0~1.5)*($27/2)+$28*$29)-$26)*$7c)/$2a
 +	[in] u8 $2a : damage divider (target count)
 +	[in] u8 $007c : damage multiplier (hit count)
 +	[out] u16 $1c : final damage (0-9999)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = $25,2b >>= 1;	//hibyte:2b

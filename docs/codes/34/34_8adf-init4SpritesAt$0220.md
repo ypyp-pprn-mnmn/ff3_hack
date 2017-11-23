@@ -1,10 +1,11 @@
 ﻿
 # $34:8adf init4SpritesAt$0220
 
-<summary></summary>
+
 
 //fill0x10byteAt$0220with0xF0
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 + [in] u8 $18 : sprite index

@@ -1,12 +1,13 @@
 ﻿
 # $35:b4d4 itemWindow_moveCursor
 
-<summary></summary>
 
-## args:
+
+### args:
 +	[in] u8 $62 : cursor row index (0-3)
 +	[in] u8 $63 : cursor col index (0-7)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = #a8;

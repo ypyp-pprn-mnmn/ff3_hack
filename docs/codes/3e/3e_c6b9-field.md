@@ -3,10 +3,12 @@
 
 
 //	$44 < 0 && $45 >= 0
-## args:
+
+### args:
 +	[in] u8 $42 : vehicle?
 +	[in] u8 $78 : world
-## code:
+
+### code:
 ```js
 {
 	if ( ($78 != #04)  //beq c6cb

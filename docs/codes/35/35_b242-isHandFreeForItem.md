@@ -1,15 +1,16 @@
 ﻿
 # $35:b242 isHandFreeForItem
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] itemid $3e : toRemove
 + [in] itemid $40 : toEquip
 + [in] itemid $7af5 : righthand
 + [in] itemid $7af9 : lefthand
 + [out] bool carry : 0:ok 1:bad combination
-## notes:
+
+### notes:
 外そうとしている手の逆に着けてるものと着けようとしている物の組み合わせを調べる
 		素手	片手	竪琴	弓	矢	盾	防具その他
 	(id)	00	01	46	4a	4f	58	(62-)
@@ -20,7 +21,8 @@
 	4a-4e 				x	o	x
 	4f-57 					x	x
 	58-64						o
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$1d = $40;	//着けようとしてるもの

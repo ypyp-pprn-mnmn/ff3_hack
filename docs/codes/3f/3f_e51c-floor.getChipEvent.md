@@ -2,12 +2,13 @@
 # $3f:e51c floor::getChipEvent
 
 
-## args:
+### args:
 +	[in] u8 $84,$85 : chip position(x,y)
 +	[ou] y : chipId
 +	[out] u8 $44 : chip attributes (80:event 40:encountable? 08:damage)
 +	[out] u8 $45 : [hhhhiiii] h : eventId(index of handler), i: eventParam(serial number)
-## code:
+
+### code:
 ```js
 {
 	y = $4c;

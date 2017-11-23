@@ -1,10 +1,11 @@
 ﻿
 # $34:92db dispCommand09_sub03
 
-<summary></summary>
+
 
 can be thought as exactly like %u%s
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	x = $78ef;

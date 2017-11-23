@@ -1,10 +1,11 @@
 ﻿
 # $34:9745 strToTileArray_OnChar02
 
-<summary></summary>
+
 
 //tab(space run)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	x++;

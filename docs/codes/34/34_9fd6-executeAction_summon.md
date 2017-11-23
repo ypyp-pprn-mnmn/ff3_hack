@@ -1,9 +1,9 @@
 ﻿
 # $34:9fd6 executeAction_summon
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$7e93 = 0;

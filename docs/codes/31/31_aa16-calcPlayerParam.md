@@ -1,9 +1,9 @@
 ﻿
 # $31:aa16 calcPlayerParam()
 
-<summary></summary>
 
-## notes:
+
+### notes:
 dispatchId : 5
 //	$52 = 
 //	アイテムをキャンセルした場合	: 該当キャラ
@@ -12,19 +12,22 @@ dispatchId : 5
 //		(もし4番目のキャラの場合4,有効なindexは00-03hなのでバグだが
 //		運よく各構造体のサイズが40hのため1番目のキャラのアドレスにループする)
 //	属性ボーナスが適用されないのはこの関数が正しくフラグを設定しないせい
-## args:
+
+### args:
 + [in] u16 $57 : playerBaseParam(=$6100)
 + [in] u16 $59 : playerEquips(=$6200)
 + [in] u16 $5b : playerBattleParam(=$7575)
 + [in] u8 $52 : playerIndex
-## local variabless:
+
+### local variabless:
 + u8 $24[5] : equips (head,body,wrest,right,left)
 + u8 $7433[5] : equips
 + u8 $2c[5] : baseParams (str,agi,vit,int,men)
 + u8 $7400[8][5] : equipParams ( head, body, accessory, right, left )
 + WeaponType $48[2] : {right, left}
 	(80:盾 08:竪琴 04:矢(弓装備時) 02:弓(矢装備時)  01:片手武器 00:それ以外)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	y = updateBaseOffset();	//$31:be90(); //$5f = a = $52 << 6

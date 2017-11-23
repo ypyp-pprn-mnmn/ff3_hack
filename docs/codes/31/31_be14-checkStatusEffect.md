@@ -1,15 +1,16 @@
 ﻿
 # $31:be14 checkStatusEffect
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $742c : physical evade
 + [in] u8 $742e : status resist
 + [in] u8 $7442 : hit
 + [in] u8 $7444 : status to apply
 + [in] u8 $7c : hit count
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$25 = $7444;	//=$6e[#1a]

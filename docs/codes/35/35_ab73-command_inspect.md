@@ -1,9 +1,12 @@
 ﻿
 # $35:ab73 command_inspect
 
-<summary>0c: しらべる</summary>
 
-## (pseudo-)code:
+
+>0c: しらべる
+
+
+### (pseudo-)code:
 ```js
 {
 	setEffectHandlerTo18();	//ab66

@@ -1,9 +1,9 @@
 ﻿
 # $34:8306 updatePlayerBaseParams
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	for ($52 = 0;$52 != 4;$52++) {

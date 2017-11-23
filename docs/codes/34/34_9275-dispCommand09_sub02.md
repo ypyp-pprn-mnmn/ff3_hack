@@ -1,9 +1,9 @@
 ﻿
 # $34:9275 dispCommand09_sub02
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = #c5;	//'?'

@@ -1,9 +1,9 @@
 ﻿
 # $34:9ba2 drawInfoWindow
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if ((a = $7ceb) != 0) {

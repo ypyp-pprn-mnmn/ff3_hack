@@ -2,7 +2,7 @@
 # $3d:a88c saveMenu::close
 
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	$8f74();

@@ -2,11 +2,12 @@
 # $35:bf7c battle.grow_player
 
 
-## args:
+### args:
 + [in] u8 A: lvupInfo
 + [in] u16 $57 : playerParamBasePtr
 + [in] u8 $5f : playerOffsetBase
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$19 = a;

@@ -2,11 +2,13 @@
 # $3f:ece5 field::draw_window_top
 
 
-## callers:
+### callers:
 +	`1E:AAA3:4C E5 EC  JMP field::draw_window_top` @ ?
-## notes:
+
+### notes:
 called when executed an exchange of position in item window from menu
-## code:
+
+### code:
 ```js
 {
 //1F:ECE5:A5 39     LDA window_top = #$02

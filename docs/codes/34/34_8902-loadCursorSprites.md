@@ -1,18 +1,20 @@
 ﻿
 # $34:8902 loadCursorSprites
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] $1a : destIndex (spriteIndex)
 + [out] $0220 : sprites[4]
-## local variables:
+
+### local variables:
 + 	$891e(file:6892e) [4][4] = {
 //		F0 5A 03 F0  F0 59 03 F0
 //		F0 5C 03 F0  F0 5B 03 F0
 //	} : cursor sprites
 //
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$4a,4b = #0220;

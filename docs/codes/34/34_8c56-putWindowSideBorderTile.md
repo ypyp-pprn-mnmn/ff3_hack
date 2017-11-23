@@ -1,11 +1,12 @@
 ﻿
 # $34:8c56 putWindowSideBorderTile
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in,out] u8 $1b : side (1:left 0:right)  (toggled on each call)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$1c = #fa;	//左枠線

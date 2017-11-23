@@ -1,9 +1,9 @@
 ﻿
 # $34:868a showDamage
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	call_2e_9d53(a = #1c);

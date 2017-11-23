@@ -1,9 +1,12 @@
 ﻿
 # $35:ab6e commandWindow_OnInspect 
 
-<summary>0c: しらべる</summary>
 
-## (pseudo-)code:
+
+>0c: しらべる
+
+
+### (pseudo-)code:
 ```js
 {
 	a = #0c;

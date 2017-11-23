@@ -1,17 +1,18 @@
 ﻿
 # $31:bcd2 damageHp
 
-<summary></summary>
 
-## args:
+
+### args:
 +	[in] u16 $78 : damage
 +	[in] u16 $24 : targetPtrToApply
 +	[out] u8 $7573 : deathCounter?
 +	[out] bool carry : isTargetAlive
-## notes:
+
+### notes:
 //$31:bced processKill
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 	if ($78,79 == 0) return;

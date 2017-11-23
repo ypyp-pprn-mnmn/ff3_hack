@@ -2,15 +2,17 @@
 # $3f:ebd1 field::unseek_text_to_line_beginning
 
 
-## args:
+### args:
 +	[in,out] ptr $1c: pointer to text to seek with
 +	[out] ptr $3e: pointer to the text, pointing the beginning of line
-## callers:
+
+### callers:
 +	`1F:EB81:20 D1 EB  JSR field.unseek_to_line_beginning`
-## notes:
+
+### notes:
 used to scroll back texts, in particular when a cursor moved up in item window.
 
-## code:
+### code:
 ```js
 {
 	var ptr = $1c - 1;

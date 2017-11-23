@@ -1,13 +1,18 @@
 ﻿
 # $35:a104 command_fight
 
-<summary>04: たたかう</summary>
 
-## args:
+
+>04: たたかう
+
+
+### args:
 + [out] u8 $7edf : protectionTargetBit
-## notes:
+
+### notes:
 //$35:a29e
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if (getActor2C() < 0) {	//$35:a42e()敵ならマイナス(bit7=1)

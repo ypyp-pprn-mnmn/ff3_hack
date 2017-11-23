@@ -1,9 +1,9 @@
 ﻿
 # $34:8a82 getInputAndUpdateCursor_OnLeft
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if ((a = $22) != 0) { //beq $8a95

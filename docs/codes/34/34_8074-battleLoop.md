@@ -2,7 +2,7 @@
 # $34:8074 battleLoop 
 
 
-## (pseudo-)code:
+### (pseudo-)code:
 ```js
 {
 //	least value of S = $18 = $20 - 8(call_doBattle,beginBattle,dungeon_mainLoop,dungeon_mainLoop)

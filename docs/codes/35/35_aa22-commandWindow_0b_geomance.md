@@ -1,9 +1,12 @@
 ﻿
 # $35:aa22 commandWindow_0b_geomance
 
-<summary>0b: ちけい</summary>
 
-## (pseudo-)code:
+
+>0b: ちけい
+
+
+### (pseudo-)code:
 ```js
 {
 	setYtoOffset2E();	//9b9b

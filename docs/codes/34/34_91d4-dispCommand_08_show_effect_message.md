@@ -1,11 +1,12 @@
 ﻿
 # $34:91d4 dispCommand_08_show_effect_message
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $78d9 : effect id? (#ff = display nothing)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = $78d9;

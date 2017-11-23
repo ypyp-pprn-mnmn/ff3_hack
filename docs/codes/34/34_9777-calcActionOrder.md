@@ -1,16 +1,21 @@
 ﻿
 # $34:9777 calcActionOrder
 
-<summary>行動順を決める</summary>
 
-## args:
+
+>行動順を決める
+
+
+### args:
 + [out] u8 $7acb[#c+1] : ordered indices (#ff:last)
 + 	u8 $7400[2][#c] : weight values
-## notes:
+
+### notes:
 まず乱数を12個生成しその大きい順にindexを並び替える
 次にプレイヤーキャラのagiを乱数により1~3倍し大きい順にindexを並び替える
 12個の乱数値のうちindex9-12のある場所をプレイヤーキャラの大きかった順に埋めていく
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	for (y = 0;y != #c;y++) {

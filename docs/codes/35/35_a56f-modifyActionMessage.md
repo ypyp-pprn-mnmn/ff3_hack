@@ -1,14 +1,15 @@
 ﻿
 # $35:a56f modifyActionMessage?
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $7e88 : (invokedActionId)
 + [in] u8 $7e9b : effect target bits
 + [in] u8 $54 : (fight/special = 0)
 + [in] u8 $35:a5fd : hasActionMessage (bit array,higher bit = lower id)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$24 = a = $7e88;

@@ -1,14 +1,18 @@
 ﻿
 # $34:8613 playEffect_00
 
-<summary>たたかう・うたう</summary>
 
-## args:
+
+>たたかう・うたう
+
+
+### args:
 + [in] u8 $7e6f : targetside (0 = player)
 + [in] u8 $7e9a : effectSideFlags
 + [in] u8 $7e9b : targetBit
 + [in] u8 $bb,bc : hitCount
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$7e96 = x = 0;

@@ -1,11 +1,14 @@
 ﻿
 # $31:b30c handleStatusMagic
 
-<summary>specialHandler04: バステ魔法</summary>
 
-## notes:
 
-## (pseudo-)code:
+>specialHandler04: バステ魔法
+
+
+### notes:
+
+### (pseudo-)code:
 ```js
 {
 	if (isTargetWeakToHoly() ) { //$bbe2(); bcc b31f

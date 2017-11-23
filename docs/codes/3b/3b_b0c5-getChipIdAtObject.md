@@ -2,13 +2,14 @@
 # $3b:b0c5 getChipIdAtObject
 
 
-## args:
+### args:
 +	[in] u8 $4c : default chip id? (warpparam.+03 = $0783)
 +	[in] u8 $84 : object.x?
 +	[in] u8 $85 : object.y?
 +	[in] mapdata $7400[0x20*0x20]
 +	[in] chipattr $0400[0x100]
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	y = $4c;

@@ -2,7 +2,7 @@
 # $3a:8f43 field::loadTileParams
 
 
-## args:
+### args:
 +	[out] u8 $0500[64],0580[64],0600[64],0680[64] : 
 	static tile indices (shared by all maps)`
 +	[out] u8 $0700[64] :
@@ -11,7 +11,8 @@
 	dynamic tile indices (indiviual to each maps,also updated dynamically)
 +	[out] u8 $0740[64] :
 +	[out] TileEvent $0400[128]
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	call_switch2ndBank(per8k:a = #00); //ff09

@@ -1,11 +1,12 @@
 ﻿
 # $34:850a playEffect_09 //charge (command0F)
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $7e93 : effectFlag (1=ためすぎ 0=通常)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	set52toActorIndexFromEffectBit();	//$8532

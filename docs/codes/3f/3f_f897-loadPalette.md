@@ -2,7 +2,7 @@
 # $3f:f897 loadPalette
 
 
-## code:
+### code:
 ```js
 {
 	setVramAddr(high:a = #3f, low:x = #0);	//f8e0

@@ -1,12 +1,13 @@
 ﻿
 # $31:a368 sumDamageForDisplay
 
-<summary></summary>
 
-## args:
+
+### args:
 +	[in,out] u16 $6a,6b : resultDamage
 +	[in] u16 $78 : damageToAdd
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	clc;

@@ -2,11 +2,12 @@
 # $3a:914b getPaletteEntries
 
 
-## args:
+### args:
 +	[in] x : dest offset
 +	[in] y : paletteId
 +	$00:b100[3][0x100] : colorIds
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	$03c0.x = $b100.y;

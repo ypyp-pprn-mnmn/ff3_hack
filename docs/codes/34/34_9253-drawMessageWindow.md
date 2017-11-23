@@ -1,9 +1,9 @@
 ﻿
 # $34:9253 drawMessageWindow
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	strToTileArray($18 = #11); //$34:966a();

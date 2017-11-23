@@ -1,9 +1,12 @@
 ﻿
 # $35:a71c commandWindow_OnForwardSelected
 
-<summary>02: ぜんしん</summary>
 
-## (pseudo-)code:
+
+>02: ぜんしん
+
+
+### (pseudo-)code:
 ```js
 {
 	setYtoOffsetOf(a = #f);	//9b88

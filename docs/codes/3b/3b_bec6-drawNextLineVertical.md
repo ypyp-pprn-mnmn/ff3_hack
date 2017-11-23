@@ -2,7 +2,7 @@
 # $3b:bec6 drawNextLineVertical
 
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	$82 = #f - $30;

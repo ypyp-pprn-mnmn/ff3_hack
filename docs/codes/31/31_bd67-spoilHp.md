@@ -1,15 +1,18 @@
 ﻿
 # $31:bd67 spoilHp
 
-<summary></summary>
 
-## args:
-### in:
+
+### args:
+
+#### in:
 +	u16 $78,79 : damage
-### out:
+
+#### out:
 +	u8 $26 : dead flag (00:both alive 01:target dead 81:actor dead)
 +	u8 $42 : undead flag
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$26 = 0;

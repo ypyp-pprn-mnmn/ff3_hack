@@ -2,10 +2,11 @@
 # $3b:b6bf floor::object::event::F0
 
 
-## args:
+### args:
 +	[out] ptr $94 : string ptr
 +	[out] u8 $76 : string Id
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	$76 = $0740.(x = $71);

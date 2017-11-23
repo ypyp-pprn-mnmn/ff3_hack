@@ -2,7 +2,7 @@
 # $36:899f switch2ndBankToSoundDataBank
 
 
-## args:
+### args:
 +	[in] u8 $7f43 : soundId
 ```js
 {

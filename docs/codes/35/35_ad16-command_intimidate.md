@@ -1,9 +1,12 @@
 ﻿
 # $35:ad16 command_intimidate
 
-<summary>11: おどかす</summary>
 
-## (pseudo-)code:
+
+>11: おどかす
+
+
+### (pseudo-)code:
 ```js
 {
 	$78d5 = 1;

@@ -2,12 +2,14 @@ ________________________________________________________________________________
 # $36:8003 soundDriverEntry
 <details>
 
-## args:
+### args:
 +	[in] u8 $7f43 : ?
 +	[in] u8 $7f49 : soundId ( =$ca | #80); #40 = playLast?
-## callers:
+
+### callers:
 +	$3f:faf2(irq worker)
-## code:
+
+### code:
 ```js
 {
 	if ($7f43 == #37) { //bne $8011
@@ -81,7 +83,7 @@ ________________________________________________________________________________
 # $36:80ab
 <details>
 
-## code:
+### code:
 ```js
 {
 	if ($7f42 >= 0) return;	//bmi 80b1
@@ -115,7 +117,7 @@ ________________________________________________________________________________
 # $36:81e6
 <details>
 
-## code
+### code
 ```js
 {
 	x = $d0;
@@ -141,7 +143,7 @@ ________________________________________________________________________________
 # $36:820b
 <details>
 
-## code
+### code
 ```js
 {
 	$d3,d4 = $7f51.x,$7f58.x
@@ -160,13 +162,13 @@ ________________________________________________________________________________
 # $36:8925 updateMusicStream
 <details>
 
-## args:
+### args:
 +	[in] u8 $7f40 : soundIdPlayingOn? | #80
 +	[in] u8 $7f41 : lastPlayedMusic?
 +	[in] u8 $7f42 : controlFlag 01:playNew 02:playLast 04:stopMusic 40:delayedStop 80:playOn
 +	[in] u8 $7f43 : soundIdToPlay?
 
-## code:
+### code:
 ```js
 {
 	switch2ndBankToSoundDataBank($7f43);	//$899f();
@@ -224,7 +226,7 @@ ________________________________________________________________________________
 # $36:899f switch2ndBankToSoundDataBank
 <details>
 
-## args:
+### args:
 +	[in] u8 $7f43 : soundId
 ```js
 {
@@ -268,7 +270,7 @@ ________________________________________________________________________________
 # $36:8ac0 muteChannels
 <details>
 
-## code
+### code
 ```js
 {
 	for (x = 3;x >= 0;x--) {

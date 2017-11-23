@@ -1,9 +1,12 @@
 ﻿
 # $35:ab0c command_detect
 
-<summary>0d: みやぶる</summary>
 
-## (pseudo-)code:
+
+>0d: みやぶる
+
+
+### (pseudo-)code:
 ```js
 {
 	setEffectHandlerTo18();	//ab66

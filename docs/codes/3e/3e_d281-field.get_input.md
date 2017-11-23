@@ -2,11 +2,13 @@
 # $3e:d281 field::get_input
 
 
-## args:
+### args:
 +	[out] u8 $20 : inputBits (bit7< A B select start up down left right >bit0)
-## notes:
+
+### notes:
 bitの配置が戦闘中のルーチンと逆
-## code:
+
+### code:
 ```js
 {
 	$4016 = 1; $4016 = 0;

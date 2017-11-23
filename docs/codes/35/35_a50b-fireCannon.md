@@ -1,9 +1,9 @@
 ﻿
 # $35:a50b fireCannon
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	call_2d_9e53(a = #f);	//$fa0e

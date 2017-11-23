@@ -1,12 +1,13 @@
 ﻿
 # $35:b1d8 loadTileArrayOfItemProps
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $34[2][4] : items
 + [in] u16 $43 : ptrToDestTileArray
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	initTileArrayStorage();	//$34:9754();

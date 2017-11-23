@@ -1,9 +1,12 @@
 ﻿
 # $35:ac65 commandWindow_OnChargeSelected
 
-<summary>0F: ためる</summary>
 
-## (pseudo-)code:
+
+>0F: ためる
+
+
+### (pseudo-)code:
 ```js
 {
 	setYtoOffset2E();	//$34:9b9b();

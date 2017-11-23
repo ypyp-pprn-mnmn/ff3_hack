@@ -2,7 +2,7 @@
 # $3f:ff0c switch_1st_page
 
 
-## code:
+### code:
 ```js
 {
 	push a;

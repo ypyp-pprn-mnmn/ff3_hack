@@ -2,16 +2,18 @@
 # $3f$eb69 field.scrollup_item_window
 
 
-## args:
+### args:
 +	[in,out] ptr $1c: pointer to text
 +	[in] u8 $93: bank number of the text
 +	[in] u8 $a3: ?
 +	[out] u8 $b4: ? (= 0xc0 if scrolled, or 0x80 if aborted)
 +	[in,out] u16 ($79f0,$79f2): ?
 +	[out] bool carry: 1: scroll aborted, 0: scroll successful
-## callers:
+
+### callers:
 +	`1E:9233:20 69 EB  JSR field.scrollup_item_window` @ ?
-## code:
+
+### code:
 ```js
 {
 /*

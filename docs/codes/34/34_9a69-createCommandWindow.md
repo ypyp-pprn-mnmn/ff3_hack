@@ -1,14 +1,15 @@
 ﻿
 # $34:9a69 createCommandWindow
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $5f : playerOffset
 + [in] u8 $78ba : begginingFlag (surpriseAttack/backAttack)
 + [out] u8 $7400[6] : commandIdList (index=cursor pos)
 //	
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = $78ba;

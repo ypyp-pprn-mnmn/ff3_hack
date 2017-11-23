@@ -1,9 +1,9 @@
 ﻿
 # $34:8f6f sort
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 a : end
 + [in] u8 $1a : begin
 + [in] ptr $1c : keys
@@ -13,9 +13,11 @@
 +	u8 $1a : firstLesserKeyIndexInFront
 +	u8 $1b : firstGreaterKeyIndexInBack
 +	u8 $20 : pivot (key of begin)
-## notes:
+
+### notes:
 sorts descending (greater key first)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$1b = a;	//len? or end?

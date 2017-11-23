@@ -1,9 +1,12 @@
 ﻿
 # $35:aa11 command_09_landing
 
-<summary>09: (着地)</summary>
 
-## (pseudo-)code:
+
+>09: (着地)
+
+
+### (pseudo-)code:
 ```js
 {
 	$6e[y = #2] &= #fe;

@@ -1,15 +1,17 @@
 ﻿
 # $34:986c getCommandInput
 
-<summary></summary>
 
-## notes:
+
+### notes:
 //[processPlayerCommandInput]
-## args:
+
+### args:
 + [in]	u8 $52 : playerIndex
 + [in]	u8 $7ed8 : battleMode? (20:invincible)
 + u16 $5b : playerPtr
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 //コマンドハンドラが1を返したらここまで

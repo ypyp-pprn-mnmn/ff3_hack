@@ -2,7 +2,7 @@
 # $3f:f549 getTreasure
 
 
-## args:
+### args:
 +	[in] u8 $0710[0x10] : treasureIds
 +	[in] u8 $45 : eventParam
 +	[in] u8 $49 : warpparam.+01 & 0x20
@@ -11,7 +11,8 @@
 	-	FF: chipId=e0-ef
 	-	chipId:D0-DF = staticChipId:7C(宝箱)
 +	[out] a : messageId
-## code:
+
+### code:
 ```js
 {
 	x = $45 & #0f;

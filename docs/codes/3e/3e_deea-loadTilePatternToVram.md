@@ -2,10 +2,11 @@
 # $3e:deea loadTilePatternToVram
 
 
-## args:
+### args:
 +	[in] x : tileCount
 +	[in] ptr $80 : pPattern
-## code:
+
+### code:
 ```js
 {
 	for (x;x != 0;x--) {

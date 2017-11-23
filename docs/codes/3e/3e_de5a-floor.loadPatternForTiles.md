@@ -2,12 +2,13 @@
 # $3e:de5a floor::loadPatternForTiles
 
 
-## args:
+### args:
 +	[in] u8 $48 : warpId
 +	[in] u8 $78 : world
 +	$00:8c00[2][0x100] : tileSetId (index = warpId)
 +	ptr $00:8e00[0x30][0x8] : pTilePattern (index = tileSetId)
-## code:
+
+### code:
 ```js
 {
 	call_switchFirst2Banks(per8k:a = 00); //ff03

@@ -2,7 +2,7 @@
 # $3e:da3a floor::loadObjectSprite
 
 
-## args:
+### args:
 +	[in] ptr $80 : building info (= $700e.x,$700f.x + 0|8 + $7105.x)
 	++	$700e.x :
 			objparam.+03 & 3 == 0 : #b43a
@@ -13,7 +13,8 @@
 			(objparam.+03 << 4) & #c0
 +	[in,out] u8 $26 : sprite offset
 +	[in] u8 $82 : tile index offset
-## code:
+
+### code:
 ```js
 {
 	y = 0;

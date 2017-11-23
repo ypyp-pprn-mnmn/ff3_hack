@@ -2,10 +2,11 @@
 # $3d:b270 floor::shop::getItemValue
 
 
-## args:
+### args:
 +	[in] u8 a : itemid??
 +	[out] u24 $61 : gil?
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	floor::getTreasureGil( treasureParam:x = a ); //f5d4

@@ -1,14 +1,15 @@
 ﻿
 # $35:b8fd isPlayerAllowedToUseItem
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $18 : itemid
 + [in] u16 $20 : ? itemDataBase = #$9400
 + [out] u8 $1c : allowed (1:ok 0:not)
 + [out] u8 $7478[8] : itemParams
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	loadTo7400FromBank30(id:$18, size:$1a = #8, dest:x = #78);	//$ba3a();

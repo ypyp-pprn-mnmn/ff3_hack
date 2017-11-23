@@ -1,18 +1,23 @@
 ﻿
 # $31:a732 decideEnemyAction
 
-<summary>dispid:2 [battleFunction02]</summary>
 
-## args:
+
+>dispid:2 [battleFunction02]
+
+
+### args:
 + [in,out] u8 $78b7 : special sequence
 + [in] u8 $7be2 : some  flag (checked to do barrier-change)
 + [in] u8 $7d6b : group to id map
 + [in] u8 $7da7 : index to group map
 + [in] u8 $7ed8 : battle mode ? (<0 = use specials sequencially)
-## local variables:
+
+### local variables:
 +	u8 $53 : confused flag
 +	ptr $24 : current enemy
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$69 = 0;

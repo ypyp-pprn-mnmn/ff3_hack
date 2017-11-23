@@ -1,9 +1,9 @@
 ﻿
 # $34:9715 getPrevLinePtr
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$1d = a = y;

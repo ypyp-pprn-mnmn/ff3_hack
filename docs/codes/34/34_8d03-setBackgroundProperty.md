@@ -1,9 +1,9 @@
 ﻿
 # $34:8d03 setBackgroundProperty
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	bit $2002;

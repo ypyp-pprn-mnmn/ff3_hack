@@ -2,10 +2,11 @@
 # $3f:f8e0 setVramAddr {
 
 
-## args:
+### args:
 +	[in] u8 a : addr(high byte)
 +	[in] u8 x : addr(low byte)
-## code:
+
+### code:
 ```js
 {
 	bit $2002;	//PPU status

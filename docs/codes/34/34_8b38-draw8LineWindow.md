@@ -1,14 +1,15 @@
 ﻿
 # $34:8b38 draw8LineWindow
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $18 : left (border incl)
 + [in] u8 $19 : right (border incl)
 + [in] u8 $1a : behavior[xxxxxxba] (a:put left-border,b:put right-border)
 + [in] u16 $7ac0 : ptr to charTileArray ()
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	push(a = $19);

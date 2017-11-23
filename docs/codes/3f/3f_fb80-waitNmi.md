@@ -2,7 +2,7 @@
 # $3f:fb80 waitNmi
 
 
-## code:
+### code:
 ```js
 {
 	$05++;

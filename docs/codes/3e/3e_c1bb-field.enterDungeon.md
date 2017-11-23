@@ -2,9 +2,10 @@
 # $3e:c1bb field::enterDungeon
 
 
-## args:
+### args:
 +	[in] u8 $78 : world (00:floating land)
-## code:
+
+### code:
 ```js
 {
 	$7f49 = #93;	//SE

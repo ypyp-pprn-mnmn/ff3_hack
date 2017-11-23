@@ -1,13 +1,17 @@
 ﻿
 # $34:966a strToTileArray
 
-<summary>文字列をキャラクタ番号の配列に変換する(濁点、半濁点、改行などを処理)</summary>
 
-## args:
+
+>文字列をキャラクタ番号の配列に変換する(濁点、半濁点、改行などを処理)
+
+
+### args:
 + [in] u8 $18 : cchLine
 + [in] u8 $4e : destCharPtr
 + [in] u8 $7ad7[] : string (zero terminated)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	offset$4e_16(a = $18);	//$35:a558();

@@ -2,11 +2,12 @@
 # $3f:f727 switch_to_character_logics_bank
 
 
-## notes:
+### notes:
 This logic's implementation is identical to `$3f:eb28 switch_to_floor_logics_bank`.
 It might not be a bug, as how the banks are arranged to place the logic is completely physical matter,
 hence it is irrevant to programmers' original intention. 
-## code:
+
+### code:
 ```js
 {
 	/*

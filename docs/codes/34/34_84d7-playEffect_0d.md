@@ -1,9 +1,9 @@
 ﻿
 # $34:84d7 playEffect_0d
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if ($7e9a >= 0) { //bmi 84e6

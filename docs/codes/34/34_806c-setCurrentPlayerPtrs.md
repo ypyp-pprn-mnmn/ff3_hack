@@ -1,9 +1,9 @@
 ﻿
 # $34:806c setCurrentPlayerPtrs
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$52 = a >> 6; //fd43

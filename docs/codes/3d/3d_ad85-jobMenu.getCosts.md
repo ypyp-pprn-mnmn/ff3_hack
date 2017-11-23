@@ -2,9 +2,10 @@
 # $3d:ad85 jobMenu::getCosts
 
 
-## args:
+### args:
 +	[out] u8 $7200[0x17] : costs
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	for ($8f = 0; $8f < #17; $8f++) {

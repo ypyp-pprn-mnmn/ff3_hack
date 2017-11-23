@@ -1,16 +1,18 @@
 ﻿
 # $31:a397 isRangedWeapon
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $741e : isDouble
 + [in] u8 $741f : countOfWeaponHand
 + [out] bool carry : ranged
-## notes:
+
+### notes:
 竪琴フラグがどちらかの手に立っているか
 装備武器のidが3f,40,41ならtrue
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$52 = a & 7

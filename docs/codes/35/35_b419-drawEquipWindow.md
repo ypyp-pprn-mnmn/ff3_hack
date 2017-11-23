@@ -1,12 +1,13 @@
 ﻿
 # $35:b419 drawEquipWindow
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u16 $59 : ptrToEquips ($6200)
 + [in] bool $7573 : eraseFlag 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	for (x = 7;x >= 0;x--) {

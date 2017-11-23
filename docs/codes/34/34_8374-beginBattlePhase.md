@@ -1,9 +1,9 @@
 ﻿
 # $34:8374 beginBattlePhase
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$74 = 0;

@@ -1,9 +1,12 @@
 ﻿
 # $35:a877 commandWindow_OnGuard
 
-<summary>05: ぼうぎょ</summary>
 
-## (pseudo-)code:
+
+>05: ぼうぎょ
+
+
+### (pseudo-)code:
 ```js
 {
 	setYtoOffset2e();	//9b9b

@@ -1,11 +1,14 @@
 ﻿
 # $31:b17c handleDamageMagic
 
-<summary>specialHandler00: ダメージ魔法</summary>
 
-## notes:
 
-## (pseudo-)code:
+>specialHandler00: ダメージ魔法
+
+
+### notes:
+
+### (pseudo-)code:
 ```js
 {
 	if ($70[y = #26] != 0) { //beq b185

@@ -1,11 +1,12 @@
 ﻿
 # $35:aac3 getCurrentTerrain
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $74c8 : = field $48; warpId
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = $7ce3;

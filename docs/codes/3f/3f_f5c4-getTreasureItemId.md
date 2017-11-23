@@ -2,11 +2,12 @@
 # $3f:f5c4 getTreasureItemId //getTreasureParam
 
 
-## args:
+### args:
 +	[in] x : treasureId
 +	[out] a : itemId
 +	$01:9c00 u8 param[0x200]
-## code:
+
+### code:
 ```js
 {
 	call_switch1stBank(per8k:a = #01); //ff06

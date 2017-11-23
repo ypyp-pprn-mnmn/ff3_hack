@@ -1,9 +1,9 @@
 ﻿
 # $35:a784 showArrowAndDecideCommand
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if (($78ba & #08) != 0) { //beq a7a4

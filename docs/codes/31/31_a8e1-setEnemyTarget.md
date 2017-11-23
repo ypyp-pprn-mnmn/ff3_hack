@@ -1,12 +1,13 @@
 ﻿
 # $31:a8e1 setEnemyTarget
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] x : index of target
 + [in] BattleChar* $24
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	x = a;

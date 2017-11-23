@@ -1,9 +1,12 @@
 ﻿
 # $31:b480 handleHaste
 
-<summary>specialHandler09: ヘイスト</summary>
 
-## (pseudo-)code:
+
+>specialHandler09: ヘイスト
+
+
+### (pseudo-)code:
 ```js
 {
 	clearEffectTargetIfMiss(); //b921

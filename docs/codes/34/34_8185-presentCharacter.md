@@ -1,9 +1,9 @@
 ﻿
 # $34:8185 presentCharacter
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	push a;	push (a = y); push (a = x);

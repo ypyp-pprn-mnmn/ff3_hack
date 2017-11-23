@@ -2,10 +2,11 @@
 # $3f$fb87 switch_16k_synchronized
 
 
-## args:
+### args:
 +	[in] u8 A : bankNo (per _16k_ unit)
 +	[out] u8 $ab : per16kBankNo
-## code:
+
+### code:
 ```js
 {
 	$ab = a;

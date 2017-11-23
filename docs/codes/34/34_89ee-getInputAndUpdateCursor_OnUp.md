@@ -1,9 +1,9 @@
 ﻿
 # $34:89ee getInputAndUpdateCursor_OnUp
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if ((a = $23) != 0) $8a0a

@@ -1,9 +1,9 @@
 ﻿
 # $35:af4c itemWindow_OnAButton
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in,out] u8 $1d : cursor.x
 + [in,out] u8 $52 : currentPlayerIndex
 + [in] u16 $59 : playerEquipsPtr
@@ -13,7 +13,8 @@
 + [in,out] u8 $68,69 : lastSelection {row,col}
 + [in] u8 $7af5[2][0x20+4] : items {id,count}
 + [in] u8 $7b3d[0x20+4] : isEquipmentForHand?
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	if (0 == (a = $67)) {

@@ -2,10 +2,11 @@
 # $3f$fb89 switch_16k_synchronized_nocache
 
 
-## args:
+### args:
 +	[in] u8 A : bankNo (per _16k_ unit)
 +	[out] u8 $ab : per16kBankNo
-## local variables:
+
+### local variables:
 +	u8 $a9 : page_lock (コマンド発行中のみincr)
 @see `$3f$fb87 switch_16k_synchronized`
 

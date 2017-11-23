@@ -1,13 +1,14 @@
 ﻿
 # $34:8411 playEffect
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $7e9a :	action side flag (80:actor enemy 40:target enemy)
 + [in] u8 $7ec2 : effectType; set by commandHandler, usually commandId
 + [in] u8 $7ec3 : (0 or 1?)
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = $7e9a;

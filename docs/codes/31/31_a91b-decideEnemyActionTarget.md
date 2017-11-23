@@ -1,9 +1,9 @@
 ﻿
 # $31:a91b decideEnemyActionTarget
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$46 = a;

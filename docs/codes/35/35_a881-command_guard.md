@@ -1,9 +1,12 @@
 ﻿
 # $35:a881 command_guard
 
-<summary>05: ぼうぎょ</summary>
 
-## (pseudo-)code:
+
+>05: ぼうぎょ
+
+
+### (pseudo-)code:
 ```js
 {
 	$78d7 = #3e;

@@ -2,7 +2,7 @@
 # $3f:f8cb updatePpuScrollNoWait
 
 
-## code:
+### code:
 ```js
 {
 	$2000 = $06;	//PPU ctrl1

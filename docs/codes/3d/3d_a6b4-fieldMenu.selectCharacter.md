@@ -2,11 +2,13 @@
 # $3d:a6b4 fieldMenu::selectCharacter
 
 
-## args:
-###	out:
+### args:
+
+####	out:
 +	bool carry : canceled
 +	u8 $7f : offset of selected character
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	//...

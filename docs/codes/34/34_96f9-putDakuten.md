@@ -1,9 +1,9 @@
 ﻿
 # $34:96f9 putDakuten	//Voiced consonant mark
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	push (a = y);

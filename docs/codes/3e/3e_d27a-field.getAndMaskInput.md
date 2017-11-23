@@ -2,7 +2,7 @@
 # $3e:d27a field::getAndMaskInput
 
 
-## code:
+### code:
 ```js
 {
 	field::getInput();	//d281

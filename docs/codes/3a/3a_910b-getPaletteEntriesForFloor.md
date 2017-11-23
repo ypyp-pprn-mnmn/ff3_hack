@@ -2,9 +2,10 @@
 # $3a:910b getPaletteEntriesForFloor
 
 
-## args:
+### args:
 +	[in] WarpParam $0780
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	getPaletteEntries(offset:x = 1, paletteId:y = $0785);

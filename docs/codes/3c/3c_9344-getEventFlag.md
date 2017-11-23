@@ -2,7 +2,7 @@
 # $3c:9344 getEventFlag?
 
 
-## (pseudo)code:
+### (pseudo)code:
 ```js
 {
 	push (a & #7f);

@@ -1,9 +1,9 @@
 ﻿
 # $34:8213 initBattleVars
 
-<summary></summary>
 
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	a = #ff;

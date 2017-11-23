@@ -1,9 +1,12 @@
 ﻿
 # $35:aba4 command_steal
 
-<summary>0E: ぬすむ</summary>
 
-## (pseudo-)code:
+
+>0E: ぬすむ
+
+
+### (pseudo-)code:
 ```js
 {
 	setEffectHandlerTo18();	//ab66

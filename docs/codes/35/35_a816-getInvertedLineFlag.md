@@ -1,12 +1,13 @@
 ﻿
 # $35:a816 getInvertedLineFlag
 
-<summary></summary>
 
-## args:
+
+### args:
 + [out] $18 : inverted line flag
 + [out] a : flag
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	push a;

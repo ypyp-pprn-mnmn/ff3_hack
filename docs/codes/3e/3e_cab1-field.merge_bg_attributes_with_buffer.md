@@ -2,7 +2,7 @@
 # $3e:cab1 field::merge_bg_attributes_with_buffer
 
 
-## args:
+### args:
 +	[in] u8 $2d : ??? (1 if caller is: $3e:c98f field::update_window_attr_buff)
 +	[in] u8 $30 : tile.y (in 16x16) (== $3b >> 1)
 +	[in] u8 $31 : tile.x (in 16x16) (== $38 >> 1)
@@ -12,7 +12,8 @@
 +	[out] u8 $07d0[0x10] : vram addr high
 +	[out] u8 $07e0[0x10] : vram addr low
 +	[out] u8 $07f0[0x10] : attr value
-## code:
+
+### code:
 ```js
 {
 	push ($31);

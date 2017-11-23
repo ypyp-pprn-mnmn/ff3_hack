@@ -2,12 +2,13 @@
 # $3d:adf2 getJobParameter
 
 
-## args:
+### args:
 +	[in] u8 $7f : offset of character
 +	[in] u8 $8f : jobId
 +	[out] JobBaseParam $7c00 : target job's
 +	[out] JobBaseParam $7c08 : current job's
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	call_switch1stBank(a = #39);	//ff06

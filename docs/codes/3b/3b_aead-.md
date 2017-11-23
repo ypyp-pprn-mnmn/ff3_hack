@@ -2,9 +2,10 @@
 # $3b:aead
 
 
-## args:
+### args:
 +	[in] ptr $80 : $700e.x,$700f.x + 0|8
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	$80,81 += $7105.x;

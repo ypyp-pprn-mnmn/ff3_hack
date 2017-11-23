@@ -1,16 +1,17 @@
 ﻿
 # $34:8c84 putWindowTopBottomBorderTile
 
-<summary></summary>
 
-## args:
+
+### args:
 + [in] u8 $1a : behavior [xxxxxxba] (a:put left-corner b:put right-corner)
 + [in,out] u8 $1e : vertical-side (1:top 0:bottom) ; toggled on each call
 + [in,out] u16 $2a : vramAddr
 + [in,out] u16 $2c : vramAddrForExtra
 + [in] u8 $78b8 : width (without border)
 + [in] u8 $78b9 : extraWidth
-## (pseudo-)code:
+
+### (pseudo-)code:
 ```js
 {
 	$1d = #f7;	//border-topleft 

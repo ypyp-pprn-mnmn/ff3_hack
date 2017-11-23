@@ -2,11 +2,12 @@
 # $3c:937e floor::searchSpaceForItem
 
 
-## args:
+### args:
 +	[in] u8 $80 : itemid
 +	[out] bool carry : item full
 +	[out] u8 x : index
-## (pseudo)code:
+
+### (pseudo)code:
 ```js
 {
 	for (x = 0;x < 0x20;x++) {

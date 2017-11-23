@@ -2,7 +2,7 @@
 # $3e:ccbb field::getMapDataPointers
 
 
-## args:
+### args:
 +	[out] ptr $82 : pDest
 +	[out] ptr $80 : pSrc
 +	[in] u8 $2c : y?
@@ -10,7 +10,8 @@
 +	u16 $06:9000[0x400] : linear offset from $06:9000( 0d000 )
 	cc42: 90 90 92 94 96
 +	u8 $78 : world (浮遊大陸//浮上前/浮上後/海中)
-## code:
+
+### code:
 ```js
 {
 	call_switch1stBank(per8k:a = #06);	//ff06
