@@ -26,7 +26,7 @@ function split_docs($outdir, $target) {
 			if (-not (Test-Path "${outdir}/${bank}")) {
 				mkdir -Path "${outdir}/${bank}"
 			}
-			$content = $_ -replace "</?details>","";
+			$content = $_ -replace "</?(details|summary)>","";
 			try {
 				if (-not (Test-Path $out)) {
 					$content | Out-File -FilePath $out -Encoding utf8;
