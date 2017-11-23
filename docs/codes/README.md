@@ -17,10 +17,10 @@ docs/codes
     ここにあるドキュメントは基本的に作業中のものです。
 
 -   ## _pandoc
-    [pandoc] (http://pandoc.org/MANUAL.html#general-options)関連のファイルです。
+    [pandoc]("http://pandoc.org/MANUAL.html#general-options")関連のファイルです。
     ルーチンごとに分けたドキュメントから包括的なドキュメントを生成するために利用しています。
 
-    テンプレートは[sidebar-toc-template] (https://github.com/Mushiyo/pandoc-toc-sidebar)をカスタマイズして使っています。
+    テンプレートは[sidebar-toc-template]("https://github.com/Mushiyo/pandoc-toc-sidebar")をカスタマイズして使っています。
 
 ## ドキュメント管理のワークフロー
 とりあえずこれで運用してみる
