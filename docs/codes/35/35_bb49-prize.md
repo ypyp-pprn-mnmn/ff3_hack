@@ -37,6 +37,7 @@
 +	$3f:fda6 : loadTo7400Ex
 
 ### notes:
+
 	struct BattlePrizeInfo { //@ram7400
 		u8  ? $10:9c80		//00
 		u16 exp; 		//01 from $10:9d80

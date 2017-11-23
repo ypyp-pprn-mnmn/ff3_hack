@@ -9,8 +9,8 @@
 + [out] bool carry : ranged
 
 ### notes:
-竪琴フラグがどちらかの手に立っているか
-装備武器のidが3f,40,41ならtrue
+>竪琴フラグがどちらかの手に立っているか
+>装備武器のidが3f,40,41ならtrue
 
 ### (pseudo-)code:
 ```js

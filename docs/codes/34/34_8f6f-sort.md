@@ -15,7 +15,7 @@
 +	u8 $20 : pivot (key of begin)
 
 ### notes:
-sorts descending (greater key first)
+>sorts descending (greater key first)
 
 ### (pseudo-)code:
 ```js
