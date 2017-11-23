@@ -4,7 +4,7 @@
 
 
 ### notes:
-//2F = target indicator bits
+offset 2F: target indicator bits
 
 ### code:
 ```js

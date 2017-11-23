@@ -3,7 +3,7 @@
 
 
 
-//fill_7200to73ff_ff
+### args:
 + [out] u16 $4e,$7ac0 : #7200
 
 ### (pseudo-)code:

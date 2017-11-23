@@ -10,7 +10,7 @@
 + [out] u8 $7edf : protectionTargetBit
 
 ### notes:
-//$35:a29e
+`$35:a29e`
 
 ### (pseudo-)code:
 ```js

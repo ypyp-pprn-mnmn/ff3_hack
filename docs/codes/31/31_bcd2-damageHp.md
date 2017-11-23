@@ -10,7 +10,7 @@
 +	[out] bool carry : isTargetAlive
 
 ### notes:
-//$31:bced processKill
+`$31:bced processKill`
 
 ### (pseudo-)code:
 ```js

@@ -6,8 +6,9 @@
 ### args:
 + [in] u16 $5b : playerPtr
 + [in] u16 $5d : enemyPtr?
-//uses:
-//	u8 $5f : offset
+
+### local variables:
++	u8 $5f : offset
 
 ### (pseudo-)code:
 ```js

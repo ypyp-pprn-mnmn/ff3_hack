@@ -3,7 +3,8 @@
 
 
 
-//tab(space run)
+### notes:
+char 02 = tab(space run)
 
 ### (pseudo-)code:
 ```js

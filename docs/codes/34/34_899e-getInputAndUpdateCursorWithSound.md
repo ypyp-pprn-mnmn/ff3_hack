@@ -2,7 +2,8 @@
 # $34:899e getInputAndUpdateCursorWithSound
 
 
-各種入力ウインドウにおいて、パッド入力を取得し対応する動作を行う(十字キーなら音ともに移動・ABなら音を鳴らして戻る)
+
+>各種入力ウインドウにおいて、パッド入力を取得し対応する動作を行う(十字キーなら音ともに移動・ABなら音を鳴らして戻る)
 
 
 ### args:
@@ -13,7 +14,7 @@
 + [out] u8 $50[$1a] : inputBits (only a,b,left,right;otherwise unchanged)
 
 ### notes:
-//[commandWindow_dispatchInput]
+[commandWindow_dispatchInput]
 
 ### (pseudo-)code:
 ```js

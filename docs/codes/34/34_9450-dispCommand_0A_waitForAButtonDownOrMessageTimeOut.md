@@ -5,7 +5,6 @@
 
 ### args:
 + [in] u8 $6010 : ?
-//
 
 ### (pseudo-)code:
 ```js
