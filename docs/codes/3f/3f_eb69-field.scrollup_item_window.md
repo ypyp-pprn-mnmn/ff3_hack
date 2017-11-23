@@ -1,5 +1,5 @@
 ﻿
-# $3f$eb69 field.scrollup_item_window
+# $3f:eb69 field.scrollup_item_window
 
 
 ### args:

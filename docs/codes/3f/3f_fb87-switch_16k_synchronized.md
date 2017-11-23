@@ -1,5 +1,5 @@
 ﻿
-# $3f$fb87 switch_16k_synchronized
+# $3f:fb87 switch_16k_synchronized
 
 
 ### args:
