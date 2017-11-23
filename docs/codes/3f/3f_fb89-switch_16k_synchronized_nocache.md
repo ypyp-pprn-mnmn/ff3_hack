@@ -1,5 +1,5 @@
 ﻿
-# $3f$fb89 switch_16k_synchronized_nocache
+# $3f:fb89 switch_16k_synchronized_nocache
 
 
 ### args:
