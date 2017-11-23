@@ -1,5 +1,5 @@
 ﻿# $xx:xxxx ns.func
-<summary></summary>
+> short description of the function
 
 ### args:
 +	
