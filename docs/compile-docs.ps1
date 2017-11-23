@@ -1,5 +1,7 @@
-## do-pandoc.ps
-## 	front-end wrapper to build stand-alone document with [pandoc] (http://pandoc.org/MANUAL.html#general-options).
+## compile-docs.ps
+## 	front-end wrapper to build stand-alone document
+##	with [pandoc] (http://pandoc.org/MANUAL.html#general-options)
+##	powered by [sidebar-toc-template] (https://github.com/Mushiyo/pandoc-toc-sidebar).
 ##```powershell
 #[CmdletBinding()]
 
@@ -11,23 +13,26 @@ Param(
 $docs_root = "."
 $sources = "${docs_root}/codes";
 $draft_dir_name = "_drafts";
-$pandoc_template_dir_name = "_pandoc-toc-sidebar";
-$pandoc_template_dir = "${docs_root}/codes/${pandoc_template_dir_name}";
+$pandoc_data_dir = "${docs_root}/codes/_pandoc";
+$pandoc_template_dir_name = "pandoc-toc-sidebar";
+$pandoc_template_dir = "${pandoc_data_dir}/${pandoc_template_dir_name}";
+#
+$pandoc_metadata = "${pandoc_data_dir}/metadata.yaml";
 $pandoc_template = "${pandoc_template_dir}/toc-sidebar.html";
 $pandoc_nav = "${pandoc_template_dir}/nav";
 
-$outpath = "poc.html";
-$title = "ff3 プチDS化パッチ";
+$outpath = "code-reference.html";
 ## parse command line arguments
 $pandoc_args = @(
 	#"pandoc",
-	"--from gfm",
+	#"--from gfm",	#to enable metadata.yaml, source format should be pandoc flavor markdown (default)
 	"--to html5",
 	"--toc",
 	"--toc-depth 1",
 	"--standalone",
 	"--self-contained",
-	"--metadata=title:'${title}'",
+	#"--metadata=title:'${title}'",
+	#"--data-dir ${pandoc_data_dir}"
 	"--template ${pandoc_template}",
 	"--include-before ${pandoc_nav}",
 	"--output ${outpath}"
@@ -38,18 +43,22 @@ $OutputEncoding = [Text.UTF8Encoding]::UTF8;
 ## do it.
 try {
 	write-host -ForegroundColor Gray $command;
+	$metadata = Get-Content -Encoding UTF8 $pandoc_metadata;
 	$contents = 
 		Get-ChildItem $sources -Filter "*.md" -Recurse |
 			Where-Object {
-				-not ($_.FullName -match "\\_");
+				-not ($_.FullName -match "(\\(_|\.))|README.md");
 			} |
 			ForEach-Object {
-				#Write-Host $_.FullName;
+				Write-Host $_.FullName;
 				$_ | Get-Content -Encoding UTF8;
 				#$_.Parent.FullName;
 				#$_.FullName
+				"".PadRight(80, "_");
 			}
+	$contents = $metadata + $contents;
 	#chcp 65001;	#utf8
+	Write-Host -ForegroundColor Gray "pandoc $(${pandoc_args} -join ' ')"
 	Invoke-Expression -Command "`$contents | pandoc $(${pandoc_args} -join ' ')"
 } catch {
 	write-host -ForegroundColor DarkRed $error[0].Exception.Message

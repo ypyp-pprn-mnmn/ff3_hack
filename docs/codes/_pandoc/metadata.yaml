@@ -1,0 +1,12 @@
+
+---
+title:  'FF3@FC Original Code Documentation'
+author:
+- ypyp-pprn-mnmn (aka "301")
+#- Author Two
+tags: [6502, asm, ff3, fc]
+abstract: |
+  パッチの作成のために解析したコードのドキュメンテーションです。
+
+#  It consists of two paragraphs.
+...
