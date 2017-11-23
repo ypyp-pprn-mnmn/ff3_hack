@@ -1,30 +1,56 @@
-/* encoding: utf-8 */
--------------------------------------------------------------------------------------------------
-$2e:9d50
+# $2e:9d50 
+
+### code:
+```js
 {
 	return $9d5f();
 }
+```
 
-$2e:9d53 presentSceneThunk
-//	[in] u8 A : $af4e_param
-//	[in] u8 $52 : charIndex ($af4e_param)
+________________________
+# $2e:9d53 presentSceneThunk
+
+### args:
++	[in] u8 A : $af4e_param
++	[in] u8 $52 : charIndex ($af4e_param)
+
+### code:
+```js
 {
 	jmp $9d59
 }
+```
 
-$2e:9d56
+________________________
+# $2e:9d56 
+
+### code:
+```js
 {
 	return initBattle();	//$9e8e();
 }
+```
 
-$2e:9d59:
+________________________
+# $2e:9d59 
+
+### code:
+```js
+{
 	x = $52;
 	return presentScene();	//jmp $2f:af4e();
 }
+```
 
-$2e:9d5f
-//	[in] encounter_params $7d67
-//	[in] enemy_graphics_params[4] $7d73
+________________________
+# $2e:9d5f 
+
+### args:
++	[in] encounter_params $7d67
++	[in] enemy_graphics_params[4] $7d73
+
+### code:
+```js
 {
 	$9e64();
 	$9d88();
@@ -47,10 +73,17 @@ $9d84:
 	return;
 $9d88:
 }
+```
 
-$2e:9e8e initBattle
-//	[in] u8 $7ced : encounterId
-//	[in,out] u8 $7ed8 : 
+________________________
+# $2e:9e8e initBattle
+
+### args:
++	[in] u8 $7ced : encounterId
++	[in,out] u8 $7ed8 : 
+
+### code:
+```js
 {
 	if ((a = $7ed8) != 0) { //beq 9e95
 		a = 1;
@@ -115,27 +148,40 @@ $9f60:
 	}
 	return;
 }
+```
 
-$2f:9faa ()
+________________________
+# $2f:9faa ()
+
+### code:
+```js
 {
 
 }
+```
 
-//[in]
-//  $7ced,7cee : encounter_id?
-//  $2e:8000 : encounter_params { enemy_party_id, spawn_param_id }[512]
-//      index: encounter_id
-//  $2e:8400 : enemy_party_table { palette_ [2], enemy_id[4] }[256]
-//      index: enemy_party_id
-//  $2e:8a00 : spawn_param_table { {u4 min,max}[4] }[64]
-//      index: spawn_param_id
-//[out]
-//  encounter_params            $7d67 : loaded_encounter_params
-//  enemy_party_table           $7d69 : loaded_enemy_party
-//  u8[4]                       $7d6f : number of the enemy spawned
-//  enemy_graphics_params[4]    $7d73 : loaded_enemy_graphics_params
-//
-$2f:a02a loadEnemyGroups
+________________________
+# $2f:a02a loadEnemyGroups
+
+### args:
+
+#### in
++	$7ced,7cee : encounter_id?
++	$2e:8000 : encounter_params { enemy_party_id, spawn_param_id }[512]
+	-	index: encounter_id
++  $2e:8400 : enemy_party_table { palette_ [2], enemy_id[4] }[256]
+	-	index: enemy_party_id
++  $2e:8a00 : spawn_param_table { {u4 min,max}[4] }[64]
+	-	index: spawn_param_id
+
+#### out
++	encounter_params            $7d67 : loaded_encounter_params
++	enemy_party_table           $7d69 : loaded_enemy_party
++	u8[4]                       $7d6f : number of the enemy spawned
++	enemy_graphics_params[4]    $7d73 : loaded_enemy_graphics_params
+
+### code:
+```js
 {
 	$7e,7f = $7ced,$7cee
 	$7e,7f <<= 1;
@@ -175,8 +221,13 @@ $a0b7:
 	return;
 $a0c8:
 }
+```
 
-$2f:a0c8 randomizeEnemyCount
+________________________
+# $2f:a0c8 randomizeEnemyCount
+
+### code:
+```js
 {
 	$7e = a;
 	push (a = x);
@@ -189,18 +240,25 @@ $2f:a0c8 randomizeEnemyCount
 	return;
 $a0e7:
 }
+```
 
-$2f:a0e7 load_enemy_graphics_params
-//	[in]  a : enemyId
-//	[in] u8 $2e:8b00(5cb00) : enemy_to_graphics_id ([aaabbbbb])
-//  [in] u8 $2e:8f00(5cf00) : some flag for enemy (1-bit per record, lower id stored in higher bit)
-//  [out] u8 $7e : graphics_id (= $2e:8b00[ enemy_id ])
-//  [out] u8 $7f : ($2e:8b00[ enemy_id ] & 0x1f) + offset
-//      where offset:
-//          $7e&#e0 == #20 then #10
-//          $7e&#e0 == #60 then #18
-//          otherwise #00
-//  [out] u8 $80 : msb contains bit of $2e:8f00[ enemy_id >> 3 ] >> (enemy_id & 7)
+________________________
+# $2f:a0e7 load_enemy_graphics_params
+
+### args:
++	[in]  a : enemyId
++	[in] u8 $2e:8b00(5cb00) : enemy_to_graphics_id ([aaabbbbb])
++	[in] u8 $2e:8f00(5cf00) : some flag for enemy (1-bit per record, lower id stored in higher bit)
++	[out] u8 $7e : graphics_id (= $2e:8b00[ enemy_id ])
++	[out] u8 $7f : ($2e:8b00[ enemy_id ] & 0x1f) + offset
+	-	where offset:
+		-	$7e&#e0 == #20 then #10
+		-	$7e&#e0 == #60 then #18
+		-	otherwise #00
++	[out] u8 $80 : msb contains bit of $2e:8f00[ enemy_id >> 3 ] >> (enemy_id & 7)
+
+### code:
+```js
 {
 	$7e = a;
 	push (a = x);
@@ -249,8 +307,14 @@ $a145:
 	x = pop a;
 	return;
 }
+```
 
-$2f:a14a render_enemy_graphics() {
+________________________
+# $2f:a14a render_enemy_graphics() 
+
+### code:
+```js
+{
     load_enemy_patterns();  //a37f;   // load patterns
     a362;
     a247;
@@ -259,10 +323,17 @@ $2f:a14a render_enemy_graphics() {
     a1f9;
     return a1f4;
 }
+```
 
-$2f:a1b9 loadSprites?
-//	[in] u8 a : loadParamIndex
-//	[in] ptr $7e : 
+________________________
+# $2f:a1b9 loadSprites?
+
+### args:
++	[in] u8 a : loadParamIndex
++	[in] ptr $7e : 
+
+### code:
+```js
 {
 	mul_8x8reg(a, x = 6);	//$f8ea
 	$18,19 = #a15f + (a,x);	//$a15f: LoadToVramParams
@@ -275,12 +346,19 @@ $2f:a1b9 loadSprites?
 	y = pop a;
 	return;
 }
+```
 
-$2f:a31f createIndexToGroupMap
-//  [in]
-//      u8      $7d7b : enemy_graphics_layout_id
-//      u8[4]   $7d6f : number_of_enemies_spawned
-//      [4]     $a4da : { u8[4] placement }
+________________________
+# $2f:a31f createIndexToGroupMap
+
+### args:
++  [in]
++	u8      $7d7b : enemy_graphics_layout_id
++   u8[4]   $7d6f : number_of_enemies_spawned
++	[4]     $a4da : { u8[4] placement }
+
+### code:
+```js
 {
 	a = #ff;
 	for (x = 8;x != 0;x--) {
@@ -302,21 +380,32 @@ $a346:
 $a35c:
 	}
 }
+```
 
-$2f:a37f load_enemy_patterns() {
+________________________
+# $2f:a37f load_enemy_patterns() 
+
+### code:
+```js
+{
     for ( x = 0; x != 4; x++ ) {
         $86 = x;
         load_enemy_pattern(x);  //$a38c;
     }
 }
+```
 
-//
-//[preserved] x
-//[in]
-//      u8      x       : group_index
-//      u8[4]   $7d6b   : enemy_id
-//      u8      $7d7b   : enemy_graphics_layout_id
-$2f:a38c load_enemy_pattern()
+________________________
+# $2f:a38c load_enemy_pattern()
+
+### args:
++	[preserved] x
++	[in] u8      x       : group_index
++	[in] u8[4]   $7d6b   : enemy_id
++	[in] u8      $7d7b   : enemy_graphics_layout_id
+
+### code:
+```js
 {
     if ( $7d6b[group_index] == #ff ) {
         return;
@@ -329,10 +418,16 @@ $2f:a38c load_enemy_pattern()
     }
     
 }
+```
 
-$2f:a3ab load_enemy_graphics_for_layout9()
-//  [in]
-//      u8 $7d68    : spawn_param_id
+________________________
+# $2f:a3ab load_enemy_graphics_for_layout9()
+
+### args:
++  [in] u8 $7d68    : spawn_param_id
+
+### code:
+```js
 {
     a = $7d68 << 1;
     if ( a >= 0 ) { //bmi a3b7
@@ -341,26 +436,43 @@ $2f:a3ab load_enemy_graphics_for_layout9()
     }
 $a3b7:
 }
+```
 
-$2f:a3b8 get_enemy_graphics_address_for_layout9()
-//[in]
-//  x               : group_index * 2
-//  u8 $86          : group_index
-//  u16[?] $9068    : offsets (in per 8x8pixel tiles)
-//[out]
-//  u16 $7e : source_addr
-//  u16 $80 : dest_vram_addr (= 0x0700)
-//  u8  $82 : length (= 0x90 (= 0x0c * 0x0c))
-//  u8  $84 : source_bank
-//  u8  y   : enemy_graphics_id * 2
+________________________
+# $2f:a3b8 get_enemy_graphics_address_for_layout9()
+
+### args:
+
+#### in
++	x               : group_index * 2
++	u8 $86          : group_index
++	u16[?] $9068    : offsets (in per 8x8pixel tiles)
+
+#### out
++  u16 $7e : source_addr
++  u16 $80 : dest_vram_addr (= 0x0700)
++  u8  $82 : length (= 0x90 (= 0x0c * 0x0c))
++  u8  $84 : source_bank
++  u8  y   : enemy_graphics_id * 2
+
+### code:
+```js
 {
 }
+```
 
-$2f:a40b ()
-//[in]
-//  u8 $78c3        : encounter_mode
-//  u16[4] $9068    : ?
-//  u8 y            : enemy_graphics_id * 2
+________________________
+# $2f:a40b ()
+
+### args:
+
+#### in
++	u8 $78c3        : encounter_mode
++	u16[4] $9068    : ?
++	u8 y            : enemy_graphics_id * 2
+
+### code:
+```js
 {
     if ( ($9069[y] & 0x10) == 0 ) {
         return copy_to_vram_with_encounter_mode(); //$3f:f942();
@@ -372,28 +484,39 @@ $2f:a40b ()
     
     pop $78c3;
 }
+```
 
-//(a,b) := lower bytes first.
-//[in]
-//  x:          group_index * 2
-//  u8 $86:     group_index
-//  enemy_graphics_params[4] $7d73: loaded_graphics_params
-//      graphics_id must be < 0xc0
-//[const]
-//  u16[4] $a4a4: group_index_to_dest_vram_addrs
-//  u16[4] $a4ac: group_index_to_dest_vram_addrs (for enemies which have the flag's bit5-7 set)
-//  [6] $a4b4: enemy_graphics_size_params { u16 offset, u8 bank, u8 size_index }
-//  [7] $a4cc: enemy_graphics_sizes { u8 width, u8 height } // metrics in tiles
-//[out]
-//  u16 $7e : source_addr
-//  u16 $80 : dest_vram_addr
-//  u8 $82 : size_flags
-//  u8 $84 : source_bank
-//  u8 $86: next_group_index
-//  u8 $88 : enemy_graphics_id
-//  u16 $8a : source_offset (from $a4b4)
-//  
-$2f:a42e get_enemy_pattern_address_and_copy_pattern_to_vram()
+________________________
+# $2f:a42e get_enemy_pattern_address_and_copy_pattern_to_vram()
+
+### notes:
+(a,b) := lower bytes first.
+
+### args:
+
+#### in:
++	x:          group_index * 2
++	u8 $86:     group_index
++	enemy_graphics_params[4] $7d73: loaded_graphics_params
+	+	graphics_id must be < 0xc0
+
+### out
++  u16 $7e : source_addr
++  u16 $80 : dest_vram_addr
++  u8 $82 : size_flags
++  u8 $84 : source_bank
++  u8 $86: next_group_index
++  u8 $88 : enemy_graphics_id
++  u16 $8a : source_offset (from $a4b4)
+
+### static references:
++  u16[4] $a4a4: group_index_to_dest_vram_addrs
++  u16[4] $a4ac: group_index_to_dest_vram_addrs (for enemies which have the flag's bit5-7 set)
++  [6] $a4b4: enemy_graphics_size_params { u16 offset, u8 bank, u8 size_index }
++  [7] $a4cc: enemy_graphics_sizes { u8 width, u8 height } // metrics in tiles
+
+### code:
+```js
 {
     $88 = a = $7d73.x;
     y = (a & #e0) >> 3; // logically >> 5 << 2
@@ -420,8 +543,13 @@ $a497:
     ($80,81) = ($a4a4,a4a5).x;
     return copy_to_vram_with_encounter_mode(); //$3f:f942();
 }
+```
 
-$2f:a6b1
+________________________
+# $2f:a6b1 
+
+### code:
+```js
 {
 	$a857();
 	$a697();
@@ -440,8 +568,13 @@ $a6dd:
 	}
 $a6ef:
 }
+```
 
-$2f:a738 flashEnemy
+________________________
+# $2f:a738 flashEnemy
+
+### code:
+```js
 {
 	$a697();
 	$a6b1();	//?
@@ -462,10 +595,19 @@ $a743:
 	return;
 $a75a:
 }
+```
 
-$2f:a78d //bug
-//	green dragon = 7d7b = 09 (bug:0F)
-//	[in] ptr $18 : ptr to some 3bytes data from $a5e6[$7d7b]
+________________________
+# $2f:a78d 
+
+>bug
+
+### args:
++	green dragon = 7d7b = 09 (bug:0F)
++	[in] ptr $18 : ptr to some 3bytes data from $a5e6[$7d7b]
+
+### code:
+```js
 {
 	$8c = $18[y = 0];
 	$8e = $18[++y];
@@ -494,8 +636,13 @@ $a7d1:
 	return;
 $a7d4:
 }
+```
 
-$2f:a7d4
+________________________
+# $2f:a7d4 
+
+### code:
+```js
 {
 	push (a = x);
 	push (a = y);
@@ -516,8 +663,13 @@ $a806:
 	y = pop a;
 	x = pop a;
 }
+```
 
-$2f:a8ea loadBlowEffectParams
+________________________
+# $2f:a8ea loadBlowEffectParams
+
+### code:
+```js
 {
 	mul_8x8reg(a = $7e1f, x = 3);	//$f8ea
 	$7e,7f = #9098 + (a,x)
@@ -545,10 +697,17 @@ $2f:a8ea loadBlowEffectParams
 	$7e18 = $7e16;
 	return;
 }
+```
 
-$2f:a9cf loadActorSprite?
-//	[in] u8 x : actorIndex? 
-//	[in] u8 $7d8b : ?
+________________________
+# $2f:a9cf loadActorSprite?
+
+### args:
++	[in] u8 x : actorIndex? 
++	[in] u8 $7d8b : ?
+
+### code:
+```js
 {
 	push (a = x);
 	if ($7d8b.x != #ff) {	//beq a9ea
@@ -561,10 +720,17 @@ $2f:a9cf loadActorSprite?
 	x = pop a
 	return;
 }
+```
 
-$2f:ab3d
-//	[in] u8 $7e : index
-//	[out] ptr $1c : dataAddr
+________________________
+# $2f:ab3d 
+
+### args:
++	[in] u8 $7e : index
++	[out] ptr $1c : dataAddr
+
+### code:
+```js
 {
 	push (a = x);
 	if ($7e != #18) { //beq ab54
@@ -589,8 +755,14 @@ $ab7d:
 	return;
 $ab80:
 }
+```
 
-$2f:ad78 {
+________________________
+# $2f:ad78 
+
+### code:
+```js
+{
     $7cf3++;
     $09 = $0a = $0b = 0x1e;
     updatePpuDmaScrollSyncNmiEx();  //3f:f8b0;
@@ -602,9 +774,15 @@ $ad8e:
         $adc0();
     }
 }
+```
 $ad9a:
 
-$2f:aedf dispatchEffectFunction {
+________________________
+# $2f:aedf dispatchEffectFunction 
+
+### code:
+```js
+{
 	a = 0;
 $aee1:	return call_32_8000();	//$3f:f854
 $aee4:	a = 1; goto $aee1;
@@ -625,59 +803,76 @@ $af30:	a = #14;goto $aee1;
 //...
 $af44: a = #19; goto $aee1;
 }
+```
 
-//[in]
-//  u8 $78c3    : encounter_mode
-//[out]
-//  bool zero   : 1: back-attacked
-$2f:af48 is_backattacked_2f()    //is$78c3_#88
+________________________
+# $2f:af48 is_backattacked_2f()    
+
+>is$78c3_#88
+
+### args:
++	[in] u8 $78c3    : encounter_mode
++	[out] bool zero   : 1: back-attacked
+
+### code:
+```js
 {
 	return ($78c3 == #88);
 }
+```
 
-$2f:af4e presentScene	//invoke$af74
-//	[in] u8 A : commandId (00-25h)
-//		01 : さがる(char:$52)
-//		02 : 指示するキャラが前に出る(char:$52)
-//		03 : playEffect_05 (back(03) )
-//		04 : playEffect_04 (forward(02) )
-//		07 : playEffect_0e(死亡・味方)
-//		08 : $b38b 行動終了したキャラを元の位置まで戻す
-//		09 : $b38e 行動中のキャラを示す(一定のラインまで前に出る)
-//		0a : playEffect_0e(死亡・敵 $7e=死亡bit(各bitが敵1体に相当) )
-//		0b : playEffect_0e
-//			(蘇生? bitが立っている敵の枠に敵がいたならグラ復活
-//			 生存かつ非表示の敵がいたとき $7e=生存bit で呼ばれる)
-//		0C : 敵生成(召還・分裂・増殖) playEffect_0F (disp_0C)
-//		0d : playEffect_0c (escape(06/07) : $7e9a(sideflag) < 0)
-//		0e :
-//		
-//		0F : prize($35:bb49)
-//		10 : 対象選択
-//		12 : 打撃モーション&エフェクト(char:$52)
-//		13 : presentCharacter($34:8185)
-//		14 : playEffect_00 (fight/sing 被弾モーション?)
-//		15 : playEffect_06 (defend(05) )
-//		16 : playEffect_09 (charge(0f) 通常)
-//		17 : playEffect_09 (charge(0f) ためすぎ)
-//		18 : playEffect_07 (jump(08) )
-//		19 : playEffect_08 (landing(09) )
-//		1a : playEffect_0a (intimidate(11) )
-//		1b : playEffect_0b (cheer(12) )
-//		1c : playEffect_0F (disp_0C) ダメージ表示?
-//		1d : playEffect_01 (command13/ cast/item)
-//		1f : playEffect_00 行動する敵が点滅
-//		20 : playEffect_00 (fight/sing 敵の打撃エフェクト?)
-//		21 : playEffect_0d (escape(06/07) : $7e9a(effectside) >= 0)
-//		22 : playEffect_01 (magicparam+06 == #07)
-//		23 : playEffect_01 (magicparam+06 == #0d)
-//		24 : playEffect_0c (command15)
-//	[in] u8 X : actorIndex
-//	[out] u8 $7d7d : 0
-//uses:
-//	u16 $2f:af74 : functionTable
-//notes:
-//	各種ゲームシーン表示系のルーチンから呼ばれる
+________________________
+# $2f:af4e presentScene	
+
+>invoke$af74
+
+### args:
++	[in] u8 A : commandId (00-25h)
+	-	01 : さがる(char:$52)
+	-	02 : 指示するキャラが前に出る(char:$52)
+	-	03 : playEffect_05 (back(03) )
+	-	04 : playEffect_04 (forward(02) )
+	-	07 : playEffect_0e(死亡・味方)
+	-	08 : $b38b 行動終了したキャラを元の位置まで戻す
+	-	09 : $b38e 行動中のキャラを示す(一定のラインまで前に出る)
+	-	0a : playEffect_0e(死亡・敵 $7e=死亡bit(各bitが敵1体に相当) )
+	-	0b : playEffect_0e
+		-	(蘇生? bitが立っている敵の枠に敵がいたならグラ復活
+		-	 生存かつ非表示の敵がいたとき $7e=生存bit で呼ばれる)
+	-	0C : 敵生成(召還・分裂・増殖) playEffect_0F (disp_0C)
+	-	0d : playEffect_0c (escape(06/07) : $7e9a(sideflag) < 0)
+	-	0e :
+	-	0F : prize($35:bb49)
+	-	10 : 対象選択
+	-	12 : 打撃モーション&エフェクト(char:$52)
+	-	13 : presentCharacter($34:8185)
+	-	14 : playEffect_00 (fight/sing 被弾モーション?)
+	-	15 : playEffect_06 (defend(05) )
+	-	16 : playEffect_09 (charge(0f) 通常)
+	-	17 : playEffect_09 (charge(0f) ためすぎ)
+	-	18 : playEffect_07 (jump(08) )
+	-	19 : playEffect_08 (landing(09) )
+	-	1a : playEffect_0a (intimidate(11) )
+	-	1b : playEffect_0b (cheer(12) )
+	-	1c : playEffect_0F (disp_0C) ダメージ表示?
+	-	1d : playEffect_01 (command13/ cast/item)
+	-	1f : playEffect_00 行動する敵が点滅
+	-	20 : playEffect_00 (fight/sing 敵の打撃エフェクト?)
+	-	21 : playEffect_0d (escape(06/07) : $7e9a(effectside) >= 0)
+	-	22 : playEffect_01 (magicparam+06 == #07)
+	-	23 : playEffect_01 (magicparam+06 == #0d)
+	-	24 : playEffect_0c (command15)
++	[in] u8 X : actorIndex
++	[out] u8 $7d7d : 0
+
+### local variables:
++	u16 $2f:af74 : functionTable
+
+### notes:
+各種ゲームシーン表示系のルーチンから呼ばれる
+
+### code:
+```js
 {
 	$93 = a;
 	push (a = x);
@@ -692,14 +887,29 @@ $af69:
 	y = a = pop;
 	x = a = pop;
 }
-$2f:af71 callPtrOn$0093 { 
+```
+________________________
+# $2f:af71 callPtrOn$0093 
+
+### code:
+```js
+{ 
 	(*$93)();	//jmp ($0093);
 }
+```
 
-$2f:af74 $af4e_funcTable;
+________________________
+# $2f:af74 $af4e_funcTable;
 
 
-$2f:b024 presenetScene_1f // [flashEnemy]
+
+________________________
+# $2f:b024 presenetScene_1f 
+
+> [flashEnemy]
+
+### code:
+```js
 {
 	if ($7e9d != #09) { //beq b049
 		for ($b6 = 0;$b6 != #08;$b6++) {
@@ -718,16 +928,38 @@ $b03e:
 $b049:
 	return;
 }
+```
 
-$2f:$b04a {
+________________________
+# $2f:b04a 
+
+### code:
+```js
+{
 	return $a738();
 }
-$2f:$b04d {
+```
+________________________
+# $2f:b04d 
+
+### code:
+```js
+{
 	return $a6b1();
 }
+```
 
-$2f:b15e presentScene_1d	//[magic effect]
-//	[in] u8 $7e9a :	side flag
+________________________
+# $2f:b15e presentScene_1d	
+
+>[magic effect]
+
+
+### args:
++	[in] u8 $7e9a :	side flag
+
+### code:
+```js
 {
 	a = $7e9a;
 	if (a < 0) {
@@ -743,19 +975,41 @@ $b175:
 	$2f:a1b3();
 	$cc = 0;
 }
+```
 
-$2f:b1ac presentScene_1c	//[damage]
+________________________
+# $2f:b1ac presentScene_1c	
+
+>[damage]
+
+
+### code:
+```js
 {
 	dispatchEffectCommand(#0c);	//jmp $af10
 }
+```
 
-$2f:b1d8 presentScene_16	//[charge]
+________________________
+# $2f:b1d8 presentScene_16	
+
+>[charge]
+
+### code:
+```js
 {
 	$7e19 = 0;
 	return $b1e5();
 }
+```
 
-$2f:b1e0 presentScene_17	//[charge,fail]
+________________________
+# $2f:b1e0 presentScene_17	
+
+>[charge,fail]
+
+### code:
+```js
 {
 	$7e19 = 1;
 $b1e5:
@@ -765,13 +1019,27 @@ $b1e5:
 	dispatchEffectFunction_07();	// $aefc();
 	return $b25b();
 }
+```
 
-$2f:b24c presentScene_13	//caller: $34:8185
+________________________
+# $2f:b24c presentScene_13	
+
+>caller: $34:8185
+
+### code:
+```js
 {
 	dispatchEffectCommand(#03);	//jmp $aeec
 }
+```
 
-$2f:b24f presentScene_12	//fight
+________________________
+# $2f:b24f presentScene_12	
+
+>fight
+
+### code:
+```js
 {
 	moveCharacterForward();	//$b38e()	//まえにでる
 	$a9cf();	
@@ -780,26 +1048,50 @@ $2f:b24f presentScene_12	//fight
 	x = $95;
 	return $b38b();	//さがる
 }
+```
 
-$2f:b25b
+________________________
+# $2f:b25b 
+
+### code:
+```js
 {
 	x = $95;
 	return $b38b();	//さがる
 }
+```
 
-$2f:b2fa presentScene_10	//selectTarget
+________________________
+# $2f:b2fa presentScene_10	
+
+>selectTarget
+
+### code:
+```js
 {
 	$a5 = x;
 	$7e0f.x = 0;
 	return dispatchEffectFunction_01();	//$aee4()
 }
+```
 
-$2f:b348 presentScene_0C	//敵生成
+________________________
+# $2f:b348 presentScene_0C	
+
+>敵生成
+
+### code:
+```js
 {
 	return $b93a(x = $7e);
 }
+```
 
-$2f:b352 moveCharacterBack
+________________________
+# $2f:b352 moveCharacterBack
+
+### code:
+```js
 {
 	$7d7d = #1;
 	y = x << 1;
@@ -821,15 +1113,27 @@ $b37f:
 	return $b45c();
 $b388:
 }
+```
 
-$2f:b38b call_b3c7
+________________________
+# $2f:b38b call_b3c7
+
+### code:
+```js
 {
 	return $b3c7();
 }
+```
 
-$2f:b38e moveCharacterForward
-//	[in] x : actorIndex
-//	[in,out] u8 $7d7f[] : x?
+________________________
+# $2f:b38e moveCharacterForward
+
+### args:
++	[in] x : actorIndex
++	[in,out] u8 $7d7f[] : x?
+
+### code:
+```js
 {
 	$7d7d = 0;
 	y = x << 1;
@@ -856,14 +1160,24 @@ $b3bb:
 	return $b45c();
 $b3c7:
 }
+```
 
-$2f:b3c7
+________________________
+# $2f:b3c7 
+
+### code:
+```js
 {
 	moveCharacterBack();	//$b352();
 	return $b58f();
 }
+```
 
-$2f:b45c
+________________________
+# $2f:b45c 
+
+### code:
+```js
 {
 	push (a = x);
 	$7cf4 = 0;
@@ -871,8 +1185,13 @@ $2f:b45c
 	x = pop a;
 	return;
 }
+```
 
-$2f:b58f
+________________________
+# $2f:b58f 
+
+### code:
+```js
 {
 	push (a = x);
 	y = a;
@@ -890,8 +1209,13 @@ $2f:b58f
 	return;
 $b5b8:
 }
+```
 
-$2f:b5f2
+________________________
+# $2f:b5f2 
+
+### code:
+```js
 {
 	if ( (($9a & 1) == 0) //bne b606
 		&& ($99 & 8) != 0) //beq b606
@@ -902,8 +1226,13 @@ $b5fe:
 $b606:
 	return;
 }
+```
 
-$2f:b607
+________________________
+# $2f:b607 
+
+### code:
+```js
 {
 	if (($99 & #80) == 0) b61d; //beq b61d
 	if (($99 & #05) == 0) b618;
@@ -934,9 +1263,16 @@ $b64d:
 	return;
 
 }
+```
 
-$2f:b909 getEnemyCounts
-//	[out] u8 $80 : total enemy count
+________________________
+# $2f:b909 getEnemyCounts
+
+### args:
++	[out] u8 $80 : total enemy count
+
+### code:
+```js
 {
 	$80 = y = 0;
 	for (y;y != 4;y++) {
@@ -950,9 +1286,16 @@ $b921:
 	return;
 $b927:
 }
+```
 
-$2f:b927 countEnemyInSameGroup
-//	[in] u8 $7e : groupId
+________________________
+# $2f:b927 countEnemyInSameGroup
+
+### args:
++	[in] u8 $7e : groupId
+
+### code:
+```js
 {
 	for (x = 0;x != 8;x++) {
 		$7f = x;
@@ -963,8 +1306,13 @@ $2f:b927 countEnemyInSameGroup
 	return;
 $b93a:
 }
+```
 
-$2f:b93a presentEnemyGeneration
+________________________
+# $2f:b93a presentEnemyGeneration
+
+### code:
+```js
 {
 	$7e = x;
 	for (x = 0;x != 6;x++) {
@@ -977,8 +1325,13 @@ $b94b:
 	$b96f();
 	return getEnemyCounts();	//$b909();
 }
+```
 
-$2f:b96f
+________________________
+# $2f:b96f 
+
+### code:
+```js
 {
 	$a362();
 	$a247();
@@ -997,8 +1350,13 @@ $2f:b96f
 	waitNmi();	//$fb80();
 	return updatePpuScrollNoWait();	//$f8cb();
 }
+```
 
-$2f:ba4a
+________________________
+# $2f:ba4a 
+
+### code:
+```js
 {
 	$80 = a; $81 = x;
 	$7e,7f = #7900;
@@ -1024,8 +1382,13 @@ $ba7c:
 	return;
 $ba8e:
 }
+```
 
-$2f:ba8e put16hTilesFrom$7e
+________________________
+# $2f:ba8e put16hTilesFrom$7e
+
+### code:
+```js
 {
 	setVramAddr(high:a = $81, low:x = $80);	//f8e0
 	for (y = 0;y != #16;y++) {
@@ -1034,44 +1397,86 @@ $ba97:
 	}
 	return;
 }
-//=========================================================================================
-$32:8000 invokeEffectFunction
-//	[in] u8 A : effectId (00-19h)
-//	01:$9a1c selectTarget
-//	03:$9f11 presentCharacter? ($34:8185)+
-//	04:$a0c0 味方打撃
-//	0d:$bafd 魔法
-//	14:$be9a 移動
+```
+
+________________________
+# $32:8000 invokeEffectFunction
+
+### args:
++	[in] u8 A : effectId (00-19h)
+	- 01:$9a1c selectTarget
+	- 03:$9f11 presentCharacter? ($34:8185)+
+	- 04:$a0c0 味方打撃
+	- 0d:$bafd 魔法
+	- 14:$be9a 移動
+
+### code:
+```js
 {
 	y = a << 1;
 	$96,97 = $800f.y,$8010.y;
 	return (*$0096)();
 }
-$32:800f(6401f) invokeEffectFunction_handlers = {
+```
+________________________
+# $32:800f (6401f) invokeEffectFunction_handlers = 
+
+### code:
+```js
+{
 	11 91  1C 9A  D8 90  11 9F  C0 A0  B8 A8  F7 AB  27 AB
 	B8 AA  15 AA  88 A9  2B A9  2B AD  FD BA  EF 8C  A4 8C
 	B0 AF  89 BC  89 BE  74 BE  9A BE  FB 8E  99 A8  B7 89
 }
+```
 
-$32:89b7 effect_17
+________________________
+# $32:89b7 effect_17
 
-$32:8ae6 incrementEffectFrame	//incrementB6
+
+________________________
+# $32:8ae6 incrementEffectFrame	
+
+>incrementB6
+
+### code:
+```js
 {
 	return a = ++$b6;
 }
+```
 
-$32:8ca4 effect_0F
-$32:8cef effect_0E
-$32:8efb effect_15
+________________________
+# $32:8ca4 effect_0F
 
-$32:90d2 is_backattacked_32() //is$78c3_88
-//	[in] u8 $78c3
-//	[out] bool zero
+________________________
+# $32:8cef effect_0E
+
+________________________
+# $32:8efb effect_15
+
+
+________________________
+# $32:90d2 is_backattacked_32() 
+
+>is$78c3_88
+
+### args:
++	[in] u8 $78c3
++	[out] bool zero
+
+### code:
+```js
 {
 	return (#88 == $78c3);
 }
+```
 
-$32:90d8 effect_02
+________________________
+# $32:90d8 effect_02
+
+### code:
+```js
 {
 	fill_A0hBytes_f0_at$0200();	//$a42b();
 	$c8 = #a0;
@@ -1080,18 +1485,33 @@ $90e1:
 		$90ea();
 	}
 }
+```
 
-$32:90ea
+________________________
+# $32:90ea 
+
+### code:
+```js
 {
 }
+```
 
-$32:97ac
+________________________
+# $32:97ac 
+
+### code:
+```js
 {
 	$7d07 = a;
 	return call_waitNmi();	//f8b0
 }
+```
 
-$32:97b2
+________________________
+# $32:97b2 
+
+### code:
+```js
 {
 	push a;
 	a = $bb.(x = $cd);
@@ -1112,14 +1532,24 @@ $97cf:
 	$7f = $97e0.y;
 	(*$7e)();
 }
+```
 
-$32:98d1 showBlowSprite_02
+________________________
+# $32:98d1 showBlowSprite_02
+
+### code:
+```js
 {
 	getRandomizedBlowSpritePosition();	//$98e8
 	y = #12
 }
+```
 
-$32:98d6
+________________________
+# $32:98d6 
+
+### code:
+```js
 {
 	if ($cd != 0) {
 		y++;
@@ -1127,20 +1557,35 @@ $32:98d6
 	$8e = y;
 	return $9357();
 }
+```
 
-$32:98e0 showBlowSprite_01	//type 0(fist) ,2(bell,book,rod,cane) ,4(harp),9(claw)
+________________________
+# $32:98e0 showBlowSprite_01	
+
+>type 0(fist) ,2(bell,book,rod,cane) ,4(harp),9(claw)
+
+### code:
+```js
 {
 	getRandomizedBlowSpritePosition();	//$98e8();
 	y = #10;
 	return $98d6();	//jmp
 }
+```
 
-$32:98e8 getRandomizedBlowSpritePosition
-//	[in] u8 $b6 : frameCount
-//note:
-//	偶数フレームしか座標を更新しないので
-//	最初に表示するフレームが奇数フレーム(全体フレーム/2=奇数)だと
-//	一発目のみその前に殴った敵の位置に表示される
+________________________
+# $32:98e8 getRandomizedBlowSpritePosition
+
+### args:
++	[in] u8 $b6 : frameCount
+
+### note:
+偶数フレームしか座標を更新しないので
+最初に表示するフレームが奇数フレーム(全体フレーム/2=奇数)だと
+一発目のみその前に殴った敵の位置に表示される
+
+### code:
+```js
 {
 	if (($b6 & 1) == 0) { //b6=framecount bne 9912
 $98ee:
@@ -1160,18 +1605,39 @@ $9912:
 	return;
 $991f:
 }
+```
 
-$32:9a1c effectCommand_01	//[selectTarget]
-//	[in] u8 $b3 : targetingFlag (01:allowMulti 02:preferPlayerSide)
+________________________
+# $32:9a1c effectCommand_01	
+
+>[selectTarget]
+
+### args:
++	[in] u8 $b3 : targetingFlag (01:allowMulti 02:preferPlayerSide)
+
+### code:
+```js
 {
 }
+```
 
-$32:9f11 effectCommand_03	//[loadCharacter]
-//caller:presentScene_13 <= $34:8185
-//	[in,out] u8 $b7 : tileIndexBase
-//	[in] u8 $7db7 : spriteProps
-//uses:
-//	u8 $9f0d = { 49 4d 51 55 }
+________________________
+# $32:9f11 effectCommand_03	
+
+>[loadCharacter]
+
+### args:
++	[in,out] u8 $b7 : tileIndexBase
++	[in] u8 $7db7 : spriteProps
+
+### callers
++	presentScene_13 <= $34:8185
+
+### static references:
++	u8 $9f0d = { 49 4d 51 55 }
+
+### code:
+```js
 {
 	a = $ac;
 	if (a == 0) return;	//bne $9f16
@@ -1201,10 +1667,17 @@ $9f6b:
 	$b7++;
 	return;
 }
+```
 
-$32:9f71 putCharacterSprites
-//	[in] u8 $b7 : ?
-//	[in] u8 $7df7[2][8] : spritePos {x,y}
+________________________
+# $32:9f71 putCharacterSprites
+
+### args:
++	[in] u8 $b7 : ?
++	[in] u8 $7df7[2][8] : spritePos {x,y}
+
+### code:
+```js
 {
 	a = #f0;
 	for (x = 0;x != #20;x++) {
@@ -1239,13 +1712,20 @@ $9fde:
 $9fe3:
 	return;
 }
+```
 
-$32:9fe4 putStatusSprites
-//	[in] u8 $9e : offsetY?
-//	[in] u8 $9f : tileIndex? (#ff == nothing)
-//	[in] u8 $a0 : destOffset
-//	[in] u16 $a1 : ptr to spriteProps {y,?,attr,x}
-//	[in] u8 $a3 : index of $7db7
+________________________
+# $32:9fe4 putStatusSprites
+
+### args:
++	[in] u8 $9e : offsetY?
++	[in] u8 $9f : tileIndex? (#ff == nothing)
++	[in] u8 $a0 : destOffset
++	[in] u16 $a1 : ptr to spriteProps {y,?,attr,x}
++	[in] u8 $a3 : index of $7db7
+
+### code:
+```js
 {
 
 	for (x = $a0,y = 0;y != 8;) {
@@ -1279,21 +1759,38 @@ $a02f:
 	}
 $a048:	return;
 }
+```
 
-$33:a059 beginSwingFrame()	//clearB6
+________________________
+# $33:a059 beginSwingFrame()	
+
+>clearB6
+
+### code:
+```js
 {
 	$b6 = 0;
 	return;
 $a05e:
 }
+```
 
-$33:a05e fill_A0hBytes_f0_at$0200andSet$c8_0
+________________________
+# $33:a05e fill_A0hBytes_f0_at$0200andSet$c8_0
+
+### code:
+```js
 {
 	$c8 = 0;
 	return fill_A0hBytes_f0_at$0200();	//$33:a42b()
 }
+```
 
-$33:a065
+________________________
+# $33:a065 
+
+### code:
+```js
 {
 	push a;
 	a = x;
@@ -1301,7 +1798,12 @@ $33:a065
 	pop a;
 	return $a3dd();	//jmp
 }
-$33:a06e
+```
+________________________
+# $33:a06e 
+
+### code:
+```js
 {
 	push a;
 	a = x;
@@ -1309,18 +1811,35 @@ $33:a06e
 	pop a;
 	return $a3eb();
 }
+```
 
-$33:a077 blowEffect_swingCountBoundForWeaponTypes = {
+________________________
+# $33:a077 blowEffect_swingCountBoundForWeaponTypes = 
+
+### code:
+```js
+{
 	07 05 05 07 05 07 07 07 07
 }
+```
 
-$33:a080 blowEffect_dispatchWeaponFunction_handlers = {
+________________________
+# $33:a080 blowEffect_dispatchWeaponFunction_handlers = 
+
+### code:
+```js
+{
 	F2 A2  65 A3  6F A3  51 A2
 	A5 A1  2C A1  25 A1  EF A1
 	F2 A2  FB A2
 }
+```
 
-$33:a094 blowEffect_limitHitCountAndDispatchWeaponFunction
+________________________
+# $33:a094 blowEffect_limitHitCountAndDispatchWeaponFunction
+
+### code:
+```js
 {
 	$7e = a;
 	$b7 = 0;
@@ -1336,12 +1855,21 @@ $a0af:
 	$7f = $a081.y
 	(*$7e)();
 }
+```
 
-$33:a0c0 effect_playerBlow //[effectFunction_04]
-//	[in] u8 $bb : swingCountRight?
-//	[in] u8 $bc : swingCountLeft?
-//	[in] u8 $7e1f : righthandWeaponKind
-//	[in] u8 $7e20 : lefthandWeaponKind
+________________________
+# $33:a0c0 effect_playerBlow 
+
+>[effectFunction_04]
+
+### args:
++	[in] u8 $bb : swingCountRight?
++	[in] u8 $bc : swingCountLeft?
++	[in] u8 $7e1f : righthandWeaponKind
++	[in] u8 $7e20 : lefthandWeaponKind
+
+### code:
+```js
 {
 	$a6c3();
 	if (carry) { //bcc a0cb
@@ -1382,8 +1910,15 @@ $a105:
 	a = $7e20;
 	return blowEffect_limitHitCountAndDispatch();	//$a094();
 }
+```
 
-$33:a1a5 blowEffect_type04	//[harp]
+________________________
+# $33:a1a5 blowEffect_type04	
+
+>[harp]
+
+### code:
+```js
 {
 	$a11c();
 	x = $95;
@@ -1419,8 +1954,15 @@ $a1da:
 	return $ac3a;	//jmp
 $a1ef:
 }
+```
 
-$33:a1ef blowEffect_type07	//[shuriken]
+________________________
+# $33:a1ef blowEffect_type07	
+
+>[shuriken]
+
+### code:
+```js
 {
 	$a11c();
 	x = $95;
@@ -1466,14 +2008,28 @@ $a23f:
 	return $ac35();	//jmp
 $a245:
 }
+```
 
-$33:a245 getHitCountOfCurrentHand
-//	[in] u8 $cd : hand (0=right,1=left)
+________________________
+# $33:a245 getHitCountOfCurrentHand
+
+### args:
++	[in] u8 $cd : hand (0=right,1=left)
+
+### code:
+```js
 {
 	$bd =$bb.(x = $cd);
 }
+```
 
-$33:a251 blowEffect_type03	//[bow]
+________________________
+# $33:a251 blowEffect_type03	
+
+>[bow]
+
+### code:
+```js
 {
 	$a245();
 	push (a = $7e17);
@@ -1504,21 +2060,40 @@ $a2c5:
 	return $ac35();
 
 }
+```
 
-$33:a2cf
+________________________
+# $33:a2cf 
+
+### code:
+```js
 {
 	y = $95 << 1;
 	return ($7d9b.y & 5);
 $a2d9:
 }
+```
 
-$33:a2f2 blowEffect_type00_08	//fist & arrow
+________________________
+# $33:a2f2 blowEffect_type00_08	
+
+>fist & arrow
+
+### code:
+```js
 {
 	if ( ($7e1f|$7e20) != 0) { //bne a2fb (blowEffect_type09)
 		return;
 	}
 }
-$33:a2fb blowEffect_type09	//claw
+```
+________________________
+# $33:a2fb blowEffect_type09	
+
+>claw
+
+### code:
+```js
 {
 	$a11c();
 	x = $95;
@@ -1568,22 +2143,43 @@ $a362:
 	return $ac35();
 $a365:
 }
-$33:a365 blowEffect_type01	//axe,sword,spear
+```
+________________________
+# $33:a365 blowEffect_type01	
+
+>axe,sword,spear
+
+### code:
+```js
 {
 	getHitCountOfCurrentHand();	//$a245();
 	$ba = 0;
 	return doSwing();	//$a379();
 }
+```
 
-$33:a36f blowEffect_type02	//bell,rod,book
+________________________
+# $33:a36f blowEffect_type02	
+
+>bell,rod,book
+
+### code:
+```js
 {
 	getHitCountOfCurrentHand();	//$a245
 	$ba = 1;
 	return doSwing();
 }
+```
 
-$33:a379 doSwing
-//	[in] u8 $bd : hitCount
+________________________
+# $33:a379 doSwing
+
+### args:
++	[in] u8 $bd : hitCount
+
+### code:
+```js
 {
 	$a438();	//getWeaponSprite?
 	$a40f();	//copySpriteProps?
@@ -1638,8 +2234,15 @@ $a3ce:
 $a3da:
 	return $ac35();	//jmp
 }
+```
 
-$33:a3f9 clearWeaponSprite? //fill 18hbytes at y
+________________________
+# $33:a3f9 clearWeaponSprite? 
+
+>fill 18hbytes at y
+
+### code:
+```js
 {
 	push (a = x);
 	y = $a3f5.x;
@@ -1651,7 +2254,12 @@ $33:a3f9 clearWeaponSprite? //fill 18hbytes at y
 	return;
 $a40f:
 }
-$33:a40f
+```
+________________________
+# $33:a40f 
+
+### code:
+```js
 {
 	for (x = 0;x != 4;x++) {
 		$7d87.x = $7d83.x;
@@ -1659,48 +2267,86 @@ $33:a40f
 	return;
 $a41d:
 }
+```
 
-$33:a42b fill_A0hBytes_f0_at$0200
+________________________
+# $33:a42b fill_A0hBytes_f0_at$0200
+
+### code:
+```js
 {
 	for (x = 0,a = #f0;x != #a0;x++) {
 $a42f:		$0200.x = a;
 	}
 }
+```
 
-$33:a438 getWeaponSprite?
+________________________
+# $33:a438 getWeaponSprite?
+
+### code:
+```js
 {
 	x = $cd & 1;
 	a = $7e17.x;
 	//fall through
-$33:a440
+}
+```
+
+**fall through**
+________________________
+# $33:a440 
+
+### code:
+```js
 {
 	$ab08();
 	return updatePpuDmaScrollSyncNmiEx();	//$f8b0();
 }
+```
 
-$33:a446 getSys0Random
+________________________
+# $33:a446 getSys0Random
+
+### code:
+```js
 {
 	push a;
 	$21 = 0;
 	pop a;
 	return getBattleRandom(max:a, min:x, sys:$21);	//$fbef();
 }
+```
 
-$33:a44f getSys0Random_00_ff
+________________________
+# $33:a44f getSys0Random_00_ff
+
+### code:
+```js
 {
 	x = 0; a = #ff;
 	return $a446();	//jmp
 }
+```
 
-$33:ac35 blowEffect_end
+________________________
+# $33:ac35 blowEffect_end
+
+### code:
+```js
 {
 	$7f49 = #$ff	//stop playing SE
 	$a41d();
 	$90d8();
 	return updatePpuDmaScrollSyncNmi();	//$f8c5()
 }
+```
 
-$33:ac4b buildDamageSprite
+________________________
+# $33:ac4b buildDamageSprite
+
+### code:
+```js
 {
 	push (a = x);
 	if ($7e6f == 0) { //bne ac6c
@@ -1727,8 +2373,13 @@ $aca1:
 	x = pop a;
 	return;
 }
+```
 
-$acaa setupDamageSprites
+_________________________
+# $33$acaa setupDamageSprites
+
+### code:
+```js
 {
 	x = $c8;
 	a = $8e;	//y
@@ -1757,8 +2408,13 @@ $acf5:
 	return;
 $acfd:
 }
+```
 
-$33:ad0a getDamageValueAndFlag
+________________________
+# $33:ad0a getDamageValueAndFlag
+
+### code:
+```js
 {
 	$7e = a = x;
 	y = a << 1;
@@ -1769,15 +2425,25 @@ $33:ad0a getDamageValueAndFlag
 	x = $7e;	//restore x
 	return;
 }
+```
 
-$33:ad2b effect_0C	//damageEffect
-//	[in] u8 $7e6f : side (0 = player)
-//	[in] damage $7e4f[8] : damages
-//	struct damage {
-//		u16 damage : 14;	//表示する値 3FFFで 表示無し
-//		u16 miss : 1;		//1なら damage == 3fffでない限りミス!と表示
-//		u16 heal : 1;		//1なら数字の色が緑($56-の代わりに$66-のタイルを使用,パレットは同じ)
-//	};
+________________________
+# $33:ad2b effect_0C	
+
+>damageEffect
+
+### args:
++	[in] u8 $7e6f : side (0 = player)
++	[in] damage $7e4f[8] : damages
+
+		struct damage {
+			u16 damage : 14;	//表示する値 3FFFで 表示無し
+			u16 miss : 1;		//1なら damage == 3fffでない限りミス!と表示
+			u16 heal : 1;		//1なら数字の色が緑($56-の代わりに$66-のタイルを使用,パレットは同じ)
+		};
+
+### code:
+```js
 {
 	$cb = 0;
 	a = #be;
@@ -1827,8 +2493,13 @@ $ad9f:
 	if (($b6 & #20) == 0) goto $ad5c;
 	return;
 }
+```
 
-$33:ada6 damagesToTilesAndColor
+________________________
+# $33:ada6 damagesToTilesAndColor
+
+### code:
+```js
 {
 	for (x = 0; x != 8; x++) {
 		getDamageValueAndFlag();	//$ad0a();
@@ -1843,8 +2514,13 @@ $33:ada6 damagesToTilesAndColor
 	return;
 $add1:
 }
+```
 
-$33:add1 getDamageDigitTilesAndColor
+________________________
+# $33:add1 getDamageDigitTilesAndColor
+
+### code:
+```js
 {
 	x = a = $7e72 & #3f;
 	y = a << 2;
@@ -1852,8 +2528,13 @@ $33:add1 getDamageDigitTilesAndColor
 	$7e,7f,80,81 = $7300.y, $7301.y, $7302.y, $7303.y;
 	return;
 }
+```
 
-$33:adf4 damageToTilesAndColor
+________________________
+# $33:adf4 damageToTilesAndColor
+
+### code:
+```js
 {
 	push (a = x);
 	if ( $7e70 == #ff && $7e71 == #3f) { //bne bne $ae13
@@ -1899,19 +2580,32 @@ $aeab:
 	return;
 $aeae:
 }
+```
 
-$33:af6f getActionEffectLoadParam
-//	[in] u8 $7e88 : actionId
-//	[out] u8 $7e8b[3] : params <= $2e:91d0[actionId*3] 
-//uses:
+________________________
+# $33:af6f getActionEffectLoadParam
+
+### args:
++	[in] u8 $7e88 : actionId
++	[out] u8 $7e8b[3] : params <= $2e:91d0[actionId*3] 
+
+### code:
+```js
 {
 	mul8x8_reg(a = $7e88,x = 3);	//$3f:f8ea
 	return memcpy(src:$7e,7f = #91d0 + (a,x), dest:$80,81 = #7e8b,
 		len:$82 = 3, bank:$84 = #17); //$3f:f92f
 }
+```
 
-$33:b09b beginActionEffect
-//	[in] u8 $7e88 : actionId
+________________________
+# $33:b09b beginActionEffect
+
+### args:
++	[in] u8 $7e88 : actionId
+
+### code:
+```js
 {
 	getActionEffectLoadParam();	//$33:af6f();
 	push (a = $7e8b & #80);
@@ -1979,8 +2673,13 @@ $b129:
 		$b6++;
 	} while (0 != (a = $7e26));
 }
+```
 
-$33:b19b invertHorizontalIfBackattack
+________________________
+# $33:b19b invertHorizontalIfBackattack
+
+### code:
+```js
 {
 	if (is_backattacked_32()) //$32:90d2()
 	{	//bne $b1b3
@@ -1989,11 +2688,17 @@ $33:b19b invertHorizontalIfBackattack
 	}
 $b1b3:
 }
+```
 
-$33:b276
-//	[in] u8 $cc
-//	[in] u8 $7e9a
+________________________
+# $33:b276 
 
+### args:
++	[in] u8 $cc
++	[in] u8 $7e9a
+
+### code:
+```js
 {
 	a = $7e9a & #c0;
 	if (a != #40) return;
@@ -2060,9 +2765,16 @@ $b31b:
 	}
 $b321:
 }
+```
 
-$33:b589 loadEffectSprites
-//	[in] u8 $7e8b[3] : actionEffectLoadParam
+________________________
+# $33:b589 loadEffectSprites
+
+### args:
++	[in] u8 $7e8b[3] : actionEffectLoadParam
+
+### code:
+```js
 {
 	a = $7e8b & #40;
 	if (a == 0) a = 0; x = #96;
@@ -2074,12 +2786,19 @@ $b59b:
 	loadEffectSpritesWorker(a = 7);	//bf24
 	return loadEffectSpritesWorker_base0(a = 8); //bf1e
 }
+```
 
-$33:b64f presentEffectAtTarget
-//	[in] u8 $90 : current target index
-//	[in] u8 $7300[0x100] : effectFrameParams
-//	[in] u8 $7e9a :	actor's char index?
-//	[in] u8 $7eb8 : reflected target bits
+________________________
+# $33:b64f presentEffectAtTarget
+
+### args:
++	[in] u8 $90 : current target index
++	[in] u8 $7300[0x100] : effectFrameParams
++	[in] u8 $7e9a :	actor's char index?
++	[in] u8 $7eb8 : reflected target bits
+
+### code:
+```js
 {
 	$7eb8 <<= 1;
 	if (!carry) {	//bcs $b657
@@ -2105,10 +2824,17 @@ $b680:
 	$90 = pop a;
 	return;
 }
+```
 
-$33:b68d presentActionEffect
-//	[in] u8 $7e88 : actionId
-//	[in] u8 $7e9b : targetIndicatorFlag (see $34:9de4 executeAction)
+________________________
+# $33:b68d presentActionEffect
+
+### args:
++	[in] u8 $7e88 : actionId
++	[in] u8 $7e9b : targetIndicatorFlag (see $34:9de4 executeAction)
+
+### code:
+```js
 {
 	$7e89 = $7e9b;
 	loadEffectSprites();	//$33:b589();
@@ -2133,8 +2859,13 @@ $b6ea:
 	}
 $b6f2:
 }
+```
 
-$33:b6f3 presentEffectAtTargetWorker
+________________________
+# $33:b6f3 presentEffectAtTargetWorker
+
+### code:
+```js
 {
 	$c9++;		//doesPlaySound(1:play)
 	$7e9c = 1;
@@ -2147,16 +2878,24 @@ $b70b:
 	fill_A0hBytes_f0_at$0200andSet$c8_0();	//$33:a05e();
 	return call_waitNmi();	//$3f:f8b0();
 }
+```
 
-$33:b711 presentEffectFrameAtTarget
-//	[in] u8 $7dd7[2][$90] : targetPosInfo
-//	[in] u8 $7e8b : ? some flags
-//	[in] u8 $7e9a :	play flag (#40 = play on player?)
-//	[in] u8 $c0[4],$c4[4] : player pos {x,y}
-//uses:
-//	u8 $8c : offsetX
-//	u8 $8d : offsetY
-//	u8 $7dd7[2] : x,y?
+________________________
+# $33:b711 presentEffectFrameAtTarget
+
+### args:
++	[in] u8 $7dd7[2][$90] : targetPosInfo
++	[in] u8 $7e8b : ? some flags
++	[in] u8 $7e9a :	play flag (#40 = play on player?)
++	[in] u8 $c0[4],$c4[4] : player pos {x,y}
+
+### local variables:
++	u8 $8c : offsetX
++	u8 $8d : offsetY
++	u8 $7dd7[2] : x,y?
+
+### code:
+```js
 {
 	fill_A0hBytes_f0_at$0200andSet$c8_0();	//$33:a05e();
 	loadAndBuildEffectSprites();	//$33:b7cf();
@@ -2196,15 +2935,25 @@ $b799:
 	setSpriteAndScrollx4();	//$b7a9
 	return swap60hBytesAt$0200and$02a0();	//jmp $33:b7b5()
 }
+```
 
-$33:b7a9 setSpriteAndScrollx4
+________________________
+# $33:b7a9 setSpriteAndScrollx4
+
+### code:
+```js
 {
 	for ($b6 = 4;$b6 != 0;$b6--) {
 $b7ad:		setSpriteAndScroll();	//$3f:f8c5();
 	}
 }
+```
 
-$33:b7b5 swap60hBytesAt$0200and$02a0
+________________________
+# $33:b7b5 swap60hBytesAt$0200and$02a0
+
+### code:
+```js
 {
 	for (x = 0;x != 0x60;x++) {
 $b7b7:
@@ -2213,17 +2962,25 @@ $b7b7:
 		$0200.x = pop a;
 	}
 }
+```
 
-$33:b7cf loadAndBuildEffectSprites
-//	[in] u8 $7300[] : effectFrameParams (00-fe,ff:2byte escape)
-//	[in] u8 $7e9c : frameParamOffset
-//	[out] SpriteProperty $7924[]
-//uses:
-//	u8 $87 : [000000ab] where
-//		a = (frameParam == #ff)
-//		b = (frameParam & #80)
-//	SpriteTileParam $7900[0x24]
-//	u16 $9708[ $7300[$7e9c] ]
+________________________
+# $33:b7cf loadAndBuildEffectSprites
+
+### args:
++	[in] u8 $7300[] : effectFrameParams (00-fe,ff:2byte escape)
++	[in] u8 $7e9c : frameParamOffset
++	[out] SpriteProperty $7924[]
+
+### local variables:
++	u8 $87 : [000000ab] where
+	-	a = (frameParam == #ff)
+	-	b = (frameParam & #80)
++	SpriteTileParam $7900[0x24]
++	u16 $9708[ $7300[$7e9c] ]
+
+### code:
+```js
 {
 	$87 = 0;
 	x = $7e9c;
@@ -2269,16 +3026,24 @@ $b853:
 $b861:
 	}
 }
+```
 
-$33:b866 setEffectSpriteTile
-//	[in] u8 $7e : [xVHnnnnn]
-//	[out] u8 $7925.y : sprite.tileIndex where
-//		$7e & #7f == 0 : 0
-//		otherwise : ($7e & #1f) + #49
-//	[in,out] u8 $7926.y : sprite.attr
-//	[in,out] u8 Y : spriteIndex
-//uses:
-//	u8 $7f : [VH000011]
+________________________
+# $33:b866 setEffectSpriteTile
+
+### args:
++	[in] u8 $7e : [xVHnnnnn]
++	[out] u8 $7925.y : sprite.tileIndex where
+	-	$7e & #7f == 0 : 0
+	-	otherwise : ($7e & #1f) + #49
++	[in,out] u8 $7926.y : sprite.attr
++	[in,out] u8 Y : spriteIndex
+
+### local variables:
++	u8 $7f : [VH000011]
+
+### code:
+```js
 {
 	$7f = (($7e << 1) & #c0) | #03;
 	a = $7e & #7f;
@@ -2293,11 +3058,20 @@ $b881:
 	$7926.y = ($7f & #c0) ^ $18;	//attr:パレット番号は必ず3?
 	y += 4;
 }
+```
 
-$33:b8af initAndTileEffectSprites //tile6x6
-//	[in] u8 A : coordinates mode (00:left top,01:right top,02:left bottom,03:right bottom)
-//	[in] u8 $b89b.(a*4) : { beginX,diffX, beginY,dY }
-//	[in] u8 $b8ab.(a) : defaultAttr
+________________________
+# $33:b8af initAndTileEffectSprites 
+
+>tile6x6
+
+### args:
++	[in] u8 A : coordinates mode (00:left top,01:right top,02:left bottom,03:right bottom)
++	[in] u8 $b89b.(a*4) : { beginX,diffX, beginY,dY }
++	[in] u8 $b8ab.(a) : defaultAttr
+
+### code:
+```js
 {
 	push (a);
 	a <<= 2;
@@ -2330,21 +3104,40 @@ $b8fe:
 $b905:		$7926.x = a;		//sprite.attr
 	}
 }
+```
 
-$33:b91a {
+________________________
+# $33:b91a 
+
+### code:
+```js
+{
 	$7ecc = 0;
 	return $33:b937();
 }
+```
 
-$33:b937 {
+________________________
+# $33:b937 
+
+### code:
+```js
+{
 	beginActionEffect();	//$33:b09b();	cast effect	[$7e8b,$7e8c]
 	$33:b276();	//launch	
 	blowEffect_end();	//$33:ac35();	//?
 	return presentActionEffect();	//$33:b68d();
 }
+```
 
-$33:bafd effect_0d
-//	[in] u8 $7e9d : from actionParam[6]
+________________________
+# $33:bafd effect_0d
+
+### args:
++	[in] u8 $7e9d : from actionParam[6]
+
+### code:
+```js
 {
 	y = $7e9d << 1;
 	$7e,7f = $bc2b.y, $bc2c.y;
@@ -2352,16 +3145,29 @@ $33:bafd effect_0d
 	fill_A0hBytes_f0_at$0200();	//$32:a42b();
 	setSpriteAndScroll();	//jmp $3f:f8c5
 }
+```
 
-$33:bb15 callPtrOn$007e {
+________________________
+# $33:bb15 callPtrOn$007e 
+
+### code:
+```js
+{
 	(*$007e)();
 }
+```
 
-$33:bd45 updateCharacterPos
-//	[in] u8 x : charIndex
-//	[in] $7d7d,7cf4
-//	[in] $7d7f[4] : goal coords
-//	[out] $c0[4],$c4[4] = {x,y}
+________________________
+# $33:bd45 updateCharacterPos
+
+### args:
++	[in] u8 x : charIndex
++	[in] $7d7d,7cf4
++	[in] $7d7f[4] : goal coords
++	[out] $c0[4],$c4[4] = {x,y}
+
+### code:
+```js
 {
 	if ((a = $7d7d) == 0) {
 		$7e = 0;
@@ -2406,8 +3212,13 @@ $bdde:
 	$c0.x += ($7e + $7e);
 	return;
 }
+```
 
-$33:be89
+________________________
+# $33:be89 
+
+### code:
+```js
 {
 	for (x = 0;x != 4;x++) {
 		updateCharacterPos();	//$33:bd45
@@ -2416,9 +3227,18 @@ $33:be89
 	$7cf4++;
 	return;
 }
+```
 
-$33:be9a moveCharacter	//effect_14
-//	[in] u8 $7d7f[4] : goalX
+________________________
+# $33:be9a moveCharacter	
+
+>effect_14
+
+### args:
++	[in] u8 $7d7f[4] : goalX
+
+### code:
+```js
 {
 	$33:be89
 	loadCharacter();	//$32:9f11 = effect_03 = call_2e_9d53(#13)
@@ -2430,11 +3250,23 @@ $33:be9a moveCharacter	//effect_14
 	return;
 $beb2
 }
+```
 
-$33:bf1e loadEffectSpritesWorker_base0
+________________________
+# $33:bf1e loadEffectSpritesWorker_base0
+
+### code:
+```js
 {
 	$7e,7f = x = 0;
-$33:bf24 loadEffectSpritesWorker
+}
+```
+________________________
+# $33:bf24 loadEffectSpritesWorker
+
+### code:
+```js
+{
 	mul8x8_reg(a,x = 6);	//f8ea
 	$18,19 = #beb2 + a,x;
 	push (a = y);
@@ -2447,3 +3279,4 @@ $33:bf24 loadEffectSpritesWorker
 	copyToVramDirect(src:$7e, vramAddr:$80, len:$82, bank:$84)	//$3f:f969();
 	y = pop a;
 }
+```

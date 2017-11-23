@@ -4,7 +4,7 @@
 
 
 ### notes:
-//P-sound mark
+P-sound mark = handakuten
 
 ### (pseudo-)code:
 ```js

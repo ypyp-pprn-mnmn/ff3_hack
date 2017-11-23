@@ -8,11 +8,10 @@
 + [out] $0220 : sprites[4]
 
 ### local variables:
-+ 	$891e(file:6892e) [4][4] = {
-//		F0 5A 03 F0  F0 59 03 F0
-//		F0 5C 03 F0  F0 5B 03 F0
-//	} : cursor sprites
-//
+	$891e(file:6892e) [4][4] = {
+		F0 5A 03 F0  F0 59 03 F0
+		F0 5C 03 F0  F0 5B 03 F0
+	} : cursor sprites
 
 ### (pseudo-)code:
 ```js

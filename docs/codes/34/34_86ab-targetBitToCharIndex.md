@@ -3,8 +3,6 @@
 
 
 
-//find$7e98_x_In$fd24
-
 ### args:
 + [in] u8 $7e98.x : ?
 + [in] u8 X : side

@@ -4,7 +4,7 @@
 
 
 ### notes:
-//03 = EXP or lefthand or HP
+offset 03 = EXP or lefthand or HP
 
 ### code:
 ```js

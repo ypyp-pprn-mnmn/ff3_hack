@@ -3,8 +3,10 @@
 
 
 
+>battleFunction06
+
+
 ### notes:
-//battleFunction06
 
 ### args:
 + [in] BattleChar *$5b : player party base

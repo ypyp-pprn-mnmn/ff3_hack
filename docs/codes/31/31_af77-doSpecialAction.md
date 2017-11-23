@@ -3,11 +3,10 @@
 
 
 
->battleFunction00
+>battleFunction00 (dispId : 0)
 
 
 ### notes:
-//dispId : 0
 
 ### args:
 + [in] u16 $6e : actorPtr

@@ -3,8 +3,6 @@
 
 
 
-//(bank=$30)
-
 ### args:
 + [in] $1a : itemDataSize
 + [in] $18 : itemid (if magic,itemid-#$30)

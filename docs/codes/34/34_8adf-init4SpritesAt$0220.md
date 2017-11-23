@@ -3,8 +3,6 @@
 
 
 
-//fill0x10byteAt$0220with0xF0
-
 ### (pseudo-)code:
 ```js
 {
