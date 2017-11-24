@@ -6,7 +6,7 @@
 ```js
 {
 	$67 = ((a & 3) << 6) & 0xc0; //lsr ror ror
-	if ($84 > 0x30) { //bcc f299
+	if (($84 = a) > 0x30) { //bcc f299
 		if ($84 == 0xff) { //bne f289
 $f24a:
 			x = $67;
@@ -34,6 +34,37 @@ $f291:	//switch_to_string_bank
 		return field.eval_and_draw_string();	//$eefa();
 	}
 $f299:
+	switch (a) {
+	case 0x00:	//bne f301
+		//...
+$f2d8:	//some other cases are calling this address
+		//...
+		return $f0c5();	//in the middle of the handler for charcode == 0x18
+$f301:
+	case 0x01:	//bne f310
+		//...
+		//1F:F30D:4C D8 F2  JMP $F2D8
+		return $f2d8();
+$f310:
+	case 0x02:	//bne f348
+		//...
+$f316:	//case 0x0c calls this address
+		//...
+		return field.eval_and_draw_string();	//$eefa();
+$f348:
+	default:
+		if (a < 0x08) {	//bcs f373
+			//...
+$f36a:
+			//...
+			return $f0a1();	//in the middle of the handler for charcode == 0x18
+		} else {
+$f373:
+			//...
+$f387:
+			return field.eval_and_draw_string();	//$eefa();
+		}
+	}
 }
 ```
 

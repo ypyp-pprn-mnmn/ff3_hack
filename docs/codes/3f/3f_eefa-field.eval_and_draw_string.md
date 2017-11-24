@@ -9,6 +9,14 @@
 +	[out] u8 $90: destOffset
 +	[out] bool carry: more_to_draw
 
+### callers:
++	`1F:EEE4:20 FA EE  JSR field.eval_and_draw_string` @ $3f:eec0 field.draw_string_in_window
++	`1F:F0D8:20 FA EE  JSR field.eval_and_draw_string` @ $3f:f02a field.string.eval_replacement (recurse)
++	`1F:F33F:20 FA EE  JSR field.eval_and_draw_string` @ ?
++	`1F:EF24:4C FA EE  JMP field.eval_and_draw_string` @ $3f:eefa field.eval_and_draw_string (recurse)
++	`1F:F345:4C FA EE  JMP field.eval_and_draw_string` @ ?
++	`1F:F387:4C FA EE  JMP field.eval_and_draw_string` @ ?
+
 ### code:
 ```js
 {
