@@ -8,7 +8,9 @@
 Param(
 	[Parameter(Mandatory)]
 	[ValidatePattern("[\.\:\`$_]?[0-9a-fA-f]{2}[\.\:\`$_]?[0-9a-fA-f]{4}")]
-		[string] $bank_and_address
+		[string] $bank_and_address,
+	[switch]
+		$no_thank_you = $false
 )
 ## const.
 $draft_dir = "./codes/_drafts";
@@ -66,18 +68,23 @@ function make_me_happy($bank, $addr, $tuple) {
 			throw "oops! it looks like you forgot you have already started drafting! check ${outpath}.";
 		}
 		try {
-			"" | Out-File -FilePath $outpath -NoNewline -Encoding utf8;
-			if ($tuple[0][1] -ne $null) {
-				#Get-Content -Path $tuple[0][1].fullname -Encoding utf8 | Out-File -Encoding utf8 -FilePath $outpath;
-				cite $(Get-Content -Path $tuple[0][1].fullname -Encoding utf8)  | Out-File -Encoding utf8 -FilePath $outpath;
-				"".PadRight(80, "_") | Out-File -Encoding utf8 -FilePath $outpath -Append;
-			}
-			get_template $bank $addr | Out-File -Encoding utf8 -FilePath $outpath -Append;
-			if ($tuple[2][1] -ne $null) {
-				"".PadRight(80, "_") | Out-File -Encoding utf8 -FilePath $outpath -Append;
-				#Get-Content -Path $tuple[2][1].fullname -Encoding utf8 | Out-File -Encoding utf8 -FilePath $outpath -Append;
-				cite $(Get-Content -Path $tuple[2][1].fullname -Encoding utf8) | Out-File -Encoding utf8 -FilePath $outpath -Append;
-				
+			if (-not $no_thank_you) {
+				"" | Out-File -FilePath $outpath -NoNewline -Encoding utf8;
+				if ($tuple[0][1] -ne $null) {
+					#Get-Content -Path $tuple[0][1].fullname -Encoding utf8 | Out-File -Encoding utf8 -FilePath $outpath;
+					cite $(Get-Content -Path $tuple[0][1].fullname -Encoding utf8)  | Out-File -Encoding utf8 -FilePath $outpath;
+					"".PadRight(80, "_") | Out-File -Encoding utf8 -FilePath $outpath -Append;
+				}
+				get_template $bank $addr | Out-File -Encoding utf8 -FilePath $outpath -Append;
+				if ($tuple[2][1] -ne $null) {
+					"".PadRight(80, "_") | Out-File -Encoding utf8 -FilePath $outpath -Append;
+					#Get-Content -Path $tuple[2][1].fullname -Encoding utf8 | Out-File -Encoding utf8 -FilePath $outpath -Append;
+					cite $(Get-Content -Path $tuple[2][1].fullname -Encoding utf8) | Out-File -Encoding utf8 -FilePath $outpath -Append;
+					
+				}
+				Write-Host -ForegroundColor DarkBlue "HERE YOU GO! created new file for drafting!: ${outpath}";
+			} else {
+				Write-Host -ForegroundColor DarkMagenta "hmm...isn't it tasty for you: $($tuple[0][1].name) $($tuple[2][1].name)";
 			}
 		} catch {
 			if (Test-Path $outpath) {
@@ -85,7 +92,6 @@ function make_me_happy($bank, $addr, $tuple) {
 			}
 			throw;
 		}
-		Write-Host -ForegroundColor DarkBlue "HERE YOU GO! created new file for drafting!: ${outpath}";
 	} else {
 		## there is existing documentation for the addr.
 		## just point it out.
