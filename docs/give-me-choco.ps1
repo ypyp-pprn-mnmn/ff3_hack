@@ -68,7 +68,15 @@ function make_me_happy($bank, $addr, $tuple) {
 			throw "oops! it looks like you forgot you have already started drafting! check ${outpath}.";
 		}
 		try {
-			if (-not $no_thank_you) {
+			if ($no_thank_you) {
+				if ($tuple[0][1] -ne $null) {
+					$(Get-Content -Path $tuple[0][1].fullname -Encoding utf8) | Write-Output
+				}
+				if ($tuple[2][1] -ne $null) {
+					$(Get-Content -Path $tuple[2][1].fullname -Encoding utf8) | Write-Output
+				}
+				Write-Host -ForegroundColor DarkMagenta "hmm...isn't it tasty for you: $($tuple[0][1].name) $($tuple[2][1].name)";
+			} else {
 				"" | Out-File -FilePath $outpath -NoNewline -Encoding utf8;
 				if ($tuple[0][1] -ne $null) {
 					#Get-Content -Path $tuple[0][1].fullname -Encoding utf8 | Out-File -Encoding utf8 -FilePath $outpath;
@@ -83,8 +91,6 @@ function make_me_happy($bank, $addr, $tuple) {
 					
 				}
 				Write-Host -ForegroundColor DarkBlue "HERE YOU GO! created new file for drafting!: ${outpath}";
-			} else {
-				Write-Host -ForegroundColor DarkMagenta "hmm...isn't it tasty for you: $($tuple[0][1].name) $($tuple[2][1].name)";
 			}
 		} catch {
 			if (Test-Path $outpath) {
