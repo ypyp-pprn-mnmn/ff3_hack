@@ -7,6 +7,11 @@
 +	[in] u8 $93 : string bank
 +	[out] bool carry: more_to_draw
 
+### callers:
++	`1F:EB61:20 C0 EE  JSR field::draw_string_in_window` @ $3f:eb61 field.reflect_window_scroll
++	`1F:EE80:20 C0 EE  JSR field::draw_string_in_window` @ $3f:ee65 field::stream_string_in_window
++	`1F:EEBE:85 93     STA field.window_text_bank = #$18` (fall through)@ $3f:ee9a field::load_and_draw_string
+
 ### code:
 ```js
 {

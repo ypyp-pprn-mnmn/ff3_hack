@@ -1,5 +1,5 @@
 ﻿
-# $3f:ee9a field::load_and_draw_string:
+# $3f:ee9a field::load_and_draw_string
 
 
 ### args:
