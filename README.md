@@ -51,7 +51,8 @@ ToDoは[githubのissues](https://github.com/ypyp-pprn-mnmn/ff3_hack/issues)で�
 
 ### パッチの開発は大まかに次のステップのサイクルです
   1. エミュレータを利用して、興味のある処理を特定する
-      + 最近は[fceux](http://www.fceux.com/web/home.html)を利用しています
+      + 最近は[Mesen](https://www.mesen.ca/ja/)を利用しています
+      + [fceux](http://www.fceux.com/web/home.html)も使っています
   2. 必要十分な解析を行う
       + 解析結果などは適宜[docs](docs)フォルダに放り込んでいます。
   3. [nesasm](https://github.com/camsaul/nesasm)の記法で、asmのソースコードを記述
