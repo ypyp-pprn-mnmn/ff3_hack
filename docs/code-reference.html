@@ -845,7 +845,7 @@ code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Infor
           <li><a href="#ffaf2">$3f:faf2</a></li>
           <li><a href="#ffb17-savefieldvars">$3f:fb17 saveFieldVars</a></li>
           <li><a href="#ffb30-irq_handler">$3f:fb30 irq_handler</a></li>
-          <li><a href="#ffb57-battle.nmi_handler">$3f:fb57 battle.nmi_handler</a></li>
+          <li><a href="#ffb57-ppud.nmi_handler">$3f:fb57 ppud.nmi_handler</a></li>
           <li><a href="#ffb80-ppud.await_nmi_completion">$3f:fb80 ppud.await_nmi_completion</a></li>
           <li><a href="#ffb87-switch_16k_synchronized">$3f:fb87 switch_16k_synchronized</a></li>
           <li><a href="#ffb89-switch_16k_synchronized_nocache">$3f:fb89 switch_16k_synchronized_nocache</a></li>
@@ -18381,13 +18381,13 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb635-16" data-line-number="16">    <span class="cf">return</span><span class="op">;</span></div>
 <div class="sourceLine" id="cb635-17" data-line-number="17"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="ffb57-battle.nmi_handler">$3f:fb57 battle.nmi_handler</h1>
+<h1 id="ffb57-ppud.nmi_handler">$3f:fb57 ppud.nmi_handler</h1>
 <blockquote>
 <p>戦闘モード時のnmiハンドラ</p>
 </blockquote>
 <h3 id="args-254">args:</h3>
 <ul>
-<li>[in,out] u8 $05: nmi_pending (<span class="citation" data-cites="see">@see</span> <code>$3f:fb80 await_nmi_completion</code>)</li>
+<li>[in,out] u8 $05: nmi_pending (<span class="citation" data-cites="see">@see</span> <code>$3f:fb80 ppud.await_nmi_completion</code>)</li>
 </ul>
 <h3 id="notes-55">notes:</h3>
 <h3 id="code-290">code:</h3>
@@ -18396,7 +18396,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb636-3" data-line-number="3">    <span class="at">push</span>(a <span class="op">=</span> x)<span class="op">;</span></div>
 <div class="sourceLine" id="cb636-4" data-line-number="4">    a <span class="op">=</span> $7cf3<span class="op">;</span>  <span class="co">//sprite0 hitflag?</span></div>
 <div class="sourceLine" id="cb636-5" data-line-number="5">    <span class="cf">if</span> (a <span class="op">!=</span> <span class="dv">0</span>) <span class="op">{</span></div>
-<div class="sourceLine" id="cb636-6" data-line-number="6">        <span class="va">ppu_driver</span>.<span class="at">reset_registers</span>() <span class="co">//$3f:f8cb();</span></div>
+<div class="sourceLine" id="cb636-6" data-line-number="6">        <span class="va">ppud</span>.<span class="at">sync_registeres_with_cache</span>() <span class="co">//$3f:f8cb();</span></div>
 <div class="sourceLine" id="cb636-7" data-line-number="7">        $02 <span class="op">=</span> a <span class="op">=</span> $03<span class="op">;</span></div>
 <div class="sourceLine" id="cb636-8" data-line-number="8">        $c000 <span class="op">=</span> $c001 <span class="op">=</span> a<span class="op">;</span>  <span class="co">//irq latch regs (mapper function)</span></div>
 <div class="sourceLine" id="cb636-9" data-line-number="9">        x <span class="op">=</span> $01<span class="op">;</span>        <span class="co">//$01 : 0:disable / 1:enable irq (mapper function;MMC3)</span></div>
