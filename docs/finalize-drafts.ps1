@@ -4,7 +4,8 @@ Param(
 	[string] $target,
 	[Parameter(Mandatory, ParameterSetName="all")]
 	[switch] $all = $false,
-	[switch] $overwrite = $false
+	[switch] $overwrite = $false,
+	[switch] $forget_draft = $false
 )
 $drafts_dir = "./codes/_drafts";
 $outdir = "$(Get-Location)/codes";
@@ -27,12 +28,18 @@ function split_docs($outdir, $target) {
 				mkdir -Path "${outdir}/${bank}"
 			}
 			$content = $_ -replace "</?(details|summary)>","";
+			## is there existing file for this address?
+			## as symbols may have been renamed, just compare its address.
+			$existing = Get-ChildItem -Path "${outdir}/${bank}" | Where-Object { $_.Name -match "${bank}_${addr}"};
+			## write the content into file.
 			try {
-				if (-not (Test-Path $out)) {
+				#if (-not (Test-Path $out)) {
+				if ($existing -eq $null) {
 					$content | Out-File -FilePath $out -Encoding utf8;
 					Write-Host -ForegroundColor DarkBlue "NEW : $out";
 				} else {
 					if ($overwrite) {
+						Remove-Item $existing.FullName;
 						$content | Out-File -FilePath $out -Encoding utf8;
 						Write-Host -ForegroundColor DarkGreen "UP  : $out";
 					} else {
@@ -50,6 +57,9 @@ function split_docs($outdir, $target) {
 				Write-Host -ForegroundColor DarkRed "ERR : failed to parse. context unknown";
 			}
 		}
+	}
+	if ($forget_draft) {
+		Remove-Item $target;
 	}
 }
 
