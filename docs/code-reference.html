@@ -826,7 +826,7 @@ code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Infor
           <li><a href="#ff897-ppud.upload_palette">$3f:f897 ppud.upload_palette</a></li>
           <li><a href="#ff8aa-do_sprite_dma_from_0200">$3f:f8aa do_sprite_dma_from_0200</a></li>
           <li><a href="#ff8b0-ppud.update_sprites_and_palette_after_nmi">$3f:f8b0 ppud.update_sprites_and_palette_after_nmi</a></li>
-          <li><a href="#ff8bc-ppud.update_palette">$3f:f8bc ppud.update_palette</a></li>
+          <li><a href="#ff8bc-ppud.update_palette_after_nmi">$3f:f8bc ppud.update_palette_after_nmi</a></li>
           <li><a href="#ff8c5-ppud.update_sprites_after_nmi">$3f:f8c5 ppud.update_sprites_after_nmi</a></li>
           <li><a href="#ff8cb-ppud.sync_registers_with_cache">$3f:f8cb ppud.sync_registers_with_cache</a></li>
           <li><a href="#ff8e0-ppud.set_vram_addr">$3f:f8e0 ppud.set_vram_addr</a></li>
@@ -18019,7 +18019,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb615-5" data-line-number="5">    <span class="cf">return</span> <span class="va">ppud</span>.<span class="at">sync_registers_with_cache</span>()<span class="op">;</span>    <span class="co">//f8cb</span></div>
 <div class="sourceLine" id="cb615-6" data-line-number="6"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="ff8bc-ppud.update_palette">$3f:f8bc ppud.update_palette</h1>
+<h1 id="ff8bc-ppud.update_palette_after_nmi">$3f:f8bc ppud.update_palette_after_nmi</h1>
 <blockquote>
 <p>awaits nmi, then barely updates palette.</p>
 </blockquote>
@@ -18038,12 +18038,10 @@ sta $4014   ;DMA</code></pre></li>
 <h3 id="notes-51">notes:</h3>
 <h3 id="pseudocode-52">(pseudo)code:</h3>
 <pre class="sourceCode js" id="cb616"><code class="sourceCode javascript"><div class="sourceLine" id="cb616-1" data-line-number="1"><span class="op">{</span></div>
-<div class="sourceLine" id="cb616-2" data-line-number="2"><span class="co">/*</span></div>
-<div class="sourceLine" id="cb616-3" data-line-number="3"><span class="co"> 1F:F8BC:20 80 FB  JSR await_nmi_completion</span></div>
-<div class="sourceLine" id="cb616-4" data-line-number="4"><span class="co"> 1F:F8BF:20 97 F8  JSR ppud.upload_palette</span></div>
-<div class="sourceLine" id="cb616-5" data-line-number="5"><span class="co"> 1F:F8C2:4C CB F8  JMP ppud.reset_registers</span></div>
-<div class="sourceLine" id="cb616-6" data-line-number="6"><span class="co">*/</span></div>
-<div class="sourceLine" id="cb616-7" data-line-number="7"><span class="op">}</span></div></code></pre>
+<div class="sourceLine" id="cb616-2" data-line-number="2">    <span class="va">ppud</span>.<span class="at">await_nmi_completion</span>()<span class="op">;</span>    <span class="co">//$fb80</span></div>
+<div class="sourceLine" id="cb616-3" data-line-number="3">    <span class="va">ppud</span>.<span class="at">upload_palette</span>()<span class="op">;</span>  <span class="co">//$f897</span></div>
+<div class="sourceLine" id="cb616-4" data-line-number="4">    <span class="cf">return</span> <span class="va">ppud</span>.<span class="at">sync_registers_with_cache</span>()<span class="op">;</span>    <span class="co">//$fbcb</span></div>
+<div class="sourceLine" id="cb616-5" data-line-number="5"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ff8c5-ppud.update_sprites_after_nmi">$3f:f8c5 ppud.update_sprites_after_nmi</h1>
 <h3 id="args-245">args:</h3>

@@ -1,5 +1,6 @@
 ﻿
-# $3f:f8bc ppud.update_palette
+
+# $3f:f8bc ppud.update_palette_after_nmi
 > awaits nmi, then barely updates palette.
 
 ### args:
@@ -17,11 +18,10 @@
 ### (pseudo)code:
 ```js
 {
-/*
- 1F:F8BC:20 80 FB  JSR await_nmi_completion
- 1F:F8BF:20 97 F8  JSR ppud.upload_palette
- 1F:F8C2:4C CB F8  JMP ppud.reset_registers
-*/
+    ppud.await_nmi_completion();    //$fb80
+    ppud.upload_palette();  //$f897
+    return ppud.sync_registers_with_cache();    //$fbcb
 }
 ```
+
 
