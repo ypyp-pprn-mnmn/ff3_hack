@@ -1,4 +1,6 @@
 ﻿
+
+
 # $3f:ee9a field::load_and_draw_string
 
 
@@ -16,6 +18,8 @@
 ### callers:
 +	`1F:C036:20 9A EE  JSR field::load_and_draw_string`
 +	`1F:EE65:20 9A EE  JSR field::load_and_draw_string` @ $3f:ee65 field::stream_string_in_window
++	`3c:9116  jmp $EE9A `   
++	`3d:a682  jmp $EE9A `
 
 ### code:
 ```js
@@ -35,4 +39,6 @@ $eec0:
 
 
 **fall through**
+
+
 
