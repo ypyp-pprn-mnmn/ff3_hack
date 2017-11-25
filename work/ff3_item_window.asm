@@ -1,10 +1,11 @@
+;; encoding: **shift-jis**
 ; ff3_item_window.asm
 ;
 ; description:
 ;	replaces entire item-window related codes
 ;
 ; version:
-;	0.12 (2006-11-12)
+;	0.13 (2017-11-25)
 ;
 ;======================================================================================================
 ff3_itemWindow_begin:
@@ -60,14 +61,14 @@ equipFlag		= $45
 commandWindow_OnItem:
 .scrollX = $10
 .counter = $43
-	jsr updateDmaPpuScrollSyncNmi
+	jsr ppud.update_sprites_after_nmi
 	lda #0
 	sta <$3d	;erase flag
 	jsr eraseWindow
 
 	lda #$78
 	sta <.scrollX
-	jsr updateDmaPpuScrollSyncNmi
+	jsr ppud.update_sprites_after_nmi
 	
 	lda #0
 	sta $7573	;erase flag
@@ -538,7 +539,7 @@ closeItemWindow:
 	lda <$08
 	and #$fe
 	sta <$08
-	jsr updateDmaPpuScrollSyncNmi ;$3f:f8c5();
+	jsr ppud.update_sprites_after_nmi ;$3f:f8c5();
 	lda #0
 	sta <$18
 	jsr clearSprites2x2	 ;
@@ -964,7 +965,7 @@ scrollItemWindow:
 	adc <.currentX
 	sta <.scrollTo
 .scroll_loop:
-		jsr updateDmaPpuScrollSyncNmi	;$3f:f8c5 (y is unchanged)
+		jsr ppud.update_sprites_after_nmi	;$3f:f8c5 (y is unchanged)
 		tya
 		clc
 		adc <.currentX

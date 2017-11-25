@@ -1,3 +1,4 @@
+;; encoding: utf-8
 ; ff3_command_window.asm
 ;
 ;description:
@@ -5,7 +6,7 @@
 ;	implements 'extra ability' feature ready mechanism
 ;
 ;version:
-;	0.14 (2006-11-01)
+;	0.15 (2017-11-25)
 ;======================================================================================================
 ff3_commandWindow_begin:
 	INIT_PATCH $34,$986c,$99fd
@@ -149,7 +150,7 @@ getPlayerCommandInput:
 .input_wait:;9958
 	ldy #3	;to keep input accepted in 3 frames interval 
 .wait_loop:	
-		jsr waitNmi
+		jsr ppud.await_nmi_completion
 		dey
 		bne .wait_loop
 	lda #0
@@ -313,7 +314,7 @@ commandWindow_handlers:
 	.dw commandWindow_OnItem	;$adaf
 	.dw commandWindow_OnMagic	;$b646
 	;extra
-	;óeó à»äOÇ…êßå¿ñ≥Çµ
+	;	more commands can be added, as long as capacity here remains.
 	.dw commandWindow_OnProvoke	;extra
 	.dw commandWindow_OnDisorderedShot	;extra
 	.dw commandWindow_OnAbyss	;abyss
