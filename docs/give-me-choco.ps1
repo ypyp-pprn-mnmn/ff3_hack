@@ -61,53 +61,56 @@ function find_target_with_context($bank, $target_addr) {
 	return @($prev, $found, $next, $bank, $target_addr);
 }
 function make_me_happy($bank, $addr, $tuple) {
-	if ($tuple[1] -eq $null) {
-		## not found let's start drafting!
-		$outpath = "${draft_dir}/${bank}_${addr}_DRAFT.md";
-		if (Test-Path $outpath) {
-			throw "oops! it looks like you forgot you have already started drafting! check ${outpath}.";
-		}
-		try {
-			if ($no_thank_you) {
-				if ($tuple[0][1] -ne $null) {
-					$(Get-Content -Path $tuple[0][1].fullname -Encoding utf8) | Write-Output
-				}
-				if ($tuple[2][1] -ne $null) {
-					$(Get-Content -Path $tuple[2][1].fullname -Encoding utf8) | Write-Output
-				}
-				Write-Host -ForegroundColor DarkMagenta "hmm...isn't it tasty for you: $($tuple[0][1].name) $($tuple[2][1].name)";
-			} else {
-				"" | Out-File -FilePath $outpath -NoNewline -Encoding utf8;
-				if ($tuple[0][1] -ne $null) {
-					#Get-Content -Path $tuple[0][1].fullname -Encoding utf8 | Out-File -Encoding utf8 -FilePath $outpath;
-					cite $(Get-Content -Path $tuple[0][1].fullname -Encoding utf8)  | Out-File -Encoding utf8 -FilePath $outpath;
-					"".PadRight(80, "_") | Out-File -Encoding utf8 -FilePath $outpath -Append;
-				}
+	## not found let's start drafting!
+	$outpath = "${draft_dir}/${bank}_${addr}_DRAFT.md";
+	if (Test-Path $outpath) {
+		throw "oops! it looks like you forgot you have already started drafting! check ${outpath}.";
+	}
+	try {
+		if ($no_thank_you) {
+			#if ($tuple[0][1] -ne $null) {
+			#	$(Get-Content -Path $tuple[0][1].fullname -Encoding utf8) | Write-Output
+			#}
+			#if ($tuple[2][1] -ne $null) {
+			#	$(Get-Content -Path $tuple[2][1].fullname -Encoding utf8) | Write-Output
+			#}
+			## there is existing documentation for the addr.
+			## just point it out.
+			#$name = $tuple[1][1].fullname;
+			Write-Host -ForegroundColor DarkMagenta "yup! please come back whenever you wish: $($tuple[1][1].name)";
+			Write-Host -ForegroundColor DarkBlue "hmm...isn't it tasty for you: $($tuple[0][1].name) $($tuple[2][1].name)";
+		} else {
+			"" | Out-File -FilePath $outpath -NoNewline -Encoding utf8;
+			if ($tuple[0][1] -ne $null) {
+				#Get-Content -Path $tuple[0][1].fullname -Encoding utf8 | Out-File -Encoding utf8 -FilePath $outpath;
+				cite $(Get-Content -Path $tuple[0][1].fullname -Encoding utf8)  | Out-File -Encoding utf8 -FilePath $outpath;
+				"".PadRight(80, "_") | Out-File -Encoding utf8 -FilePath $outpath -Append;
+			}
+			if ($tuple[1] -eq $null) {
 				get_template $bank $addr | Out-File -Encoding utf8 -FilePath $outpath -Append;
-				if ($tuple[2][1] -ne $null) {
-					"".PadRight(80, "_") | Out-File -Encoding utf8 -FilePath $outpath -Append;
-					#Get-Content -Path $tuple[2][1].fullname -Encoding utf8 | Out-File -Encoding utf8 -FilePath $outpath -Append;
-					cite $(Get-Content -Path $tuple[2][1].fullname -Encoding utf8) | Out-File -Encoding utf8 -FilePath $outpath -Append;
-					
-				}
-				Write-Host -ForegroundColor DarkBlue "HERE YOU GO! created new file for drafting!: ${outpath}";
+			} else {
+				$(Get-Content -Path $tuple[1][1].fullname -Encoding utf8)  | Out-File -Encoding utf8 -FilePath $outpath -Append;
 			}
-		} catch {
-			if (Test-Path $outpath) {
-				Remove-Item $outpath
+			if ($tuple[2][1] -ne $null) {
+				"".PadRight(80, "_") | Out-File -Encoding utf8 -FilePath $outpath -Append;
+				#Get-Content -Path $tuple[2][1].fullname -Encoding utf8 | Out-File -Encoding utf8 -FilePath $outpath -Append;
+				cite $(Get-Content -Path $tuple[2][1].fullname -Encoding utf8) | Out-File -Encoding utf8 -FilePath $outpath -Append;
+				
 			}
-			throw;
+			Write-Host -ForegroundColor DarkBlue "HERE YOU GO! created new file for drafting!: ${outpath}";
+			## let's launch it!
+			code --reuse-window ${outpath};
 		}
-	} else {
-		## there is existing documentation for the addr.
-		## just point it out.
-		$name = $tuple[1][1].fullname;
-		Write-Host -ForegroundColor DarkMagenta "found existing documentation: ${name}";
+	} catch {
+		if (Test-Path $outpath) {
+			Remove-Item $outpath
+		}
+		throw;
 	}
 }
 function get_template($bank, $addr) {
 	$template = Get-Content -Path $template -Encoding utf8 | Select-Object -Skip 1;
-	return @("# `$${bank}`$${addr} ns.addr") + ($template);
+	return @("# `$${bank}:${addr} ns.addr") + ($template);
 }
 
 function cite(
