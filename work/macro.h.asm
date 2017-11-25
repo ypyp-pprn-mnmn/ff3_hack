@@ -109,6 +109,29 @@ FIX_ADDR_ON_CALLER	.macro
 	RESTORE_PC __patch_addr_\@
 	.endm
 
+FIX_OFFSET_ON_CALLER .macro
+	__patch_addr_\@:
+	.bank \1
+	.org \2
+	__branch_opcode_\@:
+	;;sanity checks
+	.if ((\2 >> 13) & 1) != (\1 & 1)
+		.fail	;even banks would fall in address ranges starting at $8000 or $c000, and for odd ones it would be $a000 or $e000.
+	.endif;
+	.if (__patch_addr_\@ < (-$80 + 1 + __branch_opcode_\@))
+		.fail	;relative offset must be fall in signed byte range (-128 ... +127)
+	.endif
+	.if (($7f + 1 + __branch_opcode_\@) <= __patch_addr_\@)
+		.fail	;relative offset must be fall in signed byte range (-128 ... +127)
+	.endif
+	;;ok
+	.db (__patch_addr_\@ - (1 + __branch_opcode_\@))
+	RESTORE_PC __patch_addr_\@
+	.endm
+
 FALL_THROUGH_TO	.macro
 	__fall_through_\1:
+	;.if (__fall_through_\1 < \1)
+	;	.ds (\1 - __fall_through_\1)
+	;.endif
 	.endm	;FALL_THROUGH_TO
