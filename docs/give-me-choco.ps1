@@ -13,9 +13,9 @@ Param(
 		$no_thank_you = $false
 )
 ## const.
-$draft_dir = "./codes/_drafts";
-$published_dir = "./codes";
-$template = "./codes/_template.md";
+$draft_dir = "../docs/codes/_drafts";
+$published_dir = "../docs/codes";
+$template = "../docs/codes/_template.md";
 ## parse command line arguments
 $bank_and_address = ($bank_and_address -replace "[^0-9a-fA-F]");
 $bank_and_address -match "([0-9a-fA-F]{2})([0-9a-fA-F]{4})(.*?)" | Out-Null;

@@ -7,8 +7,8 @@ Param(
 	[switch] $overwrite = $false,
 	[switch] $forget_draft = $false
 )
-$drafts_dir = "./codes/_drafts";
-$outdir = "$(Get-Location)/codes";
+$drafts_dir = "../docs/codes/_drafts";
+$outdir = "../docs/codes";
 function split_docs($outdir, $target) {
 	$markdown = (Get-Content $target -Encoding UTF8) -join "`n";
 	$codes = $markdown -split "^_{5,}$", 0, "Multiline"

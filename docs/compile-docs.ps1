@@ -10,7 +10,7 @@ Param(
 	#[ValidatePattern("")]
 )
 ## const.
-$docs_root = "."
+$docs_root = "../docs"
 $sources = "${docs_root}/codes";
 $draft_dir_name = "_drafts";
 $pandoc_data_dir = "${docs_root}/codes/_pandoc";
