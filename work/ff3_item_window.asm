@@ -61,6 +61,7 @@ equipFlag		= $45
 commandWindow_OnItem:
 .scrollX = $10
 .counter = $43
+	;;eraseWindow also does the below as port of its operation
 	jsr ppud.update_sprites_after_nmi
 	lda #0
 	sta <$3d	;erase flag
