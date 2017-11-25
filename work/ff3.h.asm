@@ -39,13 +39,9 @@ field.draw_string_in_window	= $eec0
 ;;
 switchBanksTo3c3d			= $f727
 ;; ppu drivers, mostly used only in battle mode
-;do_sprite_dma_from_0200		= $f8aa
 ppud.do_sprite_dma			= $f8aa
-;updateDmaPpuScrollSyncNmiEx = $f8b0
 ppud.update_sprites_and_palette_after_nmi = $f8b0
-;updateDmaPpuScrollSyncNmi	= $f8c5	;(y is unchanged)
 ppud.update_sprites_after_nmi = $f8c5;
-;updatePpuScrollNoWait		= $f8cb
 ppud.sync_registers_with_cache = $f8cb;
 ;;
 setVramAddr					= $f8e0	;[in] a:high, x:low
