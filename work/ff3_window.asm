@@ -454,12 +454,14 @@ copyCodeBytes:
 ff3_window_last:	
 ;------------------------------------------------------------------------------------------------------
 	INIT_PATCH $34,$8eb0,$8f0b
+
+
 eraseWindow:
 .vram1stBegin = $2240
 .vram1stEnd = $23a0	;last line begins $2380
 .vram2ndBegin = $2640
-	;jsr ppud.await_nmi_completion	;presentCharacterのかわりに使うと画面消去中キャラが動かないが多少(7scanline分) 描画に使える時間が増える
-	jsr presentCharacter	;;ステータスエフェクトを動かすために必要
+	;jsr ppud.await_nmi_completion	;presentCharacterのかわりに使うと画面消去中キャラが動かないが多少(5scanline分) 描画に使える時間が増える
+	jsr presentCharacter	;;ステータスエフェクトを動かすために必要。@see $32:9f11 effectCommand_03
 	;; scanline 247, pixel 48 (fceux+old PPU) remaining 1591.7 + 97.7 cpu cycles. (14 x 113.7 + ((341 - 48) / 3)) 
 	;; scanline 247, pxiel 97 (fceux+new PPU) remaining 1591.7 + 81.3 cpu cycles. (14 x 113.7 + ((341 - 97) / 3)) 
 	ldx #LOW(.vram1stBegin)		;3
@@ -479,6 +481,10 @@ eraseWindow:
 .erase_loop:
 	;fill 32*11 bytes. 1loop = 49cycles = (4*11)+5. 32x49=1568 cycles.
 	;fill 22*16 bytes. 1loop = 69cycles. 22x69 = 1518 cycles.
+	;; if an emulator running the game is accuretely emulating ppu behaviors,
+	;; code here can't complete rendering within v-blank period, and would be causing glithces.
+	;; 'accurate' one seems to take more cycle than not.
+	;; the 50-cycles gain achieved by unrolling mitigates this.
 		sta $2007
 		sta $2007
 		sta $2007
@@ -489,15 +495,17 @@ eraseWindow:
 		sta $2007
 		sta $2007
 		sta $2007
-		sta $2007	;11
+		sta $2007	;11 STA's so far
 
 		sta $2007
 		sta $2007
 		sta $2007
 		sta $2007
-		sta $2007
+		sta $2007	;16 STA's so far
 		dex
 		bne .erase_loop
+	;;here, the v-blank period is reaching almost the end.
+	;;ppu is operating at scanline 260, cycle around 319
 	jmp ppud.sync_registers_with_cache
 ;$8f0b
 ;------------------------------------------------------------------------------------------------------
