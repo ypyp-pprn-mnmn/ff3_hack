@@ -15,7 +15,7 @@ FIELD_WINDOW_SCROLL_FRAMES = $01
 
 ;--------------------------------------------------------------------------------------------------
 	;INIT_PATCH $3f, $eb2d, $eba9
-	INIT_PATCH $3f, $eb2d, $ee9a
+	INIT_PATCH $3f, $eb2d, $eefa
 
 ;;# $3f:eb2d field.scrolldown_item_window
 ;;<details>
@@ -1205,8 +1205,142 @@ field_x.blackout_1frame:
 	sta $2001	
 	rts
 	.endif	;TEST_BLACKOUT_ON_WINDOW
+	;VERIFY_PC $ee9a
+;======================================================================================================
 
-	VERIFY_PC $ee9a
+	;INIT_PATCH $3f,$ee9a,$eec0
+;------------------------------------------------------------------------------------------------------
+;;# $3f:ee9a field::load_and_draw_string
+;;### args:
+;;
+;;#### in:
+;;+	u8 $92: string_id
+;;+	ptr $94: offset to string ptr table
+;;
+;;#### out:
+;;+	bool carry: more_to_draw	//flagged cases could be tested at サロニアの図書館(オーエンのほん1)
+;;+	ptr $3e: offset to the string, assuming the bank it to be loaded is at 1st page (starting at $8000)
+;;+	u8 $93: bank number which the string would be loaded from
+;;
+;;### callers:
+;;+	`1F:C036:20 9A EE  JSR field::load_and_draw_string`
+;;+	`1F:EE65:20 9A EE  JSR field::load_and_draw_string` @ $3f:ee65 field::stream_string_in_window
+;;+	`3c:9116  jmp $EE9A `   
+;;+	`3d:a682  jmp $EE9A `
+field.load_and_draw_string:	;;$ee9a
+;; fixups.
+	FIX_ADDR_ON_CALLER $3c, $9116+1
+	FIX_ADDR_ON_CALLER $3d, $a682+1
+	FIX_ADDR_ON_CALLER $3e, $c036+1
+;; ---
+.p_text = $3e
+.text_id = $92
+.text_bank = $93
+.p_text_table = $94	;;stores offset from $30000(18:8000) to the text 
+;; ---
+	lda #$18
+	jsr call_switch1stBank
+	lda <.text_id
+	asl A
+	tay
+	bcc .lower_half
+	inc <.p_text_table+1
+.lower_half:
+	lda [.p_text_table],Y
+	sta <.p_text
+	iny
+	lda [.p_text_table],Y
+	pha
+	and #$1F
+	ora #$80
+	sta <.p_text+1	;store pointer as an offset from $8000, the bank will be always mapped to there.
+	pla	;high byte of the offset (from $30000 == $18:8000)
+	;lsr A
+	;lsr A
+	;lsr A
+	;lsr A
+	;lsr A
+	jsr shiftRight6+1	;; A >> 5
+	clc
+	adc #$18
+	sta <.text_bank
+	;;fall through.
+	;nop
+	;nop
+	FALL_THROUGH_TO field.draw_string_in_window
+
+;------------------------------------------------------------------------------------------------------
+	;INIT_PATCH $3f,$eec0,$eefa
+;;# $3f:eec0 field.draw_string_in_window
+;;
+;;
+;;### args:
+;;+	[in] ptr $3e : string offset
+;;+	[in] u8 $93 : string bank
+;;+	[out] bool carry: more_to_draw
+;;
+;;### callers:
+;;+	`1F:EB61:20 C0 EE  JSR field::draw_string_in_window` @ $3f:eb61 field.reflect_window_scroll
+;;+	`1F:EE80:20 C0 EE  JSR field::draw_string_in_window` @ $3f:ee65 field::stream_string_in_window
+;;+	`1F:EEBE:85 93     STA field.window_text_bank = #$18` (fall through)@ $3f:ee9a field::load_and_draw_string
+field.draw_string_in_window:	;;$eec0
+;; fixups.
+	;; every caller is implemented within this file.
+;; ---
+.text_index = $90
+.text_bank = $93
+.p_text = $3e
+.p_text_line = $1c
+.lines_drawn = $1f
+;; ---
+.program_bank = $57
+;; --- window related
+.in_menu_mode = $37
+.window_left = $38
+.window_top = $39
+.offset_x = $3a
+.offset_y = $3b
+.window_width = $3c
+.window_height = $3d
+;; ---
+	lda <.text_bank
+	jsr call_switch_2banks	;$FF03
+	lda #$00
+	sta <$1e
+	lda <.p_text
+	sta <.p_text_line
+	lda <.p_text+1
+	sta <.p_text_line+1
+	;sta <$1D ;;???
+	lda <.window_left	;$38
+	sta <.offset_x		;$3A
+	lda <.window_top	;$39
+	sta <.offset_y		;$3B
+	jsr field.calc_draw_width_and_init_window_tile_buffer	;$f670
+	lda #$00
+	sta <.text_index
+	sta <.lines_drawn	;$1F
+	jsr field.eval_and_draw_string	;$eefa
+	;bcs .more_to_draw	;$EEF3
+	bcc .completed
+;$eef3
+.more_to_draw:
+	lda <.program_bank	; $57
+	jsr call_switch_2banks	;$FF03
+	sec
+	rts
+.completed:
+	jsr field.draw_window_content	;$f692
+	lda <.program_bank	; $57
+	jsr call_switch_2banks	;$FF03
+;$eef1
+field_x.clc_return:
+	FIX_OFFSET_ON_CALLER $3f,$eefe+1
+	clc
+	rts
+
+	
+	VERIFY_PC $eefa
 	.endif	;FAST_FIELD_WINDOW
 ;======================================================================================================
 ;$3f:f40a setVramAddrForWindow
@@ -1278,7 +1412,7 @@ field_x.calc_window_width_in_bg:
 ;;	1F:EEDB:20 70 F6  JSR field::calc_size_and_init_buff @ $3f:eec0 field::draw_string_in_window
 field.calc_draw_width_and_init_window_tile_buffer:
 ;; patch out callers {
-	FIX_ADDR_ON_CALLER $3f,$eedb+1
+	;FIX_ADDR_ON_CALLER $3f,$eedb+1
 ;; }
 ;;[in]
 ;.left = $38
@@ -1351,7 +1485,7 @@ field.init_window_tile_buffer:
 ;;	1F:F48E:20 92 F6  JSR field::draw_window_content @ 
 field.draw_window_content:
 ;; patch out external callers {
-	FIX_ADDR_ON_CALLER $3f,$eee9+1
+	;FIX_ADDR_ON_CALLER $3f,$eee9+1
 	FIX_ADDR_ON_CALLER $3f,$ef49+1
 	FIX_ADDR_ON_CALLER $3f,$efde+1
 	FIX_ADDR_ON_CALLER $3f,$f48e+1
