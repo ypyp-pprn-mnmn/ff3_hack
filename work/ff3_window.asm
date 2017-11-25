@@ -481,9 +481,9 @@ eraseWindow:
 .erase_loop:
 	;fill 32*11 bytes. 1loop = 49cycles = (4*11)+5. 32x49=1568 cycles.
 	;fill 22*16 bytes. 1loop = 69cycles. 22x69 = 1518 cycles.
-	;; if an emulator running the game is accuretely emulating ppu behaviors,
+	;; if an emulator running the game is accurately emulating ppu behaviors,
 	;; code here can't complete rendering within v-blank period, and would be causing glithces.
-	;; 'accurate' one seems to take more cycle than not.
+	;; 'accurate' one seems to take more cycles than not.
 	;; the 50-cycles gain achieved by unrolling mitigates this.
 		sta $2007
 		sta $2007
