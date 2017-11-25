@@ -77,7 +77,9 @@ function make_me_happy($bank, $addr, $tuple) {
 			## there is existing documentation for the addr.
 			## just point it out.
 			#$name = $tuple[1][1].fullname;
-			Write-Host -ForegroundColor DarkMagenta "yup! please come back whenever you wish: $($tuple[1][1].name)";
+			if ($tuple[1] -ne $null) {
+				Write-Host -ForegroundColor DarkMagenta "yup! please come back whenever you wished: $($tuple[1][1].name)";
+			}
 			Write-Host -ForegroundColor DarkBlue "hmm...isn't it tasty for you: $($tuple[0][1].name) $($tuple[2][1].name)";
 		} else {
 			"" | Out-File -FilePath $outpath -NoNewline -Encoding utf8;
