@@ -91,6 +91,10 @@ scrollYSetOnIrq		= $11
 inputBits			= $12	;used in battle phase. see also getPad1Input($3f:fbaa)
 ;bit7< A B select start up down left right >bit0
 field.pad1_bits		= $20	;order of bits averse to those in battle ($12). see also field::get_input($3e:d281).
+;; ---
+floor.map_x = $29
+floor.map_y = $2a
+;; ---
 selectTarget_behavior		= $b3	;param of presentSceneFunction10($2e:9d53)
 selectTarget_selectedBits	= $b4
 selectTarget_targetFlag		= $b5

@@ -59,9 +59,9 @@ field.abort_item_window_scroll:	;;$3f$eb3c
 ;; ---
 	sta <$b4
 	;sec	;;aborted scrolinng item window
-field_x.restore_bank_with_status:
+field_x.restore_banks_with_carry_set:
 	;php
-	jsr field.restore_bank	;;note: here original implementation calls $ff03, not $ecf5
+	jsr field.restore_banks	;;note: here original implementation calls $ff03, not $ecf5
 	;plp
 	sec	;;aborted scrolinng item window
 	rts
@@ -120,8 +120,8 @@ field.reflect_window_scroll:	;;$3f$eb61
 ;; ---
 	jsr field.draw_string_in_window	;$eec0
 	;clc	;successfully scrolled the item window
-	;bcc field_x.restore_bank_with_status
-	jmp field.restore_bank	;carry will be cleared by this routine
+	;bcc field_x.restore_banks_with_status
+	jmp field.restore_banks	;carry will be cleared by this routine
 
 ;--------------------------------------------------------------------------------------------------
 ;;# $3f$eb69 field.scrollup_item_window
@@ -240,7 +240,7 @@ field_x.find_next_eol:
 ;;
 field.unseek_text_to_line_beginning:	;;$3f:ebd1
 ;; fixup callers:
-	FIX_ADDR_ON_CALLER $3f,$eb81+1
+	;FIX_ADDR_ON_CALLER $3f,$eb81+1
 ;; ---
 ;;note: in this logic this points to the byte immeditely preceding the current position
 .p_text = $1c
@@ -402,7 +402,7 @@ field_x.draw_window_box_with_region:
 	jsr field_x.render_borders
 ; adjust metrics as borders don't need further drawing...
 	jsr field_x.shrink_window_metrics
-	jmp field.restore_bank	;$ecf5
+	jmp field.restore_banks	;$ecf5
 
 	;VERIFY_PC $ed56
 ;--------------------------------------------------------------------------------------------------
@@ -758,19 +758,19 @@ field.draw_window_top:
 	;jsr field.init_window_attr_buffer	;;unnecessary
 	jsr field.get_window_top_tiles
 	jsr field.draw_window_row
-	;; fall through (into $ecf5: field.restore_bank)
-	;jmp field.restore_bank	;$ecf5
-	FALL_THROUGH_TO field.restore_bank
+	;; fall through (into $ecf5: field.restore_banks)
+	;jmp field.restore_banks	;$ecf5
+	FALL_THROUGH_TO field.restore_banks
 
 	;VERIFY_PC $ecf5
 ;------------------------------------------------------------------------------------------------------
 ;;$3f:ecf5 restoreBanksBy$57
 ;;callers:
-;;	 1F:EB64:20 F5 EC  JSR field::restore_bank (in $3f:eb61 field::drawEncodedStringInWindowAndRestoreBanks)
-;;	 1F:F49E:4C F5 EC  JMP field::restore_bank
+;;	 1F:EB64:20 F5 EC  JSR field::restore_banks (in $3f:eb61 field::drawEncodedStringInWindowAndRestoreBanks)
+;;	 1F:F49E:4C F5 EC  JMP field::restore_banks
 ;;	field::draw_window_top (by falling thourgh)
 ;;	field::draw_window_box
-field.restore_bank:
+field.restore_banks:
 ;; patch out external callers {
 	;FIX_ADDR_ON_CALLER $3f,$eb64+1
 	FIX_ADDR_ON_CALLER $3f,$f49e+1
@@ -1265,8 +1265,6 @@ field.load_and_draw_string:	;;$ee9a
 	adc #$18
 	sta <.text_bank
 	;;fall through.
-	;nop
-	;nop
 	FALL_THROUGH_TO field.draw_string_in_window
 
 ;------------------------------------------------------------------------------------------------------
@@ -1305,8 +1303,8 @@ field.draw_string_in_window:	;;$eec0
 ;; ---
 	lda <.text_bank
 	jsr call_switch_2banks	;$FF03
-	lda #$00
-	sta <$1e
+	;lda #$00
+	;sta <$1e
 	lda <.p_text
 	sta <.p_text_line
 	lda <.p_text+1
@@ -1320,19 +1318,22 @@ field.draw_string_in_window:	;;$eec0
 	lda #$00
 	sta <.text_index
 	sta <.lines_drawn	;$1F
+	sta <$1e
 	jsr field.eval_and_draw_string	;$eefa
 	;bcs .more_to_draw	;$EEF3
 	bcc .completed
 ;$eef3
 .more_to_draw:
-	lda <.program_bank	; $57
-	jsr call_switch_2banks	;$FF03
-	sec
-	rts
+	jmp field_x.restore_banks_with_carry_set
+	;lda <.program_bank	; $57
+	;jsr call_switch_2banks	;$FF03
+	;sec
+	;rts
 .completed:
 	jsr field.draw_window_content	;$f692
-	lda <.program_bank	; $57
-	jsr call_switch_2banks	;$FF03
+	;lda <.program_bank	; $57
+	;jsr call_switch_2banks	;$FF03
+	jmp field.restore_banks	;carry will be implictly cleared
 ;$eef1
 field_x.clc_return:
 	FIX_OFFSET_ON_CALLER $3f,$eefe+1
