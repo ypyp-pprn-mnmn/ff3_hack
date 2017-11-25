@@ -38,15 +38,22 @@ field.draw_string_in_window	= $eec0
 ;field.upload_window_content	= $f6aa	;impl replaced but stay at the original addr
 ;;
 switchBanksTo3c3d			= $f727
-do_sprite_dma_from_0200		= $f8aa
-updateDmaPpuScrollSyncNmiEx = $f8b0
-updateDmaPpuScrollSyncNmi	= $f8c5	;(y is unchanged)
-updatePpuScrollNoWait		= $f8cb
+;; ppu drivers, mostly used only in battle mode
+;do_sprite_dma_from_0200		= $f8aa
+ppud.do_sprite_dma			= $f8aa
+;updateDmaPpuScrollSyncNmiEx = $f8b0
+ppud.update_sprites_and_palette_after_nmi = $f8b0
+;updateDmaPpuScrollSyncNmi	= $f8c5	;(y is unchanged)
+ppud.update_sprites_after_nmi = $f8c5;
+;updatePpuScrollNoWait		= $f8cb
+ppud.sync_registers_with_cache = $f8cb;
+;;
 setVramAddr					= $f8e0	;[in] a:high, x:low
 mul_8x8_reg					= $f8ea	;a,x = a * x
 call_2e_9d53				= $fa0e
 doBattle					= $fa26
-waitNmi						= $fb80	;wait on $05 clear
+;waitNmi						= $fb80	;wait on $05 clear
+ppud.await_nmi_completion		= $fb80
 switchFirst2Banks			= $fb87	;[in] a : per16k bank index
 getPad1Input				= $fbaa	;[out] $12 : inputFlags
 getBattleRandom				= $fbef	;[out] a : rand [min:x - max:a] max included

@@ -1,10 +1,11 @@
+;; encoding: **shift-jis**
 ; ff3_blow_effect.asm
 ;
 ; description:
 ;	replaces blow-effect playing code
 ;	
 ; version:
-;	0.03 (2006-10-23)
+;	0.04 (2017-11-25)
 ;======================================================================================================
 ff3_blow_effect_begin:
 ;======================================================================================================
@@ -132,7 +133,7 @@ blowEffect_type07	;shuriken
 		.show_hand:
 			jsr $a06e
 	.next_frame:
-		jsr updateDmaPpuScrollSyncNmiEx	;f8b0
+		jsr ppud.update_sprites_and_palette_after_nmi	;f8b0
 		jsr incrementSwingFrame	;8ae6
 		lsr a
 		jsr blowEffect_isFrameCountSatisfied
@@ -200,7 +201,7 @@ blowEffect_doReturn_00:
 blowEffect_advanceFrameOrFinish:
 .swingCount = $bd
 ;[out] bool carry: do next frame(0),do next swing(1)
-	jsr updateDmaPpuScrollSyncNmiEx	;$f8b0
+	jsr ppud.update_sprites_and_palette_after_nmi	;$f8b0
 	jsr incrementSwingFrame			;$8ae6
 	jsr blowEffect_isFrameCountSatisfied
 	bcc blowEffect_doReturn_00 ;.return

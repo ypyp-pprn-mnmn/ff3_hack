@@ -1,3 +1,4 @@
+;; encondig: **shift-jis**
 ; ff3_window.asm
 ;
 ;	replaces window drawing functions
@@ -12,7 +13,7 @@
 ;		256(=2048 CPU cycles; 理論的な上限は279=2272cycles)を超えたら転送を止めて次のNMIを待つ
 ;		なお、転送用のコードが要するCPUサイクル数は概算で69+9*1行の幅(8x8のタイル単位)
 ;version:
-;	0.14 (2017-11-13)
+;	0.14 (2017-11-25)
 ;
 ;	$1b,22,23,24,25,26 used in caller (so should be avoided)
 ;
@@ -124,7 +125,7 @@ draw8LineWindow:
 	sta <lineLen
 
 	jsr generateCopyLoopCode
-	jsr waitNmi
+	jsr ppud.await_nmi_completion
 ; --- begin drawing	
 	ldx <.vram_1st		;3
 	lda <.vram_1st+1	;3
@@ -145,7 +146,7 @@ draw8LineWindow:
 		asl <borderPutFlags
 		jsr generateCopyLoopCode
 
-		jsr waitNmi
+		jsr ppud.await_nmi_completion
 		ldx <.vram_2nd		;3
 		lda <.vram_2nd+1	;3
 		jsr drawWindow_setVram		;6+52
@@ -213,7 +214,7 @@ putTopBottom:
 	tya	;0(top) or 6(bottom)
 	beq checkUpdateAndOffsetVram
 		;we finished drawing. setup scroll values
-		jmp updatePpuScrollNoWait
+		jmp ppud.sync_registers_with_cache
 	;jmp checkUpdateAndOffsetVram
 ;-----------------------------------------------------------------------------------------------------
 checkUpdateAndOffsetVram:	;50clk = 24 + 26clk(if update skipped)
@@ -221,8 +222,8 @@ checkUpdateAndOffsetVram:	;50clk = 24 + 26clk(if update skipped)
 	clc					;2
 	adc <clockCount		;3
 	bcc .store_counter	;2+1
-		jsr updatePpuScrollNoWait	;$f8cb 6+34
-		jsr waitNmi		;
+		jsr ppud.sync_registers_with_cache	;$f8cb 6+34
+		jsr ppud.await_nmi_completion		;
 		clc				;2
 		lda #(40>>3)	;2
 .store_counter:
@@ -244,11 +245,11 @@ drawWindow_setVramAddr:	;18clk
 	sta $2006	;vram addr high		;4
 	stx $2006	;vram addr low		;4
 drawWindow_doReturn:
-	rts
+	rts	;6
 
 drawWindow_setVramAndInitPpu:
-	jsr drawWindow_setVramAddr	;6+12
-	jmp updatePpuScrollNoWait	;3+28
+	jsr drawWindow_setVramAddr	;6+18
+	jmp ppud.sync_registers_with_cache	;3+28
 ;------------------------------------------------------------------------------------------------------
 getBorderParts:
 	lda <borderDrawFlags
@@ -457,22 +458,24 @@ eraseWindow:
 .vram1stBegin = $2240
 .vram1stEnd = $23a0	;last line begins $2380
 .vram2ndBegin = $2640
-	;jsr waitNmi	;presentCharacterのかわりに使うと画面消去中キャラが動かないが多少(7scanline分) 描画に使える時間が増える
-	jsr presentCharacter
-	ldx #LOW(.vram1stBegin)
-	lda #HIGH(.vram1stBegin)
-	jsr .erase
-	;jsr waitNmi
+	;jsr ppud.await_nmi_completion	;presentCharacterのかわりに使うと画面消去中キャラが動かないが多少(7scanline分) 描画に使える時間が増える
+	jsr presentCharacter	;;ステータスエフェクトを動かすために必要
+	;; scanline 247, pixel 48 (fceux+old PPU) remaining 1591.7 + 97.7 cpu cycles. (14 x 113.7 + ((341 - 48) / 3)) 
+	;; scanline 247, pxiel 97 (fceux+new PPU) remaining 1591.7 + 81.3 cpu cycles. (14 x 113.7 + ((341 - 97) / 3)) 
+	ldx #LOW(.vram1stBegin)		;3
+	lda #HIGH(.vram1stBegin)	;3
+	jsr .erase	;6 + 24 + loop-body
+	;jsr ppud.await_nmi_completion
 	jsr presentCharacter
 	ldx #LOW(.vram2ndBegin)
 	lda #HIGH(.vram2ndBegin)
 	;fall through
 .erase:
 	;jsr drawWindow_setVramAndInitPpu	;6+49
-	jsr drawWindow_setVramAddr	;6+12
-	lda #0
+	jsr drawWindow_setVramAddr	;6+18
+	lda #0		;3
 	;ldx #$20
-	ldx #$16
+	ldx #$16	;3
 .erase_loop:
 	;fill 32*11 bytes. 1loop = 49cycles = (4*11)+5. 32x49=1568 cycles.
 	;fill 22*16 bytes. 1loop = 69cycles. 22x69 = 1518 cycles.
@@ -495,7 +498,7 @@ eraseWindow:
 		sta $2007
 		dex
 		bne .erase_loop
-	jmp updatePpuScrollNoWait
+	jmp ppud.sync_registers_with_cache
 ;$8f0b
 ;------------------------------------------------------------------------------------------------------
 	;.bank	$34
@@ -504,7 +507,7 @@ eraseWindow:
 eraseFromLeftBottom0Bx0A:
 .vram = $18
 	INIT16 <.vram,$2380
-	jsr waitNmi
+	jsr ppud.await_nmi_completion
 	ldy #$0a
 .erase_loop:
 		ldx <.vram
@@ -524,6 +527,6 @@ eraseFromLeftBottom0Bx0A:
 		dey	
 		bne .erase_loop
 	rts
-	;jmp updatePpuScrollNoWait
+	;jmp ppud.sync_registers_with_cache
 ;=======================================================================================================	
 	RESTORE_PC	ff3_window_last

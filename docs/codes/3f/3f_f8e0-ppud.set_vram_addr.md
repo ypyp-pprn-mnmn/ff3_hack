@@ -1,5 +1,6 @@
 ﻿
-# $3f:f8e0 setVramAddr {
+
+# $3f:f8e0 ppud.set_vram_addr
 
 
 ### args:
@@ -14,6 +15,7 @@
 	$2006 = x;
 }
 ```
+
 
 
 

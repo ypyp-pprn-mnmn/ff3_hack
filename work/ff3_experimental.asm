@@ -100,7 +100,7 @@ nmi_counter16 = $0106
 		stx nmi_counter16
 		stx nmi_counter16+1
 		;replace handle ptr
-		jsr waitNmi
+		jsr ppud.await_nmi_completion
 		lda #LOW(.dest)
 		sta pNmiHandler
 		lda #HIGH(.dest)
@@ -201,7 +201,7 @@ nmi_counter16 = $0106
 		jsr .stopMusic
 		ldx #3
 	.wait_loop:
-			jsr waitNmi
+			jsr ppud.await_nmi_completion
 			dex
 			bne .wait_loop
 		lda #0
@@ -307,7 +307,7 @@ nmi_counter16 = $0106
 	selectEncounterId:
 		ldx #3
 	.wait_loop:
-			jsr waitNmi
+			jsr ppud.await_nmi_completion
 			dex
 			bne .wait_loop
 		ldy encounterId

@@ -820,7 +820,7 @@ field_x.end_ppu_update:
 
 field_x.begin_ppu_update:
 	jsr waitNmiBySetHandler	;$ff00
-	jmp do_sprite_dma_from_0200
+	jmp ppud.do_sprite_dma
 	;VERIFY_PC $ede1
 ;------------------------------------------------------------------------------------------------------
 ;$3f:ede1 field::sync_ppu_scroll
