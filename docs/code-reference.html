@@ -18386,18 +18386,34 @@ sta $4014   ;DMA</code></pre></li>
 <h3 id="args-254">args:</h3>
 <ul>
 <li>[in,out] u8 $05: nmi_pending (<span class="citation" data-cites="see">@see</span> <code>$3f:fb80 ppud.await_nmi_completion</code>)</li>
+<li><a href="#in-2">in</a> u8 $7cf3: ?</li>
+<li><a href="#in-2">in</a> u8 $01: irq disable/enable.
+<ul>
+<li>1: enabled (touch odd address on <span class="math inline"><em>e</em>000−</span>ffff)</li>
+<li>0: disabled (touch even address on <span class="math inline"><em>e</em>000−</span>ffff)</li>
+</ul></li>
+<li><a href="#out-2">out</a> u8 $02: irq countdown?</li>
+<li><a href="#in-2">in</a> u8 $03: irq countdown?</li>
 </ul>
 <h3 id="notes-55">notes:</h3>
+<ul>
+<li>the ppu set VBlank flag at 2nd tick of scanline 241, where the VBlank NMI also occurs.</li>
+<li>cpu cycles this handler takes to execute is depending on the value at $7cf3:
+<ul>
+<li>$7cf3 != 0: 97 cycles (including RTI)</li>
+<li>$7cf3 == 0: 32 cycles (including RTI)</li>
+</ul></li>
+</ul>
 <h3 id="code-290">code:</h3>
 <pre class="sourceCode js" id="cb636"><code class="sourceCode javascript"><div class="sourceLine" id="cb636-1" data-line-number="1"><span class="op">{</span></div>
 <div class="sourceLine" id="cb636-2" data-line-number="2">    <span class="at">push</span>(a)<span class="op">;</span></div>
 <div class="sourceLine" id="cb636-3" data-line-number="3">    <span class="at">push</span>(a <span class="op">=</span> x)<span class="op">;</span></div>
 <div class="sourceLine" id="cb636-4" data-line-number="4">    a <span class="op">=</span> $7cf3<span class="op">;</span>  <span class="co">//sprite0 hitflag?</span></div>
 <div class="sourceLine" id="cb636-5" data-line-number="5">    <span class="cf">if</span> (a <span class="op">!=</span> <span class="dv">0</span>) <span class="op">{</span></div>
-<div class="sourceLine" id="cb636-6" data-line-number="6">        <span class="va">ppud</span>.<span class="at">sync_registeres_with_cache</span>() <span class="co">//$3f:f8cb();</span></div>
+<div class="sourceLine" id="cb636-6" data-line-number="6">        <span class="va">ppud</span>.<span class="at">sync_registeres_with_cache</span>() <span class="co">//$3f:f8cb(); 40 cycles</span></div>
 <div class="sourceLine" id="cb636-7" data-line-number="7">        $02 <span class="op">=</span> a <span class="op">=</span> $03<span class="op">;</span></div>
-<div class="sourceLine" id="cb636-8" data-line-number="8">        $c000 <span class="op">=</span> $c001 <span class="op">=</span> a<span class="op">;</span>  <span class="co">//irq latch regs (mapper function)</span></div>
-<div class="sourceLine" id="cb636-9" data-line-number="9">        x <span class="op">=</span> $01<span class="op">;</span>        <span class="co">//$01 : 0:disable / 1:enable irq (mapper function;MMC3)</span></div>
+<div class="sourceLine" id="cb636-8" data-line-number="8">        $c000 <span class="op">=</span> $c001 <span class="op">=</span> a<span class="op">;</span>  <span class="co">//irq latch regs (mapper MMC3 function)</span></div>
+<div class="sourceLine" id="cb636-9" data-line-number="9">        x <span class="op">=</span> $01<span class="op">;</span>        <span class="co">//$01 : 0:disable / 1:enable irq (mapper MMC3 function)</span></div>
 <div class="sourceLine" id="cb636-10" data-line-number="10">        <span class="va">$e000</span>.<span class="at">x</span> <span class="op">=</span> a<span class="op">;</span>    <span class="co">//irq disable/enable</span></div>
 <div class="sourceLine" id="cb636-11" data-line-number="11">    <span class="op">}</span></div>
 <div class="sourceLine" id="cb636-12" data-line-number="12"><span class="dt">$fb71</span><span class="op">:</span></div>
