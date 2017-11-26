@@ -43,7 +43,7 @@ DSがない…せや!ファミコンですればええんや!
 ### というわけで
 + ### 基本的に作者の審美眼と興味に基づき、気の向いたところを実装します
   + 審美眼とはいったい…
-+ ### 当面はROM容量512k, マッパーMMC3 を想定したコードにしておきます
++ ### 当面はROM容量512k, マッパー[MMC3](https://wiki.nesdev.com/w/index.php/MMC3) を想定したコードにしておきます
   + 家を建てるにはまず基礎工事が必要です
 
 ## 開発の進め方
@@ -51,7 +51,7 @@ ToDoは[githubのissues](https://github.com/ypyp-pprn-mnmn/ff3_hack/issues)で�
 
 ### パッチの開発は大まかに次のステップのサイクルです
   1. エミュレータを利用して、興味のある処理を特定する
-      + 最近は[Mesen](https://www.mesen.ca/ja/)を利用しています
+      + 最近は[Mesen(公式)](https://www.mesen.ca/ja/) [(@github)](https://github.com/SourMesen/Mesen)を利用しています
       + [fceux](http://www.fceux.com/web/home.html)も使っています
   2. 必要十分な解析を行う
       + 解析結果などは適宜[docs](docs)フォルダに放り込んでいます。
