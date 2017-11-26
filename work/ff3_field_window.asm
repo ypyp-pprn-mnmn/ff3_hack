@@ -1462,7 +1462,7 @@ textd.draw_in_box:
 	sta     <$84                            ; EF61 85 84
 	lda     #$00                            ; EF63 A9 00
 	sta     <$B9                            ; EF65 85 B9
-	jmp     $F09D                           ; EF67 4C 9D F0
+	jmp     textd.deref_param_text          ; EF67 4C 9D F0
 ; ----------------------------------------------------------------------------
 .case_3:
 	cmp     #$03                            ; EF6A C9 03
@@ -1575,7 +1575,8 @@ textd.draw_in_box:
 ; ----------------------------------------------------------------------------
 	VERIFY_PC $f02a
 
-	.if 0
+	.if 1
+	INIT_PATCH $3f,$f02a,$f38a
 ;------------------------------------------------------------------------------------------------------
 ;;# $3f:f02a textd.eval_replacement
 ;;### args:
@@ -1605,96 +1606,127 @@ textd.draw_in_box:
 ; ----------------------------------------------------------------------------
 ; bank $3f
 textd.eval_replacement:
+;; --- variables.
+.text_index = $90
+.text_id = $92
+.text_bank = $93
+.p_text_table = $94	;;stores offset from $30000(18:8000) to the text 
+;; textd
+.p_text_line = $1c
+.lines_drawn = $1f
+.parameter_byte = $84
+;; ---
+.program_bank = $57
+;; --- window related
+.in_menu_mode = $37
+.window_left = $38
+.window_top = $39
+.offset_x = $3a
+.offset_y = $3b
+.window_width = $3c
+.window_height = $3d
+.p_text = $3e
+;;
+.tile_buffer_upper = $0780
+.tile_buffer_lower = $07a0
+;;static reference
         pha                                     ; F02A 48
-        ldx     $67                             ; F02B A6 67
+        ldx     <$67                            ; F02B A6 67
         cmp     #$1D                            ; F02D C9 1D
-        beq     LF034                           ; F02F F0 03
-        lda     ($3E),y                         ; F031 B1 3E
+        beq     .L_F034                           ; F02F F0 03
+        lda     [.p_text],y                         ; F031 B1 3E
         tax                                     ; F033 AA
-LF034:  stx     $84                             ; F034 86 84
-        stx     $67                             ; F036 86 67
-        inc     $3E                             ; F038 E6 3E
-        bne     LF03E                           ; F03A D0 02
-        inc     $3F                             ; F03C E6 3F
-LF03E:  pla                                     ; F03E 68
+.L_F034:  stx     <.parameter_byte                             ; F034 86 84
+        stx     <$67                            ; F036 86 67
+        inc     <.p_text                             ; F038 E6 3E
+        bne     .L_F03E                           ; F03A D0 02
+        inc     <.p_text+1                             ; F03C E6 3F
+.L_F03E:  pla                                     ; F03E 68
         cmp     #$14                            ; F03F C9 14
-        bcs     LF046                           ; F041 B0 03
-        jmp     field.string.eval_code_10_13    ; F043 4C 39 F2
+        bcs     .L_F046                           ; F041 B0 03
+        jmp     textd.eval_code_10_13    ; F043 4C 39 F2
 ; ----------------------------------------------------------------------------
-LF046:  bne     LF04F                           ; F046 D0 07
-        lda     $84                             ; F048 A5 84
-        sta     $90                             ; F04A 85 90
+.L_F046:  bne     .L_F04F                           ; F046 D0 07
+        lda     <.parameter_byte                             ; F048 A5 84
+        sta     <.text_index                             ; F04A 85 90
         jmp     textd.draw_in_box     ; F04C 4C FA EE
 ; ----------------------------------------------------------------------------
-LF04F:  cmp     #$18                            ; F04F C9 18
-        bcs     LF09B                           ; F051 B0 48
+.L_F04F:  cmp     #$18                            ; F04F C9 18
+        bcs     .L_F09B                           ; F051 B0 48
         sec                                     ; F053 38
         sbc     #$15                            ; F054 E9 15
         clc                                     ; F056 18
         adc     #$78                            ; F057 69 78
-        sta     $81                             ; F059 85 81
+        sta     <$81                            ; F059 85 81
         lda     #$00                            ; F05B A9 00
-        sta     $80                             ; F05D 85 80
-        lda     $84                             ; F05F A5 84
-        sta     $90                             ; F061 85 90
-        lda     ($3E),y                         ; F063 B1 3E
-        sta     $82                             ; F065 85 82
+        sta     <$80                            ; F05D 85 80
+        lda     <.parameter_byte                             ; F05F A5 84
+        sta     <.text_index                             ; F061 85 90
+        lda     [.p_text],y                         ; F063 B1 3E
+        sta     <$82                            ; F065 85 82
         iny                                     ; F067 C8
-        lda     ($3E),y                         ; F068 B1 3E
-        sta     $83                             ; F06A 85 83
+        lda     [.p_text],y                         ; F068 B1 3E
+        sta     <$83                            ; F06A 85 83
         ldy     #$F1                            ; F06C A0 F1
-        lda     ($80),y                         ; F06E B1 80
-        ldx     $1E                             ; F070 A6 1E
-        bne     LF077                           ; F072 D0 03
-        inc     $1E                             ; F074 E6 1E
+        lda     [$80],y                         ; F06E B1 80
+        ldx     <$1E                            ; F070 A6 1E
+        bne     .L_F077                           ; F072 D0 03
+        inc     <$1E                            ; F074 E6 1E
         txa                                     ; F076 8A
-LF077:  tax                                     ; F077 AA
+.L_F077:  tax                                     ; F077 AA
         clc                                     ; F078 18
         adc     #$04                            ; F079 69 04
-        sta     ($80),y                         ; F07B 91 80
+        sta     [$80],y                         ; F07B 91 80
         txa                                     ; F07D 8A
         tay                                     ; F07E A8
-        lda     $84                             ; F07F A5 84
+        lda     <.parameter_byte                             ; F07F A5 84
         clc                                     ; F081 18
-        adc     $97                             ; F082 65 97
-        sta     ($80),y                         ; F084 91 80
-        lda     $98                             ; F086 A5 98
+        adc     <$97                            ; F082 65 97
+        sta     [$80],y                         ; F084 91 80
+        lda     <$98                            ; F086 A5 98
         clc                                     ; F088 18
-        adc     $1F                             ; F089 65 1F
+        adc     <.lines_drawn                             ; F089 65 1F
         iny                                     ; F08B C8
-        sta     ($80),y                         ; F08C 91 80
+        sta     [$80],y                         ; F08C 91 80
         iny                                     ; F08E C8
-        lda     $82                             ; F08F A5 82
-        sta     ($80),y                         ; F091 91 80
-        lda     $83                             ; F093 A5 83
+        lda     <$82                            ; F08F A5 82
+        sta     [$80],y                         ; F091 91 80
+        lda     <$83                            ; F093 A5 83
         iny                                     ; F095 C8
-        sta     ($80),y                         ; F096 91 80
+        sta     [$80],y                         ; F096 91 80
         jmp     textd.draw_in_box     ; F098 4C FA EE
 ; ----------------------------------------------------------------------------
-LF09B:  bne     LF0F0                           ; F09B D0 53
-LF09D:  lda     $84                             ; F09D A5 84
-        beq     LF0ED                           ; F09F F0 4C
-        lda     $90                             ; F0A1 A5 90
+.L_F09B:
+		bne     .L_F0F0                           ; F09B D0 53
+.L_F09D:
+;;textd.f09d_deref_param_text
+;;in $b9?
+		lda     <.parameter_byte                             ; F09D A5 84
+        beq     .L_F0ED                           ; F09F F0 4C
+;;F0A1
+        lda     <.text_index                             ; F0A1 A5 90
         pha                                     ; F0A3 48
-        jsr     LF3E4                           ; F0A4 20 E4 F3
+        jsr     $F3E4                           ; F0A4 20 E4 F3
         lda     #$18                            ; F0A7 A9 18
-        jsr     call_switchFirst2Banks          ; F0A9 20 03 FF
-        lda     $84                             ; F0AC A5 84
+        jsr     call_switch_2banks          ; F0A9 20 03 FF
+        lda     <.parameter_byte                             ; F0AC A5 84
         asl     a                               ; F0AE 0A
         tax                                     ; F0AF AA
-        bcs     LF0BD                           ; F0B0 B0 0B
+        bcs     .L_F0BD                           ; F0B0 B0 0B
         lda     $8800,x                         ; F0B2 BD 00 88
-        sta     $3E                             ; F0B5 85 3E
+        sta     <.p_text                             ; F0B5 85 3E
         lda     $8801,x                         ; F0B7 BD 01 88
-        jmp     LF0C5                           ; F0BA 4C C5 F0
+        jmp     textd.draw_item_name                          ; F0BA 4C C5 F0
 ; ----------------------------------------------------------------------------
-LF0BD:  lda     $8900,x                         ; F0BD BD 00 89
-        sta     $3E                             ; F0C0 85 3E
+.L_F0BD:  lda     $8900,x                         ; F0BD BD 00 89
+        sta     <.p_text                             ; F0C0 85 3E
         lda     $8901,x                         ; F0C2 BD 01 89
-LF0C5:  pha                                     ; F0C5 48
+.L_F0C5:
+;;textd.draw_item_name?
+		pha                                     ; F0C5 48
         and     #$1F                            ; F0C6 29 1F
         ora     #$80                            ; F0C8 09 80
-        sta     $3F                             ; F0CA 85 3F
+        sta     <.p_text+1                             ; F0CA 85 3F
         pla                                     ; F0CC 68
         lsr     a                               ; F0CD 4A
         lsr     a                               ; F0CE 4A
@@ -1703,25 +1735,26 @@ LF0C5:  pha                                     ; F0C5 48
         lsr     a                               ; F0D1 4A
         clc                                     ; F0D2 18
         adc     #$18                            ; F0D3 69 18
-        jsr     call_switchFirst2Banks          ; F0D5 20 03 FF
+        jsr     call_switch_2banks          ; F0D5 20 03 FF
         jsr     textd.draw_in_box     ; F0D8 20 FA EE
-        jsr     LF3ED                           ; F0DB 20 ED F3
+        jsr     $F3ED                           ; F0DB 20 ED F3
         pla                                     ; F0DE 68
         tax                                     ; F0DF AA
-        lda     $B9                             ; F0E0 A5 B9
-        beq     LF0ED                           ; F0E2 F0 09
+        lda     <$B9                            ; F0E0 A5 B9
+        beq     .L_F0ED                           ; F0E2 F0 09
         lda     #$00                            ; F0E4 A9 00
-        sta     $B9                             ; F0E6 85 B9
+        sta     <$B9                            ; F0E6 85 B9
+		;;73 == 'X' (unusable mark)
         lda     #$73                            ; F0E8 A9 73
-        sta     $07A0,x                         ; F0EA 9D A0 07
-LF0ED:  jmp     textd.draw_in_box     ; F0ED 4C FA EE
+        sta     .tile_buffer_lower,x                         ; F0EA 9D A0 07
+.L_F0ED:  jmp     textd.draw_in_box     ; F0ED 4C FA EE
 ; ----------------------------------------------------------------------------
-LF0F0:  cmp     #$19                            ; F0F0 C9 19
-        bne     LF114                           ; F0F2 D0 20
-        ldx     $84                             ; F0F4 A6 84
+.L_F0F0:  cmp     #$19                            ; F0F0 C9 19
+        bne     .L_F114                           ; F0F2 D0 20
+        ldx     <.parameter_byte                             ; F0F4 A6 84
         lda     $7B80,x                         ; F0F6 BD 80 7B
-        sta     $84                             ; F0F9 85 84
-        bne     LF10A                           ; F0FB D0 0D
+        sta     <.parameter_byte                             ; F0F9 85 84
+        bne     .L_F10A                           ; F0FB D0 0D
         lda     $79F1                           ; F0FD AD F1 79
         sec                                     ; F100 38
         sbc     #$04                            ; F101 E9 04
@@ -1730,66 +1763,66 @@ LF0F0:  cmp     #$19                            ; F0F0 C9 19
         clc                                     ; F108 18
         rts                                     ; F109 60
 ; ----------------------------------------------------------------------------
-LF10A:  lda     #$00                            ; F10A A9 00
-        sta     $B9                             ; F10C 85 B9
-        jmp     LF09D                           ; F10E 4C 9D F0
+.L_F10A:  lda     #$00                            ; F10A A9 00
+        sta     <$B9                            ; F10C 85 B9
+        jmp     textd.deref_param_text          ; F10E 4C 9D F0
 ; ----------------------------------------------------------------------------
-LF111:  jmp     textd.draw_in_box     ; F111 4C FA EE
+.L_F111:  jmp     textd.draw_in_box     ; F111 4C FA EE
 ; ----------------------------------------------------------------------------
-LF114:  cmp     #$1A                            ; F114 C9 1A
-        bne     LF128                           ; F116 D0 10
+.L_F114:  cmp     #$1A                            ; F114 C9 1A
+        bne     .L_F128                           ; F116 D0 10
         lda     #$00                            ; F118 A9 00
-        sta     $B9                             ; F11A 85 B9
-        ldx     $84                             ; F11C A6 84
-        lda     $60C0,x                         ; F11E BD C0 60
-        beq     LF111                           ; F121 F0 EE
-        sta     $84                             ; F123 85 84
-        jmp     LF09D                           ; F125 4C 9D F0
+        sta     <$B9                            ; F11A 85 B9
+        ldx     <.parameter_byte                             ; F11C A6 84
+        lda     party.backpack.item_id,x                         ; F11E BD C0 60
+        beq     .L_F111                           ; F121 F0 EE
+        sta     <.parameter_byte                             ; F123 85 84
+        jmp     textd.deref_param_text            ; F125 4C 9D F0
 ; ----------------------------------------------------------------------------
-LF128:  cmp     #$1B                            ; F128 C9 1B
-        bne     LF13F                           ; F12A D0 13
-        jsr     LF3AC                           ; F12C 20 AC F3
-        ldx     $84                             ; F12F A6 84
+.L_F128:  cmp     #$1B                            ; F128 C9 1B
+        bne     .L_F13F                           ; F12A D0 13
+        jsr     $F3AC                           ; F12C 20 AC F3
+        ldx     <.parameter_byte                             ; F12F A6 84
         lda     $7C00,x                         ; F131 BD 00 7C
-        beq     LF111                           ; F134 F0 DB
-        sta     $84                             ; F136 85 84
+        beq     .L_F111                           ; F134 F0 DB
+        sta     <.parameter_byte                             ; F136 85 84
         lda     #$00                            ; F138 A9 00
-        sta     $B9                             ; F13A 85 B9
-        jmp     LF09D                           ; F13C 4C 9D F0
+        sta     <$B9                            ; F13A 85 B9
+        jmp     textd.deref_param_text          ; F13C 4C 9D F0
 ; ----------------------------------------------------------------------------
-LF13F:  cmp     #$1C                            ; F13F C9 1C
-        bne     LF14C                           ; F141 D0 09
-        ldx     $84                             ; F143 A6 84
-        lda     $60E0,x                         ; F145 BD E0 60
-        beq     LF111                           ; F148 F0 C7
-        bne     LF166                           ; F14A D0 1A
-LF14C:  cmp     #$1D                            ; F14C C9 1D
-        bne     LF17A                           ; F14E D0 2A
-        lda     $84                             ; F150 A5 84
+.L_F13F:  cmp     #$1C                            ; F13F C9 1C
+        bne     .L_F14C                           ; F141 D0 09
+        ldx     <.parameter_byte                             ; F143 A6 84
+        lda     party.backpack.item_count,x                         ; F145 BD E0 60
+        beq     .L_F111                           ; F148 F0 C7
+        bne     .L_F166                           ; F14A D0 1A
+.L_F14C:  cmp     #$1D                            ; F14C C9 1D
+        bne     .L_F17A                           ; F14E D0 2A
+        lda     <.parameter_byte                             ; F150 A5 84
         lsr     a                               ; F152 4A
         lda     #$0A                            ; F153 A9 0A
-        bcc     LF159                           ; F155 90 02
+        bcc     .L_F159                           ; F155 90 02
         lda     #$18                            ; F157 A9 18
-LF159:  sta     $90                             ; F159 85 90
-        ldx     $84                             ; F15B A6 84
+.L_F159:  sta     <.text_index                             ; F159 85 90
+        ldx     <.parameter_byte                             ; F15B A6 84
         lda     $7C00,x                         ; F15D BD 00 7C
-        beq     LF111                           ; F160 F0 AF
+        beq     .L_F111                           ; F160 F0 AF
         tax                                     ; F162 AA
         lda     $6300,x                         ; F163 BD 00 63
-LF166:  sta     $80                             ; F166 85 80
-        ldx     $90                             ; F168 A6 90
-        inc     $90                             ; F16A E6 90
+.L_F166:  sta     <$80                            ; F166 85 80
+        ldx     <.text_index                             ; F168 A6 90
+        inc     <.text_index                             ; F16A E6 90
         lda     #$C8                            ; F16C A9 C8
-        sta     $07A0,x                         ; F16E 9D A0 07
+        sta     .tile_buffer_lower,x                         ; F16E 9D A0 07
         jsr     switch_to_character_logics_bank ; F171 20 27 F7
-        jsr     L8B29                           ; F174 20 29 8B
-        jmp     LF291                           ; F177 4C 91 F2
+        jsr     $8B29                           ; F174 20 29 8B
+        jmp     textd.switch_to_text_bank_and_continue_drawing  ; F177 4C 91 F2
 ; ----------------------------------------------------------------------------
-LF17A:  cmp     #$1E                            ; F17A C9 1E
-        bne     LF19A                           ; F17C D0 1C
-        jsr     getLastValidJobId               ; F17E 20 8A F3
-        cmp     $84                             ; F181 C5 84
-        bcs     LF192                           ; F183 B0 0D
+.L_F17A:  cmp     #$1E                            ; F17A C9 1E
+        bne     .L_F19A                           ; F17C D0 1C
+        jsr     field.get_max_available_job_id    ; F17E 20 8A F3
+        cmp     <.parameter_byte                             ; F181 C5 84
+        bcs     .L_F192                           ; F183 B0 0D
         lda     $78F1                           ; F185 AD F1 78
         sec                                     ; F188 38
         sbc     #$04                            ; F189 E9 04
@@ -1798,271 +1831,298 @@ LF17A:  cmp     #$1E                            ; F17A C9 1E
         clc                                     ; F190 18
         rts                                     ; F191 60
 ; ----------------------------------------------------------------------------
-LF192:  lda     $84                             ; F192 A5 84
+.L_F192:  lda     <.parameter_byte                             ; F192 A5 84
         clc                                     ; F194 18
         adc     #$E2                            ; F195 69 E2
         jmp     textd.deref_text_id             ; F197 4C D8 F2
 ; ----------------------------------------------------------------------------
-LF19A:  cmp     #$1F                            ; F19A C9 1F
-        bne     LF1BB                           ; F19C D0 1D
-        ldx     $84                             ; F19E A6 84
+.L_F19A:  cmp     #$1F                            ; F19A C9 1F
+        bne     .L_F1BB                           ; F19C D0 1D
+        ldx     <.parameter_byte                             ; F19E A6 84
         lda     $7200,x                         ; F1A0 BD 00 72
-        sta     $80                             ; F1A3 85 80
-        ldx     $90                             ; F1A5 A6 90
-        inc     $90                             ; F1A7 E6 90
+        sta     <$80                            ; F1A3 85 80
+        ldx     <.text_index                             ; F1A5 A6 90
+        inc     <.text_index                             ; F1A7 E6 90
         lda     #$C8                            ; F1A9 A9 C8
-        sta     $07A0,x                         ; F1AB 9D A0 07
+        sta     .tile_buffer_lower,x                         ; F1AB 9D A0 07
         lda     #$00                            ; F1AE A9 00
-        sta     $81                             ; F1B0 85 81
+        sta     <$81                            ; F1B0 85 81
         jsr     switch_to_character_logics_bank ; F1B2 20 27 F7
-        jsr     L8B57                           ; F1B5 20 57 8B
-        jmp     LF291                           ; F1B8 4C 91 F2
+        jsr     $8B57                           ; F1B5 20 57 8B
+        jmp     textd.switch_to_text_bank_and_continue_drawing ; F1B8 4C 91 F2
 ; ----------------------------------------------------------------------------
-LF1BB:  cmp     #$20                            ; F1BB C9 20
-        bne     LF1D1                           ; F1BD D0 12
-        ldx     $84                             ; F1BF A6 84
-        lda     $60C0,x                         ; F1C1 BD C0 60
-        beq     LF1F6                           ; F1C4 F0 30
-        sta     $84                             ; F1C6 85 84
+.L_F1BB:  cmp     #$20                            ; F1BB C9 20
+        bne     .L_F1D1                           ; F1BD D0 12
+        ldx     <.parameter_byte                             ; F1BF A6 84
+        lda     party.backpack.item_id,x                         ; F1C1 BD C0 60
+        beq     .L_F1F6                           ; F1C4 F0 30
+        sta     <.parameter_byte                             ; F1C6 85 84
         tax                                     ; F1C8 AA
         lda     $7200,x                         ; F1C9 BD 00 72
-        sta     $B9                             ; F1CC 85 B9
-        jmp     LF09D                           ; F1CE 4C 9D F0
+        sta     <$B9                            ; F1CC 85 B9
+        jmp     textd.deref_param_text          ; F1CE 4C 9D F0
 ; ----------------------------------------------------------------------------
-LF1D1:  cmp     #$21                            ; F1D1 C9 21
-        bne     LF1F9                           ; F1D3 D0 24
-        ldx     $84                             ; F1D5 A6 84
+.L_F1D1:  cmp     #$21                            ; F1D1 C9 21
+        bne     .L_F1F9                           ; F1D3 D0 24
+        ldx     <.parameter_byte                             ; F1D5 A6 84
         lda     $7B80,x                         ; F1D7 BD 80 7B
-        beq     LF1F6                           ; F1DA F0 1A
+        beq     .L_F1F6                           ; F1DA F0 1A
         lda     $7B90,x                         ; F1DC BD 90 7B
-        sta     $80                             ; F1DF 85 80
+        sta     <$80                            ; F1DF 85 80
         lda     $7B98,x                         ; F1E1 BD 98 7B
-        sta     $81                             ; F1E4 85 81
+        sta     <$81                            ; F1E4 85 81
         lda     $7BA0,x                         ; F1E6 BD A0 7B
-        sta     $82                             ; F1E9 85 82
+        sta     <$82                            ; F1E9 85 82
         jsr     switch_to_character_logics_bank ; F1EB 20 27 F7
-        jsr     L8B78                           ; F1EE 20 78 8B
-        lda     $93                             ; F1F1 A5 93
-        jsr     call_switchFirst2Banks          ; F1F3 20 03 FF
-LF1F6:  jmp     textd.draw_in_box     ; F1F6 4C FA EE
+        jsr     $8B78                           ; F1EE 20 78 8B
+        lda     <.text_bank                             ; F1F1 A5 93
+        jsr     call_switch_2banks          ; F1F3 20 03 FF
+.L_F1F6:  jmp     textd.draw_in_box     ; F1F6 4C FA EE
 ; ----------------------------------------------------------------------------
-LF1F9:  cmp     #$22                            ; F1F9 C9 22
-        bne     LF1F6                           ; F1FB D0 F9
+.L_F1F9:  cmp     #$22                            ; F1F9 C9 22
+        bne     .L_F1F6                           ; F1FB D0 F9
         lda     #$00                            ; F1FD A9 00
-        sta     $B9                             ; F1FF 85 B9
-        ldx     $84                             ; F201 A6 84
-        lda     $60C0,x                         ; F203 BD C0 60
-        beq     LF1F6                           ; F206 F0 EE
-        sta     $84                             ; F208 85 84
-        lda     $90                             ; F20A A5 90
+        sta     <$B9                            ; F1FF 85 B9
+        ldx     <.parameter_byte                             ; F201 A6 84
+        lda     party.backpack.item_id,x                         ; F203 BD C0 60
+        beq     .L_F1F6                           ; F206 F0 EE
+        sta     <.parameter_byte                             ; F208 85 84
+        lda     <.text_index                             ; F20A A5 90
         pha                                     ; F20C 48
-        jsr     LF3E4                           ; F20D 20 E4 F3
+        jsr     $F3E4                           ; F20D 20 E4 F3
         lda     #$18                            ; F210 A9 18
-        jsr     call_switchFirst2Banks          ; F212 20 03 FF
-        lda     $84                             ; F215 A5 84
+        jsr     call_switch_2banks          ; F212 20 03 FF
+        lda     <.parameter_byte                             ; F215 A5 84
         asl     a                               ; F217 0A
         tax                                     ; F218 AA
-        bcs     LF229                           ; F219 B0 0E
+        bcs     .L_F229                           ; F219 B0 0E
         lda     $8800,x                         ; F21B BD 00 88
         clc                                     ; F21E 18
         adc     #$01                            ; F21F 69 01
-        sta     $3E                             ; F221 85 3E
+        sta     <.p_text                             ; F221 85 3E
         lda     $8801,x                         ; F223 BD 01 88
-        jmp     LF234                           ; F226 4C 34 F2
+        jmp     .L_F234                           ; F226 4C 34 F2
 ; ----------------------------------------------------------------------------
-LF229:  lda     $8900,x                         ; F229 BD 00 89
+.L_F229:  lda     $8900,x                         ; F229 BD 00 89
         clc                                     ; F22C 18
         adc     #$01                            ; F22D 69 01
-        sta     $3E                             ; F22F 85 3E
+        sta     <.p_text                             ; F22F 85 3E
         lda     $8901,x                         ; F231 BD 01 89
-LF234:  adc     #$00                            ; F234 69 00
-        jmp     LF0C5                           ; F236 4C C5 F0
+.L_F234:  adc     #$00                            ; F234 69 00
+        jmp     textd.draw_item_name                          ; F236 4C C5 F0
 ; ----------------------------------------------------------------------------
 
 ;------------------------------------------------------------------------------------------------------
-field.string.eval_code_10_13:
+;;field.string.eval_code_10_13:
+textd.eval_code_10_13:
+;; --- variables.
+.text_index = $90
+.text_id = $92
+.text_bank = $93
+.p_text_table = $94	;;stores offset from $30000(18:8000) to the text 
+;; textd
+.p_text_line = $1c
+.lines_drawn = $1f
+.parameter_byte = $84
+;; ---
+.program_bank = $57
+;; --- window related
+.in_menu_mode = $37
+.window_left = $38
+.window_top = $39
+.offset_x = $3a
+.offset_y = $3b
+.window_width = $3c
+.window_height = $3d
+.p_text = $3e
+;;
+.tile_buffer_upper = $0780
+.tile_buffer_lower = $07a0
         lsr     a                               ; F239 4A
         ror     a                               ; F23A 6A
         ror     a                               ; F23B 6A
         and     #$C0                            ; F23C 29 C0
-        sta     $67                             ; F23E 85 67
-        lda     $84                             ; F240 A5 84
+        sta     <$67                            ; F23E 85 67
+        lda     <.parameter_byte                             ; F240 A5 84
         cmp     #$30                            ; F242 C9 30
-        bcc     LF299                           ; F244 90 53
-LF246:  cmp     #$FF                            ; F246 C9 FF
-        bne     LF289                           ; F248 D0 3F
-        ldx     $67                             ; F24A A6 67
+        bcc     .L_F299                           ; F244 90 53
+.L_F246:  cmp     #$FF                            ; F246 C9 FF
+        bne     .L_F289                           ; F248 D0 3F
+        ldx     <$67                            ; F24A A6 67
         lda     $6101,x                         ; F24C BD 01 61
         cmp     #$62                            ; F24F C9 62
-        bcs     LF291                           ; F251 B0 3E
-        sta     $80                             ; F253 85 80
+        bcs     .L_F291                           ; F251 B0 3E
+        sta     <$80                            ; F253 85 80
         asl     a                               ; F255 0A
         clc                                     ; F256 18
-        adc     $80                             ; F257 65 80
-        sta     $84                             ; F259 85 84
+        adc     <$80                            ; F257 65 80
+        sta     <$84                            ; F259 85 84
         lda     #$00                            ; F25B A9 00
         adc     #$80                            ; F25D 69 80
-        sta     $85                             ; F25F 85 85
+        sta     <$85                            ; F25F 85 85
         lda     #$39                            ; F261 A9 39
         jsr     call_switch1stBank              ; F263 20 06 FF
         ldy     #$B0                            ; F266 A0 B0
-        lda     ($84),y                         ; F268 B1 84
+        lda     [$84],y                         ; F268 B1 84
         sec                                     ; F26A 38
-        sbc     $6103,x                         ; F26B FD 03 61
-        sta     $80                             ; F26E 85 80
+        sbc     player.exp,x                    ; F26B FD 03 61
+        sta     <$80                            ; F26E 85 80
         iny                                     ; F270 C8
-        lda     ($84),y                         ; F271 B1 84
-        sbc     $6104,x                         ; F273 FD 04 61
-        sta     $81                             ; F276 85 81
+        lda     [$84],y                         ; F271 B1 84
+        sbc     player.exp+1,x                  ; F273 FD 04 61
+        sta     <$81                            ; F276 85 81
         iny                                     ; F278 C8
-        lda     ($84),y                         ; F279 B1 84
-        sbc     $6105,x                         ; F27B FD 05 61
-        sta     $82                             ; F27E 85 82
+        lda     [$84],y                         ; F279 B1 84
+        sbc     player.exp+2,x                  ; F27B FD 05 61
+        sta     <$82                            ; F27E 85 82
         jsr     switch_to_character_logics_bank ; F280 20 27 F7
-        jsr     L8B78                           ; F283 20 78 8B
-        jmp     LF291                           ; F286 4C 91 F2
+        jsr     $8B78                           ; F283 20 78 8B
+        jmp     textd.switch_to_text_bank_and_continue_drawing ; F286 4C 91 F2
 ; ----------------------------------------------------------------------------
-LF289:  pha                                     ; F289 48
+.L_F289:  pha                                     ; F289 48
         jsr     switch_to_character_logics_bank ; F28A 20 27 F7
         pla                                     ; F28D 68
-        jsr     L8998                           ; F28E 20 98 89
+        jsr     $8998                           ; F28E 20 98 89
 
 ;textd.switch_to_text_bank_and_continue_drawing
-LF291:  lda     $93                             ; F291 A5 93
-        jsr     call_switchFirst2Banks          ; F293 20 03 FF
+.L_F291:  lda     <.text_bank                             ; F291 A5 93
+        jsr     call_switch_2banks          ; F293 20 03 FF
         jmp     textd.draw_in_box     ; F296 4C FA EE
 ; ----------------------------------------------------------------------------
-LF299:  cmp     #$00                            ; F299 C9 00
-        bne     LF301                           ; F29B D0 64
-        ldx     $67                             ; F29D A6 67
-        lda     $6102,x                         ; F29F BD 02 61
+.L_F299:  cmp     #$00                            ; F299 C9 00
+        bne     .L_F301                           ; F29B D0 64
+        ldx     <$67                            ; F29D A6 67
+        lda     player.status,x                 ; F29F BD 02 61
         and     #$FE                            ; F2A2 29 FE
-        bne     LF2BB                           ; F2A4 D0 15
-        ldx     $90                             ; F2A6 A6 90
-        inc     $90                             ; F2A8 E6 90
-        inc     $90                             ; F2AA E6 90
+        bne     .L_F2BB                           ; F2A4 D0 15
+        ldx     <.text_index                             ; F2A6 A6 90
+        inc     <.text_index                             ; F2A8 E6 90
+        inc     <.text_index                             ; F2AA E6 90
         lda     #$5E                            ; F2AC A9 5E
-        sta     $07A0,x                         ; F2AE 9D A0 07
+        sta     .tile_buffer_lower,x                         ; F2AE 9D A0 07
         lda     #$5F                            ; F2B1 A9 5F
-        sta     $07A1,x                         ; F2B3 9D A1 07
-        lda     #$3E                            ; F2B6 A9 3E
-        jmp     LF246                           ; F2B8 4C 46 F2
+        sta     .tile_buffer_lower+1,x                         ; F2B3 9D A1 07
+        lda     #$3e                            ; F2B6 A9 3E
+        jmp     .L_F246                           ; F2B8 4C 46 F2
 ; ----------------------------------------------------------------------------
-LF2BB:  ldy     #$16                            ; F2BB A0 16
+.L_F2BB:  ldy     #$16                            ; F2BB A0 16
         asl     a                               ; F2BD 0A
-        bcs     LF2D7                           ; F2BE B0 17
+        bcs     .L_F2D7                           ; F2BE B0 17
         ldy     #$17                            ; F2C0 A0 17
         asl     a                               ; F2C2 0A
-        bcs     LF2D7                           ; F2C3 B0 12
+        bcs     .L_F2D7                           ; F2C3 B0 12
         ldy     #$1B                            ; F2C5 A0 1B
         asl     a                               ; F2C7 0A
-        bcs     LF2D7                           ; F2C8 B0 0D
+        bcs     .L_F2D7                           ; F2C8 B0 0D
         iny                                     ; F2CA C8
         asl     a                               ; F2CB 0A
-        bcs     LF2D7                           ; F2CC B0 09
+        bcs     .L_F2D7                           ; F2CC B0 09
         iny                                     ; F2CE C8
         asl     a                               ; F2CF 0A
-        bcs     LF2D7                           ; F2D0 B0 05
+        bcs     .L_F2D7                           ; F2D0 B0 05
         iny                                     ; F2D2 C8
         asl     a                               ; F2D3 0A
-        bcs     LF2D7                           ; F2D4 B0 01
+        bcs     .L_F2D7                           ; F2D4 B0 01
         iny                                     ; F2D6 C8
-LF2D7:  tya                                     ; F2D7 98
+.L_F2D7:  tya                                     ; F2D7 98
 ;textd.deref_text_id
-LF2D8:  tax                                     ; F2D8 AA
-        jsr     LF3E4                           ; F2D9 20 E4 F3
+.L_F2D8:  tax                                     ; F2D8 AA
+        jsr     $F3E4                           ; F2D9 20 E4 F3
         lda     #$18                            ; F2DC A9 18
-        jsr     call_switchFirst2Banks          ; F2DE 20 03 FF
+        jsr     call_switch_2banks          ; F2DE 20 03 FF
         txa                                     ; F2E1 8A
         asl     a                               ; F2E2 0A
         tax                                     ; F2E3 AA
-        bcs     LF2F1                           ; F2E4 B0 0B
-        lda     $8200,x                         ; F2E6 BD 00 82
-        sta     $3E                             ; F2E9 85 3E
-        lda     $8201,x                         ; F2EB BD 01 82
-        jmp     LF2F9                           ; F2EE 4C F9 F2
+        bcs     .L_F2F1                           ; F2E4 B0 0B
+        lda     textd.status_and_area_names,x   ; F2E6 BD 00 82
+        sta     <.p_text                        ; F2E9 85 3E
+        lda     textd.status_and_area_names+1,x ; F2EB BD 01 82
+        jmp     .L_F2F9                           ; F2EE 4C F9 F2
 ; ----------------------------------------------------------------------------
-LF2F1:  lda     $8300,x                         ; F2F1 BD 00 83
-        sta     $3E                             ; F2F4 85 3E
-        lda     $8301,x                         ; F2F6 BD 01 83
-LF2F9:  tax                                     ; F2F9 AA
-        lda     $90                             ; F2FA A5 90
+.L_F2F1:  lda     textd.status_and_area_names+$100,x  ; F2F1 BD 00 83
+        sta     <.p_text                             ; F2F4 85 3E
+        lda     textd.status_and_area_names+$101,x  ; F2F6 BD 01 83
+.L_F2F9:  tax                                     ; F2F9 AA
+        lda     <.text_index                             ; F2FA A5 90
         pha                                     ; F2FC 48
         txa                                     ; F2FD 8A
-        jmp     LF0C5                           ; F2FE 4C C5 F0
+        jmp     textd.draw_item_name           ; F2FE 4C C5 F0
 ; ----------------------------------------------------------------------------
-LF301:  cmp     #$01                            ; F301 C9 01
-        bne     LF310                           ; F303 D0 0B
-        ldx     $67                             ; F305 A6 67
-        lda     $6100,x                         ; F307 BD 00 61
+.L_F301:  cmp     #$01                            ; F301 C9 01
+        bne     .L_F310                           ; F303 D0 0B
+        ldx     <$67                            ; F305 A6 67
+        lda     player.job,x                    ; F307 BD 00 61
         clc                                     ; F30A 18
         adc     #$E2                            ; F30B 69 E2
         jmp     textd.deref_text_id             ; F30D 4C D8 F2
 ; ----------------------------------------------------------------------------
-LF310:  cmp     #$02                            ; F310 C9 02
-        bne     LF348                           ; F312 D0 34
-        ldx     $67                             ; F314 A6 67
-        lda     $6106,x                         ; F316 BD 06 61
-        sta     $5A                             ; F319 85 5A
-        lda     $6107,x                         ; F31B BD 07 61
-        sta     $5B                             ; F31E 85 5B
-        lda     $6108,x                         ; F320 BD 08 61
-        sta     $5C                             ; F323 85 5C
-        lda     $6109,x                         ; F325 BD 09 61
-        sta     $5D                             ; F328 85 5D
-        lda     $610A,x                         ; F32A BD 0A 61
-        sta     $5E                             ; F32D 85 5E
-        lda     $610B,x                         ; F32F BD 0B 61
-        sta     $5F                             ; F332 85 5F
-        jsr     LF3E4                           ; F334 20 E4 F3
+.L_F310:  cmp     #$02                            ; F310 C9 02
+        bne     .L_F348                           ; F312 D0 34
+        ldx     <$67                            ; F314 A6 67
+        lda     player.name+0,x                 ; F316 BD 06 61
+        sta     <$5A                            ; F319 85 5A
+        lda     player.name+1,x                 ; F31B BD 07 61
+        sta     <$5B                            ; F31E 85 5B
+        lda     player.name+2,x                 ; F320 BD 08 61
+        sta     <$5C                            ; F323 85 5C
+        lda     player.name+3,x                 ; F325 BD 09 61
+        sta     <$5D                            ; F328 85 5D
+        lda     player.name+4,x                 ; F32A BD 0A 61
+        sta     <$5E                            ; F32D 85 5E
+        lda     player.name+5,x                 ; F32F BD 0B 61
+        sta     <$5F                            ; F332 85 5F
+        jsr     $F3E4                           ; F334 20 E4 F3
         lda     #$5A                            ; F337 A9 5A
-        sta     $3E                             ; F339 85 3E
+        sta     <.p_text                        ; F339 85 3E
         lda     #$00                            ; F33B A9 00
-        sta     $3F                             ; F33D 85 3F
+        sta     <.p_text+1                      ; F33D 85 3F
         jsr     textd.draw_in_box     ; F33F 20 FA EE
-        jsr     LF3ED                           ; F342 20 ED F3
+        jsr     $F3ED                           ; F342 20 ED F3
         jmp     textd.draw_in_box     ; F345 4C FA EE
 ; ----------------------------------------------------------------------------
-LF348:  cmp     #$08                            ; F348 C9 08
-        bcs     LF373                           ; F34A B0 27
+.L_F348:  cmp     #$08                            ; F348 C9 08
+        bcs     .L_F373                           ; F34A B0 27
         sec                                     ; F34C 38
         sbc     #$03                            ; F34D E9 03
         cmp     #$04                            ; F34F C9 04
-        bne     LF356                           ; F351 D0 03
+        bne     .L_F356                           ; F351 D0 03
         clc                                     ; F353 18
         adc     #$01                            ; F354 69 01
-LF356:  ora     $67                             ; F356 05 67
+.L_F356:  ora     <$67                            ; F356 05 67
         tax                                     ; F358 AA
-        lda     $6200,x                         ; F359 BD 00 62
-        bne     LF368                           ; F35C D0 0A
+        lda     player.equips,x                 ; F359 BD 00 62
+        bne     .L_F368                           ; F35C D0 0A
         txa                                     ; F35E 8A
         and     #$07                            ; F35F 29 07
         tax                                     ; F361 AA
-        lda     LF36D,x                         ; F362 BD 6D F3
+        lda     .L_F36D,x                         ; F362 BD 6D F3
         jmp     textd.deref_text_id             ; F365 4C D8 F2
 ; ----------------------------------------------------------------------------
-LF368:  sta     $84                             ; F368 85 84
-        jmp     LF0A1                           ; F36A 4C A1 F0
+.L_F368:  sta     <$84                            ; F368 85 84
+        jmp     $F0A1                           ; F36A 4C A1 F0
 ; ----------------------------------------------------------------------------
-LF36D:  cmp     $DFDE,x                         ; F36D DD DE DF
-        cpx     #$E1                            ; F370 E0 E1
-        .byte   $E1                             ; F372 E1
-LF373:  sec                                     ; F373 38
+.L_F36D:
+		.db $dd, $de, $df, $e0, $e1, $e1
+		;cmp     $DFDE,x                         ; F36D DD DE DF
+        ;cpx     #$E1                            ; F370 E0 E1
+        ;.byte   $E1                             ; F372 E1
+; ----------------------------------------------------------------------------
+.L_F373:  sec                                     ; F373 38
         sbc     #$08                            ; F374 E9 08
         tax                                     ; F376 AA
         lda     $7C00,x                         ; F377 BD 00 7C
-        beq     LF387                           ; F37A F0 0B
-        sta     $84                             ; F37C 85 84
+        beq     .L_F387                           ; F37A F0 0B
+        sta     <$84                            ; F37C 85 84
         tax                                     ; F37E AA
         lda     $7200,x                         ; F37F BD 00 72
-        sta     $B9                             ; F382 85 B9
-        jmp     LF09D                           ; F384 4C 9D F0
+        sta     <$B9                            ; F382 85 B9
+        jmp     textd.deref_param_text          ; F384 4C 9D F0
 ; ----------------------------------------------------------------------------
-LF387:  jmp     textd.draw_in_box     ; F387 4C FA EE
+.L_F387:  jmp     textd.draw_in_box     ; F387 4C FA EE
 ; ----------------------------------------------------------------------------
+	VERIFY_PC $f38a
 	.endif	;0
 
-	VERIFY_PC $f38a
 	.endif	;FAST_FIELD_WINDOW
 ;======================================================================================================
 ;$3f:f40a setVramAddrForWindow
@@ -2192,7 +2252,7 @@ field.init_window_tile_buffer:
 ;$f69c
 ;	field::sync_ppu_scroll();	//$ede1();
 ;	field::callSoundDriver();
-;	call_switchFirst2Banks(per8kbank:a = $93);	//$ff03
+;	call_switch_2banks(per8kbank:a = $93);	//$ff03
 ;	return $f683();	//??? a= ($93+1)
 ;$f6aa:
 ;}
