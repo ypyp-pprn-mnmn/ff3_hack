@@ -15,8 +15,8 @@ if (-not (Test-Path $work_dir)) {
 ## const.
 $cc65_bin = "d:\Documents\emulator\nes\tools\cc65\bin";
 $da65 = "${cc65_bin}\da65.exe";
-$project_root = "../../";
-
+$nes_file = Convert-Path -Path $nes_file;
+$work_dir = Convert-Path -Path $work_dir;
 ## parse command line arguments
 #$bank_and_address = ($bank_and_address -replace "[^0-9a-fA-F]");
 #$bank_and_address -match "([0-9a-fA-F]{2})([0-9a-fA-F]{4})(.*?)" | Out-Null;
@@ -25,17 +25,24 @@ $project_root = "../../";
 ## params.
 #$work_dir = "${project_root}/work/inspections/${addr}_${romoffset}"
 $info_file = "${work_dir}/da65.info.txt"
-$out_path = "${work_dir}/out.txt"
+#$out_path = "${work_dir}/out.txt"
 ## do it.
 ## note: parameters not specified here could be found in 'info' file.
 $args = @(
     "--cpu 65c02",
     #"--hexoffs",
-    "--info ${info_file}"
+    "--info '${info_file}'"
     #"--start-addr ${start_addr}",
-    "-o ${out_path}",
-    "${nes_file}"
+    #"-o ${out_path}",
+    "'${nes_file}'"
 );
 $command = "${da65} $(${args} -join ' ')";
 Write-Host -ForegroundColor Gray $command;
-Invoke-Expression $command;
+try {
+    Push-Location $work_dir | Out-Null
+    Invoke-Expression $command;
+} catch {
+    throw;
+} finally {
+    Pop-Location | Out-Null;
+}
