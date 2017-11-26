@@ -33,12 +33,23 @@ field.sync_ppu_scroll_with_player	= $e571
 ;field.stream_string_in_window	= $ee65
 ;field.load_and_draw_string	= $ee9a
 ;field.draw_string_in_window	= $eec0
-field.eval_and_draw_string = $eefa
+
+textd.draw_in_box = $eefa
+textd.eval_replacement = $f02a
+textd.switch_to_text_bank_and_continue_drawing = $f291
+textd.deref_text_id = $f2d8
+
+textd.tile_map_lower = $F4E1	;static table that maps charcode into tile id
+textd.tile_map_upper = $f515	;static table that maps charcode into tile id
+
+;floor.get_item_price = $f5d4	;ff3_floor_treasure.asm
+
 ;field.calc_draw_width_and_init_window_tile_buffer = $f670
 ;field.init_window_tile_buffer = $f683 ;fill 0780..79d/07c0..7dd with 0xFF
 ;field.upload_window_content	= $f6aa	;impl replaced but stay at the original addr
 ;;
-switchBanksTo3c3d			= $f727
+;switchBanksTo3c3d			= $f727
+switch_to_character_logics_bank = $f727
 ;; ppu drivers, mostly used only in battle mode
 ppud.do_sprite_dma			= $f8aa
 ppud.update_sprites_and_palette_after_nmi = $f8b0
