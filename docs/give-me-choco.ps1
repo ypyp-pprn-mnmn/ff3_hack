@@ -212,6 +212,6 @@ try {
 	$find_result = find_target_with_context $bank $addr
 	make_me_happy $bank $addr $find_result
 } catch {
-	#write-host -ForegroundColor DarkRed $error[0].Exception.Message
-	throw;
+	write-host -ForegroundColor DarkRed $error[0].Exception.Message
+	#throw;
 }
