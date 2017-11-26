@@ -58,6 +58,7 @@ PLAYER_maxmp_lv1		.rs 1
 ;------------------------------------------------------------------------------
 ;; party.
 party.world_id = $6007	;tbd. $3b:a12b
+party.ally_npc = $600b	;
 party.float_land_X = $600c;	tbd. $3e:c4fc
 party.float_land_Y = $600d;	tbd. $3e:c4fc
 party.leader_offset = $600e	;tbd.
