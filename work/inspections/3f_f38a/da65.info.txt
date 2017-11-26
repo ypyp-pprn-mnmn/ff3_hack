@@ -1,9 +1,9 @@
 GLOBAL {
 	COMMENTS	3;
-	INPUTOFFS	$7EEFA;
-	STARTADDR	$eefa;
-	INPUTSIZE	$00130;
-	OUTPUTNAME	"3f_eefa-field.eval_and_draw_string.da65out.txt";
+	INPUTOFFS	$7F38A;
+	STARTADDR	$f38a;
+	INPUTSIZE	$00080;
+	OUTPUTNAME	"3f_f38a-getLastValidJobId.da65out.txt";
 };
 LABEL {
 	NAME "commandWindow_OnBack";
