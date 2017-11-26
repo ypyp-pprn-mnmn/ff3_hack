@@ -1,0 +1,10 @@
+GLOBAL {
+	COMMENTS	3;
+	INPUTOFFS	$7eefa;
+	STARTADDR	$eefa;
+	INPUTSIZE	$500;
+	
+	#CPU	"65C02";
+	#INPUTNAME	"ff3_hack_beta.nes";
+	#OUTPUTNAME	"ff3.disasm.txt";
+};
