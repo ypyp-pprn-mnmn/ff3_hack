@@ -165,6 +165,18 @@ soundDriver_musicId	= $7f43
 soundDriver_effectId= $7f49	;msb should be 1
 ;----------------------------------------------------------------------------------------------------------
 ;in memory structs
+party.world_id = $6007	;tbd. $3b:a12b
+party.float_land_X = $600c;	tbd. $3e:c4fc
+party.float_land_Y = $600d;	tbd. $3e:c4fc
+party.leader_offset = $600e	;tbd.
+party.message_speed = $6010	;tbd.
+party.capacity = $601b
+party.gil = $601c	;24bit
+party.event_flags = $6020	; 0x20 bytes (256 flags, including job flags) tbd. $3c:9344
+party.job_flags = $6021	;lower 5bits represents each events
+party.treasure_flags = $6040
+party.object_flags = $6080	;tbd. $3b:b34e, $3b:b51a
+
 backpackItems		= $60c0
 playerBaseParams	= $6100
 playerEquips		= $6200

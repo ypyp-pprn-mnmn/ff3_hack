@@ -1336,7 +1336,7 @@ field.draw_string_in_window:	;;$eec0
 	jmp field.restore_banks	;carry will be implictly cleared
 ;$eef1
 field_x.clc_return:
-	FIX_OFFSET_ON_CALLER $3f,$eefe+1
+	;FIX_OFFSET_ON_CALLER $3f,$eefe+1
 	clc
 	rts
 
