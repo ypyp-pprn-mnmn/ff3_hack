@@ -38,9 +38,13 @@ field.sync_ppu_scroll_with_player	= $e571
 textd.draw_in_box = $eefa
 textd.eval_replacement = $f02a
 textd.deref_param_text = $f09d
-textd.draw_item_name = $f0c5
-textd.switch_to_text_bank_and_continue_drawing = $f291
+textd.deref_param_text_unsafe = $f0a1
+textd.draw_embedded_text = $f0c5
+textd.continue_with_text = $f291
 textd.deref_text_id = $f2d8
+textd.draw_player_name = $f316
+textd.save_text_ptr = $f3e4
+textd.restore_text_ptr = $f3ed
 
 field.get_max_available_job_id = $f38a
 
