@@ -12,14 +12,15 @@ Param(
 ## const.
 $docs_root = "../docs"
 $sources = "${docs_root}/codes";
-$draft_dir_name = "_drafts";
+#$draft_dir_name = "_drafts";
 $pandoc_data_dir = "${docs_root}/codes/_pandoc";
 $pandoc_template_dir_name = "pandoc-toc-sidebar";
 $pandoc_template_dir = "${pandoc_data_dir}/${pandoc_template_dir_name}";
 #
 $pandoc_metadata = "${pandoc_data_dir}/metadata.yaml";
-$pandoc_template = "${pandoc_template_dir}/toc-sidebar.html";
+$pandoc_template = "${pandoc_template_dir}/toc-sidebarL.html";	#'L': self-contained / 'l'ocal, css/js are getting self-contained also
 $pandoc_nav = "${pandoc_template_dir}/nav";
+$pandoc_date = $(date -Format "yyyy-MM-dd hh:mm:ss+0900");
 
 $outpath = "code-reference.html";
 ## parse command line arguments
@@ -32,6 +33,9 @@ $pandoc_args = @(
 	"--standalone",
 	"--self-contained",
 	#"--metadata=title:'${title}'",
+	"--metadata 'date:${pandoc_date}'",
+	"--variable 'date:${pandoc_date}'",
+	"--resource-path '${pandoc_template_dir};${docs_root}'",
 	#"--data-dir ${pandoc_data_dir}"
 	"--template ${pandoc_template}",
 	"--include-before ${pandoc_nav}",
