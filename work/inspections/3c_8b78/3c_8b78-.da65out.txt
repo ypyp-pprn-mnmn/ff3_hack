@@ -1,0 +1,1441 @@
+; da65 V2.11.0 - (C) Copyright 2000-2005,  Ullrich von Bassewitz
+; Created:    2017-11-26 20:36:04
+; Input file: D:\Documents\programming\eclipse workspaces\ff3\hack-and-patch\work\base-binary\ff3_hack_base.nes.noheader
+; Page:       1
+
+
+        .setcpu "65C02"
+
+; ----------------------------------------------------------------------------
+L0F29           := $0F29
+invokeEffectFunction:= $8000                    ; bank $32
+soundDriverEntry:= $8003                        ; bank $36
+6401f           := $800F                        ; bank $32
+dispatchBattleFunction:= $8012                  ; bank $34
+playNoiseAndSquare1:= $8030                     ; bank $36
+setCurrentPlayerPtrs:= $806C                    ; bank $34
+battleLoop      := $8074                        ; bank $34
+endBattle       := $8160                        ; bank $34
+presentCharacter:= $8185                        ; bank $34
+initBattleVars  := $8213                        ; bank $34
+battle.increment_number_of_command_selection:= $8271; bank $34
+updatePlayerBaseParams:= $8306                  ; bank $34
+beginBattlePhase:= $8374                        ; bank $34
+playEffect      := $8411                        ; bank $34
+playEffect_0F   := $8460                        ; bank $34
+playEffect_0e   := $8470                        ; bank $34
+buildEnemyDeadBits:= $8496                      ; bank $34
+playEffect_0d   := $84D7                        ; bank $34
+playEffect_0c   := $84F6                        ; bank $34
+playEffect_0b   := $84FB                        ; bank $34
+playEffect_09   := $850A                        ; bank $34
+effect08        := $8516                        ; bank $34
+effect06        := $8528                        ; bank $34
+effect07        := $852D                        ; bank $34
+set52toActorIndexFromEffectBit:= $8532          ; bank $34
+getBattleFieldId:= $8533                        ; bank $3a
+playEffect_04   := $853B                        ; bank $34
+playEffect_05   := $8540                        ; bank $34
+dispatchPresentScene_1f:= $8545                 ; bank $34
+playEffect_03   := $8576                        ; bank $34
+playEffect_01   := $8577                        ; bank $34
+playEffect_00   := $8613                        ; bank $34
+doNothing_8689  := $8689                        ; bank $34
+showDamage      := $868A                        ; bank $34
+targetBitToCharIndex:= $86AB                    ; bank $34
+set_encounter_mode:= $87BE                      ; bank $34
+setPlayerPtrs   := $88E1                        ; bank $34
+loadCursorSprites:= $8902                       ; bank $34
+updateMusicStream:= $8925                       ; bank $36
+tileSprites2x2  := $892E                        ; bank $34
+loadAndInitCursorPos:= $8966                    ; bank $34
+getInputAndUpdateCursorWithSound:= $899E        ; bank $34
+switch2ndBankToSoundDataBank:= $899F            ; bank $36
+effect_17       := $89B7                        ; bank $32
+getInputAndUpdateCursor_OnB:= $89DE             ; bank $34
+getInputAndUpdateCursor_OnA:= $89E6             ; bank $34
+getInputAndUpdateCursor_OnUp:= $89EE            ; bank $34
+getInputAndUpdateCursor_OnLeft:= $8A82          ; bank $34
+getInputAndUpdateCursor_OnRight:= $8A9F         ; bank $34
+stopMusic       := $8AA7                        ; bank $36
+getInputAndUpdateCursor_OnStartOrSelect:= $8ABE ; bank $34
+muteChannels    := $8AC0                        ; bank $36
+getInputAndUpdateCursor_end:= $8AC1             ; bank $34
+moveSelection_dispatchInput_inputHandlers8:= $8ACF; bank $34
+init4SpritesAt$0220:= $8ADF                     ; bank $34
+incrementEffectFrame:= $8AE6                    ; bank $32
+draw8LineWindow := $8B38                        ; bank $34
+fieldMenu.updateCursorPos:= $91A3               ; bank $3c
+floor.getDynamicChip:= $91C8                    ; bank $3a
+setNoTargetMessage:= $91CE                      ; bank $34
+dispCommand_08_show_effect_message:= $91D4      ; bank $34
+dispCommand_09_show_message:= $91FE             ; bank $34
+L920D           := $920D
+dispCommand09_sub00:= $923C                     ; bank $34
+loadStatusMessage:= $9245                       ; bank $34
+drawMessageWindow:= $9253                       ; bank $34
+dispCommand09_sub01:= $925F                     ; bank $34
+floor.init      := $9267                        ; bank $3a
+waitPad1ADown   := $926B                        ; bank $34
+dispCommand09_sub02:= $9275                     ; bank $34
+printHp         := $92B5                        ; bank $34
+dispCommand09_sub03:= $92DB                     ; bank $34
+floor.copyEventScriptStream:= $92F3             ; bank $3c
+dispCommand09_sub04:= $932B                     ; bank $34
+getEventFlag    := $9344                        ; bank $3c
+dispCommand_0B  := $934E                        ; bank $34
+dispCommand_0C  := $9354                        ; bank $34
+dispCommand_0D  := $935F                        ; bank $34
+floor.searchSpaceForItem:= $937E                ; bank $3c
+dispCommand_0E  := $93C4                        ; bank $34
+updatePlayerStatus:= $93CD                      ; bank $34
+updateEnemyStatus:= $9408                       ; bank $34
+dispCommand_0A_waitForAButtonDownOrMessageTimeOut:= $9450; bank $34
+dispCommand_00010204_closeWindow:= $94D6        ; bank $34
+dispCommand_03_back4or5CommandIfMessageRemainsElseClose:= $94E7; bank $34
+functionTableFor$8ff7_presentBattle0x0e:= $954D ; bank $34
+setTableBaseAddrTo$8a40:= $95BD                 ; bank $34
+setTableBaseAddrTo$8c40:= $95C6                 ; bank $34
+setTableBaseAddrTo$00e0:= $95CF                 ; bank $34
+setTableBaseAddrTo$00f0:= $95D8                 ; bank $34
+itoa_16         := $95E1                        ; bank $34
+jobMenu.main    := $962F                        ; bank $3c
+countAndDecrementUntil0:= $9648                 ; bank $34
+strToTileArray  := $966A                        ; bank $34
+putDakuten      := $96F9                        ; bank $34
+putHandakuten   := $9707                        ; bank $34
+getPrevLinePtr  := $9715                        ; bank $34
+strToTileArray_OnLinefeed:= $9735               ; bank $34
+strToTileArray_OnChar02:= $9745                 ; bank $34
+initTileArrayStorage:= $9754                    ; bank $34
+calcActionOrder := $9777                        ; bank $34
+getCommandInput := $986C                        ; bank $34
+showBlowSprite_02:= $98D1                       ; bank $32
+showBlowSprite_01:= $98E0                       ; bank $32
+getRandomizedBlowSpritePosition:= $98E8         ; bank $32
+effectCommand_01:= $9A1C                        ; bank $32
+rewindCharacterIndex:= $9A42                    ; bank $34
+commandWindow_OnCommand0001090a13:= $9A68       ; bank $34
+createCommandWindow:= $9A69                     ; bank $34
+putCanceledItem := $9AE7                        ; bank $34
+playSoundEffect := $9B79                        ; bank $34
+setYtoOffsetOf  := $9B88                        ; bank $34
+setYtoOffset03  := $9B8D                        ; bank $34
+setYtoOffset2F  := $9B94                        ; bank $34
+setYtoOffset2E  := $9B9B                        ; bank $34
+drawInfoWindow  := $9BA2                        ; bank $34
+cachePlayerStatus:= $9D1D                       ; bank $34
+presentSceneThunk:= $9D53                       ; bank $2e
+drawEnemyNamesWindow:= $9D9E                    ; bank $34
+executeAction   := $9DE4                        ; bank $34
+invokeBattleFunction:= $9E58                    ; bank $30
+doFight         := $9E8A                        ; bank $30
+initBattle      := $9E8E                        ; bank $2e
+effectCommand_03:= $9F11                        ; bank $32
+putCharacterSprites:= $9F71                     ; bank $32
+setActorCommandIdAndClearMode:= $9F7B           ; bank $34
+setActionTargetToSelf:= $9F87                   ; bank $34
+handleCommand00_0a_do_nothing:= $9FA8           ; bank $34
+actionHandlers0x15:= $9FAC                      ; bank $34
+executeAction_summon:= $9FD6                    ; bank $34
+putStatusSprites:= $9FE4                        ; bank $32
+floor.call_dispatchObjectEvent:= $A000          ; bank $3b
+loadEnemyGroups := $A02A                        ; bank $2f
+beginSwingFrame := $A059                        ; bank $33
+fill_A0hBytes_f0_at$0200andSet$c8_0:= $A05E     ; bank $33
+blowEffect_swingCountBoundForWeaponTypes:= $A077; bank $33
+blowEffect_dispatchWeaponFunction_handlers:= $A080; bank $33
+blowEffect_limitHitCountAndDispatchWeaponFunction:= $A094; bank $33
+effect_playerBlow:= $A0C0                       ; bank $33
+randomizeEnemyCount:= $A0C8                     ; bank $2f
+load_enemy_graphics_params:= $A0E7              ; bank $2f
+command_fight   := $A104                        ; bank $35
+floor.object.dispatchEvent:= $A12B              ; bank $3b
+render_enemy_graphics:= $A14A                   ; bank $2f
+blowEffect_type04:= $A1A5                       ; bank $33
+loadSprites     := $A1B9                        ; bank $2f
+blowEffect_type07:= $A1EF                       ; bank $33
+getHitCountOfCurrentHand:= $A245                ; bank $33
+blowEffect_type03:= $A251                       ; bank $33
+getActor2C      := $A2B5                        ; bank $31
+cacheStatus     := $A2BA                        ; bank $31
+checkmagic      := $A2DF                        ; bank $3d
+getRandomTargetFromEnemyParty:= $A2E9           ; bank $31
+blowEffect_type00_08:= $A2F2                    ; bank $33
+blowEffect_type09:= $A2FB                       ; bank $33
+getRandomTarget := $A300                        ; bank $31
+getIndexOfGreatest:= $A30F                      ; bank $35
+createIndexToGroupMap:= $A31F                   ; bank $2f
+consumeEquippedItem:= $A353                     ; bank $35
+blowEffect_type01:= $A365                       ; bank $33
+handleCommand14_castMagic:= $A367               ; bank $35
+sumDamageForDisplay:= $A368                     ; bank $31
+blowEffect_type02:= $A36F                       ; bank $33
+doSwing         := $A379                        ; bank $33
+load_enemy_patterns:= $A37F                     ; bank $2f
+addToAttackOffsetOf:= $A389                     ; bank $31
+load_enemy_pattern:= $A38C                      ; bank $2f
+isRangedWeapon  := $A397                        ; bank $31
+load_enemy_graphics_for_layout9:= $A3AB         ; bank $2f
+get_enemy_graphics_address_for_layout9:= $A3B8  ; bank $2f
+handleCommand13_useItem:= $A3BB                 ; bank $35
+clearWeaponSprite:= $A3F9                       ; bank $33
+loadBattlePlayers:= $A400                       ; bank $31
+fill_A0hBytes_f0_at$0200:= $A42B                ; bank $33
+getActor2C      := $A42E                        ; bank $35
+endInputCommand := $A433                        ; bank $35
+getWeaponSprite := $A438                        ; bank $33
+getSys0Random   := $A446                        ; bank $33
+getSys0Random_00_ff:= $A44F                     ; bank $33
+canPlayerPartyContinueFighting:= $A458          ; bank $35
+loadPlayer      := $A482                        ; bank $31
+loadMobParam    := $A4F6                        ; bank $31
+fireCannon      := $A50B                        ; bank $35
+fieldMenu.main  := $A52F                        ; bank $3d
+updatePlayerOffset:= $A541                      ; bank $35
+initString      := $A549                        ; bank $35
+offset$4E_16    := $A558                        ; bank $35
+getSys1Random   := $A564                        ; bank $35
+modifyActionMessage:= $A56F                     ; bank $35
+loadString      := $A609                        ; bank $35
+useItem         := $A65E                        ; bank $31
+fieldMenu.selectCharacter:= $A6B4               ; bank $3d
+commandWindow_OnForwardSelected:= $A71C         ; bank $35
+decideEnemyAction:= $A732                       ; bank $31
+flashEnemy      := $A738                        ; bank $2f
+commandWindow_OnBack:= $A750                    ; bank $35
+showArrowAndDecideCommand:= $A784               ; bank $35
+movePosition_end:= $A7C8                        ; bank $35
+initMoveArrowSprite:= $A7CD                     ; bank $35
+command_forward := $A7DF                        ; bank $35
+LA7E6           := $A7E6
+command_back    := $A7EA                        ; bank $35
+getInvertedLineFlag:= $A816                     ; bank $35
+Point           := $A823                        ; bank $35
+Point           := $A833                        ; bank $35
+commandWindow_OnAttackSelected:= $A843          ; bank $35
+commandWindow_selectSingleTargetAndGoNext:= $A848; bank $35
+commandWindow_OnGuard:= $A877                   ; bank $35
+field.loadAndDrawString:= $A87A                 ; bank $3d
+command_guard   := $A881                        ; bank $35
+saveMenu.close  := $A88C                        ; bank $3d
+fieldMenu.OnSaveSelected:= $A897                ; bank $3d
+commandWindow_OnEscapeSelected:= $A8AB          ; bank $35
+commandWindow_OnSneakAway:= $A8B5               ; bank $35
+command_escape  := $A8BF                        ; bank $35
+getEffectTarget2C:= $A8C8                       ; bank $31
+setRandomTargetFromEnemyParty:= $A8CD           ; bank $31
+setEnemyTarget  := $A8E1                        ; bank $31
+loadBlowEffectParams:= $A8EA                    ; bank $2f
+decideEnemyActionTarget:= $A91B                 ; bank $31
+command_sneakAway:= $A93B                       ; bank $35
+commandWindow_OnJump:= $A9AB                    ; bank $35
+loadActorSprite := $A9CF                        ; bank $2f
+command_jump    := $A9D8                        ; bank $35
+isValidTarget   := $A9F7                        ; bank $31
+command_09_landing:= $AA11                      ; bank $35
+calcPlayerParam := $AA16                        ; bank $31
+commandWindow_0b_geomance:= $AA22               ; bank $35
+getCommandInput_goNextCharacter:= $AA56         ; bank $35
+command_0b      := $AA5D                        ; bank $35
+field.get_menu_window_metrics:= $AABC           ; bank $3d
+getCurrentTerrain:= $AAC3                       ; bank $35
+field.draw_menu_window:= $AAF1                  ; bank $3d
+field.menu_window_metrics:= $AAF7               ; bank $3d
+geomanceTargetFlag:= $AB06                      ; bank $35
+commandWindow_OnDetect:= $AB07                  ; bank $35
+command_detect  := $AB0C                        ; bank $35
+setEffectHandlerTo18:= $AB66                    ; bank $35
+commandWindow_OnInspect:= $AB6E                 ; bank $35
+command_inspect := $AB73                        ; bank $35
+commandWindow_OnSteal:= $AB9F                   ; bank $35
+command_steal   := $ABA4                        ; bank $35
+blowEffect_end  := $AC35                        ; bank $33
+buildDamageSprite:= $AC4B                       ; bank $33
+commandWindow_OnChargeSelected:= $AC65          ; bank $35
+command_charge  := $AC6F                        ; bank $35
+setupDamageSprites:= $ACAA                      ; bank $33
+commandWindow_OnSing:= $ACD0                    ; bank $35
+floor.object.processEventUnderC0:= $ACD1        ; bank $3b
+command_sing    := $ACD5                        ; bank $35
+getDamageValueAndFlag:= $AD0A                   ; bank $33
+commandWindow_OnIntimidate:= $AD0C              ; bank $35
+command_intimidate:= $AD16                      ; bank $35
+effect_0C       := $AD2B                        ; bank $33
+commandWindow_OnCheer:= $AD6B                   ; bank $35
+command_cheer   := $AD75                        ; bank $35
+jobMenu.getCosts:= $AD85                        ; bank $3d
+damagesToTilesAndColor:= $ADA6                  ; bank $33
+commandWindow_OnItemSelected:= $ADAF            ; bank $35
+getDamageDigitTilesAndColor:= $ADD1             ; bank $33
+getJobParameter := $ADF2                        ; bank $3d
+damageToTilesAndColor:= $ADF4                   ; bank $33
+dispatchEffectFunction:= $AEDF                  ; bank $2f
+is_backattacked_2f:= $AF48                      ; bank $2f
+itemWindow_OnAButton:= $AF4C                    ; bank $35
+presentScene    := $AF4E                        ; bank $2f
+addItemBonus    := $AF63                        ; bank $31
+getActionEffectLoadParam:= $AF6F                ; bank $33
+callPtrOn$0093  := $AF71                        ; bank $2f
+$af4e_funcTable;:= $AF74                        ; bank $2f
+doSpecialAction := $AF77                        ; bank $31
+presenetScene_1f:= $B024                        ; bank $2f
+beginActionEffect:= $B09B                       ; bank $33
+getChipIdAtObject:= $B0C5                       ; bank $3b
+floor.shop      := $B0EB                        ; bank $3d
+presentScene_1d := $B15E                        ; bank $2f
+invokeActionHandler:= $B15F                     ; bank $31
+floor.object    := $B17C                        ; bank $3b
+itemWindow_OnB  := $B198                        ; bank $35
+invertHorizontalIfBackattack:= $B19B            ; bank $33
+presentScene_1c := $B1AC                        ; bank $2f
+endItemWindow   := $B1B0                        ; bank $35
+loadTileArrayOfItemProps:= $B1D8                ; bank $35
+presentScene_17 := $B1E0                        ; bank $2f
+floor.shop.getItemValues:= $B220                ; bank $3d
+handleHealingMagic:= $B233                      ; bank $31
+isHandFreeForItem:= $B242                       ; bank $35
+floor.shop.getSellingPrice:= $B248              ; bank $3d
+presentScene_13 := $B24C                        ; bank $2f
+presentScene_12 := $B24F                        ; bank $2f
+floor.shop.getItemValue:= $B270                 ; bank $3d
+itemWindow_scrollRight:= $B2A7                  ; bank $35
+presentScene_10 := $B2FA                        ; bank $2f
+floor.loadObjects:= $B2FD                       ; bank $3b
+handleStatusMagic:= $B30C                       ; bank $31
+presentScene_0C := $B348                        ; bank $2f
+floor.loadObject:= $B34E                        ; bank $3b
+moveCharacterBack:= $B352                       ; bank $2f
+itemWindow_scrollLeft:= $B362                   ; bank $35
+call_b3c7       := $B38B                        ; bank $2f
+moveCharacterForward:= $B38E                    ; bank $2f
+handleToadMinimum:= $B3F1                       ; bank $31
+getObjectBuilderAddress:= $B3F8                 ; bank $3b
+drawEquipWindow := $B419                        ; bank $35
+handleProtect   := $B474                        ; bank $31
+handleHaste     := $B480                        ; bank $31
+loadTileArrayForItemWindowColumn:= $B48B        ; bank $35
+handleErase     := $B49B                        ; bank $31
+itemWindow_moveCursor:= $B4D4                   ; bank $35
+itemWindow_OnUse:= $B4F7                        ; bank $35
+getObjectFlag   := $B51A                        ; bank $3b
+handleSuicidalExplosion:= $B51F                 ; bank $31
+floor.object.invokeEventAboveD0:= $B53F         ; bank $3b
+loadEffectSprites:= $B589                       ; bank $33
+drawEquipWindowNoErase:= $B5F9                  ; bank $35
+redrawColumn    := $B601                        ; bank $35
+commandWindow_OnMagic:= $B646                   ; bank $35
+presentEffectAtTarget:= $B64F                   ; bank $33
+presentActionEffect:= $B68D                     ; bank $33
+floor.object.event.F0:= $B6BF                   ; bank $3b
+calcHealAmount  := $B6DD                        ; bank $31
+presentEffectAtTargetWorker:= $B6F3             ; bank $33
+magic_protect   := $B704                        ; bank $31
+presentEffectFrameAtTarget:= $B711              ; bank $33
+setResultDamageInvalid:= $B74B                  ; bank $31
+doMagicHaste    := $B752                        ; bank $31
+setSpriteAndScrollx4:= $B7A9                    ; bank $33
+swap60hBytesAt$0200and$02a0:= $B7B5             ; bank $33
+loadAndBuildEffectSprites:= $B7CF               ; bank $33
+magicWindow_OnUp:= $B7F9                        ; bank $35
+magicWindow_OnDown:= $B82A                      ; bank $35
+magicWindow_OnLeft:= $B863                      ; bank $35
+setEffectSpriteTile:= $B866                     ; bank $33
+magicWindow_OnRight:= $B86C                     ; bank $35
+magicWindow_OnSelectOrStart:= $B874             ; bank $35
+isTargetNotResistable:= $B875                   ; bank $31
+magicWindow_OnA := $B877                        ; bank $35
+initAndTileEffectSprites:= $B8AF                ; bank $33
+calcMagicHitCountAndClearTargetIfMiss:= $B8E7   ; bank $31
+magicWindow_OnB := $B8EE                        ; bank $35
+isPlayerAllowedToUseItem:= $B8FD                ; bank $35
+getEnemyCounts  := $B909                        ; bank $2f
+clearEffectTargetIfMiss:= $B921                 ; bank $31
+clearEffectTarget:= $B926                       ; bank $31
+countEnemyInSameGroup:= $B927                   ; bank $2f
+presentEnemyGeneration:= $B93A                  ; bank $2f
+flagJob         := $B93E                        ; bank $35
+setMagicTarget  := $B953                        ; bank $35
+setItemEffectTarget:= $B979                     ; bank $35
+segmentate      := $B9AB                        ; bank $31
+commandWindow_OnMagic_inputHandlers8:= $BA2A    ; bank $35
+loadTo7400FromBank30:= $BA3A                    ; bank $35
+processPoison   := $BA41                        ; bank $35
+put16hTilesFrom$7e:= $BA8E                      ; bank $2f
+getPoisonDamage := $BADC                        ; bank $35
+effect_0d       := $BAFD                        ; bank $33
+callPtrOn$007e  := $BB15                        ; bank $33
+getNumberOfRandomSuccess:= $BB28                ; bank $31
+calcDamage      := $BB44                        ; bank $31
+prize           := $BB49                        ; bank $35
+isTargetWeakToHoly:= $BBE2                      ; bank $31
+applyStatus     := $BBF3                        ; bank $31
+getTarget2C     := $BC25                        ; bank $31
+damageHp        := $BCD2                        ; bank $31
+healHp          := $BD24                        ; bank $31
+updateCharacterPos:= $BD45                      ; bank $33
+getEncounterId  := $BD4D                        ; bank $3d
+spoilHp         := $BD67                        ; bank $31
+shiftRightDamageBy2:= $BDAA                     ; bank $31
+setCalcTargetToActor:= $BDB3                    ; bank $31
+isEncounterOccured:= $BDB9                      ; bank $3d
+setCalcTargetPtrToOpponent:= $BDBC              ; bank $31
+checkForEffectTargetDeath:= $BDC5               ; bank $31
+checkStatusEffect:= $BE14                       ; bank $31
+updateBaseOffset:= $BE90                        ; bank $31
+setYtoOffsetOf  := $BE98                        ; bank $31
+moveCharacter   := $BE9A                        ; bank $33
+calcDataAddress := $BE9D                        ; bank $31
+rebuildBackpackItems:= $BEBF                    ; bank $31
+drawNextLineVertical:= $BEC6                    ; bank $3b
+loadEffectSpritesWorker_base0:= $BF1E           ; bank $33
+loadEffectSpritesWorker:= $BF24                 ; bank $33
+checkSegmentation:= $BF53                       ; bank $31
+battle.grow_player:= $BF7C                      ; bank $35
+incrementItem   := $BFB3                        ; bank $35
+beginBattle     := $C049                        ; bank $3e
+field.enterDungeon:= $C1BB                      ; bank $3e
+field.dispatchInput:= $C243                     ; bank $3e
+field_OnStart   := $C269                        ; bank $3e
+field_doScroll  := $C389                        ; bank $3e
+field_setScroll := $C398                        ; bank $3e
+field.OnMove    := $C4FC                        ; bank $3e
+field           := $C6B9                        ; bank $3e
+field.OnCharacterMoved:= $C6D5                  ; bank $3e
+field.getRandom := $C711                        ; bank $3e
+floor.getObjectEventPtr:= $C72C                 ; bank $3e
+field.callSoundDriver:= $C750                   ; bank $3e
+LC758           := $C758
+switchToBank3C  := $C98A                        ; bank $3e
+field.update_window_attr_buff:= $C98F           ; bank $3e
+field.set_bg_attr_for_window:= $C9A9            ; bank $3e
+LC9B6           := $C9B6
+LC9C1           := $C9C1
+field.merge_bg_attributes_with_buffer:= $CAB1   ; bank $3e
+field.copyToVramWith_07d0:= $CB6B               ; bank $3e
+field.loadWarpDestinationFloor:= $CBA4          ; bank $3e
+loadFloorData   := $CBFA                        ; bank $3e
+field.loadMapRow:= $CC47                        ; bank $3e
+field.getMapDataPointers:= $CCBB                ; bank $3e
+vehicleSpeeds   := $CD76                        ; bank $3e
+getVehicleSpeed := $CD7E                        ; bank $3e
+getTileParamsVertical:= $CE7A                   ; bank $3e
+field.loadString:= $D1B1                        ; bank $3e
+LD20D           := $D20D
+LD213           := $D213
+floor.getInputOrFireObjectEvent:= $D219         ; bank $3e
+field.getAndMaskInput:= $D27A                   ; bank $3e
+field.get_input := $D281                        ; bank $3e
+field_maskInput := $D29A                        ; bank $3e
+loadPalette     := $D381                        ; bank $3e
+LD5EB           := $D5EB
+floor.loadObjectSprite:= $DA3A                  ; bank $3e
+loadPatternToVramEx:= $DE0F                     ; bank $3e
+loadPatternToVram:= $DE1A                       ; bank $3e
+loadSmallPatternToVram:= $DE2A                  ; bank $3e
+floor.loadPatternForTiles:= $DE5A               ; bank $3e
+loadTilePatternToVram:= $DEEA                   ; bank $3e
+floor.loadObjectPatterns:= $DF08                ; bank $3e
+floor.loadObjectPattern:= $DF41                 ; bank $3e
+dungeon.mainLoop:= $E1DC                        ; bank $3f
+floor.getInputAndHandleEvent:= $E2F8            ; bank $3f
+floor.fireOnMove:= $E396                        ; bank $3f
+floor.getEventSourceCoodinates:= $E4E9          ; bank $3f
+floor.getChipEvent:= $E51C                      ; bank $3f
+floor.event05   := $E69B                        ; bank $3f
+floor.event07   := $E6BE                        ; bank $3f
+dungeon.loadFloor:= $E7EC                       ; bank $3f
+dungeon.loadFloorData:= $E803                   ; bank $3f
+floor.processChipEvent:= $E917                  ; bank $3f
+OnTreasure      := $E982                        ; bank $3f
+floor.getObjectEvent:= $E9BB                    ; bank $3f
+floor.loadEventScriptStream:= $EA04             ; bank $3f
+floor.cache_event_script:= $EA1B                ; bank $3f
+floor.getEvent  := $EA26                        ; bank $3f
+switch_to_object_params_bank:= $EB23            ; bank $3f
+switch_to_floor_logics_bank:= $EB28             ; bank $3f
+field.scrolldown_item_window:= $EB2D            ; bank $3f
+field.abort_item_window_scroll:= $EB3C          ; bank $3f
+field.do_scrolldown_item_window:= $EB43         ; bank $3f
+field.reflect_window_scroll:= $EB61             ; bank $3f
+field.scrollup_item_window:= $EB69              ; bank $3f
+field.seek_text_to_next_line:= $EBA9            ; bank $3f
+field.unseek_text_to_line_beginning:= $EBD1     ; bank $3f
+field.show_sprites_on_lower_half_screen:= $EC0C ; bank $3f
+field.show_sprites_on_region7:= $EC12           ; bank $3f
+field.hide_sprites_under_window:= $EC18         ; bank $3f
+field.showhide_sprites_by_region:= $EC1A        ; bank $3f
+u8              := $EC67                        ; bank $3f
+field.show_message_UNKNOWN:= $EC83              ; bank $3f
+field.show_message_window:= $EC8B               ; bank $3f
+field.show_window:= $EC8D                       ; bank $3f
+field.await_and_get_new_input:= $ECAB           ; bank $3f
+field.get_next_input:= $ECBD                    ; bank $3f
+field.get_next_input:= $ECC4                    ; bank $3f
+field.advance_frame_with_sound:= $ECD8          ; bank $3f
+field.draw_window_top:= $ECE5                   ; bank $3f
+restore_banks_by_$57:= $ECF5                    ; bank $3f
+field.draw_in_place_window:= $ECFA              ; bank $3f
+field.draw_window_box:= $ED02                   ; bank $3f
+field.init_window_attr_buffer:= $ED56           ; bank $3f
+field.get_window_region:= $ED61                 ; bank $3f
+field.draw_window_row:= $EDC6                   ; bank $3f
+field.sync_ppu_scroll:= $EDE1                   ; bank $3f
+field.getWindowTilesForTop:= $EDF6              ; bank $3f
+field.getWindowTilesForMiddle:= $EE1D           ; bank $3f
+field.getWindowTilesForBottom:= $EE3E           ; bank $3f
+field.stream_string_in_window:= $EE65           ; bank $3f
+field.load_and_draw_string:= $EE9A              ; bank $3f
+field.draw_string_in_window:= $EEC0             ; bank $3f
+textd.draw_in_box:= $EEFA                       ; bank $3f
+textd.eval_replacement:= $F02A                  ; bank $3f
+field.string.eval_code_10_13:= $F239            ; bank $3f
+getLastValidJobId:= $F38A                       ; bank $3f
+setVramAddrForWindow:= $F40A                    ; bank $3f
+getTreasure     := $F549                        ; bank $3f
+getTreasureItemId:= $F5C4                       ; bank $3f
+floor.get_item_price:= $F5D4                    ; bank $3f
+increment_gil   := $F5FF                        ; bank $3f
+invert_treasure_loot_flag:= $F640               ; bank $3f
+field.calc_draw_width_and_init_window_tile_buffer:= $F670; bank $3f
+field.init_window_tile_buffer:= $F683           ; bank $3f
+field.draw_window_content:= $F692               ; bank $3f
+field.upload_window_content:= $F6AA             ; bank $3f
+switch_to_character_logics_bank:= $F727         ; bank $3f
+call_doBattle   := $F800                        ; bank $3f
+restoreFieldVariables:= $F83B                   ; bank $3f
+call_32_8000    := $F854                        ; bank $3f
+ppud.upload_palette:= $F897                     ; bank $3f
+do_sprite_dma_from_0200:= $F8AA                 ; bank $3f
+ppud.update_sprites_and_palette_after_nmi:= $F8B0; bank $3f
+ppud.update_palette_after_nmi:= $F8BC           ; bank $3f
+ppud.update_sprites_after_nmi:= $F8C5           ; bank $3f
+ppud.sync_registers_with_cache:= $F8CB          ; bank $3f
+ppud.set_vram_addr:= $F8E0                      ; bank $3f
+mul8x8_reg      := $F8EA                        ; bank $3f
+offset$7e_16    := $F8F2                        ; bank $3f
+offset$80_16    := $F8FE                        ; bank $3f
+memcpy          := $F92F                        ; bank $3f
+copy_to_vram_with_encounter_mode:= $F942        ; bank $3f
+copyToVramDirect:= $F969                        ; bank $3f
+copyToVram      := $F970                        ; bank $3f
+call_2e_9d53    := $FA0E                        ; bank $3f
+blackOutScreen  := $FA1D                        ; bank $3f
+doBattle        := $FA26                        ; bank $3f
+saveNmiIrqHandlerAndSetHandlerForBattle:= $FAB5 ; bank $3f
+restoreIrqHandlerAndNmiHandler:= $FADD          ; bank $3f
+saveFieldVars   := $FB17                        ; bank $3f
+irq_handler     := $FB30                        ; bank $3f
+ppud.nmi_handler:= $FB57                        ; bank $3f
+ppud.await_nmi_completion:= $FB80               ; bank $3f
+switch_16k_synchronized:= $FB87                 ; bank $3f
+switch_16k_synchronized_nocache:= $FB89         ; bank $3f
+getPad1Input    := $FBAA                        ; bank $3f
+getBattleRandom := $FBEF                        ; bank $3f
+initBattleRandom:= $FC27                        ; bank $3f
+div             := $FC92                        ; bank $3f
+mul8x8          := $FCD6                        ; bank $3f
+mul16x16        := $FCF5                        ; bank $3f
+flagTargetBit   := $FD20                        ; bank $3f
+clearTargetBit  := $FD2C                        ; bank $3f
+maskTargetBit   := $FD38                        ; bank $3f
+shiftLeftN      := $FD3C                        ; bank $3f
+shiftRightN     := $FD43                        ; bank $3f
+copyTo_$7ad7_x_Until0:= $FD4A                   ; bank $3f
+get2byteAtBank18:= $FD60                        ; bank $3f
+loadTo7400Ex    := $FDA6                        ; bank $3f
+copyTo7400      := $FDDC                        ; bank $3f
+call_bank30_9e58:= $FDF3                        ; bank $3f
+waitNmiBySetHandler:= $FF00                     ; bank $3f
+call_switchFirst2Banks:= $FF03                  ; bank $3f
+call_switch1stBank:= $FF06                      ; bank $3f
+call_switch2ndBank:= $FF09                      ; bank $3f
+switch_1st_page := $FF0C                        ; bank $3f
+switch_2pages   := $FF17                        ; bank $3f
+switch_2nd_page := $FF1F                        ; bank $3f
+nmi_handler_01  := $FF2A                        ; bank $3f
+setNmiHandlerTo_ff2a_andWaitNmi:= $FF36         ; bank $3f
+hardware_vectors:= $FFF0                        ; bank $3f
+; ----------------------------------------------------------------------------
+        jsr     L8C6F                           ; 8B78 20 6F 8C
+        ldx     $90                             ; 8B7B A6 90
+        jsr     L8BC2                           ; 8B7D 20 C2 8B
+        jmp     L8B91                           ; 8B80 4C 91 8B
+; ----------------------------------------------------------------------------
+        jsr     L8C2C                           ; 8B83 20 2C 8C
+        jsr     L8BB8                           ; 8B86 20 B8 8B
+        ldx     $90                             ; 8B89 A6 90
+        lda     $59                             ; 8B8B A5 59
+        sta     $07A0,x                         ; 8B8D 9D A0 07
+        inx                                     ; 8B90 E8
+L8B91:  lda     $5A                             ; 8B91 A5 5A
+        sta     $07A0,x                         ; 8B93 9D A0 07
+        inx                                     ; 8B96 E8
+        lda     $5B                             ; 8B97 A5 5B
+        sta     $07A0,x                         ; 8B99 9D A0 07
+        inx                                     ; 8B9C E8
+        lda     $5C                             ; 8B9D A5 5C
+        sta     $07A0,x                         ; 8B9F 9D A0 07
+        inx                                     ; 8BA2 E8
+        lda     $5D                             ; 8BA3 A5 5D
+        sta     $07A0,x                         ; 8BA5 9D A0 07
+        inx                                     ; 8BA8 E8
+        lda     $5E                             ; 8BA9 A5 5E
+        sta     $07A0,x                         ; 8BAB 9D A0 07
+        inx                                     ; 8BAE E8
+        lda     $5F                             ; 8BAF A5 5F
+        sta     $07A0,x                         ; 8BB1 9D A0 07
+        inx                                     ; 8BB4 E8
+        stx     $90                             ; 8BB5 86 90
+        rts                                     ; 8BB7 60
+; ----------------------------------------------------------------------------
+L8BB8:  lda     $59                             ; 8BB8 A5 59
+        cmp     #$80                            ; 8BBA C9 80
+        bne     L8BF4                           ; 8BBC D0 36
+        lda     #$FF                            ; 8BBE A9 FF
+        sta     $59                             ; 8BC0 85 59
+L8BC2:  lda     $5A                             ; 8BC2 A5 5A
+        cmp     #$80                            ; 8BC4 C9 80
+        bne     L8BF4                           ; 8BC6 D0 2C
+        lda     #$FF                            ; 8BC8 A9 FF
+        sta     $5A                             ; 8BCA 85 5A
+        lda     $5B                             ; 8BCC A5 5B
+        cmp     #$80                            ; 8BCE C9 80
+        bne     L8BF4                           ; 8BD0 D0 22
+        lda     #$FF                            ; 8BD2 A9 FF
+        sta     $5B                             ; 8BD4 85 5B
+        lda     $5C                             ; 8BD6 A5 5C
+        cmp     #$80                            ; 8BD8 C9 80
+        bne     L8BF4                           ; 8BDA D0 18
+        lda     #$FF                            ; 8BDC A9 FF
+        sta     $5C                             ; 8BDE 85 5C
+        lda     $5D                             ; 8BE0 A5 5D
+        cmp     #$80                            ; 8BE2 C9 80
+        bne     L8BF4                           ; 8BE4 D0 0E
+        lda     #$FF                            ; 8BE6 A9 FF
+        sta     $5D                             ; 8BE8 85 5D
+        lda     $5E                             ; 8BEA A5 5E
+        cmp     #$80                            ; 8BEC C9 80
+        bne     L8BF4                           ; 8BEE D0 04
+        lda     #$FF                            ; 8BF0 A9 FF
+        sta     $5E                             ; 8BF2 85 5E
+L8BF4:  rts                                     ; 8BF4 60
+; ----------------------------------------------------------------------------
+        lda     $5C                             ; 8BF5 A5 5C
+        cmp     #$80                            ; 8BF7 C9 80
+        bne     L8C2B                           ; 8BF9 D0 30
+        lda     $5D                             ; 8BFB A5 5D
+        sta     $5C                             ; 8BFD 85 5C
+        lda     $5E                             ; 8BFF A5 5E
+        sta     $5D                             ; 8C01 85 5D
+        lda     $5F                             ; 8C03 A5 5F
+        sta     $5E                             ; 8C05 85 5E
+        lda     #$FF                            ; 8C07 A9 FF
+        sta     $5F                             ; 8C09 85 5F
+        lda     $5C                             ; 8C0B A5 5C
+        cmp     #$80                            ; 8C0D C9 80
+        bne     L8C2B                           ; 8C0F D0 1A
+        lda     $5D                             ; 8C11 A5 5D
+        sta     $5C                             ; 8C13 85 5C
+        lda     $5E                             ; 8C15 A5 5E
+        sta     $5D                             ; 8C17 85 5D
+        lda     #$FF                            ; 8C19 A9 FF
+        sta     $5E                             ; 8C1B 85 5E
+        lda     $5C                             ; 8C1D A5 5C
+        cmp     #$80                            ; 8C1F C9 80
+        bne     L8C2B                           ; 8C21 D0 08
+        lda     $5D                             ; 8C23 A5 5D
+        sta     $5C                             ; 8C25 85 5C
+        lda     #$FF                            ; 8C27 A9 FF
+        sta     $5D                             ; 8C29 85 5D
+L8C2B:  rts                                     ; 8C2B 60
+; ----------------------------------------------------------------------------
+L8C2C:  ldx     #$08                            ; 8C2C A2 08
+L8C2E:  lda     $82                             ; 8C2E A5 82
+        cmp     L8D6E,x                         ; 8C30 DD 6E 8D
+        beq     L8C41                           ; 8C33 F0 0C
+        bcs     L8C53                           ; 8C35 B0 1C
+L8C37:  dex                                     ; 8C37 CA
+        bpl     L8C2E                           ; 8C38 10 F4
+        ldx     #$80                            ; 8C3A A2 80
+        stx     $59                             ; 8C3C 86 59
+        jmp     L8C6F                           ; 8C3E 4C 6F 8C
+; ----------------------------------------------------------------------------
+L8C41:  lda     $81                             ; 8C41 A5 81
+        cmp     L8D77,x                         ; 8C43 DD 77 8D
+        beq     L8C4C                           ; 8C46 F0 04
+        bcc     L8C37                           ; 8C48 90 ED
+        bcs     L8C53                           ; 8C4A B0 07
+L8C4C:  lda     $80                             ; 8C4C A5 80
+        cmp     L8D80,x                         ; 8C4E DD 80 8D
+        bcc     L8C37                           ; 8C51 90 E4
+L8C53:  lda     $80                             ; 8C53 A5 80
+        sec                                     ; 8C55 38
+; bank $34
+putWindowSideBorderTile:
+        .byte   $FD                             ; 8C56 FD
+        .byte   $80                             ; 8C57 80
+; bank $36
+loadMusicData:
+        sta     $8085                           ; 8C58 8D 85 80
+        lda     $81                             ; 8C5B A5 81
+        sbc     L8D77,x                         ; 8C5D FD 77 8D
+        sta     $81                             ; 8C60 85 81
+        lda     $82                             ; 8C62 A5 82
+        sbc     L8D6E,x                         ; 8C64 FD 6E 8D
+        sta     $82                             ; 8C67 85 82
+        txa                                     ; 8C69 8A
+        clc                                     ; 8C6A 18
+        adc     #$81                            ; 8C6B 69 81
+        sta     $59                             ; 8C6D 85 59
+L8C6F:  ldx     #$08                            ; 8C6F A2 08
+L8C71:  lda     $82                             ; 8C71 A5 82
+        cmp     L8D89,x                         ; 8C73 DD 89 8D
+        beq     putWindowTopBottomBorderTile    ; 8C76 F0 0C
+        bcs     L8C96                           ; 8C78 B0 1C
+L8C7A:  dex                                     ; 8C7A CA
+        bpl     L8C71                           ; 8C7B 10 F4
+        ldx     #$80                            ; 8C7D A2 80
+        stx     $5A                             ; 8C7F 86 5A
+        jmp     L8CB2                           ; 8C81 4C B2 8C
+; ----------------------------------------------------------------------------
+; bank $34
+putWindowTopBottomBorderTile:
+        lda     $81                             ; 8C84 A5 81
+        cmp     L8D92,x                         ; 8C86 DD 92 8D
+        beq     L8C8F                           ; 8C89 F0 04
+        bcc     L8C7A                           ; 8C8B 90 ED
+        bcs     L8C96                           ; 8C8D B0 07
+L8C8F:  lda     $80                             ; 8C8F A5 80
+        cmp     L8D9B,x                         ; 8C91 DD 9B 8D
+        bcc     L8C7A                           ; 8C94 90 E4
+L8C96:  lda     $80                             ; 8C96 A5 80
+        sec                                     ; 8C98 38
+        sbc     L8D9B,x                         ; 8C99 FD 9B 8D
+        sta     $80                             ; 8C9C 85 80
+        lda     $81                             ; 8C9E A5 81
+        sbc     L8D92,x                         ; 8CA0 FD 92 8D
+        .byte   $85                             ; 8CA3 85
+; bank $32
+effect_0F:
+        sta     ($A5,x)                         ; 8CA4 81 A5
+        .byte   $82                             ; 8CA6 82
+        sbc     L8D89,x                         ; 8CA7 FD 89 8D
+        sta     $82                             ; 8CAA 85 82
+        txa                                     ; 8CAC 8A
+        clc                                     ; 8CAD 18
+        adc     #$81                            ; 8CAE 69 81
+        sta     $5A                             ; 8CB0 85 5A
+L8CB2:  ldx     #$08                            ; 8CB2 A2 08
+L8CB4:  lda     $82                             ; 8CB4 A5 82
+        cmp     L8DA4,x                         ; 8CB6 DD A4 8D
+        beq     L8CC7                           ; 8CB9 F0 0C
+        bcs     L8CD9                           ; 8CBB B0 1C
+L8CBD:  dex                                     ; 8CBD CA
+        bpl     L8CB4                           ; 8CBE 10 F4
+        ldx     #$80                            ; 8CC0 A2 80
+        stx     $5B                             ; 8CC2 86 5B
+        jmp     L8CF5                           ; 8CC4 4C F5 8C
+; ----------------------------------------------------------------------------
+L8CC7:  lda     $81                             ; 8CC7 A5 81
+        cmp     L8DAD,x                         ; 8CC9 DD AD 8D
+        beq     L8CD2                           ; 8CCC F0 04
+        bcc     L8CBD                           ; 8CCE 90 ED
+        bcs     L8CD9                           ; 8CD0 B0 07
+L8CD2:  lda     $80                             ; 8CD2 A5 80
+        cmp     L8DB6,x                         ; 8CD4 DD B6 8D
+        bcc     L8CBD                           ; 8CD7 90 E4
+L8CD9:  lda     $80                             ; 8CD9 A5 80
+        sec                                     ; 8CDB 38
+        sbc     L8DB6,x                         ; 8CDC FD B6 8D
+        sta     $80                             ; 8CDF 85 80
+        lda     $81                             ; 8CE1 A5 81
+        sbc     L8DAD,x                         ; 8CE3 FD AD 8D
+        sta     $81                             ; 8CE6 85 81
+        lda     $82                             ; 8CE8 A5 82
+        sbc     L8DA4,x                         ; 8CEA FD A4 8D
+        sta     $82                             ; 8CED 85 82
+; bank $32
+effect_0E:
+        txa                                     ; 8CEF 8A
+        clc                                     ; 8CF0 18
+        adc     #$81                            ; 8CF1 69 81
+        sta     $5B                             ; 8CF3 85 5B
+L8CF5:  ldx     #$08                            ; 8CF5 A2 08
+L8CF7:  lda     $81                             ; 8CF7 A5 81
+        cmp     L8DBF,x                         ; 8CF9 DD BF 8D
+        beq     L8D0A                           ; 8CFC F0 0C
+        bcs     L8D11                           ; 8CFE B0 11
+L8D00:  dex                                     ; 8D00 CA
+        bpl     L8CF7                           ; 8D01 10 F4
+; bank $34
+setBackgroundProperty:
+        ldx     #$80                            ; 8D03 A2 80
+        stx     $5C                             ; 8D05 86 5C
+        jmp     L8D26                           ; 8D07 4C 26 8D
+; ----------------------------------------------------------------------------
+L8D0A:  lda     $80                             ; 8D0A A5 80
+        cmp     L8DC8,x                         ; 8D0C DD C8 8D
+        bcc     L8D00                           ; 8D0F 90 EF
+L8D11:  lda     $80                             ; 8D11 A5 80
+        sec                                     ; 8D13 38
+        sbc     L8DC8,x                         ; 8D14 FD C8 8D
+        sta     $80                             ; 8D17 85 80
+        lda     $81                             ; 8D19 A5 81
+; bank $34
+draw1RowWindow:
+        sbc     L8DBF,x                         ; 8D1B FD BF 8D
+        sta     $81                             ; 8D1E 85 81
+        txa                                     ; 8D20 8A
+        clc                                     ; 8D21 18
+        adc     #$81                            ; 8D22 69 81
+        sta     $5C                             ; 8D24 85 5C
+L8D26:  ldx     #$08                            ; 8D26 A2 08
+L8D28:  lda     $81                             ; 8D28 A5 81
+        cmp     L8DD1,x                         ; 8D2A DD D1 8D
+        beq     L8D3B                           ; 8D2D F0 0C
+        bcs     L8D42                           ; 8D2F B0 11
+L8D31:  dex                                     ; 8D31 CA
+        bpl     L8D28                           ; 8D32 10 F4
+        ldx     #$80                            ; 8D34 A2 80
+        stx     $5D                             ; 8D36 86 5D
+        jmp     L8D57                           ; 8D38 4C 57 8D
+; ----------------------------------------------------------------------------
+L8D3B:  lda     $80                             ; 8D3B A5 80
+        .byte   $DD                             ; 8D3D DD
+L8D3E:  phx                                     ; 8D3E DA
+        sta     $EF90                           ; 8D3F 8D 90 EF
+L8D42:  .byte   $A5                             ; 8D42 A5
+L8D43:  bra     $8D7D                           ; 8D43 80 38
+        .byte   $FD                             ; 8D45 FD
+        phx                                     ; 8D46 DA
+L8D47:  sta     $8085                           ; 8D47 8D 85 80
+        lda     $81                             ; 8D4A A5 81
+        sbc     L8DD1,x                         ; 8D4C FD D1 8D
+        sta     $81                             ; 8D4F 85 81
+        txa                                     ; 8D51 8A
+        clc                                     ; 8D52 18
+        adc     #$81                            ; 8D53 69 81
+        sta     $5D                             ; 8D55 85 5D
+L8D57:  ldx     #$00                            ; 8D57 A2 00
+        lda     $80                             ; 8D59 A5 80
+L8D5B:  cmp     #$0A                            ; 8D5B C9 0A
+        bcc     L8D64                           ; 8D5D 90 05
+        sbc     #$0A                            ; 8D5F E9 0A
+        inx                                     ; 8D61 E8
+        bne     L8D5B                           ; 8D62 D0 F7
+L8D64:  ora     #$80                            ; 8D64 09 80
+        sta     $5F                             ; 8D66 85 5F
+        txa                                     ; 8D68 8A
+        ora     #$80                            ; 8D69 09 80
+        sta     $5E                             ; 8D6B 85 5E
+        rts                                     ; 8D6D 60
+; ----------------------------------------------------------------------------
+L8D6E:  bbr0    $1E,L8D9E                       ; 8D6E 0F 1E 2D
+        and     $5B4C,x                         ; 8D71 3D 4C 5B
+        ror     a                               ; 8D74 6A
+        ply                                     ; 8D75 7A
+        .byte   $89                             ; 8D76 89
+L8D77:  .byte   $42                             ; 8D77 42
+        sty     $C6                             ; 8D78 84 C6
+        ora     #$4B                            ; 8D7A 09 4B
+        sta     $12CF                           ; 8D7C 8D CF 12
+        .byte   $54                             ; 8D7F 54
+L8D80:  rti                                     ; 8D80 40
+; ----------------------------------------------------------------------------
+        bra     L8D43                           ; 8D81 80 C0
+L8D83:  brk                                     ; 8D83 00
+        rti                                     ; 8D84 40
+; ----------------------------------------------------------------------------
+        bra     L8D47                           ; 8D85 80 C0
+        brk                                     ; 8D87 00
+        rti                                     ; 8D88 40
+; ----------------------------------------------------------------------------
+L8D89:  ora     ($03,x)                         ; 8D89 01 03
+        tsb     $06                             ; 8D8B 04 06
+        rmb0    $09                             ; 8D8D 07
+        ora     #$0A                            ; 8D8E 09 0A
+        .byte   $0C                             ; 8D90 0C
+        .byte   $0D                             ; 8D91 0D
+L8D92:  stx     $0D                             ; 8D92 86 0D
+        .byte   $93                             ; 8D94 93
+        inc     a                               ; 8D95 1A
+        lda     ($27,x)                         ; 8D96 A1 27
+        ldx     $BB35                           ; 8D98 AE 35 BB
+L8D9B:  ldy     #$40                            ; 8D9B A0 40
+        .byte   $E0                             ; 8D9D E0
+L8D9E:  bra     L8DC0                           ; 8D9E 80 20
+        cpy     #$60                            ; 8DA0 C0 60
+        brk                                     ; 8DA2 00
+        .byte   $A0                             ; 8DA3 A0
+L8DA4:  brk                                     ; 8DA4 00
+L8DA5:  brk                                     ; 8DA5 00
+        brk                                     ; 8DA6 00
+        brk                                     ; 8DA7 00
+        brk                                     ; 8DA8 00
+        brk                                     ; 8DA9 00
+        ora     ($01,x)                         ; 8DAA 01 01
+        .byte   $01                             ; 8DAC 01
+L8DAD:  rmb2    $4E                             ; 8DAD 27
+        lsr     $9C75                           ; 8DAE 4E 75 9C
+        .byte   $C3                             ; 8DB1 C3
+        nop                                     ; 8DB2 EA
+        ora     ($38),y                         ; 8DB3 11 38
+        .byte   $5F                             ; 8DB5 5F
+L8DB6:  bpl     L8DD8                           ; 8DB6 10 20
+        bmi     L8DFA                           ; 8DB8 30 40
+        bvc     L8E1C                           ; 8DBA 50 60
+        bvs     L8D3E                           ; 8DBC 70 80
+        .byte   $90                             ; 8DBE 90
+L8DBF:  .byte   $03                             ; 8DBF 03
+L8DC0:  rmb0    $0B                             ; 8DC0 07
+        .byte   $0B                             ; 8DC1 0B
+        bbr0    $13,L8DDC                       ; 8DC2 0F 13 17
+        .byte   $1B                             ; 8DC5 1B
+        .byte   $1F                             ; 8DC6 1F
+        .byte   $23                             ; 8DC7 23
+L8DC8:  inx                                     ; 8DC8 E8
+        bne     L8D83                           ; 8DC9 D0 B8
+        ldy     #$88                            ; 8DCB A0 88
+        bvs     L8E27                           ; 8DCD 70 58
+        rti                                     ; 8DCF 40
+; ----------------------------------------------------------------------------
+        plp                                     ; 8DD0 28
+L8DD1:  brk                                     ; 8DD1 00
+        brk                                     ; 8DD2 00
+        ora     ($01,x)                         ; 8DD3 01 01
+        ora     ($02,x)                         ; 8DD5 01 02
+        .byte   $02                             ; 8DD7 02
+L8DD8:  .byte   $03                             ; 8DD8 03
+        .byte   $03                             ; 8DD9 03
+L8DDA:  stz     $C8                             ; 8DDA 64 C8
+L8DDC:  bit     $F490                           ; 8DDC 2C 90 F4
+        cli                                     ; 8DDF 58
+        ldy     $8420,x                         ; 8DE0 BC 20 84
+        lda     #$3C                            ; 8DE3 A9 3C
+; bank $34
+drawBorder:
+        sta     $57                             ; 8DE5 85 57
+        lda     #$00                            ; 8DE7 A9 00
+        sta     $A2                             ; 8DE9 85 A2
+        sta     $A3                             ; 8DEB 85 A3
+        lda     #$01                            ; 8DED A9 01
+        sta     $A4                             ; 8DEF 85 A4
+        lda     #$80                            ; 8DF1 A9 80
+        sta     $B4                             ; 8DF3 85 B4
+        jsr     L90AD                           ; 8DF5 20 AD 90
+        .byte   $20                             ; 8DF8 20
+        .byte   $3D                             ; 8DF9 3D
+L8DFA:  bcc     L8DA5                           ; 8DFA 90 A9
+        brk                                     ; 8DFC 00
+        sta     $7AF0                           ; 8DFD 8D F0 7A
+L8E00:  jsr     L90D4                           ; 8E00 20 D4 90
+        lda     #$08                            ; 8E03 A9 08
+        jsr     L920D                           ; 8E05 20 0D 92
+        lda     $25                             ; 8E08 A5 25
+        bne     L8E23                           ; 8E0A D0 17
+        lda     $24                             ; 8E0C A5 24
+        beq     L8E00                           ; 8E0E F0 F0
+        jsr     L8F74                           ; 8E10 20 74 8F
+        ldx     $7AF0                           ; 8E13 AE F0 7A
+        lda     $7A03,x                         ; 8E16 BD 03 7A
+        tax                                     ; 8E19 AA
+        .byte   $BD                             ; 8E1A BD
+        .byte   $C0                             ; 8E1B C0
+L8E1C:  rts                                     ; 8E1C 60
+; ----------------------------------------------------------------------------
+L8E1D:  pha                                     ; 8E1D 48
+        jsr     L8FF2                           ; 8E1E 20 F2 8F
+        pla                                     ; 8E21 68
+        rts                                     ; 8E22 60
+; ----------------------------------------------------------------------------
+L8E23:  lda     #$00                            ; 8E23 A9 00
+        beq     L8E1D                           ; 8E25 F0 F6
+L8E27:  lda     #$00                            ; 8E27 A9 00
+        sta     $61                             ; 8E29 85 61
+        sta     $62                             ; 8E2B 85 62
+        sta     $63                             ; 8E2D 85 63
+        sta     $80                             ; 8E2F 85 80
+        ldx     #$00                            ; 8E31 A2 00
+L8E33:  lda     $6102,x                         ; 8E33 BD 02 61
+        and     #$C0                            ; 8E36 29 C0
+        bne     L8E3C                           ; 8E38 D0 02
+        inc     $80                             ; 8E3A E6 80
+L8E3C:  txa                                     ; 8E3C 8A
+        clc                                     ; 8E3D 18
+        adc     #$40                            ; 8E3E 69 40
+        tax                                     ; 8E40 AA
+        bne     L8E33                           ; 8E41 D0 F0
+        lda     $80                             ; 8E43 A5 80
+        asl     a                               ; 8E45 0A
+        asl     a                               ; 8E46 0A
+        clc                                     ; 8E47 18
+        adc     $80                             ; 8E48 65 80
+        sta     $80                             ; 8E4A 85 80
+        lda     $7B00                           ; 8E4C AD 00 7B
+        sta     $61                             ; 8E4F 85 61
+        jsr     L8E55                           ; 8E51 20 55 8E
+        rts                                     ; 8E54 60
+; ----------------------------------------------------------------------------
+L8E55:  lda     #$00                            ; 8E55 A9 00
+        sta     $81                             ; 8E57 85 81
+        sta     $82                             ; 8E59 85 82
+        sta     $83                             ; 8E5B 85 83
+        sta     $84                             ; 8E5D 85 84
+L8E5F:  lsr     $80                             ; 8E5F 46 80
+        bcc     L8E76                           ; 8E61 90 13
+        lda     $81                             ; 8E63 A5 81
+        clc                                     ; 8E65 18
+        adc     $61                             ; 8E66 65 61
+        sta     $81                             ; 8E68 85 81
+        lda     $82                             ; 8E6A A5 82
+        adc     $62                             ; 8E6C 65 62
+        sta     $82                             ; 8E6E 85 82
+        lda     $63                             ; 8E70 A5 63
+        adc     $83                             ; 8E72 65 83
+        sta     $83                             ; 8E74 85 83
+L8E76:  asl     $61                             ; 8E76 06 61
+        rol     $62                             ; 8E78 26 62
+        rol     $63                             ; 8E7A 26 63
+        lda     $80                             ; 8E7C A5 80
+        bne     L8E5F                           ; 8E7E D0 DF
+        lda     $81                             ; 8E80 A5 81
+        sta     $61                             ; 8E82 85 61
+        lda     $82                             ; 8E84 A5 82
+        sta     $62                             ; 8E86 85 62
+        lda     $83                             ; 8E88 A5 83
+        sta     $63                             ; 8E8A 85 63
+        rts                                     ; 8E8C 60
+; ----------------------------------------------------------------------------
+L8E8D:  jsr     L8E27                           ; 8E8D 20 27 8E
+        lda     #$04                            ; 8E90 A9 04
+        jsr     L8EF5                           ; 8E92 20 F5 8E
+        jsr     L8F58                           ; 8E95 20 58 8F
+        jsr     L8FD1                           ; 8E98 20 D1 8F
+        jsr     L8F04                           ; 8E9B 20 04 8F
+        bcc     L8EA3                           ; 8E9E 90 03
+        jmp     L8FF2                           ; 8EA0 4C F2 8F
+; ----------------------------------------------------------------------------
+L8EA3:  lda     $61                             ; 8EA3 A5 61
+        sta     $80                             ; 8EA5 85 80
+        lda     $62                             ; 8EA7 A5 62
+        sta     $81                             ; 8EA9 85 81
+        lda     $63                             ; 8EAB A5 63
+        sta     $82                             ; 8EAD 85 82
+        .byte   $20                             ; 8EAF 20
+; bank $34
+eraseWindow:
+        smb1    $8F                             ; 8EB0 97
+        bbs0    $90,L8EC2                       ; 8EB1 8F 90 0E
+        jsr     LC9C1                           ; 8EB4 20 C1 C9
+        lda     #$6C                            ; 8EB7 A9 6C
+        jsr     L8EF5                           ; 8EB9 20 F5 8E
+        jsr     L8F38                           ; 8EBC 20 38 8F
+        jmp     L8FF2                           ; 8EBF 4C F2 8F
+; ----------------------------------------------------------------------------
+L8EC2:  jsr     LC9C1                           ; 8EC2 20 C1 C9
+        lda     #$4F                            ; 8EC5 A9 4F
+        jsr     L8EF5                           ; 8EC7 20 F5 8E
+        jsr     L8ED8                           ; 8ECA 20 D8 8E
+        jsr     L8F38                           ; 8ECD 20 38 8F
+        lda     $7B01                           ; 8ED0 AD 01 7B
+        sta     $6C                             ; 8ED3 85 6C
+        jmp     L8FF2                           ; 8ED5 4C F2 8F
+; ----------------------------------------------------------------------------
+L8ED8:  ldx     #$00                            ; 8ED8 A2 00
+L8EDA:  lda     $6102,x                         ; 8EDA BD 02 61
+        and     #$C0                            ; 8EDD 29 C0
+        bne     L8EED                           ; 8EDF D0 0C
+        lda     $610E,x                         ; 8EE1 BD 0E 61
+        sta     $610C,x                         ; 8EE4 9D 0C 61
+        lda     $610F,x                         ; 8EE7 BD 0F 61
+        sta     $610D,x                         ; 8EEA 9D 0D 61
+L8EED:  txa                                     ; 8EED 8A
+        clc                                     ; 8EEE 18
+        adc     #$40                            ; 8EEF 69 40
+        tax                                     ; 8EF1 AA
+        bne     L8EDA                           ; 8EF2 D0 E6
+        rts                                     ; 8EF4 60
+; ----------------------------------------------------------------------------
+L8EF5:  pha                                     ; 8EF5 48
+        jsr     LC9B6                           ; 8EF6 20 B6 C9
+        lda     #$00                            ; 8EF9 A9 00
+; bank $32
+effect_15:
+        sta     $96                             ; 8EFB 85 96
+        jsr     field.draw_window_box           ; 8EFD 20 02 ED
+        pla                                     ; 8F00 68
+        jmp     L90FF                           ; 8F01 4C FF 90
+; ----------------------------------------------------------------------------
+L8F04:  lda     #$00                            ; 8F04 A9 00
+        sta     $24                             ; 8F06 85 24
+        sta     $25                             ; 8F08 85 25
+        .byte   $A9                             ; 8F0A A9
+; bank $34
+eraseFromLeftBottom0Bx0A:
+        ora     ($85,x)                         ; 8F0B 01 85
+        stx     $20,y                           ; 8F0D 96 20
+        .byte   $02                             ; 8F0F 02
+        sbc     $06A9                           ; 8F10 ED A9 06
+        jsr     L90FF                           ; 8F13 20 FF 90
+        lda     #$00                            ; 8F16 A9 00
+        sta     $78F0                           ; 8F18 8D F0 78
+        lda     #$01                            ; 8F1B A9 01
+        sta     $A2                             ; 8F1D 85 A2
+L8F1F:  jsr     L90D4                           ; 8F1F 20 D4 90
+        lda     #$04                            ; 8F22 A9 04
+        jsr     fieldMenu.updateCursorPos       ; 8F24 20 A3 91
+        lda     $25                             ; 8F27 A5 25
+        bne     L8F36                           ; 8F29 D0 0B
+        lda     $24                             ; 8F2B A5 24
+        beq     L8F1F                           ; 8F2D F0 F0
+        lda     $78F0                           ; 8F2F AD F0 78
+        bne     L8F36                           ; 8F32 D0 02
+        clc                                     ; 8F34 18
+        rts                                     ; 8F35 60
+; ----------------------------------------------------------------------------
+L8F36:  sec                                     ; 8F36 38
+        rts                                     ; 8F37 60
+; ----------------------------------------------------------------------------
+L8F38:  jsr     L90F0                           ; 8F38 20 F0 90
+        lda     #$00                            ; 8F3B A9 00
+        sta     $A2                             ; 8F3D 85 A2
+        sta     $A3                             ; 8F3F 85 A3
+        sta     $A4                             ; 8F41 85 A4
+; bank $3a
+field.loadTileParams:
+        jsr     L90D4                           ; 8F43 20 D4 90
+        jsr     field.get_input                 ; 8F46 20 81 D2
+        lda     $20                             ; 8F49 A5 20
+        bne     field.loadTileParams            ; 8F4B D0 F6
+L8F4D:  jsr     L90D4                           ; 8F4D 20 D4 90
+        jsr     field.get_input                 ; 8F50 20 81 D2
+        lda     $20                             ; 8F53 A5 20
+        beq     L8F4D                           ; 8F55 F0 F6
+; bank $34
+getSortedIndex:
+        rts                                     ; 8F57 60
+; ----------------------------------------------------------------------------
+L8F58:  lda     #$00                            ; 8F58 A9 00
+        sta     $24                             ; 8F5A 85 24
+        sta     $25                             ; 8F5C 85 25
+        sta     $47                             ; 8F5E 85 47
+        sta     $A3                             ; 8F60 85 A3
+        sta     $A4                             ; 8F62 85 A4
+        jsr     field.get_input                 ; 8F64 20 81 D2
+        lda     $20                             ; 8F67 A5 20
+        and     #$0F                            ; 8F69 29 0F
+        sta     $A1                             ; 8F6B 85 A1
+        lda     #$3C                            ; 8F6D A9 3C
+; bank $34
+sort:   sta     $57                             ; 8F6F 85 57
+        sta     $B4                             ; 8F71 85 B4
+        rts                                     ; 8F73 60
+; ----------------------------------------------------------------------------
+L8F74:  lda     #$00                            ; 8F74 A9 00
+        sta     $24                             ; 8F76 85 24
+        sta     $25                             ; 8F78 85 25
+        jmp     LD20D                           ; 8F7A 4C 0D D2
+; ----------------------------------------------------------------------------
+        asl     a                               ; 8F7D 0A
+        tax                                     ; 8F7E AA
+        bcs     L8F8C                           ; 8F7F B0 0B
+        lda     invokeEffectFunction,x          ; 8F81 BD 00 80
+        sta     $80                             ; 8F84 85 80
+        lda     $8001,x                         ; 8F86 BD 01 80
+        sta     $81                             ; 8F89 85 81
+        rts                                     ; 8F8B 60
+; ----------------------------------------------------------------------------
+L8F8C:  lda     $8100,x                         ; 8F8C BD 00 81
+        sta     $80                             ; 8F8F 85 80
+        lda     $8101,x                         ; 8F91 BD 01 81
+        sta     $81                             ; 8F94 85 81
+        rts                                     ; 8F96 60
+; ----------------------------------------------------------------------------
+        lda     $601E                           ; 8F97 AD 1E 60
+        cmp     $82                             ; 8F9A C5 82
+        bcc     L8FB4                           ; 8F9C 90 16
+        beq     L8FA2                           ; 8F9E F0 02
+        bcs     L8FB6                           ; 8FA0 B0 14
+L8FA2:  lda     $601D                           ; 8FA2 AD 1D 60
+        cmp     $81                             ; 8FA5 C5 81
+        bcc     L8FB4                           ; 8FA7 90 0B
+        beq     L8FAD                           ; 8FA9 F0 02
+        bcs     L8FB6                           ; 8FAB B0 09
+L8FAD:  lda     $601C                           ; 8FAD AD 1C 60
+        cmp     $80                             ; 8FB0 C5 80
+        bcs     L8FB6                           ; 8FB2 B0 02
+L8FB4:  sec                                     ; 8FB4 38
+        rts                                     ; 8FB5 60
+; ----------------------------------------------------------------------------
+L8FB6:  lda     $601C                           ; 8FB6 AD 1C 60
+        sec                                     ; 8FB9 38
+        sbc     $80                             ; 8FBA E5 80
+        sta     $601C                           ; 8FBC 8D 1C 60
+        lda     $601D                           ; 8FBF AD 1D 60
+        sbc     $81                             ; 8FC2 E5 81
+        sta     $601D                           ; 8FC4 8D 1D 60
+        lda     $601E                           ; 8FC7 AD 1E 60
+        sbc     $82                             ; 8FCA E5 82
+        sta     $601E                           ; 8FCC 8D 1E 60
+        clc                                     ; 8FCF 18
+        rts                                     ; 8FD0 60
+; ----------------------------------------------------------------------------
+L8FD1:  lda     #$03                            ; 8FD1 A9 03
+        sta     $96                             ; 8FD3 85 96
+        jsr     field.draw_window_box           ; 8FD5 20 02 ED
+        lda     #$05                            ; 8FD8 A9 05
+        jmp     L90FF                           ; 8FDA 4C FF 90
+; ----------------------------------------------------------------------------
+        lda     #$00                            ; 8FDD A9 00
+        sta     $78F0                           ; 8FDF 8D F0 78
+        sta     $79F0                           ; 8FE2 8D F0 79
+        sta     $7AF0                           ; 8FE5 8D F0 7A
+        sta     $79F1                           ; 8FE8 8D F1 79
+        lda     #$3C                            ; 8FEB A9 3C
+        sta     $57                             ; 8FED 85 57
+        jmp     L8E8D                           ; 8FEF 4C 8D 8E
+; ----------------------------------------------------------------------------
+L8FF2:  jsr     LD20D                           ; 8FF2 20 0D D2
+        .byte   $20                             ; 8FF5 20
+        .byte   $F0                             ; 8FF6 F0
+; bank $34
+presentBattle:
+        bcc     L9019                           ; 8FF7 90 20
+        brk                                     ; 8FF9 00
+        bbs7    $A9,L8FFF                       ; 8FFA FF A9 02
+        .byte   $8D                             ; 8FFD 8D
+        .byte   $14                             ; 8FFE 14
+L8FFF:  rti                                     ; 8FFF 40
+; ----------------------------------------------------------------------------
+        jsr     LC758                           ; 9000 20 58 C7
+        jsr     LC9B6                           ; 9003 20 B6 C9
+        jsr     LC9C1                           ; 9006 20 C1 C9
+        lda     #$00                            ; 9009 A9 00
+        sta     $24                             ; 900B 85 24
+        sta     $25                             ; 900D 85 25
+        sta     $22                             ; 900F 85 22
+        sta     $23                             ; 9011 85 23
+        sta     $47                             ; 9013 85 47
+        rts                                     ; 9015 60
+; ----------------------------------------------------------------------------
+        jsr     field.get_input                 ; 9016 20 81 D2
+L9019:  lda     $20                             ; 9019 A5 20
+        sta     $03                             ; 901B 85 03
+L901D:  jsr     field.get_input                 ; 901D 20 81 D2
+        jsr     L90D4                           ; 9020 20 D4 90
+        lda     $20                             ; 9023 A5 20
+        cmp     $03                             ; 9025 C5 03
+        beq     L901D                           ; 9027 F0 F4
+        sta     $03                             ; 9029 85 03
+L902B:  jsr     field.get_input                 ; 902B 20 81 D2
+        jsr     L90D4                           ; 902E 20 D4 90
+        lda     $20                             ; 9031 A5 20
+        cmp     $03                             ; 9033 C5 03
+        beq     L902B                           ; 9035 F0 F4
+        ldx     $04                             ; 9037 A6 04
+        txs                                     ; 9039 9A
+        jmp     L8FF2                           ; 903A 4C F2 8F
+; ----------------------------------------------------------------------------
+        lda     $38                             ; 903D A5 38
+        sta     $7AF8                           ; 903F 8D F8 7A
+        lda     $39                             ; 9042 A5 39
+        sta     $7AF9                           ; 9044 8D F9 7A
+        lda     $97                             ; 9047 A5 97
+        sta     $7AFA                           ; 9049 8D FA 7A
+        lda     $98                             ; 904C A5 98
+        sta     $7AFB                           ; 904E 8D FB 7A
+        lda     $3C                             ; 9051 A5 3C
+        sta     $7AFC                           ; 9053 8D FC 7A
+        lda     $3D                             ; 9056 A5 3D
+        sta     $7AFD                           ; 9058 8D FD 7A
+; bank $34
+dispCommand_05_showActorName:
+        lda     $93                             ; 905B A5 93
+        sta     $7AF7                           ; 905D 8D F7 7A
+        lda     $1C                             ; 9060 A5 1C
+        sta     $7AFE                           ; 9062 8D FE 7A
+        lda     $1D                             ; 9065 A5 1D
+        sta     $7AFF                           ; 9067 8D FF 7A
+        lda     $3E                             ; 906A A5 3E
+        sta     $7AF4                           ; 906C 8D F4 7A
+        lda     $3F                             ; 906F A5 3F
+        sta     $7AF5                           ; 9071 8D F5 7A
+        rts                                     ; 9074 60
+; ----------------------------------------------------------------------------
+        lda     $7AF8                           ; 9075 AD F8 7A
+        sta     $38                             ; 9078 85 38
+        lda     $7AF9                           ; 907A AD F9 7A
+        sta     $39                             ; 907D 85 39
+        lda     $7AFA                           ; 907F AD FA 7A
+        sta     $97                             ; 9082 85 97
+        lda     $7AFB                           ; 9084 AD FB 7A
+        sta     $98                             ; 9087 85 98
+        lda     $7AFC                           ; 9089 AD FC 7A
+        sta     $3C                             ; 908C 85 3C
+        lda     $7AFD                           ; 908E AD FD 7A
+; bank $3a
+getPaletteEntriesForWorld:
+        sta     $3D                             ; 9091 85 3D
+        lda     $7AF7                           ; 9093 AD F7 7A
+        sta     $93                             ; 9096 85 93
+        lda     $7AFE                           ; 9098 AD FE 7A
+        sta     $1C                             ; 909B 85 1C
+        lda     $7AFF                           ; 909D AD FF 7A
+; bank $34
+dispCommand_06_showActionName:
+        sta     $1D                             ; 90A0 85 1D
+        lda     $7AF4                           ; 90A2 AD F4 7A
+        sta     $3E                             ; 90A5 85 3E
+        lda     $7AF5                           ; 90A7 AD F5 7A
+        sta     $3F                             ; 90AA 85 3F
+        rts                                     ; 90AC 60
+; ----------------------------------------------------------------------------
+L90AD:  lda     #$02                            ; 90AD A9 02
+        sta     $96                             ; 90AF 85 96
+        jsr     field.draw_window_box           ; 90B1 20 02 ED
+        lda     #$39                            ; 90B4 A9 39
+        jmp     L910C                           ; 90B6 4C 0C 91
+; ----------------------------------------------------------------------------
+        jsr     floor.searchSpaceForItem        ; 90B9 20 7E 93
+        lda     $60C0,x                         ; 90BC BD C0 60
+        cmp     $80                             ; 90BF C5 80
+        bne     L90D3                           ; 90C1 D0 10
+        lda     $60E0,x                         ; 90C3 BD E0 60
+        sec                                     ; 90C6 38
+        sbc     $81                             ; 90C7 E5 81
+        sta     $60E0,x                         ; 90C9 9D E0 60
+        bne     L90D3                           ; 90CC D0 05
+        lda     #$00                            ; 90CE A9 00
+        .byte   $9D                             ; 90D0 9D
+        .byte   $C0                             ; 90D1 C0
+; bank $32
+is_backattacked_32:
+        rts                                     ; 90D2 60
+; ----------------------------------------------------------------------------
+L90D3:  rts                                     ; 90D3 60
+; ----------------------------------------------------------------------------
+L90D4:  jsr     waitNmiBySetHandler             ; 90D4 20 00 FF
+        .byte   $A9                             ; 90D7 A9
+; bank $32
+effect_02:
+        .byte   $02                             ; 90D8 02
+        sta     $4014                           ; 90D9 8D 14 40
+        inc     $F0                             ; 90DC E6 F0
+        jsr     LC758                           ; 90DE 20 58 C7
+        jsr     L90F0                           ; 90E1 20 F0 90
+        jsr     L9119                           ; 90E4 20 19 91
+        jsr     L912A                           ; 90E7 20 2A 91
+        jsr     L914C                           ; 90EA 20 4C 91
+        jmp     LA7E6                           ; 90ED 4C E6 A7
+; ----------------------------------------------------------------------------
+L90F0:  ldx     #$1F                            ; 90F0 A2 1F
+        lda     #$F8                            ; 90F2 A9 F8
+L90F4:  sta     $0220,x                         ; 90F4 9D 20 02
+        dex                                     ; 90F7 CA
+        bpl     L90F4                           ; 90F8 10 FA
+        lda     #$20                            ; 90FA A9 20
+        sta     $26                             ; 90FC 85 26
+        rts                                     ; 90FE 60
+; ----------------------------------------------------------------------------
+L90FF:  sta     $92                             ; 90FF 85 92
+        lda     #$00                            ; 9101 A9 00
+        sta     $94                             ; 9103 85 94
+        lda     #$82                            ; 9105 A9 82
+        sta     $95                             ; 9107 85 95
+        .byte   $4C                             ; 9109 4C
+        .byte   $65                             ; 910A 65
+; bank $3a
+getPaletteEntriesForFloor:
+        .byte   $EE                             ; 910B EE
+L910C:  sta     $92                             ; 910C 85 92
+        lda     #$00                            ; 910E A9 00
+        sta     $94                             ; 9110 85 94
+        lda     #$82                            ; 9112 A9 82
+        sta     $95                             ; 9114 85 95
+        jmp     field.load_and_draw_string      ; 9116 4C 9A EE
+; ----------------------------------------------------------------------------
+L9119:  lda     $A2                             ; 9119 A5 A2
+        bne     L911E                           ; 911B D0 01
+        rts                                     ; 911D 60
+; ----------------------------------------------------------------------------
+L911E:  ldy     $78F0                           ; 911E AC F0 78
+        ldx     $7800,y                         ; 9121 BE 00 78
+        lda     $7801,y                         ; 9124 B9 01 78
+        jmp     L9164                           ; 9127 4C 64 91
+; ----------------------------------------------------------------------------
+L912A:  lda     $A3                             ; 912A A5 A3
+        bne     L912F                           ; 912C D0 01
+L912E:  rts                                     ; 912E 60
+; ----------------------------------------------------------------------------
+L912F:  cmp     #$01                            ; 912F C9 01
+        beq     L9140                           ; 9131 F0 0D
+        lda     $79F2                           ; 9133 AD F2 79
+        bne     L912E                           ; 9136 D0 F6
+        lda     $79F0                           ; 9138 AD F0 79
+        cmp     $79F1                           ; 913B CD F1 79
+        bcs     L912E                           ; 913E B0 EE
+L9140:  ldy     $79F0                           ; 9140 AC F0 79
+        ldx     $7900,y                         ; 9143 BE 00 79
+        lda     $7901,y                         ; 9146 B9 01 79
+        .byte   $4C                             ; 9149 4C
+        .byte   $64                             ; 914A 64
+; bank $3a
+getPaletteEntries:
+        .byte   $91                             ; 914B 91
+L914C:  lda     $A4                             ; 914C A5 A4
+        bne     L9151                           ; 914E D0 01
+L9150:  rts                                     ; 9150 60
+; ----------------------------------------------------------------------------
+L9151:  cmp     #$01                            ; 9151 C9 01
+        beq     L915B                           ; 9153 F0 06
+        lda     $F0                             ; 9155 A5 F0
+        and     #$04                            ; 9157 29 04
+        bne     L9150                           ; 9159 D0 F5
+L915B:  ldy     $7AF0                           ; 915B AC F0 7A
+        ldx     $7A00,y                         ; 915E BE 00 7A
+        lda     $7A01,y                         ; 9161 B9 01 7A
+L9164:  asl     a                               ; 9164 0A
+        asl     a                               ; 9165 0A
+        asl     a                               ; 9166 0A
+        sta     $41                             ; 9167 85 41
+        txa                                     ; 9169 8A
+        asl     a                               ; 916A 0A
+        asl     a                               ; 916B 0A
+        asl     a                               ; 916C 0A
+        sta     $40                             ; 916D 85 40
+        asl     a                               ; 916F 0A
+        asl     a                               ; 9170 0A
+        asl     a                               ; 9171 0A
+        jmp     LD5EB                           ; 9172 4C EB D5
+; ----------------------------------------------------------------------------
+        .byte   $20                             ; 9175 20
+        .byte   $19                             ; 9176 19
+; bank $34
+dispCommand_07_showTargetName:
+        cmp     ($A5)                           ; 9177 D2 A5
+        jsr     L0F29                           ; 9179 20 29 0F
+        beq     L918A                           ; 917C F0 0C
+        cmp     $A1                             ; 917E C5 A1
+        beq     L9191                           ; 9180 F0 0F
+        sta     $A1                             ; 9182 85 A1
+        jsr     LD213                           ; 9184 20 13 D2
+        lda     $A1                             ; 9187 A5 A1
+        rts                                     ; 9189 60
+; ----------------------------------------------------------------------------
+L918A:  lda     #$00                            ; 918A A9 00
+        sta     $47                             ; 918C 85 47
+        sta     $A1                             ; 918E 85 A1
+        rts                                     ; 9190 60
+; ----------------------------------------------------------------------------
+L9191:  lda     $47                             ; 9191 A5 47
+        clc                                     ; 9193 18
+        adc     #$01                            ; 9194 69 01
+        sta     $47                             ; 9196 85 47
+        cmp     #$10                            ; 9198 C9 10
+        bcc     L91A0                           ; 919A 90 04
+        lda     #$00                            ; 919C A9 00
+        sta     $A1                             ; 919E 85 A1
+L91A0:  lda     #$00                            ; 91A0 A9 00
+        rts                                     ; 91A2 60
+; ----------------------------------------------------------------------------

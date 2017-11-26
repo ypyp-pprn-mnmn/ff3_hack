@@ -41,6 +41,8 @@ Write-Host -ForegroundColor Gray $command;
 try {
     Push-Location $work_dir | Out-Null
     Invoke-Expression $command;
+    $out_file = Get-ChildItem -Filter "*.da65out.txt" | Select-Object -First 1
+    code --reuse-window $out_file.FullName
 } catch {
     throw;
 } finally {
