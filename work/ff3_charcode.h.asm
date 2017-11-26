@@ -4,13 +4,52 @@
 ;==================================================================================================
 CHAR.NULL = $00
 CHAR.EOL = $01
+CHAR.TREASURE_NAME = $02
+CHAR.TREASURE_GIL = $03
+CHAR.INN_CHARGE = $04
+CHAR.UNKNOWN_05 = $05
+CHAR.NOT_IMPL_06 = $06
+CHAR.ALLY_NPC_NAME = $07
+CHAR.CAPACITY = $08
+CHAR.PADDING_TO_EOL = $09
+CHAR.PAGING = $0a
+CHAR.NOT_IMPL_0B = $0b
+CHAR.LEADER_NAME = $0c
+CHAR.UNKNOWN_0D = $0d
+CHAR.NOT_IMPL_0E = $0e
+CHAR.DUSTBOX = $0f
+;;
+CHAR.PLAYER1_PARAMS = $10   ;param = kind of parameter
+CHAR.PLAYER2_PARAMS = $11   ;param = kind of parameter
+CHAR.PLAYER3_PARAMS = $12   ;param = kind of parameter
+CHAR.PLAYER4_PARAMS = $13   ;param = kind of parameter
+
+CHAR.SPACE_FILL = $14   ;param = fill length
+CHAR.UNKNOWN_15 = $15
+CHAR.UNKNOWN_16 = $16
+CHAR.UNKNOWN_17 = $17
+
+CHAR.TEXT_REF = $18     ;param = text_id
+CHAR.UNKNOWN_19 = $19   ;param = index into $7b80.
+CHAR.ITEM_NAME_IN_MENU = $1a    ;param: item index
+CHAR.UNKNOWN_1B = $1b   ;
+CHAR.ITEM_COUNT = $1c   ;param: item index
+CHAR.UNKNOWN_1D = $1d   ;
+CHAR.JOB_NAME = $1e     ;param: job_id
+CHAR.UNKNOWN_1F = $1f   ;
+CHAR.ITEM_NAME_IN_EQUIP_SELECTION = $20 ;param: item index
+CHAR.UNKNOWN_21 = $21;
+CHAR.ITEM_NAME_IN_TARGET = $22  ;param: item index
+
+;;
 CHAR.REPLACEMENT_BEGIN = $10    ;inclusive
 CHAR.REPLACEMENT_END = $28      ;exclusive. ($28 = space)
+;;
 CHAR.SPACE = $28
 
 ;; =======================================================
 ;; --  00 01 02 03 04 05 06 07    08 09 0a 0b 0c 0d 0e 0f
-;; 00  \0 \n \t .. .. .. .. ..    .. .. .. .. .. .. .. ..
+;; 00  \0 \n .. .. .. .. .. ..    .. .. .. .. .. .. .. ..
 ;; 10  .. .. .. .. .. .. .. ..    .. .. .. .. .. .. .. ..
 ;; 20  .. .. .. .. .. .. .. ..    .. が ぎ ぐ げ ご ざ じ
 ;; 30  ず ぜ ぞ だ ぢ づ で ど     ば び ぶ べ ぼ ぱ ぴ ぷ

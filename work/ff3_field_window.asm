@@ -1439,9 +1439,10 @@ textd.draw_in_box:
     bcc .control_char                    ; EF40 90 03
     jmp textd.eval_replacement          ; EF42 4C 2A F0
 ; ----------------------------------------------------------------------------
-.control_char: 
+.control_char:
     cmp #$01                            ; EF45 C9 01
     bne .case_2                         ; EF47 D0 12
+;;case_1: ;;eol.
     jsr field.draw_window_content       ; EF49 20 92 F6
     inc <.lines_drawn                   ; EF4C E6 1F
 .next_line: 
@@ -1455,7 +1456,7 @@ textd.draw_in_box:
 .continue_drawing:
     jmp textd.draw_in_box     ; EF58 4C FA EE
 ; ----------------------------------------------------------------------------
-.case_2: 
+.case_2:	;;item name of treasure which has just been gotten. $bb := item_id
     cmp #$02                            ; EF5B C9 02
     bne .case_3                         ; EF5D D0 0B
     lda <$BB                            ; EF5F A5 BB
@@ -1464,7 +1465,7 @@ textd.draw_in_box:
     sta <$B9                            ; EF65 85 B9
     jmp textd.deref_param_text          ; EF67 4C 9D F0
 ; ----------------------------------------------------------------------------
-.case_3:
+.case_3:	;;item price. $bb := item_id ?
     cmp #$03                            ; EF6A C9 03
     bne .case_4                         ; EF6C D0 0E
     jsr switch_to_character_logics_bank ; EF6E 20 27 F7
@@ -1473,7 +1474,7 @@ textd.draw_in_box:
     jsr $8B78                           ; EF76 20 78 8B
     jmp textd.continue_with_text        ; EF79 4C 91 F2
 ; ----------------------------------------------------------------------------
-.case_4
+.case_4:	;;inn charge.
     cmp #$04                            ; EF7C C9 04
     bne .case_5                         ; EF7E D0 15
     lda <$61                            ; EF80 A5 61
@@ -1493,16 +1494,16 @@ textd.draw_in_box:
     jsr $8B03                           ; EF9C 20 03 8B
     jmp textd.continue_with_text        ; EF9F 4C 91 F2
 ; ----------------------------------------------------------------------------
-.case_6:
+.case_6:	;;not implemented (nop)
     cmp #$06                            ; EFA2 C9 06
     bne .case_7                         ; EFA4 D0 03
 .break_case:
     jmp textd.draw_in_box     ; EFA6 4C FA EE
 ; ----------------------------------------------------------------------------
-.case_7:
+.case_7:	;; ally NPC name
     cmp #$07                            ; EFA9 C9 07
     bne .case_8                         ; EFAB D0 0E
-    lda $600B                           ; EFAD AD 0B 60
+    lda party.ally_npc                  ; EFAD AD 0B 60
     beq .break_case                     ; EFB0 F0 F4
     sec ; EFB2 38
     sbc #$01                            ; EFB3 E9 01
@@ -1510,7 +1511,7 @@ textd.draw_in_box:
     adc #$F8                            ; EFB6 69 F8
     jmp textd.deref_text_id             ; EFB8 4C D8 F2
 ; ----------------------------------------------------------------------------
-.case_8:
+.case_8:	;;capacity.
     cmp #$08                            ; EFBB C9 08
     bne .case_9                         ; EFBD D0 1B
     lda party.capacity                  ; EFBF AD 1B 60
@@ -1525,20 +1526,20 @@ textd.draw_in_box:
     sta .tile_buffer_lower,x                         ; EFD4 9D A0 07
     jmp textd.continue_with_text	; EFD7 4C 91 F2
 ; ----------------------------------------------------------------------------
-.case_9:
+.case_9:	;;pad to eol.
     cmp #$09                            ; EFDA C9 09
     bne .case_0a                        ; EFDC D0 06
     jsr field.draw_window_content       ; EFDE 20 92 F6
     jmp .next_line                          ; EFE1 4C 4E EF
 ; ----------------------------------------------------------------------------
-.case_0a:
+.case_0a:	;;paging.
     cmp #$0A                            ; EFE4 C9 0A
     bne .case_0b                        ; EFE6 D0 04
     lda #$09                            ; EFE8 A9 09
     clc ; EFEA 18
     rts ; EFEB 60
 ; ----------------------------------------------------------------------------
-.case_0b:
+.case_0b:	;;not implemented (nop)
     cmp #$0B                            ; EFEC C9 0B
     bne .case_0c                        ; EFEE D0 00
 .case_0c:	;;leader name
@@ -1570,7 +1571,7 @@ textd.draw_in_box:
     clc ; F022 18
     adc #$02                            ; F023 69 02
     sta <.text_index                    ; F025 85 90
-.case_0e: 
+.case_0e: ;;not implemented (nop)
     jmp textd.draw_in_box     ; F027 4C FA EE
 ; ----------------------------------------------------------------------------
     ;VERIFY_PC $f02a
@@ -1650,7 +1651,7 @@ textd.eval_replacement:
 ; ----------------------------------------------------------------------------
 .L_F046:
     bne .case_15_17                           ; F046 D0 07
-;;case 0x14:
+;;case 0x14:	;; padding, offset dest buffer by the number specified in parameter byte
     lda <.parameter_byte                             ; F048 A5 84
     sta <.text_index                             ; F04A 85 90
     jmp textd.draw_in_box     ; F04C 4C FA EE
@@ -1702,7 +1703,7 @@ textd.eval_replacement:
     sta [$80],y                         ; F096 91 80
     jmp textd.draw_in_box     ; F098 4C FA EE
 ; ----------------------------------------------------------------------------
-.case_18:
+.case_18:	;; indirect text. parameter = text_id.
     bne .case_19                           ; F09B D0 53
 .L_F09D:
 ;;textd.f09d_deref_param_text
@@ -1780,7 +1781,7 @@ textd.eval_replacement:
 .break_case_f111:
     jmp textd.draw_in_box     ; F111 4C FA EE
 ; ----------------------------------------------------------------------------
-.case_1a:
+.case_1a:	;; item name of which is stored in the backpack at the index specified by parameter
     cmp #$1A                            ; F114 C9 1A
     bne .case_1b                        ; F116 D0 10
     lda #$00                            ; F118 A9 00
@@ -1803,14 +1804,14 @@ textd.eval_replacement:
     sta <$B9                            ; F13A 85 B9
     jmp textd.deref_param_text          ; F13C 4C 9D F0
 ; ----------------------------------------------------------------------------
-.case_1c:
+.case_1c: ;; number of item of which is stored in the backpack at the index specified by parameter
     cmp #$1C                            ; F13F C9 1C
     bne .case_1d                        ; F141 D0 09
     ldx <.parameter_byte                             ; F143 A6 84
     lda party.backpack.item_count,x                         ; F145 BD E0 60
     beq .break_case_f111                           ; F148 F0 C7
     bne .L_F166                           ; F14A D0 1A
-.case_1d:
+.case_1d:	;;
     cmp #$1D                            ; F14C C9 1D
     bne .case_1e                        ; F14E D0 2A
     lda <.parameter_byte                             ; F150 A5 84
@@ -1829,13 +1830,14 @@ textd.eval_replacement:
     sta <$80                            ; F166 85 80
     ldx <.text_index                             ; F168 A6 90
     inc <.text_index                             ; F16A E6 90
+	;;c8 = ':'
     lda #$C8                            ; F16C A9 C8
     sta .tile_buffer_lower,x                         ; F16E 9D A0 07
     jsr switch_to_character_logics_bank ; F171 20 27 F7
     jsr $8B29                           ; F174 20 29 8B
     jmp textd.continue_with_text        ; F177 4C 91 F2
 ; ----------------------------------------------------------------------------
-.case_1e:
+.case_1e:	;;available job name. param = job_id
     cmp #$1E                            ; F17A C9 1E
     bne .case_1f                          ; F17C D0 1C
     jsr field.get_max_available_job_id    ; F17E 20 8A F3
@@ -1871,7 +1873,7 @@ textd.eval_replacement:
     jsr $8B57                           ; F1B5 20 57 8B
     jmp textd.continue_with_text        ; F1B8 4C 91 F2
 ; ----------------------------------------------------------------------------
-.case_20:
+.case_20:	;;item name referenced in equip selection window
     cmp #$20                            ; F1BB C9 20
     bne .case_21                        ; F1BD D0 12
     ldx <.parameter_byte                             ; F1BF A6 84
@@ -1903,7 +1905,7 @@ textd.eval_replacement:
 .break_case_f1f6:
     jmp textd.draw_in_box     ; F1F6 4C FA EE
 ; ----------------------------------------------------------------------------
-.case_22:	;;item name, of which is stored in the backpack. parameter = index in backpack
+.case_22:	;;item name of which is stored in the backpack. parameter = index in backpack
     cmp #$22                            ; F1F9 C9 22
     bne .break_case_f1f6                ; F1FB D0 F9
     lda #$00                            ; F1FD A9 00
