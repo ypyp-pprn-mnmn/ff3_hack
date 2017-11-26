@@ -1,13 +1,3 @@
-GLOBAL {
-	COMMENTS	3;
-	CPU	"65C02";
-	INPUTNAME	"ff3_hack_beta.nes";
-	INPUTOFFS	$63714;
-	STARTADDR	$b704;
-	INPUTSIZE	$47;
-	OUTPUTNAME	"ff3.disasm.txt";
-};
-
 LABEL {
 	NAME	"magic_protect";
 	ADDR	$b704;

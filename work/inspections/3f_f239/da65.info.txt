@@ -1,9 +1,9 @@
 GLOBAL {
 	COMMENTS	3;
-	INPUTOFFS	$7EEFA;
-	STARTADDR	$eefa;
-	INPUTSIZE	$00130;
-	OUTPUTNAME	"3f_eefa-field.eval_and_draw_string.da65out.txt";
+	INPUTOFFS	$7F239;
+	STARTADDR	$f239;
+	INPUTSIZE	$00151;
+	OUTPUTNAME	"3f_f239-field.string.eval_code_10_13.da65out.txt";
 };
 LABEL {
 	NAME "commandWindow_OnBack";
