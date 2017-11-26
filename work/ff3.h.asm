@@ -7,6 +7,7 @@
 ;consts
 	.include "ff3_const.h"
 	.include "ff3_charcode.h.asm"
+	.include "ff3_party_and_player.h.asm"
 ;proc addrs
 	.include "ff3_30-31.h"
 	.include "ff3_32-33.h"
@@ -36,8 +37,12 @@ field.sync_ppu_scroll_with_player	= $e571
 
 textd.draw_in_box = $eefa
 textd.eval_replacement = $f02a
+textd.deref_param_text = $f09d
+textd.draw_item_name = $f0c5
 textd.switch_to_text_bank_and_continue_drawing = $f291
 textd.deref_text_id = $f2d8
+
+field.get_max_available_job_id = $f38a
 
 textd.tile_map_lower = $F4E1	;static table that maps charcode into tile id
 textd.tile_map_upper = $f515	;static table that maps charcode into tile id
@@ -165,23 +170,14 @@ soundDriver_musicId	= $7f43
 soundDriver_effectId= $7f49	;msb should be 1
 ;----------------------------------------------------------------------------------------------------------
 ;in memory structs
-party.world_id = $6007	;tbd. $3b:a12b
-party.float_land_X = $600c;	tbd. $3e:c4fc
-party.float_land_Y = $600d;	tbd. $3e:c4fc
-party.leader_offset = $600e	;tbd.
-party.message_speed = $6010	;tbd.
-party.capacity = $601b
-party.gil = $601c	;24bit
-party.event_flags = $6020	; 0x20 bytes (256 flags, including job flags) tbd. $3c:9344
-party.job_flags = $6021	;lower 5bits represents each events
-party.treasure_flags = $6040
-party.object_flags = $6080	;tbd. $3b:b34e, $3b:b51a
 
-backpackItems		= $60c0
-playerBaseParams	= $6100
-playerEquips		= $6200
+;; ---
 playerBattleParams	= $7575	;$40*4
 enemyBattleParams	= $7675	;$40*8
+;----------------------------------------------------------------------------------------------------------
+;string pointers
+textd.message_texts = $8000;
+textd.status_and_area_names = $8200	;$18:8200 = $30200
 ;----------------------------------------------------------------------------------------------------------
 ;in rom structs
 userFlags			= $00900
@@ -197,5 +193,5 @@ commandEffectHandlers	= $6843e
 commandWindowHandlers	= $69a16
 commandHandlers			= $69fac
 ;------------------------------------------------------------------------------------------------------
-TEMP_RAM = $7900	;we cannot use stack regein due to dugeon's floor save
+TEMP_RAM = $7900	;we cannot use stack region due to dugeon's floor save
 ;------------------------------------------------------------------------------------------------------
