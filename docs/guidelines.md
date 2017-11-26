@@ -36,26 +36,25 @@ Where:
 -   address: mapped address where the code begins execution.
 -   namespace: see below.
 -   name: whatever you choose to help with code reading and understanding.
+
 #### namespaces
-<details>
+Namespace are currently defined as follows, but it is fine to define new ones.
+Basically 1st level ones should specify a 'mode' it denotes, where 'mode' represents in-game facets.
+As these 1st level namespaces act as prefix and therefore will apper in every definition,
+it should be named as short as possible.
 
-Namespace are currently defined as follows, but it is fine to define new ones:
--   field
--   field.world
--   field.floor
--   field.floor.event
--   field.floor.object
--   field.floor.chip
+Currently the 1st level namespace is not defined for those not related to a particular game mode,
+such as functions do just mathmatics. This is done to consindering these functions' generality nature and roles.
+Other possibilities include giving it a very short name, such as: 'sys', 'std'.
 
--   battle
--   battle.enemy
--   battle.enemy.gfx
--   battle.present
+If it found to be there are enough amount of functions within a category that as a whole achieves a particular goal,
+it is good to define 2nd level namespaces.
 
--   sound
-
--   util
-</details>
+-   field : generic field-mode related functions
+-   menu : generic menu-mode related functions
+-   battle : generic battle-mode
+-   sound : sound driver functions
+-   ppud : ppu driver functions
 
 ## 2.   metadata and notes
 Then, any additional metadata, typically argument definitions but not limited to,
