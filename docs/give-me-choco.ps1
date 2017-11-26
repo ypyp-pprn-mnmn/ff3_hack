@@ -10,12 +10,16 @@ Param(
 	[ValidatePattern("[\.\:\`$_]?[0-9a-fA-f]{2}[\.\:\`$_]?[0-9a-fA-f]{4}")]
 		[string] $bank_and_address,
 	[switch]
-		$no_thank_you = $false
+		$no_thank_you = $false,
+	[switch]
+		$with_candy = $false
 )
 ## const.
-$draft_dir = "../docs/codes/_drafts";
-$published_dir = "../docs/codes";
-$template = "../docs/codes/_template.md";
+$project_root = "../";
+$draft_dir = "${project_root}/docs/codes/_drafts";
+$published_dir = "${project_root}/docs/codes";
+$template = "${project_root}/docs/codes/_template.md";
+$inspection_dir = "${project_root}/work/inspections";
 ## parse command line arguments
 $bank_and_address = ($bank_and_address -replace "[^0-9a-fA-F]");
 $bank_and_address -match "([0-9a-fA-F]{2})([0-9a-fA-F]{4})(.*?)" | Out-Null;
@@ -34,6 +38,12 @@ function validate_address($bank, $addr) {
 	if ($bank -ge 0x40) {
 		throw "invalid address: valid PRG ROM bank range is 00 to 3F.";
 	}
+}
+
+function get_file_offset($bank, $addr) {
+	$bank = [convert]::ToInt32($bank, 16);
+	$addr = [convert]::ToInt32($addr, 16);
+	return ($bank -shl 13) -bor ($addr -band 0x1fff);
 }
 
 function find_target_with_context($bank, $target_addr) {
@@ -61,13 +71,26 @@ function find_target_with_context($bank, $target_addr) {
 	return @($prev, $found, $next, $bank, $target_addr);
 }
 function make_me_happy($bank, $addr, $tuple) {
-	## not found let's start drafting!
+	##
+	if ($with_candy) {
+		## huh, you're so hungry you can't stop it
+		$info = generate_da65info $bank $addr $tuple
+		$inspection_out_dir = "${inspection_dir}/${bank}_${addr}";
+		if (-not (Test-Path $inspection_out_dir)) {
+			mkdir -Path $inspection_out_dir | Out-Null;
+		}
+		## da65 won't accept utf8 with BOM
+		$info | Out-File -Encoding ascii -FilePath "${inspection_out_dir}/da65.info.txt";
+		Write-Host -ForegroundColor DarkMagenta "huh, you're so hungry you can't stop it: ${inspection_out_dir}/da65.info.txt";
+	}
 	$outpath = "${draft_dir}/${bank}_${addr}_DRAFT.md";
 	if (Test-Path $outpath) {
 		throw "oops! it looks like you forgot you have already started drafting! check ${outpath}.";
 	}
+	## existing draft not found, so let's start drafting!
 	try {
 		if ($no_thank_you) {
+			## ok, just show the search reseult!
 			#if ($tuple[0][1] -ne $null) {
 			#	$(Get-Content -Path $tuple[0][1].fullname -Encoding utf8) | Write-Output
 			#}
@@ -124,6 +147,64 @@ function cite(
 		write-output ">>$_";
 	}
 }
+
+#for info file specs, see the [reference](http://www.cc65.org/doc/da65-4.html)
+function generate_da65info($bank, $addr, $tuple) {
+	$filename_pattern = "^([0-9a-fA-F]{2})_([0-9a-fA-F]{4})-(.*?)\.md$";
+	$size = "{0:X5}" -f ([convert]::ToInt32($tuple[2][0], 16) - [convert]::ToInt32($addr, 16));
+	$offset = "{0:X5}" -f (get_file_offset $bank $addr);
+	$sym = "";
+	if ($tuple[1] -ne $null) {
+		if ($tuple[1][1] -match $filename_pattern) {
+			$sym = $matches[3];
+		}
+	}
+	$global =
+@"
+GLOBAL {
+	COMMENTS	3;
+	INPUTOFFS	`$${offset};
+	STARTADDR	`$${addr};
+	INPUTSIZE	`$${size};
+	OUTPUTNAME	"${bank}_${addr}-${sym}.da65out.txt";
+};
+"@;
+	# list up all functions documented
+	$label_hashes = @{};
+	Get-ChildItem -Recurse -Filter "*.md" -Path "${published_dir}" | ForEach-Object {
+		## map file name into address
+		if ($_.Name -match $filename_pattern) {
+			if ($matches[3] -ne "") {
+				$hash = $label_hashes[$matches[2]];
+				if ($hash -eq $null) {
+					$hash = @{};
+					$label_hashes[$matches[2]] = $hash;
+					#$label_hashes.Add($matches[2], $hash);
+				}
+				#$label =
+				$hash[$matches[1]] = $matches[3];
+			}
+		}
+	};
+	$labels = @( );
+	foreach ($k in $label_hashes.Keys) {
+		# $k:addr -> internal hash, keyed by bank
+		$hash = $label_hashes[$k];
+		$last_bank = $hash.GetEnumerator() | Sort-Object -Property "Key" -Descending | Select-Object -First 1;
+		$sym = $last_bank.Value;
+		$labels +=
+@"
+
+LABEL {
+	NAME "${sym}";
+	ADDR `$${k};
+	COMMENT "bank `$$($last_bank.Key)";
+	SIZE	1;
+};
+"@;
+	}
+	return $global + ($labels -join "");
+}
 ## ================================================================================
 ## do it.
 try {
@@ -131,5 +212,6 @@ try {
 	$find_result = find_target_with_context $bank $addr
 	make_me_happy $bank $addr $find_result
 } catch {
-	write-host -ForegroundColor DarkRed $error[0].Exception.Message
+	#write-host -ForegroundColor DarkRed $error[0].Exception.Message
+	throw;
 }
