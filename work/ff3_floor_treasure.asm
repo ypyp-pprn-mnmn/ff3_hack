@@ -1,10 +1,11 @@
+;; encoding: **shift-jis**
 ; ff3_floor_treasure.asm
 ;
 ;description:
 ;	implements treasure related functions
 ;
 ;version:
-;	0.02 (2007-08-31)
+;	0.03
 ;======================================================================================================
 	.include "ff3_floor.h"
 ff3_floor_treasure_begin:
@@ -207,7 +208,7 @@ floor_getTreasure:
 	.store_increment:
 		sta <.treasureItemCount
 
-		jsr switchBanksTo3c3d	;f727
+		jsr switch_to_character_logics_bank;switchBanksTo3c3d	;f727
 		
 		;lda <.treasureParam
 		;sta <.messageParam	;$bb
@@ -249,7 +250,7 @@ floor_getTreasure:
 		rts
 .treasure_is_gil:
 	;here x ==  (itemid)
-	jsr floor_getItemValue	;f5d4
+	jsr floor.get_item_price	;f5d4
 	jsr floor_incrementPartyGil
 	jsr floor_invertTreasureFlag
 	lda #$01	;"‚½‚©‚ç‚Î‚±‚Ì...‚¬‚é‚Ä‚É‚¢‚ê‚½"
@@ -278,7 +279,14 @@ floor_invertTreasureFlag:
 ;	$3f:ef73 @ field::decodeString 
 ;	$3f:f5b8 @ floor::getTreasure
 ;	caller expects y has been unchanged
-floor_getItemValue:
+floor.get_item_price:
+;; fixups.
+	FIX_ADDR_ON_CALLER $3d,$b230+1
+	FIX_ADDR_ON_CALLER $3d,$b271+1
+	.ifndef FAST_FIELD_WINDOW
+	FIX_ADDR_ON_CALLER $3f,$ef73+1
+	.endif
+;; ----
 .value = $80
 .itemValues = $9e00
 ;------------------------
@@ -353,17 +361,7 @@ floor_incrementPartyGil:
 	VERIFY_PC $f670
 floor_treasure_free_begin:
 floor_treasure_free_end = $f670
-;------------------------------------------------------------------------------------------------------
-;quick fixes
-	.bank	$3d
-	.org	$b230
-	jsr floor_getItemValue
-	.org	$b271
-	jsr floor_getItemValue
-	
-	.bank	$3f
-	.org	$ef73
-	jsr floor_getItemValue
+
 
 	.bank	$3d
 	.org	$b1c2
