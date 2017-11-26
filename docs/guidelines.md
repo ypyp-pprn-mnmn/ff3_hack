@@ -38,7 +38,7 @@ Where:
 -   name: whatever you choose to help with code reading and understanding.
 
 #### namespaces
-Namespace are currently defined as follows, but it is fine to define new ones.
+Namespace are currently defined as follows, but it is fine to add new ones.
 Basically 1st level ones should specify a 'mode' it denotes, where 'mode' represents in-game facets.
 As these 1st level namespaces act as prefix and therefore will apper in every definition,
 it should be named as short as possible.
@@ -50,9 +50,13 @@ Other possibilities include giving it a very short name, such as: 'sys', 'std'.
 If it found to be there are enough amount of functions within a category that as a whole achieves a particular goal,
 it is good to define 2nd level namespaces.
 
+##### 1st level namespaces:
+
 -   field : generic field-mode related functions
+    this ns is in consideration to divide into 2 separate category:
+        world / floor
 -   menu : generic menu-mode related functions
--   battle : generic battle-mode
+-   battle : generic battle-mode related functions
 -   sound : sound driver functions
 -   ppud : ppu driver functions
 
