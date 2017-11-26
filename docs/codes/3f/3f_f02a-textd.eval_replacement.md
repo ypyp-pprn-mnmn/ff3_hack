@@ -1,6 +1,7 @@
 ﻿
 
-# $3f:f02a field.string.eval_replacement
+
+# $3f:f02a textd.eval_replacement
 
 
 ### args:
@@ -44,7 +45,7 @@ $f034:
 $f046:
 	if (a == #14) { //bne f04f
 		$90 = $84;
-		return field::decodeString();//jmp
+		return textd.draw_in_box();	// field::decodeString();//jmp
 	}
 $f04f:
 	if (a < #18) { //bcs f09b
@@ -68,7 +69,7 @@ $f086:
 		$80[++y] = $82;
 		$80[++y] = $83;
 		//tail recursion. equivalent to just go back to beginning of the loop.
-		return field.eval_and_draw_string();	//jmp eefa
+		return textd.draw_in_box();	// field.eval_and_draw_string();	//jmp eefa
 	}
 $f09b:	//#18 <= a < #28
 	if (a == #18) { //bne f0f0
@@ -102,6 +103,7 @@ $f19a:
 	if (a == #1f) {} //bne f1bb
 }
 ```
+
 
 
 
