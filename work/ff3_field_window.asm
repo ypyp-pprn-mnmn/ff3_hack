@@ -1398,159 +1398,180 @@ textd.draw_in_box:
 
 
 ;; --- begin.
-        ldy     #$00                            ; EEFA A0 00
-        lda     [.p_text],y                         ; EEFC B1 3E
-        beq     field_x.clc_return              ; EEFE F0 F1
-        inc     <.p_text                             ; EF00 E6 3E
-        bne     .lEF06                          ; EF02 D0 02
-        inc     <.p_text+1                             ; EF04 E6 3F
-.lEF06: cmp     #$28                            ; EF06 C9 28
-        bcc     .lEF3E                          ; EF08 90 34
-        cmp     #$5C                            ; EF0A C9 5C
-        bcc     .lEF27                          ; EF0C 90 19
-        ldy     <.text_index                             ; EF0E A4 90
-        ldx     <.in_menu_mode                             ; EF10 A6 37
-        bne     .lEF1A                          ; EF12 D0 06
-        cmp     #$70                            ; EF14 C9 70
-        bcs     .lEF1A                          ; EF16 B0 02
-        lda     #$FF                            ; EF18 A9 FF
-.lEF1A: sta     .tile_buffer_lower,y                         ; EF1A 99 A0 07
-        lda     #$FF                            ; EF1D A9 FF
-        sta     .tile_buffer_upper,y                         ; EF1F 99 80 07
-        inc     <.text_index                             ; EF22 E6 90
-        jmp     textd.draw_in_box     ; EF24 4C FA EE
+	ldy     #$00                            ; EEFA A0 00
+	lda     [.p_text],y                     ; EEFC B1 3E
+	beq     field_x.clc_return              ; EEFE F0 F1
+	inc     <.p_text                        ; EF00 E6 3E
+	bne     .test_charcode                  ; EF02 D0 02
+	inc     <.p_text+1                      ; EF04 E6 3F
+.test_charcode:
+	cmp     #$28                            ; EF06 C9 28
+	bcc     .not_printable_char             ; EF08 90 34
+	cmp     #$5C                            ; EF0A C9 5C
+	bcc     .need_composition               ; EF0C 90 19
+	ldy     <.text_index                    ; EF0E A4 90
+	ldx     <.in_menu_mode                  ; EF10 A6 37
+	bne     .icons_supported                ; EF12 D0 06
+	cmp     #$70                            ; EF14 C9 70
+	bcs     .icons_supported                ; EF16 B0 02
+	lda     #$FF                            ; EF18 A9 FF
+.icons_supported:
+	sta     .tile_buffer_lower,y            ; EF1A 99 A0 07
+	lda     #$FF                            ; EF1D A9 FF
+	sta     .tile_buffer_upper,y            ; EF1F 99 80 07
+	inc     <.text_index                    ; EF22 E6 90
+	jmp     textd.draw_in_box               ; EF24 4C FA EE
 ; ----------------------------------------------------------------------------
-.lEF27: sec                                     ; EF27 38
-        sbc     #$28                            ; EF28 E9 28
-        tax                                     ; EF2A AA
-        ldy     <.text_index                             ; EF2B A4 90
-        lda     textd.tile_map_upper,x                         ; EF2D BD 15 F5
-        sta     .tile_buffer_upper,y                         ; EF30 99 80 07
-        lda     textd.tile_map_lower,x                         ; EF33 BD E1 F4
-        sta     .tile_buffer_lower,y                         ; EF36 99 A0 07
-        inc     <.text_index                             ; EF39 E6 90
-        jmp     textd.draw_in_box     ; EF3B 4C FA EE
+.need_composition: 
+	sec                                     ; EF27 38
+	sbc     #$28                            ; EF28 E9 28
+	tax                                     ; EF2A AA
+	ldy     <.text_index                             ; EF2B A4 90
+	lda     textd.tile_map_upper,x                         ; EF2D BD 15 F5
+	sta     .tile_buffer_upper,y                         ; EF30 99 80 07
+	lda     textd.tile_map_lower,x                         ; EF33 BD E1 F4
+	sta     .tile_buffer_lower,y                         ; EF36 99 A0 07
+	inc     <.text_index                             ; EF39 E6 90
+	jmp     textd.draw_in_box     ; EF3B 4C FA EE
 ; ----------------------------------------------------------------------------
-.lEF3E: cmp     #$10                            ; EF3E C9 10
-        bcc     .lEF45                          ; EF40 90 03
-        jmp     textd.eval_replacement   ; EF42 4C 2A F0
+.not_printable_char:
+	cmp     #$10                            ; EF3E C9 10
+	bcc     .control_char                    ; EF40 90 03
+	jmp     textd.eval_replacement          ; EF42 4C 2A F0
 ; ----------------------------------------------------------------------------
-.lEF45: cmp     #$01                            ; EF45 C9 01
-        bne     .lEF5B                          ; EF47 D0 12
-        jsr     field.draw_window_content       ; EF49 20 92 F6
-        inc     <.lines_drawn                             ; EF4C E6 1F
+.control_char: 
+	cmp     #$01                            ; EF45 C9 01
+	bne     .case_2                         ; EF47 D0 12
+	jsr     field.draw_window_content       ; EF49 20 92 F6
+	inc     <.lines_drawn                   ; EF4C E6 1F
 .next_line: 
-		inc     <.lines_drawn                             ; EF4E E6 1F
-        lda     <.lines_drawn                             ; EF50 A5 1F
-        cmp     <.window_height                             ; EF52 C5 3D
-        bcc     .lEF58                          ; EF54 90 02
-        sec                                     ; EF56 38
-        rts                                     ; EF57 60
+	inc     <.lines_drawn                   ; EF4E E6 1F
+	lda     <.lines_drawn                   ; EF50 A5 1F
+	cmp     <.window_height                 ; EF52 C5 3D
+	bcc     .continue_drawing               ; EF54 90 02
+	sec                                     ; EF56 38
+	rts                                     ; EF57 60
 ; ----------------------------------------------------------------------------
-.lEF58: jmp     textd.draw_in_box     ; EF58 4C FA EE
+.continue_drawing:
+	jmp     textd.draw_in_box     ; EF58 4C FA EE
 ; ----------------------------------------------------------------------------
-.lEF5B: cmp     #$02                            ; EF5B C9 02
-        bne     .lEF6A                          ; EF5D D0 0B
-        lda     <$BB                             ; EF5F A5 BB
-        sta     <$84                             ; EF61 85 84
-        lda     #$00                            ; EF63 A9 00
-        sta     <$B9                             ; EF65 85 B9
-        jmp     $F09D                          ; EF67 4C 9D F0
+.case_2: 
+	cmp     #$02                            ; EF5B C9 02
+	bne     .case_3                         ; EF5D D0 0B
+	lda     <$BB                            ; EF5F A5 BB
+	sta     <$84                            ; EF61 85 84
+	lda     #$00                            ; EF63 A9 00
+	sta     <$B9                            ; EF65 85 B9
+	jmp     $F09D                           ; EF67 4C 9D F0
 ; ----------------------------------------------------------------------------
-.lEF6A: cmp     #$03                            ; EF6A C9 03
-        bne     .lEF7C                          ; EF6C D0 0E
-        jsr     switch_to_character_logics_bank ; EF6E 20 27 F7
-        ldx     <$BB                             ; EF71 A6 BB
-        jsr     floor.get_item_price            ; EF73 20 D4 F5
-        jsr     $8B78                          ; EF76 20 78 8B
-        jmp     $F291                          ; EF79 4C 91 F2
+.case_3:
+	cmp     #$03                            ; EF6A C9 03
+	bne     .case_4                         ; EF6C D0 0E
+	jsr     switch_to_character_logics_bank ; EF6E 20 27 F7
+	ldx     <$BB                            ; EF71 A6 BB
+	jsr     floor.get_item_price            ; EF73 20 D4 F5
+	jsr     $8B78                           ; EF76 20 78 8B
+	jmp     $F291                           ; EF79 4C 91 F2
 ; ----------------------------------------------------------------------------
-.lEF7C: cmp     #$04                            ; EF7C C9 04
-        bne     .lEF95                          ; EF7E D0 15
-        lda     <$61                             ; EF80 A5 61
-        sta     <$80                             ; EF82 85 80
-        lda     <$62                             ; EF84 A5 62
-        sta     <$81                             ; EF86 85 81
-        lda     <$63                             ; EF88 A5 63
-        sta     <$82                             ; EF8A 85 82
-        jsr     switch_to_character_logics_bank ; EF8C 20 27 F7
-        jsr     $8B78                          ; EF8F 20 78 8B
-        jmp     textd.switch_to_text_bank_and_continue_drawing	; EF92 4C 91 F2
+.case_4
+	cmp     #$04                            ; EF7C C9 04
+	bne     .case_5                         ; EF7E D0 15
+	lda     <$61                            ; EF80 A5 61
+	sta     <$80                            ; EF82 85 80
+	lda     <$62                            ; EF84 A5 62
+	sta     <$81                            ; EF86 85 81
+	lda     <$63                            ; EF88 A5 63
+	sta     <$82                            ; EF8A 85 82
+	jsr     switch_to_character_logics_bank ; EF8C 20 27 F7
+	jsr     $8B78                           ; EF8F 20 78 8B
+	jmp     textd.switch_to_text_bank_and_continue_drawing	; EF92 4C 91 F2
 ; ----------------------------------------------------------------------------
-.lEF95: cmp     #$05                            ; EF95 C9 05
-        bne     .lEFA2                          ; EF97 D0 09
-        jsr     switch_to_character_logics_bank ; EF99 20 27 F7
-        jsr     $8B03                          ; EF9C 20 03 8B
-        jmp     textd.switch_to_text_bank_and_continue_drawing	; EF9F 4C 91 F2
+.case_5: 
+	cmp     #$05                            ; EF95 C9 05
+	bne     .case_6                         ; EF97 D0 09
+	jsr     switch_to_character_logics_bank ; EF99 20 27 F7
+	jsr     $8B03                          ; EF9C 20 03 8B
+	jmp     textd.switch_to_text_bank_and_continue_drawing	; EF9F 4C 91 F2
 ; ----------------------------------------------------------------------------
-.lEFA2: cmp     #$06                            ; EFA2 C9 06
-        bne     .lEFA9                          ; EFA4 D0 03
-.lEFA6: jmp     textd.draw_in_box     ; EFA6 4C FA EE
+.case_6:
+	cmp     #$06                            ; EFA2 C9 06
+	bne     .case_7                         ; EFA4 D0 03
+.break_case:
+	jmp     textd.draw_in_box     ; EFA6 4C FA EE
 ; ----------------------------------------------------------------------------
-.lEFA9: cmp     #$07                            ; EFA9 C9 07
-        bne     .lEFBB                          ; EFAB D0 0E
-        lda     $600B                           ; EFAD AD 0B 60
-        beq     .lEFA6                          ; EFB0 F0 F4
-        sec                                     ; EFB2 38
-        sbc     #$01                            ; EFB3 E9 01
-        clc                                     ; EFB5 18
-        adc     #$F8                            ; EFB6 69 F8
-        jmp     textd.deref_text_id             ; EFB8 4C D8 F2
+.case_7:
+	cmp     #$07                            ; EFA9 C9 07
+	bne     .case_8                         ; EFAB D0 0E
+	lda     $600B                           ; EFAD AD 0B 60
+	beq     .break_case                     ; EFB0 F0 F4
+	sec                                     ; EFB2 38
+	sbc     #$01                            ; EFB3 E9 01
+	clc                                     ; EFB5 18
+	adc     #$F8                            ; EFB6 69 F8
+	jmp     textd.deref_text_id             ; EFB8 4C D8 F2
 ; ----------------------------------------------------------------------------
-.lEFBB: cmp     #$08                            ; EFBB C9 08
-        bne     .lEFDA                          ; EFBD D0 1B
-        lda     $601B                           ; EFBF AD 1B 60
-        sta     <$80                             ; EFC2 85 80
-        lda     #$00                            ; EFC4 A9 00
-        sta     <$81                             ; EFC6 85 81
-        jsr     switch_to_character_logics_bank ; EFC8 20 27 F7
-        jsr     $8B57                          ; EFCB 20 57 8B
-        ldx     <.text_index                             ; EFCE A6 90
-        inc     <.text_index                             ; EFD0 E6 90
-        lda     #$5C                            ; EFD2 A9 5C
-        sta     .tile_buffer_lower,x                         ; EFD4 9D A0 07
-        jmp     textd.switch_to_text_bank_and_continue_drawing	; EFD7 4C 91 F2
+.case_8:
+	cmp     #$08                            ; EFBB C9 08
+	bne     .case_9                         ; EFBD D0 1B
+	lda     $601B                           ; EFBF AD 1B 60
+	sta     <$80                             ; EFC2 85 80
+	lda     #$00                            ; EFC4 A9 00
+	sta     <$81                             ; EFC6 85 81
+	jsr     switch_to_character_logics_bank ; EFC8 20 27 F7
+	jsr     $8B57                          ; EFCB 20 57 8B
+	ldx     <.text_index                             ; EFCE A6 90
+	inc     <.text_index                             ; EFD0 E6 90
+	lda     #$5C                            ; EFD2 A9 5C
+	sta     .tile_buffer_lower,x                         ; EFD4 9D A0 07
+	jmp     textd.switch_to_text_bank_and_continue_drawing	; EFD7 4C 91 F2
 ; ----------------------------------------------------------------------------
-.lEFDA: cmp     #$09                            ; EFDA C9 09
-        bne     .lEFE4                          ; EFDC D0 06
-        jsr     field.draw_window_content       ; EFDE 20 92 F6
-        jmp     .next_line                          ; EFE1 4C 4E EF
+.case_9:
+	cmp     #$09                            ; EFDA C9 09
+	bne     .case_0a                        ; EFDC D0 06
+	jsr     field.draw_window_content       ; EFDE 20 92 F6
+	jmp     .next_line                          ; EFE1 4C 4E EF
 ; ----------------------------------------------------------------------------
-.lEFE4: cmp     #$0A                            ; EFE4 C9 0A
-        bne     .lEFEC                          ; EFE6 D0 04
-        lda     #$09                            ; EFE8 A9 09
-        clc                                     ; EFEA 18
-        rts                                     ; EFEB 60
+.case_0a:
+	cmp     #$0A                            ; EFE4 C9 0A
+	bne     .case_0b                        ; EFE6 D0 04
+	lda     #$09                            ; EFE8 A9 09
+	clc                                     ; EFEA 18
+	rts                                     ; EFEB 60
 ; ----------------------------------------------------------------------------
-.lEFEC: cmp     #$0B                            ; EFEC C9 0B
-        bne     .lEFF0                          ; EFEE D0 00
-.lEFF0: cmp     #$0C                            ; EFF0 C9 0C
-        bne     .lEFFA                          ; EFF2 D0 06
-        ldx     $600E                           ; EFF4 AE 0E 60
-        jmp     $f316                          ; EFF7 4C 16 F3
+.case_0b:
+	cmp     #$0B                            ; EFEC C9 0B
+	bne     .case_0c                        ; EFEE D0 00
+.case_0c:
+	cmp     #$0C                            ; EFF0 C9 0C
+	bne     .case_0d                        ; EFF2 D0 06
+	ldx     $600E                           ; EFF4 AE 0E 60
+	jmp     $f316                           ; EFF7 4C 16 F3
 ; ----------------------------------------------------------------------------
-.lEFFA: cmp     #$0D                            ; EFFA C9 0D
-        bne     .lF007                          ; EFFC D0 09
-        jsr     switch_to_character_logics_bank ; EFFE 20 27 F7
-        jsr     $8B34                          ; F001 20 34 8B
-        jmp     textd.switch_to_text_bank_and_continue_drawing	; F004 4C 91 F2
+.case_0d:
+	cmp     #$0D                            ; EFFA C9 0D
+	bne     .case_0e                        ; EFFC D0 09
+	jsr     switch_to_character_logics_bank ; EFFE 20 27 F7
+	jsr     $8B34                           ; F001 20 34 8B
+	jmp     textd.switch_to_text_bank_and_continue_drawing	; F004 4C 91 F2
 ; ----------------------------------------------------------------------------
-.lF007: cmp     #$0F                            ; F007 C9 0F
-        bne     .lF027                          ; F009 D0 1C
-        ldx     <.text_index                             ; F00B A6 90
-        lda     #$58                            ; F00D A9 58
-        sta     .tile_buffer_upper,x                         ; F00F 9D 80 07
-        lda     #$59                            ; F012 A9 59
-        sta     .tile_buffer_upper+1,x                         ; F014 9D 81 07
-        lda     #$5A                            ; F017 A9 5A
-        sta     .tile_buffer_lower,x                         ; F019 9D A0 07
-        lda     #$5B                            ; F01C A9 5B
-        sta     .tile_buffer_lower+1,x                         ; F01E 9D A1 07
-        txa                                     ; F021 8A
-        clc                                     ; F022 18
-        adc     #$02                            ; F023 69 02
-        sta     <.text_index                    ; F025 85 90
-.lF027: jmp     textd.draw_in_box     ; F027 4C FA EE
+.case_0e:
+	cmp     #$0F                            ; F007 C9 0F
+	bne     .case_0f                        ; F009 D0 1C
+	ldx     <.text_index                             ; F00B A6 90
+	lda     #$58                            ; F00D A9 58
+	sta     .tile_buffer_upper,x                         ; F00F 9D 80 07
+	lda     #$59                            ; F012 A9 59
+	sta     .tile_buffer_upper+1,x                         ; F014 9D 81 07
+	lda     #$5A                            ; F017 A9 5A
+	sta     .tile_buffer_lower,x                         ; F019 9D A0 07
+	lda     #$5B                            ; F01C A9 5B
+	sta     .tile_buffer_lower+1,x                         ; F01E 9D A1 07
+	txa                                     ; F021 8A
+	clc                                     ; F022 18
+	adc     #$02                            ; F023 69 02
+	sta     <.text_index                    ; F025 85 90
+.case_0f: 
+	jmp     textd.draw_in_box     ; F027 4C FA EE
 ; ----------------------------------------------------------------------------
 	VERIFY_PC $f02a
 
