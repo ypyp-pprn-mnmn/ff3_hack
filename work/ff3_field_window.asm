@@ -1285,7 +1285,7 @@ field.draw_string_in_window:	;;$eec0
 ;; fixups.
 	;; every caller is implemented within this file.
 ;; ---
-.text_index = $90
+.output_index = $90
 .text_bank = $93
 .p_text = $3e
 .p_text_line = $1c
@@ -1316,7 +1316,7 @@ field.draw_string_in_window:	;;$eec0
 	sta <.offset_y		;$3B
 	jsr field.calc_draw_width_and_init_window_tile_buffer	;$f670
 	lda #$00
-	sta <.text_index
+	sta <.output_index
 	sta <.lines_drawn	;$1F
 	sta <$1e
 	jsr textd.draw_in_box	;$eefa
@@ -1373,7 +1373,7 @@ textd.draw_in_box:
 	;FIX_ADDR_ON_CALLER $3f,$f345+1
 	;FIX_ADDR_ON_CALLER $3f,$f387+1
 ;; --- variables.
-.text_index = $90
+.output_index = $90
 .text_id = $92
 .text_bank = $93
 .p_text_table = $94	;;stores offset from $30000(18:8000) to the text 
@@ -1409,7 +1409,7 @@ textd.draw_in_box:
     bcc .not_printable_char             ; EF08 90 34
     cmp #$5C                            ; EF0A C9 5C
     bcc .need_composition               ; EF0C 90 19
-    ldy <.text_index                    ; EF0E A4 90
+    ldy <.output_index                  ; EF0E A4 90
     ldx <.in_menu_mode                  ; EF10 A6 37
     bne .icons_supported                ; EF12 D0 06
     cmp #$70                            ; EF14 C9 70
@@ -1419,24 +1419,24 @@ textd.draw_in_box:
     sta .tile_buffer_lower,y            ; EF1A 99 A0 07
     lda #$FF                            ; EF1D A9 FF
     sta .tile_buffer_upper,y            ; EF1F 99 80 07
-    inc <.text_index                    ; EF22 E6 90
+    inc <.output_index                  ; EF22 E6 90
     jmp textd.draw_in_box               ; EF24 4C FA EE
 ; ----------------------------------------------------------------------------
 .need_composition: 
     sec ; EF27 38
     sbc #$28                            ; EF28 E9 28
     tax ; EF2A AA
-    ldy <.text_index                             ; EF2B A4 90
-    lda textd.tile_map_upper,x                         ; EF2D BD 15 F5
-    sta .tile_buffer_upper,y                         ; EF30 99 80 07
-    lda textd.tile_map_lower,x                         ; EF33 BD E1 F4
-    sta .tile_buffer_lower,y                         ; EF36 99 A0 07
-    inc <.text_index                             ; EF39 E6 90
+    ldy <.output_index                  ; EF2B A4 90
+    lda textd.tile_map_upper,x          ; EF2D BD 15 F5
+    sta .tile_buffer_upper,y            ; EF30 99 80 07
+    lda textd.tile_map_lower,x          ; EF33 BD E1 F4
+    sta .tile_buffer_lower,y            ; EF36 99 A0 07
+    inc <.output_index                  ; EF39 E6 90
     jmp textd.draw_in_box     ; EF3B 4C FA EE
 ; ----------------------------------------------------------------------------
 .not_printable_char:
     cmp #$10                            ; EF3E C9 10
-    bcc .control_char                    ; EF40 90 03
+    bcc .control_char                   ; EF40 90 03
     jmp textd.eval_replacement          ; EF42 4C 2A F0
 ; ----------------------------------------------------------------------------
 .control_char:
@@ -1515,22 +1515,22 @@ textd.draw_in_box:
     cmp #$08                            ; EFBB C9 08
     bne .case_9                         ; EFBD D0 1B
     lda party.capacity                  ; EFBF AD 1B 60
-    sta <$80                             ; EFC2 85 80
+    sta <$80                            ; EFC2 85 80
     lda #$00                            ; EFC4 A9 00
-    sta <$81                             ; EFC6 85 81
+    sta <$81                            ; EFC6 85 81
     jsr switch_to_character_logics_bank ; EFC8 20 27 F7
     jsr $8B57                          ; EFCB 20 57 8B
-    ldx <.text_index                             ; EFCE A6 90
-    inc <.text_index                             ; EFD0 E6 90
+    ldx <.output_index                  ; EFCE A6 90
+    inc <.output_index                  ; EFD0 E6 90
     lda #$5C                            ; EFD2 A9 5C
-    sta .tile_buffer_lower,x                         ; EFD4 9D A0 07
+    sta .tile_buffer_lower,x            ; EFD4 9D A0 07
     jmp textd.continue_with_text	; EFD7 4C 91 F2
 ; ----------------------------------------------------------------------------
 .case_9:	;;pad to eol.
     cmp #$09                            ; EFDA C9 09
     bne .case_0a                        ; EFDC D0 06
     jsr field.draw_window_content       ; EFDE 20 92 F6
-    jmp .next_line                          ; EFE1 4C 4E EF
+    jmp .next_line                      ; EFE1 4C 4E EF
 ; ----------------------------------------------------------------------------
 .case_0a:	;;paging.
     cmp #$0A                            ; EFE4 C9 0A
@@ -1558,19 +1558,19 @@ textd.draw_in_box:
 .case_0f:	;;dustbox
     cmp #$0F                            ; F007 C9 0F
     bne .case_0e                        ; F009 D0 1C
-    ldx <.text_index                             ; F00B A6 90
+    ldx <.output_index                  ; F00B A6 90
     lda #$58                            ; F00D A9 58
-    sta .tile_buffer_upper,x                         ; F00F 9D 80 07
+    sta .tile_buffer_upper,x            ; F00F 9D 80 07
     lda #$59                            ; F012 A9 59
-    sta .tile_buffer_upper+1,x                         ; F014 9D 81 07
+    sta .tile_buffer_upper+1,x          ; F014 9D 81 07
     lda #$5A                            ; F017 A9 5A
-    sta .tile_buffer_lower,x                         ; F019 9D A0 07
+    sta .tile_buffer_lower,x            ; F019 9D A0 07
     lda #$5B                            ; F01C A9 5B
-    sta .tile_buffer_lower+1,x                         ; F01E 9D A1 07
+    sta .tile_buffer_lower+1,x          ; F01E 9D A1 07
     txa ; F021 8A
     clc ; F022 18
     adc #$02                            ; F023 69 02
-    sta <.text_index                    ; F025 85 90
+    sta <.output_index                  ; F025 85 90
 .case_0e: ;;not implemented (nop)
     jmp textd.draw_in_box     ; F027 4C FA EE
 ; ----------------------------------------------------------------------------
@@ -1606,7 +1606,7 @@ textd.draw_in_box:
 ; bank $3f
 textd.eval_replacement:
 ;; --- variables.
-.text_index = $90
+.output_index = $90
 .text_id = $92
 .text_bank = $93
 .p_text_table = $94	;;stores offset from $30000(18:8000) to the text 
@@ -1632,28 +1632,28 @@ textd.eval_replacement:
 ;;static reference
 ;; ---
     pha ; F02A 48
-    ldx <.cached_param                            ; F02B A6 67
+    ldx <.cached_param                  ; F02B A6 67
     cmp #$1D                            ; F02D C9 1D
-    beq .L_F034                           ; F02F F0 03
-    lda [.p_text],y                         ; F031 B1 3E
+    beq .L_F034                         ; F02F F0 03
+    lda [.p_text],y                     ; F031 B1 3E
     tax ; F033 AA
 .L_F034:
-    stx <.parameter_byte                             ; F034 86 84
-    stx <.cached_param                            ; F036 86 67
-    inc <.p_text                             ; F038 E6 3E
-    bne .L_F03E                           ; F03A D0 02
-    inc <.p_text+1                             ; F03C E6 3F
+    stx <.parameter_byte                ; F034 86 84
+    stx <.cached_param                  ; F036 86 67
+    inc <.p_text                        ; F038 E6 3E
+    bne .L_F03E                         ; F03A D0 02
+    inc <.p_text+1                      ; F03C E6 3F
 .L_F03E:
     pla ; F03E 68
     cmp #$14                            ; F03F C9 14
-    bcs .L_F046                           ; F041 B0 03
+    bcs .L_F046                         ; F041 B0 03
     jmp textd.eval_code_10_13    ; F043 4C 39 F2
 ; ----------------------------------------------------------------------------
 .L_F046:
-    bne .case_15_17                           ; F046 D0 07
+    bne .case_15_17                     ; F046 D0 07
 ;;case 0x14:	;; padding, offset dest buffer by the number specified in parameter byte
-    lda <.parameter_byte                             ; F048 A5 84
-    sta <.text_index                             ; F04A 85 90
+    lda <.parameter_byte                ; F048 A5 84
+    sta <.output_index                  ; F04A 85 90
     jmp textd.draw_in_box     ; F04C 4C FA EE
 ; ----------------------------------------------------------------------------
 .case_15_17:
@@ -1666,17 +1666,17 @@ textd.eval_replacement:
     sta <$81                            ; F059 85 81
     lda #$00                            ; F05B A9 00
     sta <$80                            ; F05D 85 80
-    lda <.parameter_byte                             ; F05F A5 84
-    sta <.text_index                             ; F061 85 90
-    lda [.p_text],y                         ; F063 B1 3E
+    lda <.parameter_byte                ; F05F A5 84
+    sta <.output_index                  ; F061 85 90
+    lda [.p_text],y                     ; F063 B1 3E
     sta <$82                            ; F065 85 82
     iny ; F067 C8
-    lda [.p_text],y                         ; F068 B1 3E
+    lda [.p_text],y                     ; F068 B1 3E
     sta <$83                            ; F06A 85 83
     ldy #$F1                            ; F06C A0 F1
     lda [$80],y                         ; F06E B1 80
     ldx <$1E                            ; F070 A6 1E
-    bne .L_F077                           ; F072 D0 03
+    bne .L_F077                         ; F072 D0 03
     inc <$1E                            ; F074 E6 1E
     txa ; F076 8A
 .L_F077:
@@ -1686,13 +1686,13 @@ textd.eval_replacement:
     sta [$80],y                         ; F07B 91 80
     txa ; F07D 8A
     tay ; F07E A8
-    lda <.parameter_byte                             ; F07F A5 84
+    lda <.parameter_byte                ; F07F A5 84
     clc ; F081 18
     adc <$97                            ; F082 65 97
     sta [$80],y                         ; F084 91 80
     lda <$98                            ; F086 A5 98
     clc ; F088 18
-    adc <.lines_drawn                             ; F089 65 1F
+    adc <.lines_drawn                   ; F089 65 1F
     iny ; F08B C8
     sta [$80],y                         ; F08C 91 80
     iny ; F08E C8
@@ -1704,37 +1704,37 @@ textd.eval_replacement:
     jmp textd.draw_in_box     ; F098 4C FA EE
 ; ----------------------------------------------------------------------------
 .case_18:	;; indirect text. parameter = text_id.
-    bne .case_19                           ; F09B D0 53
+    bne .case_19                        ; F09B D0 53
 .L_F09D:
 ;;textd.f09d_deref_param_text
 ;;in $b9?
-    lda <.parameter_byte                             ; F09D A5 84
-    beq .L_F0ED                           ; F09F F0 4C
+    lda <.parameter_byte                ; F09D A5 84
+    beq .L_F0ED                         ; F09F F0 4C
 ;;F0A1
-    lda <.text_index                             ; F0A1 A5 90
+    lda <.output_index                  ; F0A1 A5 90
     pha ; F0A3 48
-    jsr textd.save_text_ptr               ; F0A4 20 E4 F3
+    jsr textd.save_text_ptr             ; F0A4 20 E4 F3
     lda #$18                            ; F0A7 A9 18
-    jsr call_switch_2banks          ; F0A9 20 03 FF
-    lda <.parameter_byte                             ; F0AC A5 84
+    jsr call_switch_2banks              ; F0A9 20 03 FF
+    lda <.parameter_byte                ; F0AC A5 84
     asl a                               ; F0AE 0A
     tax ; F0AF AA
-    bcs .L_F0BD                           ; F0B0 B0 0B
+    bcs .L_F0BD                         ; F0B0 B0 0B
     lda $8800,x                         ; F0B2 BD 00 88
-    sta <.p_text                             ; F0B5 85 3E
+    sta <.p_text                        ; F0B5 85 3E
     lda $8801,x                         ; F0B7 BD 01 88
-    jmp textd.draw_embedded_text                          ; F0BA 4C C5 F0
+    jmp textd.draw_embedded_text        ; F0BA 4C C5 F0
 ; ----------------------------------------------------------------------------
 .L_F0BD:
     lda $8900,x                         ; F0BD BD 00 89
-    sta <.p_text                             ; F0C0 85 3E
+    sta <.p_text                        ; F0C0 85 3E
     lda $8901,x                         ; F0C2 BD 01 89
 .L_F0C5:
 ;;textd.draw_embedded_text?
     pha ; F0C5 48
     and #$1F                            ; F0C6 29 1F
     ora #$80                            ; F0C8 09 80
-    sta <.p_text+1                             ; F0CA 85 3F
+    sta <.p_text+1                      ; F0CA 85 3F
     pla ; F0CC 68
     lsr a                               ; F0CD 4A
     lsr a                               ; F0CE 4A
@@ -1749,22 +1749,22 @@ textd.eval_replacement:
     pla ; F0DE 68
     tax ; F0DF AA
     lda <$B9                            ; F0E0 A5 B9
-    beq .L_F0ED                           ; F0E2 F0 09
+    beq .L_F0ED                         ; F0E2 F0 09
     lda #$00                            ; F0E4 A9 00
     sta <$B9                            ; F0E6 85 B9
     ;;73 == 'X' (unusable mark)
     lda #$73                            ; F0E8 A9 73
-    sta .tile_buffer_lower,x                         ; F0EA 9D A0 07
+    sta .tile_buffer_lower,x            ; F0EA 9D A0 07
 .L_F0ED:
     jmp textd.draw_in_box     ; F0ED 4C FA EE
 ; ----------------------------------------------------------------------------
 .case_19:
     cmp #$19                            ; F0F0 C9 19
-    bne .case_1a                           ; F0F2 D0 20
-    ldx <.parameter_byte                             ; F0F4 A6 84
+    bne .case_1a                        ; F0F2 D0 20
+    ldx <.parameter_byte                ; F0F4 A6 84
     lda $7B80,x                         ; F0F6 BD 80 7B
-    sta <.parameter_byte                             ; F0F9 85 84
-    bne .L_F10A                           ; F0FB D0 0D
+    sta <.parameter_byte                ; F0F9 85 84
+    bne .L_F10A                         ; F0FB D0 0D
     lda $79F1                           ; F0FD AD F1 79
     sec ; F100 38
     sbc #$04                            ; F101 E9 04
@@ -1786,20 +1786,20 @@ textd.eval_replacement:
     bne .case_1b                        ; F116 D0 10
     lda #$00                            ; F118 A9 00
     sta <$B9                            ; F11A 85 B9
-    ldx <.parameter_byte                             ; F11C A6 84
-    lda party.backpack.item_id,x                         ; F11E BD C0 60
-    beq .break_case_f111                           ; F121 F0 EE
-    sta <.parameter_byte                             ; F123 85 84
-    jmp textd.deref_param_text            ; F125 4C 9D F0
+    ldx <.parameter_byte                ; F11C A6 84
+    lda party.backpack.item_id,x        ; F11E BD C0 60
+    beq .break_case_f111                ; F121 F0 EE
+    sta <.parameter_byte                ; F123 85 84
+    jmp textd.deref_param_text          ; F125 4C 9D F0
 ; ----------------------------------------------------------------------------
 .case_1b:
     cmp #$1B                            ; F128 C9 1B
     bne .case_1c                        ; F12A D0 13
     jsr $F3AC                           ; F12C 20 AC F3
-    ldx <.parameter_byte                             ; F12F A6 84
+    ldx <.parameter_byte                ; F12F A6 84
     lda $7C00,x                         ; F131 BD 00 7C
-    beq .break_case_f111                           ; F134 F0 DB
-    sta <.parameter_byte                             ; F136 85 84
+    beq .break_case_f111                ; F134 F0 DB
+    sta <.parameter_byte                ; F136 85 84
     lda #$00                            ; F138 A9 00
     sta <$B9                            ; F13A 85 B9
     jmp textd.deref_param_text          ; F13C 4C 9D F0
@@ -1807,42 +1807,42 @@ textd.eval_replacement:
 .case_1c: ;; number of item of which is stored in the backpack at the index specified by parameter
     cmp #$1C                            ; F13F C9 1C
     bne .case_1d                        ; F141 D0 09
-    ldx <.parameter_byte                             ; F143 A6 84
-    lda party.backpack.item_count,x                         ; F145 BD E0 60
-    beq .break_case_f111                           ; F148 F0 C7
-    bne .L_F166                           ; F14A D0 1A
+    ldx <.parameter_byte                ; F143 A6 84
+    lda party.backpack.item_count,x     ; F145 BD E0 60
+    beq .break_case_f111                ; F148 F0 C7
+    bne .L_F166                         ; F14A D0 1A
 .case_1d:	;;
     cmp #$1D                            ; F14C C9 1D
     bne .case_1e                        ; F14E D0 2A
-    lda <.parameter_byte                             ; F150 A5 84
+    lda <.parameter_byte                ; F150 A5 84
     lsr a                               ; F152 4A
     lda #$0A                            ; F153 A9 0A
-    bcc .L_F159                           ; F155 90 02
+    bcc .L_F159                         ; F155 90 02
     lda #$18                            ; F157 A9 18
 .L_F159:
-    sta <.text_index                             ; F159 85 90
-    ldx <.parameter_byte                             ; F15B A6 84
+    sta <.output_index                  ; F159 85 90
+    ldx <.parameter_byte                ; F15B A6 84
     lda $7C00,x                         ; F15D BD 00 7C
-    beq .break_case_f111                           ; F160 F0 AF
+    beq .break_case_f111                ; F160 F0 AF
     tax ; F162 AA
     lda $6300,x                         ; F163 BD 00 63
 .L_F166:
     sta <$80                            ; F166 85 80
-    ldx <.text_index                             ; F168 A6 90
-    inc <.text_index                             ; F16A E6 90
+    ldx <.output_index                  ; F168 A6 90
+    inc <.output_index                  ; F16A E6 90
 	;;c8 = ':'
     lda #$C8                            ; F16C A9 C8
-    sta .tile_buffer_lower,x                         ; F16E 9D A0 07
+    sta .tile_buffer_lower,x            ; F16E 9D A0 07
     jsr switch_to_character_logics_bank ; F171 20 27 F7
     jsr $8B29                           ; F174 20 29 8B
     jmp textd.continue_with_text        ; F177 4C 91 F2
 ; ----------------------------------------------------------------------------
 .case_1e:	;;available job name. param = job_id
     cmp #$1E                            ; F17A C9 1E
-    bne .case_1f                          ; F17C D0 1C
-    jsr field.get_max_available_job_id    ; F17E 20 8A F3
-    cmp <.parameter_byte                             ; F181 C5 84
-    bcs .L_F192                           ; F183 B0 0D
+    bne .case_1f                        ; F17C D0 1C
+    jsr field.get_max_available_job_id  ; F17E 20 8A F3
+    cmp <.parameter_byte                ; F181 C5 84
+    bcs .L_F192                         ; F183 B0 0D
     lda $78F1                           ; F185 AD F1 78
     sec ; F188 38
     sbc #$04                            ; F189 E9 04
@@ -1852,7 +1852,7 @@ textd.eval_replacement:
     rts ; F191 60
 ; ----------------------------------------------------------------------------
 .L_F192:
-    lda <.parameter_byte                             ; F192 A5 84
+    lda <.parameter_byte                ; F192 A5 84
     clc ; F194 18
     adc #$E2                            ; F195 69 E2
     jmp textd.deref_text_id             ; F197 4C D8 F2
@@ -1860,13 +1860,13 @@ textd.eval_replacement:
 .case_1f:
     cmp #$1F                            ; F19A C9 1F
     bne .case_20                        ; F19C D0 1D
-    ldx <.parameter_byte                             ; F19E A6 84
+    ldx <.parameter_byte                ; F19E A6 84
     lda $7200,x                         ; F1A0 BD 00 72
     sta <$80                            ; F1A3 85 80
-    ldx <.text_index                             ; F1A5 A6 90
-    inc <.text_index                             ; F1A7 E6 90
+    ldx <.output_index                  ; F1A5 A6 90
+    inc <.output_index                  ; F1A7 E6 90
     lda #$C8                            ; F1A9 A9 C8
-    sta .tile_buffer_lower,x                         ; F1AB 9D A0 07
+    sta .tile_buffer_lower,x            ; F1AB 9D A0 07
     lda #$00                            ; F1AE A9 00
     sta <$81                            ; F1B0 85 81
     jsr switch_to_character_logics_bank ; F1B2 20 27 F7
@@ -1914,7 +1914,7 @@ textd.eval_replacement:
     lda party.backpack.item_id,x        ; F203 BD C0 60
     beq .break_case_f1f6                ; F206 F0 EE
     sta <.parameter_byte                ; F208 85 84
-    lda <.text_index                    ; F20A A5 90
+    lda <.output_index                    ; F20A A5 90
     pha ; F20C 48
     jsr textd.save_text_ptr             ; F20D 20 E4 F3
     lda #$18                            ; F210 A9 18
@@ -1945,7 +1945,7 @@ textd.eval_replacement:
 ;;field.string.eval_code_10_13:
 textd.eval_code_10_13:
 ;; --- variables.
-.text_index = $90
+.output_index = $90
 .text_id = $92
 .text_bank = $93
 .p_text_table = $94	;;stores offset from $30000(18:8000) to the text 
@@ -2033,9 +2033,9 @@ textd.eval_code_10_13:
     lda player.status,x                 ; F29F BD 02 61
     and #$FE                            ; F2A2 29 FE
     bne .L_F2BB                         ; F2A4 D0 15
-    ldx <.text_index                    ; F2A6 A6 90
-    inc <.text_index                    ; F2A8 E6 90
-    inc <.text_index                    ; F2AA E6 90
+    ldx <.output_index                    ; F2A6 A6 90
+    inc <.output_index                    ; F2A8 E6 90
+    inc <.output_index                    ; F2AA E6 90
     lda #$5E                            ; F2AC A9 5E
     sta .tile_buffer_lower,x            ; F2AE 9D A0 07
     lda #$5F                            ; F2B1 A9 5F
@@ -2086,7 +2086,7 @@ textd.eval_code_10_13:
     lda textd.status_and_area_names+$101,x  ; F2F6 BD 01 83
 .L_F2F9:
     tax ; F2F9 AA
-    lda <.text_index                             ; F2FA A5 90
+    lda <.output_index                             ; F2FA A5 90
     pha ; F2FC 48
     txa ; F2FD 8A
     jmp textd.draw_embedded_text           ; F2FE 4C C5 F0
