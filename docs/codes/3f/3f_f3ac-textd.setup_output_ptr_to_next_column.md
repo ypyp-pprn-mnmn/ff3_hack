@@ -1,7 +1,8 @@
 ﻿
 
 
-# $3f:f3ac textd.setup_output_ptr_for_item_name
+
+# $3f:f3ac textd.setup_output_ptr_to_next_column
 > co-routine of charcode 0x1b, 'item name of which is stored in the fatty choccobo'.
 
 ### args:
@@ -25,6 +26,9 @@
 +	none. all variables seem to be either set or referenced by functions outside.
 
 ### notes:
+this function is very similar (or almost identical) to the logic embedded in the handler for char codes 0x15-0x17.
+only difference is that this function expectes the parameter byte ($84) contains an index into the item in stomach,
+whereas another one expects offset to next column.
 
 ### (pseudo)code:
 ```js
@@ -63,6 +67,7 @@ LF3C2:
 */
 }
 ```
+
 
 
 

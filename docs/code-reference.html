@@ -8,7 +8,7 @@
     <meta name="generator" content="pandoc">
     <meta name="description" content>
     <meta name="author" content="ypyp-pprn-mnmn (aka “301”)">
-    <!-- generated-at 2017-11-29 12:59:51+0900 -->
+    <!-- generated-at 2017-11-29 01:09:41+0900 -->
     <title>FF3@FC Original Code Documentation</title>
 
     <!-- Bootstrap core CSS -->
@@ -810,7 +810,7 @@ code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Infor
           <li><a href="#ff02a-textd.eval_replacement">$3f:f02a textd.eval_replacement</a></li>
           <li><a href="#ff239-field.string.eval_code_10_13">$3f:f239 field.string.eval_code_10_13</a></li>
           <li><a href="#ff38a-field.get_max_available_job_id">$3f:f38a field.get_max_available_job_id</a></li>
-          <li><a href="#ff3ac-textd.setup_output_ptr_for_item_name">$3f:f3ac textd.setup_output_ptr_for_item_name</a></li>
+          <li><a href="#ff3ac-textd.setup_output_ptr_to_next_column">$3f:f3ac textd.setup_output_ptr_to_next_column</a></li>
           <li><a href="#ff3e4-textd.save_text_ptr">$3f:f3e4 textd.save_text_ptr</a></li>
           <li><a href="#ff3ed-textd.restore_text_ptr">$3f:f3ed textd.restore_text_ptr</a></li>
           <li><a href="#ff40a-setvramaddrforwindow">$3f:f40a setVramAddrForWindow</a></li>
@@ -17679,7 +17679,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb598-21" data-line-number="21">    <span class="cf">return</span><span class="op">;</span></div>
 <div class="sourceLine" id="cb598-22" data-line-number="22"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="ff3ac-textd.setup_output_ptr_for_item_name">$3f:f3ac textd.setup_output_ptr_for_item_name</h1>
+<h1 id="ff3ac-textd.setup_output_ptr_to_next_column">$3f:f3ac textd.setup_output_ptr_to_next_column</h1>
 <blockquote>
 <p>co-routine of charcode 0x1b, ‘item name of which is stored in the fatty choccobo’.</p>
 </blockquote>
@@ -17709,6 +17709,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>none. all variables seem to be either set or referenced by functions outside.</li>
 </ul>
 <h3 id="notes-50">notes:</h3>
+<p>this function is very similar (or almost identical) to the logic embedded in the handler for char codes 0x15-0x17. only difference is that this function expectes the parameter byte ($84) contains an index into the item in stomach, whereas another one expects offset to next column.</p>
 <h3 id="pseudocode-53">(pseudo)code:</h3>
 <pre class="sourceCode js" id="cb599"><code class="sourceCode javascript"><div class="sourceLine" id="cb599-1" data-line-number="1"><span class="op">{</span></div>
 <div class="sourceLine" id="cb599-2" data-line-number="2"><span class="co">/*</span></div>
