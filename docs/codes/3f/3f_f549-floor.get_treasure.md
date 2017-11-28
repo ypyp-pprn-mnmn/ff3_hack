@@ -1,5 +1,6 @@
 ﻿
-# $3f:f549 getTreasure
+
+# $3f:f549 floor.get_treasure
 
 
 ### args:
@@ -7,10 +8,11 @@
 +	[in] u8 $45 : eventParam
 +	[in] u8 $49 : warpparam.+01 & 0x20
 +	[in] u8 $ba :
-	-	00: chipId=d0-df,
-	-	FF: chipId=e0-ef
-	-	chipId:D0-DF = staticChipId:7C(宝箱)
+	-	00: if chipId=d0-df,
+		-	chipId:D0-DF = staticChipId:7C(宝箱)
+	-	FF: if chipId=e0-ef.
 +	[out] a : messageId
++	out $bb : treasure item id. (regardless whether treasure is gil or not.)
 
 ### code:
 ```js
@@ -73,6 +75,7 @@ $f5b2:
 $f5c4:
 }
 ```
+
 
 
 

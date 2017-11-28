@@ -1,6 +1,7 @@
 ﻿
-# $3f:f5c4 getTreasureItemId //getTreasureParam
 
+# $3f:f5c4 floor.get_treasure_item_id
+>getTreasureParam
 
 ### args:
 +	[in] x : treasureId
@@ -19,6 +20,7 @@ $f5d3:
 	return;	
 }
 ```
+
 
 
 

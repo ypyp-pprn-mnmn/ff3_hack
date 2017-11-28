@@ -1377,6 +1377,9 @@ textd.draw_in_box:
 .text_id = $92
 .text_bank = $93
 .p_text_table = $94	;;stores offset from $30000(18:8000) to the text 
+;; floor
+.treasure_item_id = $bb
+.inn_charge = $61	;24 bits.
 ;; textd
 .p_text_line = $1c
 .lines_drawn = $1f
@@ -1459,17 +1462,17 @@ textd.draw_in_box:
 .case_2:	;;item name of treasure which has just been gotten. $bb := item_id
     cmp #$02                            ; EF5B C9 02
     bne .case_3                         ; EF5D D0 0B
-    lda <$BB                            ; EF5F A5 BB
+    lda <.treasure_item_id              ; EF5F A5 BB
     sta <$84                            ; EF61 85 84
     lda #$00                            ; EF63 A9 00
     sta <$B9                            ; EF65 85 B9
     jmp textd.deref_param_text          ; EF67 4C 9D F0
 ; ----------------------------------------------------------------------------
-.case_3:	;;item price. $bb := item_id ?
+.case_3:	;;item price.
     cmp #$03                            ; EF6A C9 03
     bne .case_4                         ; EF6C D0 0E
     jsr switch_to_character_logics_bank ; EF6E 20 27 F7
-    ldx <$BB                            ; EF71 A6 BB
+    ldx <.treasure_item_id              ; EF71 A6 BB
     jsr floor.get_item_price            ; EF73 20 D4 F5
     jsr $8B78                           ; EF76 20 78 8B
     jmp textd.continue_with_text        ; EF79 4C 91 F2
@@ -1477,11 +1480,11 @@ textd.draw_in_box:
 .case_4:	;;inn charge.
     cmp #$04                            ; EF7C C9 04
     bne .case_5                         ; EF7E D0 15
-    lda <$61                            ; EF80 A5 61
+    lda <.inn_charge                    ; EF80 A5 61
     sta <$80                            ; EF82 85 80
-    lda <$62                            ; EF84 A5 62
+    lda <.inn_charge+1                  ; EF84 A5 62
     sta <$81                            ; EF86 85 81
-    lda <$63                            ; EF88 A5 63
+    lda <.inn_charge+2                  ; EF88 A5 63
     sta <$82                            ; EF8A 85 82
     jsr switch_to_character_logics_bank ; EF8C 20 27 F7
     jsr $8B78                           ; EF8F 20 78 8B
@@ -1610,6 +1613,8 @@ textd.eval_replacement:
 .text_id = $92
 .text_bank = $93
 .p_text_table = $94	;;stores offset from $30000(18:8000) to the text 
+;; floor
+.treasure_item_id = $bb
 ;; textd
 .p_text_line = $1c
 .lines_drawn = $1f
