@@ -43,10 +43,10 @@ textd.draw_embedded_text = $f0c5
 textd.continue_with_text = $f291
 textd.deref_text_id = $f2d8
 textd.draw_player_name = $f316
+field.get_max_available_job_id = $f38a
+textd.setup_output_ptr_to_next_column = $f3ac
 textd.save_text_ptr = $f3e4
 textd.restore_text_ptr = $f3ed
-
-field.get_max_available_job_id = $f38a
 
 textd.tile_map_lower = $F4E1	;static table that maps charcode into tile id
 textd.tile_map_upper = $f515	;static table that maps charcode into tile id
@@ -172,6 +172,16 @@ soundDriver_lastMusicId = $7f41
 soundDriver_control	= $7f42	;01:playNew(7f43) 02:playLast(7f41,saved when 01) 04:stop 80:playOn
 soundDriver_musicId	= $7f43
 soundDriver_effectId= $7f49	;msb should be 1
+;----------------------------------------------------------------------------------------------------------
+;menu-mode
+menu.choose_dialog_1 = $7800;
+menu.choose_dialog_2 = $7900;
+menu.choose_dialog_3 = $7a00;
+menu.shop_offerings = $7b80	;[8], item_id
+menu.shop_item_price.low = $7b90;	[8] lower 8-bits of price(24bits)
+menu.shop_item_price.mid = $7b98; [8] middle 8-bites of price(24bits)
+menu.shop_item_price.high = $7ba0; [8] middle 8-bites of price(24bits)
+menu.available_items_in_stomach = $7c00;
 ;----------------------------------------------------------------------------------------------------------
 ;in memory structs
 

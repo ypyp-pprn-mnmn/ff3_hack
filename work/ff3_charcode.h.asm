@@ -19,12 +19,17 @@ CHAR.UNKNOWN_0D = $0d
 CHAR.NOT_IMPL_0E = $0e
 CHAR.DUSTBOX = $0f
 ;;
+;;10-13: status of a player character. lower 2-bits represents an index of character.
 CHAR.PLAYER1_PARAMS = $10   ;param = kind of parameter
 CHAR.PLAYER2_PARAMS = $11   ;param = kind of parameter
 CHAR.PLAYER3_PARAMS = $12   ;param = kind of parameter
 CHAR.PLAYER4_PARAMS = $13   ;param = kind of parameter
-
+;;14: left-align (tabulate) text by the parameter.
 CHAR.SPACE_FILL = $14   ;param = fill length
+
+;;15-17: left-align (tabulate) text by the parameter,
+;;setup internal structure for later reference,
+;;and increment the menu-item index. (stored at $78f1/79f1/7af1)
 CHAR.SETUP_WINDOW1_MENUITEM = $15   ;; command dialog. (menu command, inn (yes/no), job, shop command)
 CHAR.SETUP_WINDOW2_MENUITEM = $16   ;; target dialog. (magic, item) + shop offerings.
 CHAR.SETUP_WINDOW3_MENUITEM = $17   ;; item dialog. (cast, use, equip, withdraw, sell)
