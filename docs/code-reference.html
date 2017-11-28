@@ -8,7 +8,7 @@
     <meta name="generator" content="pandoc">
     <meta name="description" content>
     <meta name="author" content="ypyp-pprn-mnmn (aka “301”)">
-    <!-- generated-at 2017-11-29 01:36:17+0900 -->
+    <!-- generated-at 2017-11-29 02:20:16+0900 -->
     <title>FF3@FC Original Code Documentation</title>
 
     <!-- Bootstrap core CSS -->
@@ -814,8 +814,8 @@ code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Infor
           <li><a href="#ff3e4-textd.save_text_ptr">$3f:f3e4 textd.save_text_ptr</a></li>
           <li><a href="#ff3ed-textd.restore_text_ptr">$3f:f3ed textd.restore_text_ptr</a></li>
           <li><a href="#ff40a-setvramaddrforwindow">$3f:f40a setVramAddrForWindow</a></li>
-          <li><a href="#ff549-gettreasure">$3f:f549 getTreasure</a></li>
-          <li><a href="#ff5c4-gettreasureitemid-gettreasureparam">$3f:f5c4 getTreasureItemId //getTreasureParam</a></li>
+          <li><a href="#ff549-floor.get_treasure">$3f:f549 floor.get_treasure</a></li>
+          <li><a href="#ff5c4-floor.get_treasure_item_id">$3f:f5c4 floor.get_treasure_item_id</a></li>
           <li><a href="#ff5d4-floor.get_item_price">$3f:f5d4 floor.get_item_price</a></li>
           <li><a href="#ff5ff-increment_gil">$3f:f5ff increment_gil</a></li>
           <li><a href="#ff640-invert_treasure_loot_flag">$3f:f640 invert_treasure_loot_flag</a></li>
@@ -17828,7 +17828,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb602-14" data-line-number="14"><span class="dt">$f435</span><span class="op">:</span></div>
 <div class="sourceLine" id="cb602-15" data-line-number="15"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="ff549-gettreasure">$3f:f549 getTreasure</h1>
+<h1 id="ff549-floor.get_treasure">$3f:f549 floor.get_treasure</h1>
 <h3 id="args-241">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $0710[0x10] : treasureIds</li>
@@ -17836,11 +17836,14 @@ sta $4014   ;DMA</code></pre></li>
 <li><a href="#in-2">in</a> u8 $49 : warpparam.+01 &amp; 0x20</li>
 <li><a href="#in-2">in</a> u8 $ba :
 <ul>
-<li>00: chipId=d0-df,</li>
-<li>FF: chipId=e0-ef</li>
+<li>00: if chipId=d0-df,
+<ul>
 <li>chipId:D0-DF = staticChipId:7C(宝箱)</li>
 </ul></li>
+<li>FF: if chipId=e0-ef.</li>
+</ul></li>
 <li><a href="#out-2">out</a> a : messageId</li>
+<li>out $bb : treasure item id. (regardless whether treasure is gil or not.)</li>
 </ul>
 <h3 id="code-255">code:</h3>
 <pre class="sourceCode js" id="cb603"><code class="sourceCode javascript"><div class="sourceLine" id="cb603-1" data-line-number="1"><span class="op">{</span></div>
@@ -17902,7 +17905,10 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb603-57" data-line-number="57"><span class="dt">$f5c4</span><span class="op">:</span></div>
 <div class="sourceLine" id="cb603-58" data-line-number="58"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="ff5c4-gettreasureitemid-gettreasureparam">$3f:f5c4 getTreasureItemId //getTreasureParam</h1>
+<h1 id="ff5c4-floor.get_treasure_item_id">$3f:f5c4 floor.get_treasure_item_id</h1>
+<blockquote>
+<p>getTreasureParam</p>
+</blockquote>
 <h3 id="args-242">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> x : treasureId</li>
