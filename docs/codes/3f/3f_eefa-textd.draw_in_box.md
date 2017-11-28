@@ -1,5 +1,6 @@
 ﻿
-# $3f:eefa field.eval_and_draw_string
+
+# $3f:eefa textd.draw_in_box
 
 
 ### args:
@@ -64,7 +65,7 @@ $ef27:				//#28 <= a < #5c : 濁音 or 半濁音
 $ef3e:	//a < #28 (control code)
 		if (a >= 0x10) { //bcc ef45
 			//char code:= [0x10...0x28)
-			return field.string.eval_replacement(); //$f02a
+			return textd.eval_replacement(); //$f02a
 		}
 $ef45:
 		swtich (a) {
@@ -163,6 +164,7 @@ $f027:
 }
 $f02a:
 ```
+
 
 
 

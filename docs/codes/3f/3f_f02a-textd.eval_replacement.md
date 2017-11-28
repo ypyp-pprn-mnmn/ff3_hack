@@ -1,6 +1,9 @@
 ﻿
 
-# $3f:f02a field.string.eval_replacement
+
+
+
+# $3f:f02a textd.eval_replacement
 
 
 ### args:
@@ -13,20 +16,18 @@
 +	[in,out] u8 $90: offset into the tile buffer ($0780/$07a0)
 +	[out] u8 $0780[32]: tile (or name table) buffer for upper line
 +	[out] u8 $07a0[32]: tile (or name table) buffer for lower line
++	u8 $97: window scroll x?
++	u8 $98: window scroll y?
 
 ### local variables:
 +	u8 $80,81,82,83: scratch.
 +	u8 $84: parameter byte
-+	u8 $97,98
 
 ### notes:
-charcodes ranged [10...28) are defined as opcodes (or 'replacement'),
+charcodes ranged [10...28) are defined as 2-byte opcodes (or 'variable replacement'),
 given that the codes have followed by additional one byte for parameter.
 
-#### code meanings:
-+	10-13: status of a player character. lower 2-bits represents an index of character.
-+	15-17: left-align text by paramter,increment menu-item count by 4
-+	1e: get job name
+for code details, please refer to [source code from the patch](https://github.com/ypyp-pprn-mnmn/ff3_hack/tree/master/work/ff3_charcode.h.asm).
 
 ### code:
 ```js
@@ -44,7 +45,7 @@ $f034:
 $f046:
 	if (a == #14) { //bne f04f
 		$90 = $84;
-		return field::decodeString();//jmp
+		return textd.draw_in_box();	// field::decodeString();//jmp
 	}
 $f04f:
 	if (a < #18) { //bcs f09b
@@ -68,7 +69,7 @@ $f086:
 		$80[++y] = $82;
 		$80[++y] = $83;
 		//tail recursion. equivalent to just go back to beginning of the loop.
-		return field.eval_and_draw_string();	//jmp eefa
+		return textd.draw_in_box();	// field.eval_and_draw_string();	//jmp eefa
 	}
 $f09b:	//#18 <= a < #28
 	if (a == #18) { //bne f0f0
@@ -102,6 +103,9 @@ $f19a:
 	if (a == #1f) {} //bne f1bb
 }
 ```
+
+
+
 
 
 
