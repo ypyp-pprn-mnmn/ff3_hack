@@ -8,7 +8,7 @@
     <meta name="generator" content="pandoc">
     <meta name="description" content>
     <meta name="author" content="ypyp-pprn-mnmn (aka “301”)">
-    <!-- generated-at 2017-11-29 01:09:41+0900 -->
+    <!-- generated-at 2017-11-29 01:36:17+0900 -->
     <title>FF3@FC Original Code Documentation</title>
 
     <!-- Bootstrap core CSS -->
@@ -17497,21 +17497,17 @@ sta $4014   ;DMA</code></pre></li>
 <li>[in,out] u8 $90: offset into the tile buffer ($0780/$07a0)</li>
 <li><a href="#out-2">out</a> u8 $0780[32]: tile (or name table) buffer for upper line</li>
 <li><a href="#out-2">out</a> u8 $07a0[32]: tile (or name table) buffer for lower line</li>
+<li>u8 $97: window scroll x?</li>
+<li>u8 $98: window scroll y?</li>
 </ul>
 <h3 id="local-variables-21">local variables:</h3>
 <ul>
 <li>u8 $80,81,82,83: scratch.</li>
 <li>u8 $84: parameter byte</li>
-<li>u8 $97,98</li>
 </ul>
 <h3 id="notes-49">notes:</h3>
-<p>charcodes ranged [10…28) are defined as opcodes (or ‘replacement’), given that the codes have followed by additional one byte for parameter.</p>
-<h4 id="code-meanings">code meanings:</h4>
-<ul>
-<li>10-13: status of a player character. lower 2-bits represents an index of character.</li>
-<li>15-17: left-align text by paramter,increment menu-item count by 4</li>
-<li>1e: get job name</li>
-</ul>
+<p>charcodes ranged [10…28) are defined as 2-byte opcodes (or ‘variable replacement’), given that the codes have followed by additional one byte for parameter.</p>
+<p>for code details, please refer to <a href="https://github.com/ypyp-pprn-mnmn/ff3_hack/tree/master/work/ff3_charcode.h.asm">source code from the patch</a>.</p>
 <h3 id="code-251">code:</h3>
 <pre class="sourceCode js" id="cb596"><code class="sourceCode javascript"><div class="sourceLine" id="cb596-1" data-line-number="1"><span class="op">{</span></div>
 <div class="sourceLine" id="cb596-2" data-line-number="2">    push a<span class="op">;</span></div>

@@ -2,6 +2,7 @@
 
 
 
+
 # $3f:f02a textd.eval_replacement
 
 
@@ -15,20 +16,18 @@
 +	[in,out] u8 $90: offset into the tile buffer ($0780/$07a0)
 +	[out] u8 $0780[32]: tile (or name table) buffer for upper line
 +	[out] u8 $07a0[32]: tile (or name table) buffer for lower line
++	u8 $97: window scroll x?
++	u8 $98: window scroll y?
 
 ### local variables:
 +	u8 $80,81,82,83: scratch.
 +	u8 $84: parameter byte
-+	u8 $97,98
 
 ### notes:
-charcodes ranged [10...28) are defined as opcodes (or 'replacement'),
+charcodes ranged [10...28) are defined as 2-byte opcodes (or 'variable replacement'),
 given that the codes have followed by additional one byte for parameter.
 
-#### code meanings:
-+	10-13: status of a player character. lower 2-bits represents an index of character.
-+	15-17: left-align text by paramter,increment menu-item count by 4
-+	1e: get job name
+for code details, please refer to [source code from the patch](https://github.com/ypyp-pprn-mnmn/ff3_hack/tree/master/work/ff3_charcode.h.asm).
 
 ### code:
 ```js
@@ -104,6 +103,7 @@ $f19a:
 	if (a == #1f) {} //bne f1bb
 }
 ```
+
 
 
 

@@ -1770,7 +1770,7 @@ textd.eval_replacement:
     cmp #$19                            ; F0F0 C9 19
     bne .case_1a                        ; F0F2 D0 20
     ldx <.parameter_byte                ; F0F4 A6 84
-    lda $7B80,x                         ; F0F6 BD 80 7B
+    lda menu.shop_offerings,x           ; F0F6 BD 80 7B
     sta <.parameter_byte                ; F0F9 85 84
     bne .L_F10A                         ; F0FB D0 0D
     lda $79F1                           ; F0FD AD F1 79
@@ -1807,9 +1807,9 @@ textd.eval_replacement:
 	;;param: index in the stomach.
     cmp #$1B                            ; F128 C9 1B
     bne .case_1c                        ; F12A D0 13
-    jsr $F3AC                           ; F12C 20 AC F3
+    jsr textd.setup_output_ptr_to_next_column ; F12C 20 AC F3
     ldx <.parameter_byte                ; F12F A6 84
-    lda $7C00,x                         ; F131 BD 00 7C
+    lda menu.available_items_in_stomach,x ; F131 BD 00 7C
     beq .break_case_f111                ; F134 F0 DB
     sta <.parameter_byte                ; F136 85 84
     lda #$00                            ; F138 A9 00
@@ -1837,7 +1837,7 @@ textd.eval_replacement:
     sta <.output_index                  ; F159 85 90
     ldx <.parameter_byte                ; F15B A6 84
 	;; 7c00 = item_id, where x = index in the stomach.
-    lda $7C00,x                         ; F15D BD 00 7C
+    lda menu.available_items_in_stomach,x ; F15D BD 00 7C
     beq .break_case_f111                ; F160 F0 AF
     tax ; F162 AA
 	;; $6300 = number of items, where x = item_id
@@ -1911,13 +1911,13 @@ textd.eval_replacement:
     bne .case_22                        ; F1D3 D0 24
     ldx <.parameter_byte                ; F1D5 A6 84
 	;;$7b80 = item list in shop
-    lda $7B80,x                         ; F1D7 BD 80 7B
+    lda menu.shop_offerings,x           ; F1D7 BD 80 7B
     beq .break_case_f1f6                ; F1DA F0 1A
-    lda $7B90,x                         ; F1DC BD 90 7B
+    lda menu.shop_item_price.low,x      ; F1DC BD 90 7B
     sta <$80                            ; F1DF 85 80
-    lda $7B98,x                         ; F1E1 BD 98 7B
+    lda menu.shop_item_price.mid,x      ; F1E1 BD 98 7B
     sta <$81                            ; F1E4 85 81
-    lda $7BA0,x                         ; F1E6 BD A0 7B
+    lda menu.shop_item_price.high,x     ; F1E6 BD A0 7B
     sta <$82                            ; F1E9 85 82
     jsr switch_to_character_logics_bank ; F1EB 20 27 F7
     jsr $8B78                           ; F1EE 20 78 8B
