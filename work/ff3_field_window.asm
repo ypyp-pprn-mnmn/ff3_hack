@@ -1657,6 +1657,10 @@ textd.eval_replacement:
     jmp textd.draw_in_box     ; F04C 4C FA EE
 ; ----------------------------------------------------------------------------
 .case_15_17:
+	;; setup command window. param: space fill.
+	;; 15 = (new-game; menu; equip; job)
+	;; 16 = (magic setup; item target; shop offerings;)
+	;; 17 = (items to equip; items to use; items to sell; (fatty choccobo))
     cmp #$18                            ; F04F C9 18
     bcs .case_18	;L_F09B             ; F051 B0 48
     sec ; F053 38
@@ -1703,7 +1707,9 @@ textd.eval_replacement:
     sta [$80],y                         ; F096 91 80
     jmp textd.draw_in_box     ; F098 4C FA EE
 ; ----------------------------------------------------------------------------
-.case_18:	;; indirect text. parameter = text_id.
+.case_18:
+	;; reference to anothert text.
+	;; parameter = text_id.
     bne .case_19                        ; F09B D0 53
 .L_F09D:
 ;;textd.f09d_deref_param_text
@@ -1759,6 +1765,8 @@ textd.eval_replacement:
     jmp textd.draw_in_box     ; F0ED 4C FA EE
 ; ----------------------------------------------------------------------------
 .case_19:
+	;;item name of which is listed in the shop.
+	;;param: index in the shop offerings list.
     cmp #$19                            ; F0F0 C9 19
     bne .case_1a                        ; F0F2 D0 20
     ldx <.parameter_byte                ; F0F4 A6 84
@@ -1781,7 +1789,9 @@ textd.eval_replacement:
 .break_case_f111:
     jmp textd.draw_in_box     ; F111 4C FA EE
 ; ----------------------------------------------------------------------------
-.case_1a:	;; item name of which is stored in the backpack at the index specified by parameter
+.case_1a:
+	;; item name of which is stored in the backpack,
+	;; at the index specified by parameter
     cmp #$1A                            ; F114 C9 1A
     bne .case_1b                        ; F116 D0 10
     lda #$00                            ; F118 A9 00
@@ -1793,6 +1803,8 @@ textd.eval_replacement:
     jmp textd.deref_param_text          ; F125 4C 9D F0
 ; ----------------------------------------------------------------------------
 .case_1b:
+	;;item name of which is in stomach. (of fatty choccobo).
+	;;param: index in the stomach.
     cmp #$1B                            ; F128 C9 1B
     bne .case_1c                        ; F12A D0 13
     jsr $F3AC                           ; F12C 20 AC F3
@@ -1804,14 +1816,16 @@ textd.eval_replacement:
     sta <$B9                            ; F13A 85 B9
     jmp textd.deref_param_text          ; F13C 4C 9D F0
 ; ----------------------------------------------------------------------------
-.case_1c: ;; number of item of which is stored in the backpack at the index specified by parameter
+.case_1c:
+	;; number of item of which is stored in the backpack,
+	;; at the index specified by parameter
     cmp #$1C                            ; F13F C9 1C
     bne .case_1d                        ; F141 D0 09
     ldx <.parameter_byte                ; F143 A6 84
     lda party.backpack.item_count,x     ; F145 BD E0 60
     beq .break_case_f111                ; F148 F0 C7
     bne .L_F166                         ; F14A D0 1A
-.case_1d:	;;
+.case_1d:	;;fatty choccobo. param: index in the list
     cmp #$1D                            ; F14C C9 1D
     bne .case_1e                        ; F14E D0 2A
     lda <.parameter_byte                ; F150 A5 84
@@ -1822,10 +1836,12 @@ textd.eval_replacement:
 .L_F159:
     sta <.output_index                  ; F159 85 90
     ldx <.parameter_byte                ; F15B A6 84
+	;; 7c00 = item_id, where x = index in the stomach.
     lda $7C00,x                         ; F15D BD 00 7C
     beq .break_case_f111                ; F160 F0 AF
     tax ; F162 AA
-    lda $6300,x                         ; F163 BD 00 63
+	;; $6300 = number of items, where x = item_id
+    lda party.item_amount_in_stomach,x  ; F163 BD 00 63
 .L_F166:
     sta <$80                            ; F166 85 80
     ldx <.output_index                  ; F168 A6 90
@@ -1837,7 +1853,8 @@ textd.eval_replacement:
     jsr $8B29                           ; F174 20 29 8B
     jmp textd.continue_with_text        ; F177 4C 91 F2
 ; ----------------------------------------------------------------------------
-.case_1e:	;;available job name. param = job_id
+.case_1e:
+	;;available job name. param = job_id
     cmp #$1E                            ; F17A C9 1E
     bne .case_1f                        ; F17C D0 1C
     jsr field.get_max_available_job_id  ; F17E 20 8A F3
@@ -1858,6 +1875,8 @@ textd.eval_replacement:
     jmp textd.deref_text_id             ; F197 4C D8 F2
 ; ----------------------------------------------------------------------------
 .case_1f:
+	;;capacity needed to change job to which is in the available job list.
+	;;param: index in the list.(ie, job_id)
     cmp #$1F                            ; F19A C9 1F
     bne .case_20                        ; F19C D0 1D
     ldx <.parameter_byte                ; F19E A6 84
@@ -1873,24 +1892,27 @@ textd.eval_replacement:
     jsr $8B57                           ; F1B5 20 57 8B
     jmp textd.continue_with_text        ; F1B8 4C 91 F2
 ; ----------------------------------------------------------------------------
-.case_20:	;;item name referenced in equip selection window
+.case_20:
+	;;item name referenced in equip selection window
     cmp #$20                            ; F1BB C9 20
     bne .case_21                        ; F1BD D0 12
-    ldx <.parameter_byte                             ; F1BF A6 84
-    lda party.backpack.item_id,x                         ; F1C1 BD C0 60
-    beq .break_case_f1f6                  ; F1C4 F0 30
-    sta <.parameter_byte                             ; F1C6 85 84
+    ldx <.parameter_byte                ; F1BF A6 84
+    lda party.backpack.item_id,x        ; F1C1 BD C0 60
+    beq .break_case_f1f6                ; F1C4 F0 30
+    sta <.parameter_byte                ; F1C6 85 84
     tax ; F1C8 AA
     lda $7200,x                         ; F1C9 BD 00 72
     sta <$B9                            ; F1CC 85 B9
     jmp textd.deref_param_text          ; F1CE 4C 9D F0
 ; ----------------------------------------------------------------------------
 .case_21:
+	;;item price listed in shop. param = index.
     cmp #$21                            ; F1D1 C9 21
-    bne .case_22                           ; F1D3 D0 24
-    ldx <.parameter_byte                             ; F1D5 A6 84
+    bne .case_22                        ; F1D3 D0 24
+    ldx <.parameter_byte                ; F1D5 A6 84
+	;;$7b80 = item list in shop
     lda $7B80,x                         ; F1D7 BD 80 7B
-    beq .break_case_f1f6                  ; F1DA F0 1A
+    beq .break_case_f1f6                ; F1DA F0 1A
     lda $7B90,x                         ; F1DC BD 90 7B
     sta <$80                            ; F1DF 85 80
     lda $7B98,x                         ; F1E1 BD 98 7B
@@ -1905,7 +1927,9 @@ textd.eval_replacement:
 .break_case_f1f6:
     jmp textd.draw_in_box     ; F1F6 4C FA EE
 ; ----------------------------------------------------------------------------
-.case_22:	;;item name of which is stored in the backpack. parameter = index in backpack
+.case_22:
+	;;item name of which is stored in the backpack.
+	;;parameter = index in backpack
     cmp #$22                            ; F1F9 C9 22
     bne .break_case_f1f6                ; F1FB D0 F9
     lda #$00                            ; F1FD A9 00

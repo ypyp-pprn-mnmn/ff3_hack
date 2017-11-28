@@ -1,23 +1,30 @@
 ﻿
-# $3f:f3ac textd.char_1b_helper
-> 
+
+
+# $3f:f3ac textd.setup_output_ptr_for_item_name
+> co-routine of charcode 0x1b, 'item name of which is stored in the fatty choccobo'.
 
 ### args:
 +	in u8 $84: parameter byte of char code 0x1b
-+	in,out u8 $1e: ?
++	in,out u8 $1e: is_initilized. 0: not initialized, otherwise: initizalied.
 +	in,out u8 $1f: lines drawn?
-+	out u8 $90: text index
-+	in u8 $97: ?
-+	in u8 $98: ?
++	out u8 $90: offset into output buffer.
++	in u8 $97: X scroll of window box?
++	in u8 $98: Y scroll of window box?
++	in,out u8 $7af1: offset into $7a00.
++	out stomach_item $7a00[?]: 4-tuple describing item in the stomach. where:
+	- +00: X offset into output buffer? $90 + $97.
+	- +01: Y offset into output buffer? $1f + $98.
+	- +02: always 0x1b.
+	- +03: item_id, from $84.
 
 ### callers:
-+	yet to be investigated
++	`jsr $F3AC ; F12C 20 AC F3` @ textd.eval_replacement (case 0x1b)
 
 ### local variables:
-+	yet to be investigated
++	none. all variables seem to be either set or referenced by functions outside.
 
 ### notes:
-
 
 ### (pseudo)code:
 ```js
@@ -56,4 +63,6 @@ LF3C2:
 */
 }
 ```
+
+
 
