@@ -7,6 +7,7 @@
 ;consts
 	.include "ff3_const.h"
 	.include "ff3_charcode.h.asm"
+	.include "ff3_party_and_player.h.asm"
 ;proc addrs
 	.include "ff3_30-31.h"
 	.include "ff3_32-33.h"
@@ -33,12 +34,31 @@ field.sync_ppu_scroll_with_player	= $e571
 ;field.stream_string_in_window	= $ee65
 ;field.load_and_draw_string	= $ee9a
 ;field.draw_string_in_window	= $eec0
-field.eval_and_draw_string = $eefa
+
+textd.draw_in_box = $eefa
+textd.eval_replacement = $f02a
+textd.deref_param_text = $f09d
+textd.deref_param_text_unsafe = $f0a1
+textd.draw_embedded_text = $f0c5
+textd.continue_with_text = $f291
+textd.deref_text_id = $f2d8
+textd.draw_player_name = $f316
+field.get_max_available_job_id = $f38a
+textd.setup_output_ptr_to_next_column = $f3ac
+textd.save_text_ptr = $f3e4
+textd.restore_text_ptr = $f3ed
+
+textd.tile_map_lower = $F4E1	;static table that maps charcode into tile id
+textd.tile_map_upper = $f515	;static table that maps charcode into tile id
+
+;floor.get_item_price = $f5d4	;ff3_floor_treasure.asm
+
 ;field.calc_draw_width_and_init_window_tile_buffer = $f670
 ;field.init_window_tile_buffer = $f683 ;fill 0780..79d/07c0..7dd with 0xFF
 ;field.upload_window_content	= $f6aa	;impl replaced but stay at the original addr
 ;;
-switchBanksTo3c3d			= $f727
+;switchBanksTo3c3d			= $f727
+switch_to_character_logics_bank = $f727
 ;; ppu drivers, mostly used only in battle mode
 ppud.do_sprite_dma			= $f8aa
 ppud.update_sprites_and_palette_after_nmi = $f8b0
@@ -153,12 +173,25 @@ soundDriver_control	= $7f42	;01:playNew(7f43) 02:playLast(7f41,saved when 01) 04
 soundDriver_musicId	= $7f43
 soundDriver_effectId= $7f49	;msb should be 1
 ;----------------------------------------------------------------------------------------------------------
+;menu-mode
+menu.choose_dialog_1 = $7800;
+menu.choose_dialog_2 = $7900;
+menu.choose_dialog_3 = $7a00;
+menu.shop_offerings = $7b80	;[8], item_id
+menu.shop_item_price.low = $7b90;	[8] lower 8-bits of price(24bits)
+menu.shop_item_price.mid = $7b98; [8] middle 8-bites of price(24bits)
+menu.shop_item_price.high = $7ba0; [8] middle 8-bites of price(24bits)
+menu.available_items_in_stomach = $7c00;
+;----------------------------------------------------------------------------------------------------------
 ;in memory structs
-backpackItems		= $60c0
-playerBaseParams	= $6100
-playerEquips		= $6200
+
+;; ---
 playerBattleParams	= $7575	;$40*4
 enemyBattleParams	= $7675	;$40*8
+;----------------------------------------------------------------------------------------------------------
+;string pointers
+textd.message_texts = $8000;
+textd.status_and_area_names = $8200	;$18:8200 = $30200
 ;----------------------------------------------------------------------------------------------------------
 ;in rom structs
 userFlags			= $00900
@@ -174,5 +207,5 @@ commandEffectHandlers	= $6843e
 commandWindowHandlers	= $69a16
 commandHandlers			= $69fac
 ;------------------------------------------------------------------------------------------------------
-TEMP_RAM = $7900	;we cannot use stack regein due to dugeon's floor save
+TEMP_RAM = $7900	;we cannot use stack region due to dugeon's floor save
 ;------------------------------------------------------------------------------------------------------
