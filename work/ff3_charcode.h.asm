@@ -25,20 +25,20 @@ CHAR.PLAYER3_PARAMS = $12   ;param = kind of parameter
 CHAR.PLAYER4_PARAMS = $13   ;param = kind of parameter
 
 CHAR.SPACE_FILL = $14   ;param = fill length
-CHAR.UNKNOWN_15 = $15
-CHAR.UNKNOWN_16 = $16
-CHAR.UNKNOWN_17 = $17
+CHAR.SETUP_WINDOW1_MENUITEM = $15   ;; command dialog. (menu command, inn (yes/no), job, shop command)
+CHAR.SETUP_WINDOW2_MENUITEM = $16   ;; target dialog. (magic, item) + shop offerings.
+CHAR.SETUP_WINDOW3_MENUITEM = $17   ;; item dialog. (cast, use, equip, withdraw, sell)
 
 CHAR.TEXT_REF = $18     ;param = text_id
-CHAR.UNKNOWN_19 = $19   ;param = index into $7b80.
+CHAR.ITEM_NAME_IN_SHOP = $19   ;param = index into $7b80(shop items).
 CHAR.ITEM_NAME_IN_MENU = $1a    ;param: item index
-CHAR.UNKNOWN_1B = $1b   ;
+CHAR.ITEM_NAME_IN_STOMACH = $1b   ;;param: index in the stomach. (of fatty choccobo)
 CHAR.ITEM_COUNT = $1c   ;param: item index
-CHAR.UNKNOWN_1D = $1d   ;
+CHAR.ITEM_COUNT_IN_STOMACH = $1d   ;param: index in the stomach. (of fatty choccobo)
 CHAR.JOB_NAME = $1e     ;param: job_id
-CHAR.UNKNOWN_1F = $1f   ;
+CHAR.JOB_CHANGE_COST = $1f   ;param: job_id
 CHAR.ITEM_NAME_IN_EQUIP_SELECTION = $20 ;param: item index
-CHAR.UNKNOWN_21 = $21;
+CHAR.ITEM_PRICE_IN_SHOP = $21   ;param: item index in the shop offerings list.
 CHAR.ITEM_NAME_IN_TARGET = $22  ;param: item index
 
 ;;
