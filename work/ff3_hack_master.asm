@@ -68,6 +68,8 @@
 		.include "ff3_floor_treasure.asm"	;save
 		;v0.7.3:
 		.include "ff3_field_window.asm"	;consume(field_treasure_begin)
+		;v0.8.0:
+		.include "ff3_textd.asm"
 		;;
 		.include "ff3_interrupt.asm"
 		.ifdef EXPERIMENTAL
