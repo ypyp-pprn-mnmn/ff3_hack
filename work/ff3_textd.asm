@@ -987,10 +987,10 @@ textd_x.on_code_13:	;;HANDLE_EXIT_IN_OWN
     jsr $8998                           ; F28E 20 98 89
 	jmp textd_x.continue_with_text
 ;;textd.continue_with_text
-.L_F291:
-    ;lda <.text_bank                             ; F291 A5 93
-    ;jsr call_switch_2banks          ; F293 20 03 FF
-    ;jmp textd.draw_in_box     ; F296 4C FA EE
+;.L_F291:
+    ;lda <.text_bank                    ; F291 A5 93
+    ;jsr call_switch_2banks             ; F293 20 03 FF
+    ;jmp textd.draw_in_box              ; F296 4C FA EE
 ; ----------------------------------------------------------------------------
 .case_below_30:
     cmp #$00                            ; F299 C9 00
@@ -1107,6 +1107,7 @@ textd.draw_player_name:
     sta <.p_text+1                      ; F33D 85 3F
     jsr textd.draw_in_box               ; F33F 20 FA EE
     jsr textd.restore_text_ptr          ; F342 20 ED F3
+textd_x.stepstone_3:
     jmp textd.draw_in_box               ; F345 4C FA EE
 ; ----------------------------------------------------------------------------
 textd_x.code_10_13.param_03_07:
@@ -1148,15 +1149,16 @@ textd_x.code_10_13.param_03_07:
     sbc #$08                            ; F374 E9 08
     tax ; F376 AA
     lda $7C00,x                         ; F377 BD 00 7C
-    beq .break_case_f387                ; F37A F0 0B
+    ;beq .break_case_f387                ; F37A F0 0B
+    beq textd_x.stepstone_3
     sta <$84                            ; F37C 85 84
     tax ; F37E AA
     lda $7200,x                         ; F37F BD 00 72
     sta <$B9                            ; F382 85 B9
     jmp textd.deref_param_text          ; F384 4C 9D F0
 ; ----------------------------------------------------------------------------
-.break_case_f387:
-    jmp textd.draw_in_box     ; F387 4C FA EE
+;.break_case_f387:
+;    jmp textd.draw_in_box     ; F387 4C FA EE
 
 ; -------------------------------------------------------------------------------------------------
 textd_x.ctrl_code_handlers.low:
