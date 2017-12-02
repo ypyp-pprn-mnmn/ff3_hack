@@ -275,6 +275,7 @@ textd_x.on_code_04:	;;CONTINUE_WITH_TEXT
     sta <$81                            ; EF86 85 81
     lda <.inn_charge+2                  ; EF88 A5 63
     sta <$82                            ; EF8A 85 82
+textd_x.call_i_to_a_24:
     jsr switch_to_character_logics_bank ; EF8C 20 27 F7
 	jmp $8b78
     ;jsr $8B78                           ; EF8F 20 78 8B
@@ -299,8 +300,9 @@ textd_x.on_code_08:	;;CONTINUE_WITH_TEXT
     sta <$80                            ; EFC2 85 80
     lda #$00                            ; EFC4 A9 00
     sta <$81                            ; EFC6 85 81
-    jsr switch_to_character_logics_bank ; EFC8 20 27 F7
-    jsr $8B57                          ; EFCB 20 57 8B
+    ;jsr switch_to_character_logics_bank ; EFC8 20 27 F7
+    ;jsr $8B57                          ; EFCB 20 57 8B
+    jsr textd_x.call_i_to_a_16  ;;switch + $8b57
     ldx <.output_index                  ; EFCE A6 90
     inc <.output_index                  ; EFD0 E6 90
     lda #$5C                            ; EFD2 A9 5C
@@ -476,9 +478,9 @@ textd_x.on_code_21:	;;CONTINUE_WITH_TEXT
     sta <$81                            ; F1E4 85 81
     lda menu.shop_item_price.high,x     ; F1E6 BD A0 7B
     sta <$82                            ; F1E9 85 82
-    jsr switch_to_character_logics_bank ; F1EB 20 27 F7
+    ;jsr switch_to_character_logics_bank ; F1EB 20 27 F7
     ;jsr $8B78                           ; F1EE 20 78 8B
-	jmp $8b78
+    jmp textd_x.call_i_to_a_24  ;;switch + $8b78
     ;lda <.text_bank                     ; F1F1 A5 93
     ;jsr call_switch_2banks          ; F1F3 20 03 FF
 ;.L_F1F6:
@@ -745,6 +747,7 @@ textd.deref_param_text_unsafe:
     lda <.output_index                  ; F0A1 A5 90
     pha ; F0A3 48
     jsr textd.save_text_ptr             ; F0A4 20 E4 F3
+
     lda #$18                            ; F0A7 A9 18
     jsr call_switch_2banks              ; F0A9 20 03 FF
     lda <.parameter_byte                ; F0AC A5 84
@@ -883,10 +886,12 @@ textd_x.on_code_1f:	;;CONTINUE_WITH_TEXT
     sta <$80                            ; F1A3 85 80
     ldx <.output_index                  ; F1A5 A6 90
     inc <.output_index                  ; F1A7 E6 90
+    ;; C8 = ':'
     lda #$C8                            ; F1A9 A9 C8
     sta .tile_buffer_lower,x            ; F1AB 9D A0 07
     lda #$00                            ; F1AE A9 00
     sta <$81                            ; F1B0 85 81
+textd_x.call_i_to_a_16:
     jsr switch_to_character_logics_bank ; F1B2 20 27 F7
     ;jsr $8B57                           ; F1B5 20 57 8B
 	jmp $8b57
@@ -960,11 +965,12 @@ textd_x.on_code_13:	;;HANDLE_EXIT_IN_OWN
     sbc player.exp+2,x                  ; F27B FD 05 61
     sta <$82                            ; F27E 85 82
 
-    jsr switch_to_character_logics_bank ; F280 20 27 F7
-    jsr $8B78                           ; F283 20 78 8B
+    ;jsr switch_to_character_logics_bank ; F280 20 27 F7
+    ;jsr $8B78                           ; F283 20 78 8B
+    jsr textd_x.call_i_to_a_24  ;;switch + $8b78
 .continue_with_text:
     ;jmp textd.continue_with_text        ; F286 4C 91 F2
-	jmp textd_x.continue_with_text
+	jmp textd_x.continue_with_text  ;;needed as HANDLE_EXIT_IN_OWN
 ; ----------------------------------------------------------------------------
 .case_30_fe:
     pha ; F289 48
