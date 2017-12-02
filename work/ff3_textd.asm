@@ -8,8 +8,8 @@
 
 STOMACH_LEFT_COLUMN_NAME = $01  ;;original = $01
 STOMACH_RIGHT_COLUMN_NAME = $0f  ;;original = $0f
-STOMACH_LEFT_COLUMN_AMOUNT = $0a ;;original = $0a
-STOMACH_RIGHT_COLUMN_AMOUNT = $18 ;;original = $18
+STOMACH_LEFT_COLUMN_AMOUNT = $0b ;;original = $0a
+STOMACH_RIGHT_COLUMN_AMOUNT = $19 ;;original = $18
 
 textd.patch_begin:
 	.ifdef FAST_FIELD_WINDOW
@@ -155,9 +155,9 @@ textd_x.handle_ctrl_codes:
 .not_printable_char:
 
 	tax
-	lda textd_x.ctrl_code_handlers.low,x
+	lda textd_x.ctrl_code_handlers.low-1,x
 	sta <.p_handler+0
-	lda textd_x.ctrl_code_handlers.high_and_flags,x
+	lda textd_x.ctrl_code_handlers.high_and_flags-1,x
 	pha
 	and #$07
 	clc
@@ -1142,7 +1142,7 @@ textd_x.code_10_13.param_03_07:
 
 ; -------------------------------------------------------------------------------------------------
 textd_x.ctrl_code_handlers.low:
-	.db 0
+	;.db 0
 	.db LOW(textd_x.on_code_01)
 	.db LOW(textd_x.on_code_02)
 	.db LOW(textd_x.on_code_03)
@@ -1193,7 +1193,7 @@ textd_x.HANDLE_EXIT_IN_OWN = $08
 ;;lower 3bits = higher address of the handler,
 ;;higher 4bits = exit disposition.
 textd_x.ctrl_code_handlers.high_and_flags:
-	.db 0
+	;.db 0
 	.db ((HIGH(textd_x.on_code_01) - HIGH(textd_x.code_handlers_base)) & $07) | ((textd_x.HANDLE_EXIT_IN_OWN)<<4)
 	;.db ((HIGH(textd_x.on_code_02) - HIGH(textd_x.code_handlers_base)) & $07) | ((textd_x.JUST_CONTINUE)<<4)
 	.db ((HIGH(textd_x.on_code_02) - HIGH(textd_x.code_handlers_base)) & $07) | ((textd_x.HANDLE_EXIT_IN_OWN)<<4)
