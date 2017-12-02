@@ -3,7 +3,7 @@ GLOBAL {
 	INPUTOFFS	$7F3AC;
 	STARTADDR	$f3ac;
 	INPUTSIZE	$00038;
-	OUTPUTNAME	"3f_f3ac-.da65out.txt";
+	OUTPUTNAME	"3f_f3ac-textd.setup_output_ptr_to_next_column.da65out.txt";
 };
 LABEL {
 	NAME "commandWindow_OnBack";
@@ -2064,7 +2064,7 @@ LABEL {
 	SIZE	1;
 };
 LABEL {
-	NAME "getTreasureItemId";
+	NAME "floor.get_treasure_item_id";
 	ADDR $f5c4;
 	COMMENT "bank $3f";
 	SIZE	1;
@@ -2262,7 +2262,7 @@ LABEL {
 	SIZE	1;
 };
 LABEL {
-	NAME "getTreasure";
+	NAME "floor.get_treasure";
 	ADDR $f549;
 	COMMENT "bank $3f";
 	SIZE	1;
@@ -3015,6 +3015,12 @@ LABEL {
 	NAME "is_backattacked_32";
 	ADDR $90d2;
 	COMMENT "bank $32";
+	SIZE	1;
+};
+LABEL {
+	NAME "textd.setup_output_ptr_to_next_column";
+	ADDR $f3ac;
+	COMMENT "bank $3f";
 	SIZE	1;
 };
 LABEL {
