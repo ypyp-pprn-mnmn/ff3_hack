@@ -1396,6 +1396,27 @@ textd_x.seek_source_buffer:
 ;	jmp field_x.switch_to_text_bank
 	
 ;; ---------------------------------------------------------------------
+textd_x.handle_printables:
+	DECLARE_TEXTD_VARIABLES
+    ;cmp #$5C                            ; EF0A C9 5C
+	cmp #CHAR.NEED_COMPOSITION_END
+    ;bcc .need_composition               ; EF0C 90 19
+	bcc textd_x.composite_char_and_continue
+    ldy <.output_index                  ; EF0E A4 90
+    ldx <.in_menu_mode                  ; EF10 A6 37
+    bne .icons_supported                ; EF12 D0 06
+    ;cmp #$70                            ; EF14 C9 70
+	cmp #CHAR.AVAILABLE_ONLY_IN_MENU_BEGIN
+    bcs .icons_supported                ; EF16 B0 02
+    lda #$FF                            ; EF18 A9 FF
+.icons_supported:
+    sta .tile_buffer_lower,y            ; EF1A 99 A0 07
+    lda #$FF                            ; EF1D A9 FF
+	bne textd_x.write_upper_and_continue
+    ;sta .tile_buffer_upper,y            ; EF1F 99 80 07
+    ;inc <.output_index                  ; EF22 E6 90
+    ;jmp textd.draw_in_box               ; EF24 4C FA EE
+
 textd_x.composite_char_and_continue:
 	DECLARE_TEXTD_VARIABLES
 .need_composition: 
@@ -1457,25 +1478,8 @@ textd.draw_in_box:
 ;    cmp #$28                            ; EF06 C9 28
 	cmp #CHAR.REPLACEMENT_END
     ;bcc .not_printable_char             ; EF08 90 34
-	bcc textd_x.handle_ctrl_codes
-    ;cmp #$5C                            ; EF0A C9 5C
-	cmp #CHAR.NEED_COMPOSITION_END
-    ;bcc .need_composition               ; EF0C 90 19
-	bcc textd_x.composite_char_and_continue
-    ldy <.output_index                  ; EF0E A4 90
-    ldx <.in_menu_mode                  ; EF10 A6 37
-    bne .icons_supported                ; EF12 D0 06
-    ;cmp #$70                            ; EF14 C9 70
-	cmp #CHAR.AVAILABLE_ONLY_IN_MENU_BEGIN
-    bcs .icons_supported                ; EF16 B0 02
-    lda #$FF                            ; EF18 A9 FF
-.icons_supported:
-    sta .tile_buffer_lower,y            ; EF1A 99 A0 07
-    lda #$FF                            ; EF1D A9 FF
-	bne textd_x.write_upper_and_continue
-    ;sta .tile_buffer_upper,y            ; EF1F 99 80 07
-    ;inc <.output_index                  ; EF22 E6 90
-    ;jmp textd.draw_in_box               ; EF24 4C FA EE
+	;bcc textd_x.handle_ctrl_codes
+	bcs textd_x.handle_printables
 ; ----------------------------------------------------------------------------
 textd_x.handle_ctrl_codes:
 	DECLARE_TEXTD_VARIABLES
