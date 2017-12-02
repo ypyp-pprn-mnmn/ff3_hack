@@ -63,13 +63,16 @@ CHAR.JOB_NAME = $1e     ;param: job_id
 CHAR.JOB_CHANGE_COST = $1f   ;param: job_id
 CHAR.ITEM_NAME_IN_EQUIP_SELECTION = $20 ;param: item index
 CHAR.ITEM_PRICE_IN_SHOP = $21   ;param: item index in the shop offerings list.
-CHAR.ITEM_NAME_IN_TARGET = $22  ;param: item index
+CHAR.ITEM_NAME_IN_TARGET = $22  ;param: item index. note: first byte of the name is skipped.
 
 ;;
 CHAR.REPLACEMENT_BEGIN = $10    ;inclusive
 CHAR.REPLACEMENT_END = $28      ;exclusive. ($28 = space)
 ;;
 CHAR.SPACE = $28
+;;
+CHAR.NEED_COMPOSITION_END = $5c
+CHAR.AVAILABLE_ONLY_IN_MENU_BEGIN = $70
 
 ;; ----------------------------------------------------------------------------
 ;; macros.
