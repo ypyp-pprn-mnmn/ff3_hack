@@ -1496,11 +1496,13 @@ textd_x.handle_ctrl_codes:
 	;bpl textd_x.invoke_handlers_with_care
 	bmi textd_x.just_invoke_handlers
 		;;handlers don't want to handle exit by its own
-		pha
+		;;it's fine to call 'field_x.switch_to_text_bank' regardless of current bank
+		;and #$f0
+		;pha
 		jsr textd_x.just_invoke_handlers
-		pla
+		;pla
 		;bne textd_x.continue_with_text
-		beq textd.draw_in_box
+		;beq textd.draw_in_box
 textd_x.continue_with_text:
 			jsr field_x.switch_to_text_bank
 			bne textd.draw_in_box
@@ -1608,7 +1610,7 @@ textd_x.on_code_04:	;;CONTINUE_WITH_TEXT
 ; ----------------------------------------------------------------------------
 textd_x.on_code_05:	;;CONTINUE_WITH_TEXT
 	DECLARE_TEXTD_VARIABLES
-.case_5: 
+.case_5: 	;;party gil.
     ;cmp #$05                            ; EF95 C9 05
     ;bne .case_6                         ; EF97 D0 09
     jsr switch_to_character_logics_bank ; EF99 20 27 F7
