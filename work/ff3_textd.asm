@@ -352,8 +352,10 @@ textd_x.on_code_0c:	;;HANDLE_EXIT_IN_OWN
 .case_0c:	;;leader name
     ;cmp #$0C                            ; EFF0 C9 0C
     ;bne .case_0d                        ; EFF2 D0 06
-    ldx party.leader_offset             ; EFF4 AE 0E 60
-    jmp textd.draw_player_name          ; EFF7 4C 16 F3
+    ;ldx party.leader_offset             ; EFF4 AE 0E 60
+    ;jmp textd.draw_player_name          ; EFF7 4C 16 F3
+    ldy party.leader_offset
+    jmp textd_x.draw_player_name
 ; ----------------------------------------------------------------------------
 textd_x.on_code_0f:	;;JUST_CONTINUE
 	DECLARE_TEXTD_VARIABLES
@@ -651,7 +653,7 @@ textd_x.on_code_22:	;;HANDLE_EXIT_IN_OWN
     ;beq .break_case_f1f6           ; F206 F0 EE
 	beq textd_x.just_continue_2
     sta <.parameter_byte            ; F208 85 84
-    ldx #$88
+    ldx #HIGH(textd.item_names) ;$88
     jsr textd_x.stack_load_text_ptr
     jsr textd_x.seek_source_buffer
     jmp textd_x.draw_embedded_text
@@ -750,7 +752,7 @@ textd_x.on_code_18:	;;HANDLE_EXIT_IN_OWN
 ;;F0A1
 textd.deref_param_text_unsafe:
 	DECLARE_TEXTD_VARIABLES
-    ldx #$88
+    ldx #HIGH(textd.item_names) ;$88
     jsr textd_x.stack_load_text_ptr
 ;    lda <.output_index                  ; F0A1 A5 90
 ;    pha ; F0A3 48
@@ -1113,23 +1115,37 @@ textd_x.code_10_13.param_02:	;;player name
     cmp #$02                            ; F310 C9 02
     ;bne .case_03_07                     ; F312 D0 34
 	bne textd_x.code_10_13.param_03_07
-    ldx <.cached_param                            ; F314 A6 67
+    ;ldx <.cached_param                            ; F314 A6 67
+    ldy <.cached_param
 
-textd.draw_player_name:
+;; in:
+;;  X : offset to the player to obtain name (0x40 * player_index)
+;textd.draw_player_name:
+;    lda player.name+0,x                 ; F316 BD 06 61
+;    sta <$5A                            ; F319 85 5A
+;    lda player.name+1,x                 ; F31B BD 07 61
+;    sta <$5B                            ; F31E 85 5B
+;    lda player.name+2,x                 ; F320 BD 08 61
+;    sta <$5C                            ; F323 85 5C
+;    lda player.name+3,x                 ; F325 BD 09 61
+;    sta <$5D                            ; F328 85 5D
+;    lda player.name+4,x                 ; F32A BD 0A 61
+;    sta <$5E                            ; F32D 85 5E
+;    lda player.name+5,x                 ; F32F BD 0B 61
+;    sta <$5F                            ; F332 85 5F
+;; in:
+;;  Y : offset to the player to obtain name (0x40 * player_index)
+textd_x.draw_player_name:
 	DECLARE_TEXTD_VARIABLES
-;;in x : offset (0x40 * player_index)
-    lda player.name+0,x                 ; F316 BD 06 61
-    sta <$5A                            ; F319 85 5A
-    lda player.name+1,x                 ; F31B BD 07 61
-    sta <$5B                            ; F31E 85 5B
-    lda player.name+2,x                 ; F320 BD 08 61
-    sta <$5C                            ; F323 85 5C
-    lda player.name+3,x                 ; F325 BD 09 61
-    sta <$5D                            ; F328 85 5D
-    lda player.name+4,x                 ; F32A BD 0A 61
-    sta <$5E                            ; F32D 85 5E
-    lda player.name+5,x                 ; F32F BD 0B 61
-    sta <$5F                            ; F332 85 5F
+    ldx #($100 - 6)
+.copy_name:
+        ;lda [$80],y
+        lda player.name,y
+        sta <$60,x
+        iny
+        inx
+        bne .copy_name
+
     jsr textd.save_text_ptr             ; F334 20 E4 F3
     lda #$5A                            ; F337 A9 5A
     sta <.p_text                        ; F339 85 3E
