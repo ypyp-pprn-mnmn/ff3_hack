@@ -129,9 +129,10 @@ FIX_OFFSET_ON_CALLER .macro
 	RESTORE_PC __patch_addr_\@
 	.endm
 
+;;length label will be trunacted and might be resulting in false duplicates
 FALL_THROUGH_TO	.macro
-	__fall_through_\1:
-	;.if (__fall_through_\1 < \1)
-	;	.ds (\1 - __fall_through_\1)
+	__ft_\1:
+	;.if (__ft_\1 < \1)
+	;	.ds (\1 - __ft_\1)
 	;.endif
 	.endm	;FALL_THROUGH_TO
