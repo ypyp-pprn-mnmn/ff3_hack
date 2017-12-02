@@ -43,8 +43,8 @@ field.sync_ppu_scroll_with_player	= $e571
 ;textd.continue_with_text = $f291
 ;textd.deref_text_id = $f2d8
 ;textd.draw_player_name = $f316
-field.get_max_available_job_id = $f38a
-textd.setup_output_ptr_to_next_column = $f3ac
+;field.get_max_available_job_id = $f38a
+;textd.setup_output_ptr_to_next_column = $f3ac
 textd.save_text_ptr = $f3e4
 textd.restore_text_ptr = $f3ed
 

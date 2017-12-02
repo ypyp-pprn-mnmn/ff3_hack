@@ -8,7 +8,8 @@
 	
 textd.patch_begin:
 	.ifdef FAST_FIELD_WINDOW
-	INIT_PATCH $3f,$eefa,$f38a
+	;INIT_PATCH $3f,$eefa,$f38a
+    INIT_PATCH $3f,$eefa,$f3e4
 ;; -------------------------
 DECLARE_TEXTD_VARIABLES	.macro
 	;; --- variables.
@@ -314,10 +315,10 @@ textd_x.on_code_0d:	;;CONTINUE_WITH_TEXT
 textd_x.on_code_02:	;;HANDLE_EXIT_IN_OWN
 	DECLARE_TEXTD_VARIABLES
 .case_2:	;;item name of treasure which has just been gotten. $bb := item_id
-    ;cmp #$02                            ; EF5B C9 02
-    ;bne .case_3                         ; EF5D D0 0B
+    ;cmp #$02                           ; EF5B C9 02
+    ;bne .case_3                        ; EF5D D0 0B
     lda <.treasure_item_id              ; EF5F A5 BB
-    sta <$84                            ; EF61 85 84
+    sta <.parameter_byte                ; EF61 85 84
     lda #$00                            ; EF63 A9 00
     sta <$B9                            ; EF65 85 B9
     jmp textd.deref_param_text          ; EF67 4C 9D F0
@@ -634,7 +635,7 @@ textd_x.on_code_22:	;;HANDLE_EXIT_IN_OWN
 textd_x.on_code_1b:	;;HANDLE_EXIT_IN_OWN
 	DECLARE_TEXTD_VARIABLES
 .case_1b:
-	;;item name of which is in stomach. (of fatty choccobo).
+	;;item name of which is in the stomach. (of fatty choccobo).
 	;;param: index in the stomach.
     ;cmp #$1B                            ; F128 C9 1B
     ;bne .case_1c                        ; F12A D0 13
@@ -1168,6 +1169,98 @@ textd_x.ctrl_code_handlers.high_and_flags:
 	.db ((HIGH(textd_x.on_code_27) - HIGH(textd_x.code_handlers_base)) & $07) | ((textd_x.JUST_CONTINUE)<<4)
 ; -------------------------------------------------------------------------------------------------
 	VERIFY_PC $f38a
+    INIT_PATCH $3f,$f38a,$f3ac
+
+;;# $3f:f38a field.get_max_available_job_id
+;;> calculates the maximum job_id available to palyer, and returns it in the register A.
+;;
+;;### args:
+;;-	in u8 $6021 : event flags, [...fffff] where lower 5 bits represents each Crystal event
+;;
+;;### callers:
+;;-	`jsr field.get_max_available_job_id  ; F17E 20 8A F3` @ textd.eval_replacement (handler for 0x1e)
+
+field.get_max_available_job_id:
+;; fixups.
+;; ---
+    lda party.job_flags                 ; F38A AD 21 60
+    and #$1F                            ; F38D 29 1F
+    ldx #$00                            ; F38F A2 00
+    lsr a                               ; F391 4A
+    bcc .L_F3AA                         ; F392 90 16
+    ldx #$05                            ; F394 A2 05
+    lsr a                               ; F396 4A
+    bcc .L_F3AA                         ; F397 90 11
+    ldx #$09                            ; F399 A2 09
+    lsr a                               ; F39B 4A
+    bcc .L_F3AA                         ; F39C 90 0C
+    ldx #$10                            ; F39E A2 10
+    lsr a                               ; F3A0 4A
+    bcc .L_F3AA                         ; F3A1 90 07
+    ldx #$13                            ; F3A3 A2 13
+    lsr a                               ; F3A5 4A
+    bcc .L_F3AA                         ; F3A6 90 02
+    ldx #$30                            ; F3A8 A2 30
+.L_F3AA:
+    txa                                 ; F3AA 8A
+    rts                                 ; F3AB 60
+    VERIFY_PC $f3ac
+; =================================================================================================
+    INIT_PATCH $3f,$f3ac,$f3e4
+;;# $3f:f3ac textd.setup_output_ptr_to_next_column
+;;> co-routine of charcode 0x1b, 'item name of which is stored in the fatty choccobo'.
+;;
+;;### args:
+;;+	in u8 $84: parameter byte of char code 0x1b
+;;+	in,out u8 $1e: is_initilized. 0: not initialized, otherwise: initizalied.
+;;+	in,out u8 $1f: lines drawn?
+;;+	out u8 $90: offset into output buffer.
+;;+	in u8 $97: X scroll of window box?
+;;+	in u8 $98: Y scroll of window box?
+;;+	in,out u8 $7af1: offset into $7a00.
+;;+	out selectable_item $7a00[?]: 4-tuple describing item in the menu. where:
+;;	- +00: X offset into output buffer? $90 + $97.
+;;	- +01: Y offset into output buffer? $1f + $98.
+;;	- +02: 1st byte of the char code directing a label built with the menu item. in this function, it is always 0x1b.
+;;	- +03: 2nd byte of the char code directing a label built with the menu item. in this function, it is item_id, from $84.
+;;
+;;### callers:
+;;+	`jsr $F3AC ; F12C 20 AC F3` @ textd.eval_replacement (case 0x1b)
+textd.setup_output_ptr_to_next_column:
+    DECLARE_TEXTD_VARIABLES
+
+	lda <.parameter_byte                ; F3AC A5 84
+	lsr a                               ; F3AE 4A
+	lda #$01                            ; F3AF A9 01
+	bcc .L_F3B5                         ; F3B1 90 02
+	lda #$0F                            ; F3B3 A9 0F
+.L_F3B5:
+	sta <.output_index                  ; F3B5 85 90
+	ldx $7AF1                           ; F3B7 AE F1 7A
+	lda <.menu_item_continue_building   ; F3BA A5 1E
+	bne .L_F3C2                         ; F3BC D0 04
+	inc <.menu_item_continue_building   ; F3BE E6 1E
+	ldx #$00                            ; F3C0 A2 00
+.L_F3C2:
+	txa ; F3C2 8A
+	clc ; F3C3 18
+	adc #$04                            ; F3C4 69 04
+	sta $7AF1                           ; F3C6 8D F1 7A
+	lda <.output_index                  ; F3C9 A5 90
+	clc ; F3CB 18
+	adc <$97                            ; F3CC 65 97
+	sta $7A00,x                         ; F3CE 9D 00 7A
+	lda <$98                            ; F3D1 A5 98
+	clc ; F3D3 18
+	adc <.lines_drawn                   ; F3D4 65 1F
+	sta $7A01,x                         ; F3D6 9D 01 7A
+	lda #$1B                            ; F3D9 A9 1B
+	sta $7A02,x                         ; F3DB 9D 02 7A
+	lda <.parameter_byte                ; F3DE A5 84
+	sta $7A03,x                         ; F3E0 9D 03 7A
+	rts ; F3E3 60
+    VERIFY_PC $f3e4
+; =================================================================================================
 textd.patch_end:
 
 	.endif	;FAST_FIELD_WINDOW

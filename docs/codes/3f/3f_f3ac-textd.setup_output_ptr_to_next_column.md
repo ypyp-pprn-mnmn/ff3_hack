@@ -1,9 +1,5 @@
 ﻿
 
-
-
-
-
 # $3f:f3ac textd.setup_output_ptr_to_next_column
 > co-routine of charcode 0x1b, 'item name of which is stored in the fatty choccobo'.
 
@@ -69,9 +65,5 @@ LF3C2:
 */
 }
 ```
-
-
-
-
 
 
