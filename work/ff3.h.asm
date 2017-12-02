@@ -192,6 +192,7 @@ enemyBattleParams	= $7675	;$40*8
 ;string pointers
 textd.message_texts = $8000;
 textd.status_and_area_names = $8200	;$18:8200 = $30200
+textd.item_names = $8800;
 ;----------------------------------------------------------------------------------------------------------
 ;in rom structs
 userFlags			= $00900
