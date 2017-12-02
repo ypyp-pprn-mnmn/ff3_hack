@@ -8,7 +8,7 @@
     <meta name="generator" content="pandoc">
     <meta name="description" content>
     <meta name="author" content="ypyp-pprn-mnmn (aka “301”)">
-    <!-- generated-at 2017-11-29 02:20:16+0900 -->
+    <!-- generated-at 2017-12-02 01:22:36+0900 -->
     <title>FF3@FC Original Code Documentation</title>
 
     <!-- Bootstrap core CSS -->
@@ -17705,7 +17705,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>none. all variables seem to be either set or referenced by functions outside.</li>
 </ul>
 <h3 id="notes-50">notes:</h3>
-<p>this function is very similar (or almost identical) to the logic embedded in the handler for char codes 0x15-0x17. only difference is that this function expectes the parameter byte ($84) contains an index into the item in stomach, whereas another one expects offset to next column.</p>
+<p>this function is very similar (or almost identical) to the logic embedded in the handler for char codes 0x15-0x17. only the difference here is that this function expects the parameter byte ($84) contains an index into the item in stomach, whereas another one expects offset to next column.</p>
 <h3 id="pseudocode-53">(pseudo)code:</h3>
 <pre class="sourceCode js" id="cb599"><code class="sourceCode javascript"><div class="sourceLine" id="cb599-1" data-line-number="1"><span class="op">{</span></div>
 <div class="sourceLine" id="cb599-2" data-line-number="2"><span class="co">/*</span></div>
