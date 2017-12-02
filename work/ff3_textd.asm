@@ -980,6 +980,8 @@ textd_x.on_code_13:	;;HANDLE_EXIT_IN_OWN
     ;jmp textd.continue_with_text        ; F286 4C 91 F2
 	jmp textd_x.continue_with_text  ;;needed as HANDLE_EXIT_IN_OWN
 ; ----------------------------------------------------------------------------
+;;A = status(ability)_id
+.textd_x.draw_status_value:
 .case_30_fe:
     pha ; F289 48
     jsr switch_to_character_logics_bank ; F28A 20 27 F7
@@ -999,7 +1001,7 @@ textd_x.on_code_13:	;;HANDLE_EXIT_IN_OWN
     ldx <.cached_param                  ; F29D A6 67
     lda player.status,x                 ; F29F BD 02 61
     and #$FE                            ; F2A2 29 FE
-    bne .L_F2BB                         ; F2A4 D0 15
+    bne textd_x.draw_status_name        ; F2A4 D0 15
     ldx <.output_index                  ; F2A6 A6 90
     inc <.output_index                  ; F2A8 E6 90
     inc <.output_index                  ; F2AA E6 90
@@ -1010,32 +1012,42 @@ textd_x.on_code_13:	;;HANDLE_EXIT_IN_OWN
     lda #$5F                            ; F2B1 A9 5F
     sta .tile_buffer_lower+1,x          ; F2B3 9D A1 07
     lda #$3e                            ; F2B6 A9 3E
-    jmp .L_F246                         ; F2B8 4C 46 F2
+    ;jmp .L_F246                        ; F2B8 4C 46 F2
+    bne .textd_x.draw_status_value
 ; ----------------------------------------------------------------------------
+textd_x.draw_status_name.name_id:
+    .db $16,$17,$1b,$1c,$1d,$1e,$1f
+textd_x.draw_status_name:
 .L_F2BB:
-    ldy #$16                            ; F2BB A0 16
-    asl a                               ; F2BD 0A
-    bcs .L_F2D7                         ; F2BE B0 17
-    ldy #$17                            ; F2C0 A0 17
-    asl a                               ; F2C2 0A
-    bcs .L_F2D7                         ; F2C3 B0 12
-    ldy #$1B                            ; F2C5 A0 1B
-    asl a                               ; F2C7 0A
-    bcs .L_F2D7                         ; F2C8 B0 0D
-    iny                                 ; F2CA C8
-    asl a                               ; F2CB 0A
-    bcs .L_F2D7                         ; F2CC B0 09
-    iny                                 ; F2CE C8
-    asl a                               ; F2CF 0A
-    bcs .L_F2D7                         ; F2D0 B0 05
-    iny                                 ; F2D2 C8
-    asl a                               ; F2D3 0A
-    bcs .L_F2D7                         ; F2D4 B0 01
-    iny                                 ; F2D6 C8
-.L_F2D7:
-    tya                                 ; F2D7 98
-;;textd.deref_text_id
+;    ldy #$16                            ; F2BB A0 16
+;    asl a                               ; F2BD 0A
+;    bcs .L_F2D7                         ; F2BE B0 17
+;    ldy #$17                            ; F2C0 A0 17
+;    asl a                               ; F2C2 0A
+;    bcs .L_F2D7                         ; F2C3 B0 12
+;    ldy #$1B                            ; F2C5 A0 1B
+;    asl a                               ; F2C7 0A
+;    bcs .L_F2D7                         ; F2C8 B0 0D
+;    iny                                 ; F2CA C8
+;    asl a                               ; F2CB 0A
+;    bcs .L_F2D7                         ; F2CC B0 09
+;    iny                                 ; F2CE C8
+;    asl a                               ; F2CF 0A
+;    bcs .L_F2D7                         ; F2D0 B0 05
+;    iny                                 ; F2D2 C8
+;    asl a                               ; F2D3 0A
+;    bcs .L_F2D7                         ; F2D4 B0 01
+;    iny                                 ; F2D6 C8
+;.L_F2D7:
+;    tya                                 ; F2D7 98
+    ldy #$ff
+.loop:
+    asl a
+    iny
+    bcc .loop
+    lda textd_x.draw_status_name.name_id,y
 
+;;textd.deref_text_id
 textd.deref_text_id:
 	DECLARE_TEXTD_VARIABLES
 .L_F2D8:
