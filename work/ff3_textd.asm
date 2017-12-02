@@ -362,19 +362,23 @@ textd_x.on_code_0f:	;;JUST_CONTINUE
 .case_0f:	;;dustbox
     ;cmp #$0F                            ; F007 C9 0F
     ;bne .case_0e                        ; F009 D0 1C
-    ldx <.output_index                  ; F00B A6 90
-    lda #$58                            ; F00D A9 58
-    sta .tile_buffer_upper,x            ; F00F 9D 80 07
-    lda #$59                            ; F012 A9 59
-    sta .tile_buffer_upper+1,x          ; F014 9D 81 07
-    lda #$5A                            ; F017 A9 5A
-    sta .tile_buffer_lower,x            ; F019 9D A0 07
-    lda #$5B                            ; F01C A9 5B
-    sta .tile_buffer_lower+1,x          ; F01E 9D A1 07
-    txa ; F021 8A
-    clc ; F022 18
-    adc #$02                            ; F023 69 02
-    sta <.output_index                  ; F025 85 90
+    ldx <.output_index              ; F00B A6 90
+    lda #$58                        ; F00D A9 58
+    sta .tile_buffer_upper,x        ; F00F 9D 80 07
+    lda #$5A                        ; F017 A9 5A
+    sta .tile_buffer_lower,x        ; F019 9D A0 07
+    lda #$59                        ; F012 A9 59
+    sta .tile_buffer_upper+1,x      ; F014 9D 81 07
+    lda #$5B                        ; F01C A9 5B
+    sta .tile_buffer_lower+1,x      ; F01E 9D A1 07
+
+    ;txa                            ; F021 8A
+    ;clc                            ; F022 18
+    ;adc #$02                       ; F023 69 02
+    ;sta <.output_index              ; F025 85 90
+    inx
+    inx
+    stx <.output_index
 	FALL_THROUGH_TO textd_x.nop_code_handler
 ; ----------------------------------------------------------------------------
 textd_x.on_code_0b:	;;JUST_CONTINUE
