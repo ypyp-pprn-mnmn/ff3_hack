@@ -973,19 +973,35 @@ textd_x.on_code_13:	;;HANDLE_EXIT_IN_OWN
     sta <$85                            ; F25F 85 85
     lda #$39                            ; F261 A9 39
     jsr call_switch1stBank              ; F263 20 06 FF
-    ldy #$B0                            ; F266 A0 B0
-    lda [$84],y                         ; F268 B1 84
-    sec                                 ; F26A 38
-    sbc player.exp,x                    ; F26B FD 03 61
-    sta <$80                            ; F26E 85 80
-    iny                                 ; F270 C8
-    lda [$84],y                         ; F271 B1 84
-    sbc player.exp+1,x                  ; F273 FD 04 61
-    sta <$81                            ; F276 85 81
-    iny                                 ; F278 C8
-    lda [$84],y                         ; F279 B1 84
-    sbc player.exp+2,x                  ; F27B FD 05 61
-    sta <$82                            ; F27E 85 82
+    ;ldy #$B0                            ; F266 A0 B0
+    ldy #$b2
+;    lda [$84],y                         ; F268 B1 84
+;    sec                                 ; F26A 38
+;    sbc player.exp,x                    ; F26B FD 03 61
+;    sta <$80                            ; F26E 85 80
+;    iny                                 ; F270 C8
+;    lda [$84],y                         ; F271 B1 84
+;    sbc player.exp+1,x                  ; F273 FD 04 61
+;    sta <$81                            ; F276 85 81
+;    iny                                 ; F278 C8
+;    lda [$84],y                         ; F279 B1 84
+;    sbc player.exp+2,x                  ; F27B FD 05 61
+;    sta <$82                            ; F27E 85 82
+.push_next_exp:
+        lda [$84],y
+        pha
+        dey
+        cpy #$b0
+        bcs .push_next_exp
+    sec
+    ldy #$fd
+.calc_next_exp:
+        pla
+        sbc player.exp,x
+        sta $ff83,y
+        inx
+        iny
+        bne .calc_next_exp
 
     ;jsr switch_to_character_logics_bank ; F280 20 27 F7
     ;jsr $8B78                           ; F283 20 78 8B
