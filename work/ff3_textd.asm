@@ -641,41 +641,43 @@ textd_x.on_code_22:	;;HANDLE_EXIT_IN_OWN
 .case_22:
 	;;item name (with skipping the first byte), of which is stored in the backpack.
 	;;parameter = index in backpack
-    ;cmp #$22                            ; F1F9 C9 22
-    ;bne .break_case_f1f6                ; F1FB D0 F9
-    lda #$00                            ; F1FD A9 00
-    sta <$B9                            ; F1FF 85 B9
-    ;ldx <.parameter_byte                ; F201 A6 84
+    ;cmp #$22                       ; F1F9 C9 22
+    ;bne .break_case_f1f6           ; F1FB D0 F9
+    lda #$00                        ; F1FD A9 00
+    sta <$B9                        ; F1FF 85 B9
+    ;ldx <.parameter_byte           ; F201 A6 84
     ;;X has already have parameter byte. (set by the dispatcher)
-    lda party.backpack.item_id,x        ; F203 BD C0 60
-    ;beq .break_case_f1f6                ; F206 F0 EE
+    lda party.backpack.item_id,x    ; F203 BD C0 60
+    ;beq .break_case_f1f6           ; F206 F0 EE
 	beq textd_x.just_continue_2
-    sta <.parameter_byte                ; F208 85 84
-    lda <.output_index                    ; F20A A5 90
-    pha ; F20C 48
-    jsr textd.save_text_ptr             ; F20D 20 E4 F3
-    lda #$18                            ; F210 A9 18
+    sta <.parameter_byte            ; F208 85 84
+    lda <.output_index              ; F20A A5 90
+    pha                             ; F20C 48
+    jsr textd.save_text_ptr         ; F20D 20 E4 F3
+    lda #$18                        ; F210 A9 18
     jsr call_switch_2banks          ; F212 20 03 FF
-    lda <.parameter_byte                ; F215 A5 84
-    asl a                               ; F217 0A
-    tax ; F218 AA
-    bcs .L_F229                         ; F219 B0 0E
-    lda $8800,x                         ; F21B BD 00 88
-    clc ; F21E 18
-    adc #$01                            ; F21F 69 01
-    sta <.p_text                        ; F221 85 3E
-    lda $8801,x                         ; F223 BD 01 88
-    jmp .L_F234                         ; F226 4C 34 F2
+    lda <.parameter_byte            ; F215 A5 84
+    asl a                           ; F217 0A
+    tax                             ; F218 AA
+    bcs .L_F229                     ; F219 B0 0E
+    lda $8800,x                     ; F21B BD 00 88
+    clc                             ; F21E 18
+    adc #$01                        ; F21F 69 01
+    sta <.p_text                    ; F221 85 3E
+    lda $8801,x                     ; F223 BD 01 88
+    jmp .L_F234                     ; F226 4C 34 F2
 ; ----------------------------------------------------------------------------
 .L_F229:
-    lda $8900,x                         ; F229 BD 00 89
-    clc ; F22C 18
-    adc #$01                            ; F22D 69 01
-    sta <.p_text                             ; F22F 85 3E
-    lda $8901,x                         ; F231 BD 01 89
+    lda $8900,x                     ; F229 BD 00 89
+    clc                             ; F22C 18
+    adc #$01                        ; F22D 69 01
+    sta <.p_text                    ; F22F 85 3E
+    lda $8901,x                     ; F231 BD 01 89
 .L_F234:
-    adc #$00                            ; F234 69 00
-    ;jmp textd.draw_embedded_text                          ; F236 4C C5 F0
+    adc #$00                        ; F234 69 00
+    ;; S[0] = output index (save)
+    ;; A = high byte of the offset
+    ;jmp textd.draw_embedded_text   ; F236 4C C5 F0
 	bcc textd.draw_embedded_text
 ; ----------------------------------------------------------------------------
 textd_x.on_code_1b:	;;HANDLE_EXIT_IN_OWN
@@ -757,7 +759,9 @@ textd.deref_param_text_unsafe:
     lda $8800,x                         ; F0B2 BD 00 88
     sta <.p_text                        ; F0B5 85 3E
     lda $8801,x                         ; F0B7 BD 01 88
-    ;jmp textd.draw_embedded_text        ; F0BA 4C C5 F0
+    ;; S[0] = output index (save)
+    ;; A = high byte of the offset
+    ;jmp textd.draw_embedded_text       ; F0BA 4C C5 F0
 	bcc textd.draw_embedded_text
 ; ----------------------------------------------------------------------------
 .L_F0BD:
@@ -765,41 +769,45 @@ textd.deref_param_text_unsafe:
     sta <.p_text                        ; F0C0 85 3E
     lda $8901,x                         ; F0C2 BD 01 89
 .L_F0C5:
+    ;; S[0] = output index (save)
+    ;; A = high byte of the offset
 	FALL_THROUGH_TO textd.draw_embedded_text
 
+;; in:
+;;  A: high byte of text offset (from $18:8000)
+;;  S[0]: output index as temporary save (this function makes recusrive call on textd.draw_in_box)
 textd.draw_embedded_text:
 	DECLARE_TEXTD_VARIABLES
-;;textd.draw_embedded_text?
-    pha ; F0C5 48
-    and #$1F                            ; F0C6 29 1F
-    ora #$80                            ; F0C8 09 80
-    sta <.p_text+1                      ; F0CA 85 3F
-    pla ; F0CC 68
-    ;lsr a                               ; F0CD 4A
-    ;lsr a                               ; F0CE 4A
-    ;lsr a                               ; F0CF 4A
-    ;lsr a                               ; F0D0 4A
-    ;lsr a                               ; F0D1 4A
+    pha                             ; F0C5 48
+    and #$1F                        ; F0C6 29 1F
+    ora #$80                        ; F0C8 09 80
+    sta <.p_text+1                  ; F0CA 85 3F
+    pla                             ; F0CC 68
+    ;lsr a                          ; F0CD 4A
+    ;lsr a                          ; F0CE 4A
+    ;lsr a                          ; F0CF 4A
+    ;lsr a                          ; F0D0 4A
+    ;lsr a                          ; F0D1 4A
 	jsr shiftRight6+1
-    clc ; F0D2 18
-    adc #$18                            ; F0D3 69 18
+    clc                             ; F0D2 18
+    adc #$18                        ; F0D3 69 18
     jsr call_switch_2banks          ; F0D5 20 03 FF
-    jsr textd.draw_in_box     ; F0D8 20 FA EE
-    jsr textd.restore_text_ptr          ; F0DB 20 ED F3
+    jsr textd.draw_in_box           ; F0D8 20 FA EE
+    jsr textd.restore_text_ptr      ; F0DB 20 ED F3
 
 	;;pla => output index.
-    pla ; F0DE 68
-    tax ; F0DF AA
-    lda <$B9                            ; F0E0 A5 B9
-    beq .L_F0ED                         ; F0E2 F0 09
-    lda #$00                            ; F0E4 A9 00
-    sta <$B9                            ; F0E6 85 B9
+    pla                             ; F0DE 68
+    tax                             ; F0DF AA
+    lda <$B9                        ; F0E0 A5 B9
+    beq .L_F0ED                     ; F0E2 F0 09
+    lda #$00                        ; F0E4 A9 00
+    sta <$B9                        ; F0E6 85 B9
     ;;73 == 'X' (unusable mark)
-    lda #$73                            ; F0E8 A9 73
-    sta .tile_buffer_lower,x            ; F0EA 9D A0 07
+    lda #$73                        ; F0E8 A9 73
+    sta .tile_buffer_lower,x        ; F0EA 9D A0 07
 .L_F0ED:
 textd_x.just_continue_stepstone_1:
-    jmp textd.draw_in_box     ; F0ED 4C FA EE
+    jmp textd.draw_in_box           ; F0ED 4C FA EE
 	;bne textd.draw_in_box	;;HANDLE_EXIT_IN_OWN
 	;rts
 ; ----------------------------------------------------------------------------
@@ -943,7 +951,7 @@ textd_x.on_code_13:	;;HANDLE_EXIT_IN_OWN
 	bcs .continue_with_text
     sta <$80                            ; F253 85 80
     asl a                               ; F255 0A
-    clc ; F256 18
+    clc                                 ; F256 18
     adc <$80                            ; F257 65 80
     sta <$84                            ; F259 85 84
     lda #$00                            ; F25B A9 00
@@ -953,14 +961,14 @@ textd_x.on_code_13:	;;HANDLE_EXIT_IN_OWN
     jsr call_switch1stBank              ; F263 20 06 FF
     ldy #$B0                            ; F266 A0 B0
     lda [$84],y                         ; F268 B1 84
-    sec ; F26A 38
+    sec                                 ; F26A 38
     sbc player.exp,x                    ; F26B FD 03 61
     sta <$80                            ; F26E 85 80
-    iny ; F270 C8
+    iny                                 ; F270 C8
     lda [$84],y                         ; F271 B1 84
     sbc player.exp+1,x                  ; F273 FD 04 61
     sta <$81                            ; F276 85 81
-    iny ; F278 C8
+    iny                                 ; F278 C8
     lda [$84],y                         ; F279 B1 84
     sbc player.exp+2,x                  ; F27B FD 05 61
     sta <$82                            ; F27E 85 82
@@ -986,17 +994,19 @@ textd_x.on_code_13:	;;HANDLE_EXIT_IN_OWN
 ; ----------------------------------------------------------------------------
 .case_below_30:
     cmp #$00                            ; F299 C9 00
-    bne textd_x.code_10_13.param_01                        ; F29B D0 64
+    bne textd_x.code_10_13.param_01     ; F29B D0 64
 ;;case 0x00:	;;status
     ldx <.cached_param                  ; F29D A6 67
     lda player.status,x                 ; F29F BD 02 61
     and #$FE                            ; F2A2 29 FE
     bne .L_F2BB                         ; F2A4 D0 15
-    ldx <.output_index                    ; F2A6 A6 90
-    inc <.output_index                    ; F2A8 E6 90
-    inc <.output_index                    ; F2AA E6 90
+    ldx <.output_index                  ; F2A6 A6 90
+    inc <.output_index                  ; F2A8 E6 90
+    inc <.output_index                  ; F2AA E6 90
+    ;;5e = 'L'
     lda #$5E                            ; F2AC A9 5E
     sta .tile_buffer_lower,x            ; F2AE 9D A0 07
+    ;;5f = 'V'
     lda #$5F                            ; F2B1 A9 5F
     sta .tile_buffer_lower+1,x          ; F2B3 9D A1 07
     lda #$3e                            ; F2B6 A9 3E
@@ -1005,25 +1015,25 @@ textd_x.on_code_13:	;;HANDLE_EXIT_IN_OWN
 .L_F2BB:
     ldy #$16                            ; F2BB A0 16
     asl a                               ; F2BD 0A
-    bcs .L_F2D7                           ; F2BE B0 17
+    bcs .L_F2D7                         ; F2BE B0 17
     ldy #$17                            ; F2C0 A0 17
     asl a                               ; F2C2 0A
-    bcs .L_F2D7                           ; F2C3 B0 12
+    bcs .L_F2D7                         ; F2C3 B0 12
     ldy #$1B                            ; F2C5 A0 1B
     asl a                               ; F2C7 0A
-    bcs .L_F2D7                           ; F2C8 B0 0D
-    iny ; F2CA C8
+    bcs .L_F2D7                         ; F2C8 B0 0D
+    iny                                 ; F2CA C8
     asl a                               ; F2CB 0A
-    bcs .L_F2D7                           ; F2CC B0 09
-    iny ; F2CE C8
+    bcs .L_F2D7                         ; F2CC B0 09
+    iny                                 ; F2CE C8
     asl a                               ; F2CF 0A
-    bcs .L_F2D7                           ; F2D0 B0 05
-    iny ; F2D2 C8
+    bcs .L_F2D7                         ; F2D0 B0 05
+    iny                                 ; F2D2 C8
     asl a                               ; F2D3 0A
-    bcs .L_F2D7                           ; F2D4 B0 01
-    iny ; F2D6 C8
+    bcs .L_F2D7                         ; F2D4 B0 01
+    iny                                 ; F2D6 C8
 .L_F2D7:
-    tya ; F2D7 98
+    tya                                 ; F2D7 98
 ;;textd.deref_text_id
 
 textd.deref_text_id:
@@ -1051,8 +1061,10 @@ textd.deref_text_id:
     lda <.output_index                             ; F2FA A5 90
     pha ; F2FC 48
     txa ; F2FD 8A
+    ;; S[0] = output index (save)
+    ;; A = high byte of the offset
     jmp textd.draw_embedded_text           ; F2FE 4C C5 F0
-	;jmp textd_x.draw_embedded_text_and_continue
+	
 ; ----------------------------------------------------------------------------
 textd_x.code_10_13.param_01:	;;job name
 	DECLARE_TEXTD_VARIABLES
@@ -1064,7 +1076,7 @@ textd_x.code_10_13.param_01:	;;job name
     clc ; F30A 18
     adc #$E2                            ; F30B 69 E2
     jmp textd.deref_text_id             ; F30D 4C D8 F2
-	;jmp textd_x.deref_text_id_and_continue
+	
 ; ----------------------------------------------------------------------------
 textd_x.code_10_13.param_02:	;;player name
 	DECLARE_TEXTD_VARIABLES
@@ -1118,12 +1130,12 @@ textd_x.code_10_13.param_03_07:
     tax ; F361 AA
     lda .L_F36D,x                         ; F362 BD 6D F3
     jmp textd.deref_text_id             ; F365 4C D8 F2
-	;jmp textd_x.deref_text_id_and_continue
+
 ; ----------------------------------------------------------------------------
 .L_F368:
     sta <.parameter_byte                ; F368 85 84
     jmp textd.deref_param_text_unsafe   ; F36A 4C A1 F0
-	;jmp textd_x.deref_param_text_unsafe_and_continue
+	
 ; ----------------------------------------------------------------------------
 .L_F36D:
     .db $dd, $de, $df, $e0, $e1, $e1
