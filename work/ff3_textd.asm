@@ -5,7 +5,12 @@
 ;   re-implementation of the text-driver 'textd' functions
 ;
 ;======================================================================================================
-	
+
+STOMACH_LEFT_COLUMN_NAME = $01  ;;original = $01
+STOMACH_RIGHT_COLUMN_NAME = $0f  ;;original = $0f
+STOMACH_LEFT_COLUMN_AMOUNT = $0a ;;original = $0a
+STOMACH_RIGHT_COLUMN_AMOUNT = $18 ;;original = $18
+
 textd.patch_begin:
 	.ifdef FAST_FIELD_WINDOW
 	;INIT_PATCH $3f,$eefa,$f38a
@@ -200,6 +205,7 @@ textd_x.just_invoke_handlers:
 		;pla ; F03E 68
 .dispatch_handler:
 	pla
+    ;;A = code byte, X = param byte (if any)
 	jmp [.p_handler]
 ; ----------------------------------------------------------------------------
 ;.control_char:
@@ -402,7 +408,8 @@ textd_x.on_code_1c:	;;CONTINUE_WITH_TEXT
 	;; at the index specified by parameter
     ;cmp #$1C                            ; F13F C9 1C
     ;bne .case_1d                        ; F141 D0 09
-    ldx <.parameter_byte                ; F143 A6 84
+    ;ldx <.parameter_byte                ; F143 A6 84
+    ;;X has already have parameter byte.
     lda party.backpack.item_count,x     ; F145 BD E0 60
     ;beq .break_case_f111                ; F148 F0 C7
 	beq textd_x.nop_code_handler
@@ -414,11 +421,15 @@ textd_x.on_code_1d:	;;CONTINUE_WITH_TEXT
 .case_1d:	;;fatty choccobo. param: index in the list
     ;cmp #$1D                            ; F14C C9 1D
     ;bne .case_1e                        ; F14E D0 2A
-    lda <.parameter_byte                ; F150 A5 84
+    ;lda <.parameter_byte                ; F150 A5 84
+    ;;X has already have parameter byte.
+    txa
     lsr a                               ; F152 4A
-    lda #$0A                            ; F153 A9 0A
+    ;lda #$0A                            ; F153 A9 0A
+    lda #STOMACH_LEFT_COLUMN_AMOUNT
     bcc .L_F159                         ; F155 90 02
-    lda #$18                            ; F157 A9 18
+        ;lda #$18                            ; F157 A9 18
+        lda #STOMACH_RIGHT_COLUMN_AMOUNT
 .L_F159:
     sta <.output_index                  ; F159 85 90
     ldx <.parameter_byte                ; F15B A6 84
@@ -453,7 +464,8 @@ textd_x.on_code_21:	;;CONTINUE_WITH_TEXT
 	;;item price listed in shop. param = index.
     ;cmp #$21                            ; F1D1 C9 21
     ;bne .case_22                        ; F1D3 D0 24
-    ldx <.parameter_byte                ; F1D5 A6 84
+    ;ldx <.parameter_byte                ; F1D5 A6 84
+    ;;X has already have parameter byte.
 	;;$7b80 = item list in shop
     lda menu.shop_offerings,x           ; F1D7 BD 80 7B
     ;beq .break_case_f1f6                ; F1DA F0 1A
@@ -530,8 +542,10 @@ textd_x.on_code_21:	;;CONTINUE_WITH_TEXT
 textd_x.on_code_14:	;;JUST_CONTINUE
 	DECLARE_TEXTD_VARIABLES
 ;;case 0x14:	;; padding, offset dest buffer by the number specified in parameter byte
-    lda <.parameter_byte                ; F048 A5 84
-    sta <.output_index                  ; F04A 85 90
+    ;lda <.parameter_byte                ; F048 A5 84
+    ;;X has already have parameter byte.
+    ;sta <.output_index                  ; F04A 85 90
+    stx <.output_index
     ;jmp textd.draw_in_box     ; F04C 4C FA EE
 	rts
 ; ----------------------------------------------------------------------------
@@ -548,47 +562,76 @@ textd_x.on_code_17:	;;JUST_CONTINUE
     ;bcs .case_18	;L_F09B             ; F051 B0 48
     sec ; F053 38
     sbc #$15                            ; F054 E9 15
-    clc ; F056 18
+    pha
+
+    lda [.p_text],y                     ; F063 B1 3E
+    sta <$82                            ; F065 85 82
+    iny                                 ; F067 C8
+    lda [.p_text],y                     ; F068 B1 3E
+    sta <$83                            ; F06A 85 83
+
+    ;ldx <.parameter_byte
+    ;;X has already have parameter byte. (set by the dispatcher)
+    pla
+    FALL_THROUGH_TO textd_x.init_menu_item
+
+;;in:
+;; $82 = 1st byte of the label
+;; $83 = 2nd byte of the label
+;; A = char code; X = param byte
+textd_x.init_menu_item:
+    DECLARE_TEXTD_VARIABLES
+
+    stx <.output_index
+    clc                                 ; F056 18
     adc #$78                            ; F057 69 78
     sta <$81                            ; F059 85 81
     lda #$00                            ; F05B A9 00
     sta <$80                            ; F05D 85 80
-    lda <.parameter_byte                ; F05F A5 84
-    sta <.output_index                  ; F061 85 90
-    lda [.p_text],y                     ; F063 B1 3E
-    sta <$82                            ; F065 85 82
-    iny ; F067 C8
-    lda [.p_text],y                     ; F068 B1 3E
-    sta <$83                            ; F06A 85 83
+    ;lda <.parameter_byte               ; F05F A5 84
+    ;sta <.output_index                 ; F061 85 90
+    ;lda [.p_text],y                     ; F063 B1 3E
+    ;sta <$82                            ; F065 85 82
+    ;iny                                 ; F067 C8
+    ;lda [.p_text],y                     ; F068 B1 3E
+    ;sta <$83                            ; F06A 85 83
     ldy #$F1                            ; F06C A0 F1
     lda [$80],y                         ; F06E B1 80
     ldx <.menu_item_continue_building   ; F070 A6 1E
     bne .L_F077                         ; F072 D0 03
     inc <.menu_item_continue_building   ; F074 E6 1E
-    txa ; F076 8A
+    txa                                 ; F076 8A
 .L_F077:
-    tax ; F077 AA
-    clc ; F078 18
+    tax                                 ; F077 AA
+    clc                                 ; F078 18
     adc #$04                            ; F079 69 04
+    ;;store back item counter to 78f1/78f1/7af1
     sta [$80],y                         ; F07B 91 80
-    txa ; F07D 8A
-    tay ; F07E A8
-    lda <.parameter_byte                ; F07F A5 84
-    clc ; F081 18
+    txa                                 ; F07D 8A
+    tay                                 ; F07E A8
+    ;; calculate X offset. [$80].+00
+    ;lda <.parameter_byte                ; F07F A5 84
+    ;; this value is set on this function's entry
+    ;; for the handler for 0x15-0x17, this is identical to the 'parameter byte'
+    lda <.output_index
+    clc                                 ; F081 18
     adc <$97                            ; F082 65 97
     sta [$80],y                         ; F084 91 80
+    ;; calculate Y offset. [$80].+01
     lda <$98                            ; F086 A5 98
-    clc ; F088 18
+    clc                                 ; F088 18
     adc <.lines_drawn                   ; F089 65 1F
-    iny ; F08B C8
+    iny                                 ; F08B C8
     sta [$80],y                         ; F08C 91 80
-    iny ; F08E C8
+    ;; store the first byte. [$80].+02
+    iny                                 ; F08E C8
     lda <$82                            ; F08F A5 82
     sta [$80],y                         ; F091 91 80
+    ;; store the second byte.[$80].+03
     lda <$83                            ; F093 A5 83
-    iny ; F095 C8
+    iny                                 ; F095 C8
     sta [$80],y                         ; F096 91 80
-    ;jmp textd.draw_in_box     ; F098 4C FA EE
+    ;jmp textd.draw_in_box              ; F098 4C FA EE
 	rts
 ; ----------------------------------------------------------------------------
 textd_x.on_code_22:	;;HANDLE_EXIT_IN_OWN
@@ -600,7 +643,8 @@ textd_x.on_code_22:	;;HANDLE_EXIT_IN_OWN
     ;bne .break_case_f1f6                ; F1FB D0 F9
     lda #$00                            ; F1FD A9 00
     sta <$B9                            ; F1FF 85 B9
-    ldx <.parameter_byte                ; F201 A6 84
+    ;ldx <.parameter_byte                ; F201 A6 84
+    ;;X has already have parameter byte. (set by the dispatcher)
     lda party.backpack.item_id,x        ; F203 BD C0 60
     ;beq .break_case_f1f6                ; F206 F0 EE
 	beq textd_x.just_continue_2
@@ -639,7 +683,29 @@ textd_x.on_code_1b:	;;HANDLE_EXIT_IN_OWN
 	;;param: index in the stomach.
     ;cmp #$1B                            ; F128 C9 1B
     ;bne .case_1c                        ; F12A D0 13
-    jsr textd.setup_output_ptr_to_next_column ; F12C 20 AC F3
+    ;jsr textd.setup_output_ptr_to_next_column ; F12C 20 AC F3
+    ;	lda <.parameter_byte                ; F3AC A5 84
+    ;	lsr a                               ; F3AE 4A
+    ;	lda #$01                            ; F3AF A9 01
+    ;	bcc .L_F3B5                         ; F3B1 90 02
+    ;	lda #$0F                            ; F3B3 A9 0F
+    ;; store char code byte as 1st byte of the label
+    sta <$82
+    ;; store param byte as 2nd byte of the label
+    ;; X has already have parameter byte. (set by the dispatcher)
+    ;lda <.parameter_byte
+    txa
+    sta <$83
+    lsr a
+    ;ldx #1
+    ldx #STOMACH_LEFT_COLUMN_NAME
+    bcc .left_column
+        ;ldx #$0f
+        ldx #STOMACH_RIGHT_COLUMN_NAME
+.left_column:
+    lda #2
+
+    jsr textd_x.init_menu_item
     ldx <.parameter_byte                ; F12F A6 84
     lda menu.available_items_in_stomach,x ; F131 BD 00 7C
     ;beq .break_case_f111                ; F134 F0 DB
@@ -651,7 +717,8 @@ textd_x.just_continue_2:
     lda #$00                            ; F138 A9 00
     sta <$B9                            ; F13A 85 B9
     ;jmp textd.deref_param_text          ; F13C 4C 9D F0
-	beq textd.deref_param_text
+	;beq textd.deref_param_text
+    FALL_THROUGH_TO textd.deref_param_text
 ; ----------------------------------------------------------------------------
 textd.deref_param_text:
 textd_x.on_code_18:	;;HANDLE_EXIT_IN_OWN
@@ -663,6 +730,9 @@ textd_x.on_code_18:	;;HANDLE_EXIT_IN_OWN
 .L_F09D:
 ;;textd.f09d_deref_param_text
 ;;in $b9?
+    ;; X has already have parameter byte. if the call made from the dispatcher.
+    ;; however, this handler has also been called as function from another handler
+    ;; so we can't assume X has proper value.
     lda <.parameter_byte                ; F09D A5 84
     ;beq .L_F0ED                         ; F09F F0 4C
 	;beq textd_x.nop_code_handler
@@ -737,7 +807,8 @@ textd_x.on_code_19:	;;HANDLE_EXIT_IN_OWN
 	;;param: index in the shop offerings list.
     ;cmp #$19                            ; F0F0 C9 19
     ;bne .case_1a                        ; F0F2 D0 20
-    ldx <.parameter_byte                ; F0F4 A6 84
+    ;ldx <.parameter_byte                ; F0F4 A6 84
+    ;; X has already have parameter byte. (set by the dispatcher)
     lda menu.shop_offerings,x           ; F0F6 BD 80 7B
     sta <.parameter_byte                ; F0F9 85 84
     bne .L_F10A                         ; F0FB D0 0D
@@ -767,7 +838,8 @@ textd_x.on_code_1a:	;;HANDLE_EXIT_IN_OWN
     ;bne .case_1b                        ; F116 D0 10
     lda #$00                            ; F118 A9 00
     sta <$B9                            ; F11A 85 B9
-    ldx <.parameter_byte                ; F11C A6 84
+    ;ldx <.parameter_byte                ; F11C A6 84
+    ;; X has already have parameter byte. (set by the dispatcher)
     lda party.backpack.item_id,x        ; F11E BD C0 60
     ;beq .break_case_f111                ; F121 F0 EE
 	beq textd_x.just_continue_stepstone_1
@@ -805,7 +877,8 @@ textd_x.on_code_1f:	;;CONTINUE_WITH_TEXT
 	;;param: index in the list.(ie, job_id)
     ;cmp #$1F                            ; F19A C9 1F
     ;bne .case_20                        ; F19C D0 1D
-    ldx <.parameter_byte                ; F19E A6 84
+    ;ldx <.parameter_byte                ; F19E A6 84
+    ;; X has already have parameter byte. (set by the dispatcher)
     lda $7200,x                         ; F1A0 BD 00 72
     sta <$80                            ; F1A3 85 80
     ldx <.output_index                  ; F1A5 A6 90
@@ -825,7 +898,8 @@ textd_x.on_code_20:	;;HANDLE_EXIT_IN_OWN
 	;;item name referenced in equip selection window
     ;cmp #$20                            ; F1BB C9 20
     ;bne .case_21                        ; F1BD D0 12
-    ldx <.parameter_byte                ; F1BF A6 84
+    ;ldx <.parameter_byte                ; F1BF A6 84
+    ;; X has already have parameter byte. (set by the dispatcher)
     lda party.backpack.item_id,x        ; F1C1 BD C0 60
     ;beq .break_case_f1f6                ; F1C4 F0 30
 	beq textd_x.just_continue_stepstone_1
@@ -1168,8 +1242,8 @@ textd_x.ctrl_code_handlers.high_and_flags:
 	.db ((HIGH(textd_x.on_code_26) - HIGH(textd_x.code_handlers_base)) & $07) | ((textd_x.JUST_CONTINUE)<<4)
 	.db ((HIGH(textd_x.on_code_27) - HIGH(textd_x.code_handlers_base)) & $07) | ((textd_x.JUST_CONTINUE)<<4)
 ; -------------------------------------------------------------------------------------------------
-	VERIFY_PC $f38a
-    INIT_PATCH $3f,$f38a,$f3ac
+	;VERIFY_PC $f38a
+    ;INIT_PATCH $3f,$f38a,$f3ac
 
 ;;# $3f:f38a field.get_max_available_job_id
 ;;> calculates the maximum job_id available to palyer, and returns it in the register A.
@@ -1185,28 +1259,40 @@ field.get_max_available_job_id:
 ;; ---
     lda party.job_flags                 ; F38A AD 21 60
     and #$1F                            ; F38D 29 1F
-    ldx #$00                            ; F38F A2 00
-    lsr a                               ; F391 4A
-    bcc .L_F3AA                         ; F392 90 16
-    ldx #$05                            ; F394 A2 05
-    lsr a                               ; F396 4A
-    bcc .L_F3AA                         ; F397 90 11
-    ldx #$09                            ; F399 A2 09
-    lsr a                               ; F39B 4A
-    bcc .L_F3AA                         ; F39C 90 0C
-    ldx #$10                            ; F39E A2 10
-    lsr a                               ; F3A0 4A
-    bcc .L_F3AA                         ; F3A1 90 07
-    ldx #$13                            ; F3A3 A2 13
-    lsr a                               ; F3A5 4A
-    bcc .L_F3AA                         ; F3A6 90 02
-    ldx #$30                            ; F3A8 A2 30
-.L_F3AA:
-    txa                                 ; F3AA 8A
-    rts                                 ; F3AB 60
-    VERIFY_PC $f3ac
+    ldx #$ff
+.loop:
+    inx
+    lsr a
+    bcs .loop
+    lda .available_jobs,x
+    rts
+    
+;    ldx #$00                            ; F38F A2 00
+;    lsr a                               ; F391 4A
+;    bcc .L_F3AA                         ; F392 90 16
+;    ldx #$05                            ; F394 A2 05
+;    lsr a                               ; F396 4A
+;    bcc .L_F3AA                         ; F397 90 11
+;    ldx #$09                            ; F399 A2 09
+;    lsr a                               ; F39B 4A
+;    bcc .L_F3AA                         ; F39C 90 0C
+;    ldx #$10                            ; F39E A2 10
+;    lsr a                               ; F3A0 4A
+;    bcc .L_F3AA                         ; F3A1 90 07
+;    ldx #$13                            ; F3A3 A2 13
+;    lsr a                               ; F3A5 4A
+;    bcc .L_F3AA                         ; F3A6 90 02
+;    ldx #$30                            ; F3A8 A2 30
+;.L_F3AA:
+;    txa                                 ; F3AA 8A
+;    rts                                 ; F3AB 60
+.available_jobs:
+    .db $00,$05,$09,$10,$13,$30
+
+
+    ;VERIFY_PC $f3ac
 ; =================================================================================================
-    INIT_PATCH $3f,$f3ac,$f3e4
+    ;INIT_PATCH $3f,$f3ac,$f3e4
 ;;# $3f:f3ac textd.setup_output_ptr_to_next_column
 ;;> co-routine of charcode 0x1b, 'item name of which is stored in the fatty choccobo'.
 ;;
@@ -1226,39 +1312,39 @@ field.get_max_available_job_id:
 ;;
 ;;### callers:
 ;;+	`jsr $F3AC ; F12C 20 AC F3` @ textd.eval_replacement (case 0x1b)
-textd.setup_output_ptr_to_next_column:
-    DECLARE_TEXTD_VARIABLES
-
-	lda <.parameter_byte                ; F3AC A5 84
-	lsr a                               ; F3AE 4A
-	lda #$01                            ; F3AF A9 01
-	bcc .L_F3B5                         ; F3B1 90 02
-	lda #$0F                            ; F3B3 A9 0F
-.L_F3B5:
-	sta <.output_index                  ; F3B5 85 90
-	ldx $7AF1                           ; F3B7 AE F1 7A
-	lda <.menu_item_continue_building   ; F3BA A5 1E
-	bne .L_F3C2                         ; F3BC D0 04
-	inc <.menu_item_continue_building   ; F3BE E6 1E
-	ldx #$00                            ; F3C0 A2 00
-.L_F3C2:
-	txa ; F3C2 8A
-	clc ; F3C3 18
-	adc #$04                            ; F3C4 69 04
-	sta $7AF1                           ; F3C6 8D F1 7A
-	lda <.output_index                  ; F3C9 A5 90
-	clc ; F3CB 18
-	adc <$97                            ; F3CC 65 97
-	sta $7A00,x                         ; F3CE 9D 00 7A
-	lda <$98                            ; F3D1 A5 98
-	clc ; F3D3 18
-	adc <.lines_drawn                   ; F3D4 65 1F
-	sta $7A01,x                         ; F3D6 9D 01 7A
-	lda #$1B                            ; F3D9 A9 1B
-	sta $7A02,x                         ; F3DB 9D 02 7A
-	lda <.parameter_byte                ; F3DE A5 84
-	sta $7A03,x                         ; F3E0 9D 03 7A
-	rts ; F3E3 60
+;textd.setup_output_ptr_to_next_column:
+;    DECLARE_TEXTD_VARIABLES
+;
+;	lda <.parameter_byte                ; F3AC A5 84
+;	lsr a                               ; F3AE 4A
+;	lda #$01                            ; F3AF A9 01
+;	bcc .L_F3B5                         ; F3B1 90 02
+;	lda #$0F                            ; F3B3 A9 0F
+;.L_F3B5:
+;	sta <.output_index                  ; F3B5 85 90
+;	ldx $7AF1                           ; F3B7 AE F1 7A
+;	lda <.menu_item_continue_building   ; F3BA A5 1E
+;	bne .L_F3C2                         ; F3BC D0 04
+;	inc <.menu_item_continue_building   ; F3BE E6 1E
+;	ldx #$00                            ; F3C0 A2 00
+;.L_F3C2:
+;	txa ; F3C2 8A
+;	clc ; F3C3 18
+;	adc #$04                            ; F3C4 69 04
+;	sta $7AF1                           ; F3C6 8D F1 7A
+;	lda <.output_index                  ; F3C9 A5 90
+;	clc ; F3CB 18
+;	adc <$97                            ; F3CC 65 97
+;	sta $7A00,x                         ; F3CE 9D 00 7A
+;	lda <$98                            ; F3D1 A5 98
+;	clc ; F3D3 18
+;	adc <.lines_drawn                   ; F3D4 65 1F
+;	sta $7A01,x                         ; F3D6 9D 01 7A
+;	lda #$1B                            ; F3D9 A9 1B
+;	sta $7A02,x                         ; F3DB 9D 02 7A
+;	lda <.parameter_byte                ; F3DE A5 84
+;	sta $7A03,x                         ; F3E0 9D 03 7A
+;	rts ; F3E3 60
     VERIFY_PC $f3e4
 ; =================================================================================================
 textd.patch_end:
