@@ -2,7 +2,7 @@
 ;   ff3_textd.asm
 ;
 ; description:
-;   re-implementation of text-driver 'textd' functions
+;   re-implementation of the text-driver 'textd' functions
 ;
 ;======================================================================================================
 	

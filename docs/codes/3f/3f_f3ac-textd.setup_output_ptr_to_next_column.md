@@ -3,6 +3,7 @@
 
 
 
+
 # $3f:f3ac textd.setup_output_ptr_to_next_column
 > co-routine of charcode 0x1b, 'item name of which is stored in the fatty choccobo'.
 
@@ -14,11 +15,11 @@
 +	in u8 $97: X scroll of window box?
 +	in u8 $98: Y scroll of window box?
 +	in,out u8 $7af1: offset into $7a00.
-+	out stomach_item $7a00[?]: 4-tuple describing item in the stomach. where:
++	out selectable_item $7a00[?]: 4-tuple describing item in the menu. where:
 	- +00: X offset into output buffer? $90 + $97.
 	- +01: Y offset into output buffer? $1f + $98.
-	- +02: always 0x1b.
-	- +03: item_id, from $84.
+	- +02: 1st byte of the char code directing a label built with the menu item. in this function, it is always 0x1b.
+	- +03: 2nd byte of the char code directing a label built with the menu item. in this function, it is item_id, from $84.
 
 ### callers:
 +	`jsr $F3AC ; F12C 20 AC F3` @ textd.eval_replacement (case 0x1b)
@@ -68,6 +69,7 @@ LF3C2:
 */
 }
 ```
+
 
 
 

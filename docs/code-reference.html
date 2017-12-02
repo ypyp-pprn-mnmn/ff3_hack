@@ -8,7 +8,7 @@
     <meta name="generator" content="pandoc">
     <meta name="description" content>
     <meta name="author" content="ypyp-pprn-mnmn (aka “301”)">
-    <!-- generated-at 2017-12-02 01:22:36+0900 -->
+    <!-- generated-at 2017-12-02 09:09:59+0900 -->
     <title>FF3@FC Original Code Documentation</title>
 
     <!-- Bootstrap core CSS -->
@@ -17688,12 +17688,12 @@ sta $4014   ;DMA</code></pre></li>
 <li>in u8 $97: X scroll of window box?</li>
 <li>in u8 $98: Y scroll of window box?</li>
 <li>in,out u8 $7af1: offset into $7a00.</li>
-<li>out stomach_item $7a00[?]: 4-tuple describing item in the stomach. where:
+<li>out selectable_item $7a00[?]: 4-tuple describing item in the menu. where:
 <ul>
 <li>+00: X offset into output buffer? $90 + $97.</li>
 <li>+01: Y offset into output buffer? $1f + $98.</li>
-<li>+02: always 0x1b.</li>
-<li>+03: item_id, from $84.</li>
+<li>+02: 1st byte of the char code directing a label built with the menu item. in this function, it is always 0x1b.</li>
+<li>+03: 2nd byte of the char code directing a label built with the menu item. in this function, it is item_id, from $84.</li>
 </ul></li>
 </ul>
 <h3 id="callers-31">callers:</h3>
