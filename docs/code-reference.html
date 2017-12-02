@@ -8,7 +8,7 @@
     <meta name="generator" content="pandoc">
     <meta name="description" content>
     <meta name="author" content="ypyp-pprn-mnmn (aka “301”)">
-    <!-- generated-at 2017-12-02 09:09:59+0900 -->
+    <!-- generated-at 2017-12-03 05:46:47+0900 -->
     <title>FF3@FC Original Code Documentation</title>
 
     <!-- Bootstrap core CSS -->
@@ -17647,10 +17647,20 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb597-62" data-line-number="62"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ff38a-field.get_max_available_job_id">$3f:f38a field.get_max_available_job_id</h1>
+<blockquote>
+<p>calculates the maximum job_id available to palyer, and returns it in the register A.</p>
+</blockquote>
 <h3 id="args-236">args:</h3>
 <ul>
 <li>in u8 $6021 : event flags, […fffff] where lower 5 bits represents each Crystal event</li>
+<li>out u8 A : maximum available job_id in accordance with game flags</li>
 </ul>
+<h3 id="callers-31">callers:</h3>
+<ul>
+<li><code>jsr field.get_max_available_job_id  ; F17E 20 8A F3</code> @ textd.eval_replacement (handler for 0x1e)</li>
+</ul>
+<h3 id="notes-50">notes:</h3>
+<p>this function has also set X to the same value of A on exit, however, no callers uses X as such.</p>
 <h3 id="code-253">code:</h3>
 <pre class="sourceCode js" id="cb598"><code class="sourceCode javascript"><div class="sourceLine" id="cb598-1" data-line-number="1"><span class="op">{</span></div>
 <div class="sourceLine" id="cb598-2" data-line-number="2">    a <span class="op">=</span> $6021 <span class="op">&amp;</span> <span class="bn">0x1f</span><span class="op">;</span></div>
@@ -17696,7 +17706,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>+03: 2nd byte of the char code directing a label built with the menu item. in this function, it is item_id, from $84.</li>
 </ul></li>
 </ul>
-<h3 id="callers-31">callers:</h3>
+<h3 id="callers-32">callers:</h3>
 <ul>
 <li><code>jsr $F3AC ; F12C 20 AC F3</code> @ textd.eval_replacement (case 0x1b)</li>
 </ul>
@@ -17704,7 +17714,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li>none. all variables seem to be either set or referenced by functions outside.</li>
 </ul>
-<h3 id="notes-50">notes:</h3>
+<h3 id="notes-51">notes:</h3>
 <p>this function is very similar (or almost identical) to the logic embedded in the handler for char codes 0x15-0x17. only the difference here is that this function expects the parameter byte ($84) contains an index into the item in stomach, whereas another one expects offset to next column.</p>
 <h3 id="pseudocode-53">(pseudo)code:</h3>
 <pre class="sourceCode js" id="cb599"><code class="sourceCode javascript"><div class="sourceLine" id="cb599-1" data-line-number="1"><span class="op">{</span></div>
@@ -17751,7 +17761,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>in string* $3e: pointer to save</li>
 <li>out string* $99: saved pointer</li>
 </ul>
-<h3 id="callers-32">callers:</h3>
+<h3 id="callers-33">callers:</h3>
 <ul>
 <li><code>F0A4 20 E4 F3</code></li>
 <li><code>F20D 20 E4 F3</code></li>
@@ -17760,7 +17770,7 @@ sta $4014   ;DMA</code></pre></li>
 </ul>
 <h3 id="local-variables-23">local variables:</h3>
 <p>none.</p>
-<h3 id="notes-51">notes:</h3>
+<h3 id="notes-52">notes:</h3>
 <h3 id="pseudocode-54">(pseudo)code:</h3>
 <pre class="sourceCode js" id="cb600"><code class="sourceCode javascript"><div class="sourceLine" id="cb600-1" data-line-number="1"><span class="op">{</span></div>
 <div class="sourceLine" id="cb600-2" data-line-number="2"><span class="co">/*</span></div>
@@ -17785,14 +17795,14 @@ sta $4014   ;DMA</code></pre></li>
 <li>in string* $99: saved pointer previously saved with <code>$3f:f3e4 textd.save_text_ptr</code>.</li>
 <li>in u8 $93: bank number which the text pointed to is stored</li>
 </ul>
-<h3 id="callers-33">callers:</h3>
+<h3 id="callers-34">callers:</h3>
 <ul>
 <li><code>F342 20 ED F3</code></li>
 <li><code>F0DB 20 ED F3</code></li>
 </ul>
 <h3 id="local-variables-24">local variables:</h3>
 <p>none.</p>
-<h3 id="notes-52">notes:</h3>
+<h3 id="notes-53">notes:</h3>
 <h3 id="pseudocode-55">(pseudo)code:</h3>
 <pre class="sourceCode js" id="cb601"><code class="sourceCode javascript"><div class="sourceLine" id="cb601-1" data-line-number="1"><span class="op">{</span></div>
 <div class="sourceLine" id="cb601-2" data-line-number="2"><span class="co">/*</span></div>
@@ -17935,14 +17945,14 @@ sta $4014   ;DMA</code></pre></li>
 <li><a href="#in-2">in</a> x : item_id</li>
 <li><a href="#out-2">out</a> u24 $80 : = $10:9e00[x]</li>
 </ul>
-<h3 id="callers-34">callers:</h3>
+<h3 id="callers-35">callers:</h3>
 <ul>
 <li>$3d:b230 @ floor::shop::getItemValues</li>
 <li>$3d:b271 @ floor::shop::getItemValue</li>
 <li>$3f:ef73 @ field::eval_replacement</li>
 <li>$3f:f5b8 @ floor::getTreasure</li>
 </ul>
-<h3 id="notes-53">notes:</h3>
+<h3 id="notes-54">notes:</h3>
 <p>caller expects y has been unchanged</p>
 <h3 id="code-257">code:</h3>
 <pre class="sourceCode js" id="cb605"><code class="sourceCode javascript"><div class="sourceLine" id="cb605-1" data-line-number="1"><span class="op">{</span></div>
@@ -17966,7 +17976,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li><a href="#in-2">in</a> u24 $80 : gil</li>
 </ul>
-<h3 id="callers-35">callers:</h3>
+<h3 id="callers-36">callers:</h3>
 <ul>
 <li>$3d:b1c2 @ floor::shop::</li>
 <li>$3f:f5bb @ floor::getTreasure</li>
@@ -18090,7 +18100,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb611-42" data-line-number="42"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ff727-switch_to_character_logics_bank">$3f:f727 switch_to_character_logics_bank</h1>
-<h3 id="notes-54">notes:</h3>
+<h3 id="notes-55">notes:</h3>
 <p>This logic’s implementation is identical to <code>$3f:eb28 switch_to_floor_logics_bank</code>. It might not be a bug, as how the banks are arranged to place the logic is completely physical matter, hence it is irrevant to programmers’ original intention.</p>
 <h3 id="code-264">code:</h3>
 <pre class="sourceCode js" id="cb612"><code class="sourceCode javascript"><div class="sourceLine" id="cb612-1" data-line-number="1"><span class="op">{</span></div>
@@ -18201,7 +18211,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li>see [$3f:f897 ppud.up<em>load</em>_palette]</li>
 </ul>
-<h3 id="callers-36">callers:</h3>
+<h3 id="callers-37">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -18209,7 +18219,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li>none</li>
 </ul>
-<h3 id="notes-55">notes:</h3>
+<h3 id="notes-56">notes:</h3>
 <h3 id="pseudocode-56">(pseudo)code:</h3>
 <pre class="sourceCode js" id="cb620"><code class="sourceCode javascript"><div class="sourceLine" id="cb620-1" data-line-number="1"><span class="op">{</span></div>
 <div class="sourceLine" id="cb620-2" data-line-number="2">    <span class="va">ppud</span>.<span class="at">await_nmi_completion</span>()<span class="op">;</span>    <span class="co">//$fb80</span></div>
@@ -18413,7 +18423,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li><a href="#in-2">in</a> u8 A : 9d53_param</li>
 </ul>
-<h3 id="notes-56">notes:</h3>
+<h3 id="notes-57">notes:</h3>
 <p>各種ゲームシーン表示系のルーチンから呼ばれる</p>
 <h3 id="code-282">code:</h3>
 <pre class="sourceCode js" id="cb631"><code class="sourceCode javascript"><div class="sourceLine" id="cb631-1" data-line-number="1"><span class="op">{</span></div>
@@ -18437,7 +18447,7 @@ sta $4014   ;DMA</code></pre></li>
 <li><a href="#in-2">in</a> x : backgroound sight graphics</li>
 <li><a href="#in-2">in</a> y : battleMode?</li>
 </ul>
-<h3 id="notes-57">notes:</h3>
+<h3 id="notes-58">notes:</h3>
 <pre><code>least value of S = $1a = $20 - 6</code></pre>
 <h3 id="code-284">code:</h3>
 <pre class="sourceCode js" id="cb634"><code class="sourceCode javascript"><div class="sourceLine" id="cb634-1" data-line-number="1"><span class="op">{</span></div>
@@ -18532,7 +18542,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li>[in,out] u8</li>
 </ul>
-<h3 id="notes-58">notes:</h3>
+<h3 id="notes-59">notes:</h3>
 <p>戦闘中のハンドラ。 バンク変更中を考慮している。</p>
 <h3 id="code-289">code:</h3>
 <pre class="sourceCode js" id="cb639"><code class="sourceCode javascript"><div class="sourceLine" id="cb639-1" data-line-number="1"><span class="op">{</span></div>
@@ -18569,7 +18579,7 @@ sta $4014   ;DMA</code></pre></li>
 <li><a href="#out-2">out</a> u8 $02: irq countdown?</li>
 <li><a href="#in-2">in</a> u8 $03: irq countdown?</li>
 </ul>
-<h3 id="notes-59">notes:</h3>
+<h3 id="notes-60">notes:</h3>
 <ul>
 <li>the ppu set VBlank flag at 2nd tick of scanline 241, where the VBlank NMI also occurs.</li>
 <li>cpu cycles this handler takes to execute is depending on the value at $7cf3:
@@ -18606,7 +18616,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>otherwise: pending nmi completion</li>
 </ul></li>
 </ul>
-<h3 id="notes-60">notes:</h3>
+<h3 id="notes-61">notes:</h3>
 <p>$05 is set by <code>$3f:fb57 ppud.nmi_handler</code></p>
 <h3 id="code-291">code:</h3>
 <pre class="sourceCode js" id="cb641"><code class="sourceCode javascript"><div class="sourceLine" id="cb641-1" data-line-number="1"><span class="op">{</span></div>
@@ -18708,7 +18718,7 @@ sta $4014   ;DMA</code></pre></li>
 <li><a href="#in-2">in</a> u8 $21 : randSystemIndex?</li>
 <li><a href="#out-2">out</a> u8 A : rand [x-a] の乱数値 上限も含む</li>
 </ul>
-<h3 id="notes-61">notes:</h3>
+<h3 id="notes-62">notes:</h3>
 <pre><code>上位8bitを$21で指定した系列から取得した乱数(0x00-0xFF),下位8bitを0x80とした16bit値(A)と最大と最小の差分(8bit)(B)を掛けて
 結果のbit16-23の8bitを乱数の基本値として採用する。
 結果のbit8-15=(diff*baseRand + diff&gt;&gt;1)が

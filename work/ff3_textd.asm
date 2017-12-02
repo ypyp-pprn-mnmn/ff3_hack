@@ -1245,6 +1245,7 @@ textd_x.stack_load_text_ptr:
     ldx #$00
     stx <.p_text_table_temp
     jsr textd.save_text_ptr
+    
     lda #$18
     jsr call_switch_2banks
     pla ;text_id
