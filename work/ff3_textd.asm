@@ -4,18 +4,23 @@
 ; description:
 ;   re-implementation of the text-driver 'textd' functions
 ;
-;======================================================================================================
-
+;==================================================================================================
 STOMACH_LEFT_COLUMN_NAME = $01  ;;original = $01
 STOMACH_RIGHT_COLUMN_NAME = $0f  ;;original = $0f
 STOMACH_LEFT_COLUMN_AMOUNT = $0b ;;original = $0a
 STOMACH_RIGHT_COLUMN_AMOUNT = $19 ;;original = $18
 TEXT_BANK_BASE = $18    ;;$18:8000 => $300000
 
-textd.patch_begin:
-	.ifdef FAST_FIELD_WINDOW
+    .ifdef FAST_FIELD_WINDOW
+;; locating...
+    .ifndef field_x.BULK_PATCH_FREE_BEGIN
+        .fail
+    .endif
+;--------------------------------------------------------------------------------------------------    
+
 	;INIT_PATCH $3f,$eefa,$f38a
-    INIT_PATCH $3f,$eefa,$f3e4
+    INIT_PATCH_EX textd,$3f,$eefa,$f3e4,field_x.BULK_PATCH_FREE_BEGIN
+
 ;; -------------------------
 DECLARE_TEXTD_VARIABLES	.macro
 	;; --- variables.
@@ -137,7 +142,8 @@ textd.draw_in_box:
 ;; --- begin.
     ldy #$00                            ; EEFA A0 00
     lda [.p_text],y                     ; EEFC B1 3E
-    beq field_x.clc_return              ; EEFE F0 F1
+    ;beq field_x.clc_return              ; EEFE F0 F1
+    beq textd_x.clc_return
 ;    inc <.p_text                        ; EF00 E6 3E
 ;    bne .test_charcode                  ; EF02 D0 02
 ;    inc <.p_text+1                      ; EF04 E6 3F
@@ -250,6 +256,7 @@ textd_x.on_code_0a:	;;HANDLE_EXIT_IN_OWN
     ;cmp #$0A                            ; EFE4 C9 0A
     ;bne .case_0b                        ; EFE6 D0 04
     lda #$09                            ; EFE8 A9 09
+textd_x.clc_return:
     clc ; EFEA 18
     rts ; EFEB 60
 ; ----------------------------------------------------------------------------
@@ -1156,6 +1163,8 @@ textd_x.code_10_13.param_02:	;;player name
 ;    sta <$5F                            ; F332 85 5F
 ;; in:
 ;;  Y : offset to the player to obtain name (0x40 * player_index)
+;; note:
+;;  this handler assumes having $60 be always set to 0.
 textd_x.draw_player_name:
 	DECLARE_TEXTD_VARIABLES
     ldx #($100 - 6)
@@ -1475,8 +1484,9 @@ field.get_max_available_job_id:
 ;	lda <.parameter_byte                ; F3DE A5 84
 ;	sta $7A03,x                         ; F3E0 9D 03 7A
 ;	rts ; F3E3 60
-    VERIFY_PC $f3e4
 ; =================================================================================================
-textd.patch_end:
+    ;VERIFY_PC $f3e4
+    VERIFY_PC_TO_PATCH_END textd
+textd.BULK_PATCH_FREE_BEGIN:
 
 	.endif	;FAST_FIELD_WINDOW
