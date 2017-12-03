@@ -159,3 +159,10 @@ FALL_THROUGH_TO	.macro
 	;	.ds (\1 - __ft_\1)
 	;.endif
 	.endm	;FALL_THROUGH_TO
+
+;; label, value
+DEFINE_DEFAULT	.macro
+		.ifndef \1
+\1 = \2
+		.endif
+	.endm
