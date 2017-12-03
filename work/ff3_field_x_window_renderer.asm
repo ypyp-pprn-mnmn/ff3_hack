@@ -4,7 +4,7 @@
 ; description:
 ;   implementation of optimzied renderer code
 ;
-;======================================================================================================
+;==================================================================================================
     .ifdef FAST_FIELD_WINDOW
 
     .ifndef textd.BULK_PATCH_FREE_BEGIN
@@ -13,7 +13,7 @@
     RESTORE_PC textd.BULK_PATCH_FREE_BEGIN
 
 field_x.RENDERER_BEGIN:
-
+;--------------------------------------------------------------------------------------------------
 field_x.update_ppu_attr_table:
 .left = $38
 .top = $39	;in 8x8
