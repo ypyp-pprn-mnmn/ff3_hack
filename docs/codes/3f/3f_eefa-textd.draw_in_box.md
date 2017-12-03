@@ -1,22 +1,52 @@
 ﻿
 
 # $3f:eefa textd.draw_in_box
-
+> render a text in the specified box (i.e., window) by filling up the shared buffer (at $0780,07a0).
 
 ### args:
-+	[in] $37: in_menu_mode (1: menu, 0: floor)
-+	[in, out] string* $3e: ptr to string
++	[out] bool carry: more_to_draw.
+	- 1: reached bottom of the box without reaching end of the text
+	- 0: reached end condition of the text.
++	[out] u8 A: exit condition. valid if and only if more_to_draw: 0.
+	- 0xFF: terminated shop/job menu. (more_to_draw: 0)
+	- 0x09: code 0x0a encountered. (more_to_draw: 0)
+	- 0x00: code 0x00 (terminating null) encountered. (more_to_draw: 0)
++	[in, out] u8 $1e: continue building menu items (1: yes 0: restart)
 +	[in, out] u8 $1f: number of lines drawn (in 8x8 unit)
-+	[out] u8 $90: destOffset
-+	[out] bool carry: more_to_draw
++	[in, out] string* $3e: ptr to string. this pointer must be valid along with the text_bank ($93) mapped.
++	[in, out] u8 $67: offset to a particular player character? (TBC)
++	[in, out] u8 $90: output index
++	[in, out] ptr $99: temporary stack of text ptr ($3e)
++	[in, out] u8 $0780[32]: upper tile (i.e., name table index) buffer.
++	[in, out] u8 $07a0[32]: lower tile (i.e., name table index) buffer.
++	[in] $37: in_menu_mode (1: menu, 0: floor)
++	[in] $3d: box height (in 8x8 unit)
++	[in] u8 $93: text_bank. used to restore banks after temporary switch to another bank.
++	[in] u8 $97: box left (in 8x8 unit). used to calculate menu item's coordinates.
++	[in] u8 $98: bot top (in 8x8 unit). used to calculate menu item's coordinates.
++	[in] u8 $bb: treasure item id
 
 ### callers:
 +	`1F:EEE4:20 FA EE  JSR field.eval_and_draw_string` @ $3f:eec0 field.draw_string_in_window
+
+#### all the following are recursive calls (including tail call):
 +	`1F:F0D8:20 FA EE  JSR field.eval_and_draw_string` @ $3f:f02a field.string.eval_replacement (recurse)
 +	`1F:F33F:20 FA EE  JSR field.eval_and_draw_string` @ ?
 +	`1F:EF24:4C FA EE  JMP field.eval_and_draw_string` @ $3f:eefa field.eval_and_draw_string (recurse)
 +	`1F:F345:4C FA EE  JMP field.eval_and_draw_string` @ ?
 +	`1F:F387:4C FA EE  JMP field.eval_and_draw_string` @ ?
+
+### local variables:
++	u8 $80,81,82,83,85: scratch.
++	u8 $84: scratch, usually having a byte immediately following the code byte
+
+### notes:
+no cpu registers preserved across the call, and there is no dependency on state of A,X,Y on entry.
+this somewhat large function is an entry point for individual handlers which process a particular charcter code.
+As being consisting of many cases, this function is being quite large.
+in some of those handlers, recursive calls are made to this function to 'replace' (or 'eval') embedded code.
+however, as this function depends on many variables, callers must take care of them.
+
 
 ### code:
 ```js
@@ -164,6 +194,7 @@ $f027:
 }
 $f02a:
 ```
+
 
 
 
