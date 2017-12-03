@@ -12,12 +12,11 @@ STOMACH_RIGHT_COLUMN_AMOUNT = $19 ;;original = $18
 TEXT_BANK_BASE = $18    ;;$18:8000 => $300000
 
     .ifdef FAST_FIELD_WINDOW
-;; locating...
     .ifndef field_x.BULK_PATCH_FREE_BEGIN
         .fail
     .endif
-;--------------------------------------------------------------------------------------------------    
-
+;-------------------------------------------------------------------------------------------------- 
+;; locating...
 	;INIT_PATCH $3f,$eefa,$f38a
     INIT_PATCH_EX textd,$3f,$eefa,$f3e4,field_x.BULK_PATCH_FREE_BEGIN
 
