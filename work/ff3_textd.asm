@@ -10,6 +10,7 @@ STOMACH_LEFT_COLUMN_NAME = $01  ;;original = $01
 STOMACH_RIGHT_COLUMN_NAME = $0f  ;;original = $0f
 STOMACH_LEFT_COLUMN_AMOUNT = $0b ;;original = $0a
 STOMACH_RIGHT_COLUMN_AMOUNT = $19 ;;original = $18
+TEXT_BANK_BASE = $18    ;;$18:8000 => $300000
 
 textd.patch_begin:
 	.ifdef FAST_FIELD_WINDOW
@@ -1245,8 +1246,8 @@ textd_x.stack_load_text_ptr:
     ldx #$00
     stx <.p_text_table_temp
     jsr textd.save_text_ptr
-    
-    lda #$18
+
+    lda #TEXT_BANK_BASE
     jsr call_switch_2banks
     pla ;text_id
     asl a
@@ -1266,7 +1267,7 @@ textd_x.stack_load_text_ptr:
     pla
 	jsr shiftRight6+1
     clc
-    adc #$18
+    adc #TEXT_BANK_BASE
     jmp call_switch_2banks
 
 ; =================================================================================================
