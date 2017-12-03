@@ -67,29 +67,16 @@ field_x.update_ppu_attr_table:
 		bne .loop
 	rts
 
+;;$f388
 field_x.render_borders:
-.in_menu_mode = $37
-.left = $38
-.top = $39
-.offset_x = $3a
-;.draw_info_index = $3a
-.offset_y = $3b
-.width = $3c
-.height = $3d
-.generated_code_base = $0780
-.first_corner_parts = $07e0
-.second_corner_parts = $07e8
-;.middle_parts = $07f0
-.widths = $80
-.heights = $82
-.code_offset = $84
-.render_sequence = $85
+
+field_x.generate_uploder_code:
 	;; ------------------------------------------------------------------------
 	;; generate code to upload vram.
 field_x.store_PPUDATA = $f7b0
 .generated_code_base = $0780
 .SIZE_OF_CODE = 3
-.UNROLLED_BYTES = $1f*.SIZE_OF_CODE
+.UNROLLED_BYTES = $1c*.SIZE_OF_CODE	;;maximum mid-part length == 1c.
 	ldy #-.UNROLLED_BYTES	;dest
 .wrap_x:
 		ldx #-.SIZE_OF_CODE	;src
@@ -107,72 +94,296 @@ field_x.store_PPUDATA = $f7b0
 	sta (2+.generated_code_base)+.UNROLLED_BYTES
 	lda #$D0	;bne
 	sta (.generated_code_base)
+	FALL_THROUGH_TO field_x.setup_paramters
 
-	;; ------------------------------------------------------------------------
-	;; draw strategy:
-	;; 1: left-top to right-top, not including rightmost
-	;; 2: right-top to right-bottom, not including bottom most
-	;; 3: left-top to left-bottom, not including both corners
-	;; 4: left-bottom to right-bottom, not including right most
-	;; 5: put right-bottom
-	;; to achieve this, here needs 5-tuple info the below. 
-	;; (vram addr, length, direction, 1st tile, nth tile)
-	;; left top ---> right top ---> right bottom
-	;; --- calc widths
+field_x.setup_paramters:
+.generated_code_base = $0780
+.uploader_offset = $07d8
+.vram_addr.high = $07e0
+.vram_addr.low = $07e8
+.first_corner_parts = $07f0
+.second_corner_parts = $07f8
+.render_sequence = $85
+.width_temp = $80
+;.left_2nd = $81
+.right_x = $82
+.bottom_y = $83
+;---
+.in_menu_mode = $37
+.left = $38
+.top = $39
+.offset_x = $3a
+.offset_y = $3b
+.width = $3c
+.height = $3d
+;---
 	ldx #7
-.init_parts:
+.init_struct:
 		lda .default_first_corners,x
 		sta .first_corner_parts,x
 		lda .default_second_corners,x
 		sta .second_corner_parts,x
+		;lda <.left
+		;sta .vram_addr.low,x
+		lda <.top
+		sta .vram_addr.high,x
 		dex
-		bpl .init_parts
+		bpl .init_struct
 
+	;;required addresses:
+	;;(left, top), (left+width_1st, top),
+	;;(left, top+height-1), (left+width_1st, top+height-1)
+	;;(left, top+1), (left, 0 //top+1+height_1st)
+	;;(left+width-1, top+1), (left+width-1, 0 //top+1+height_1st)
+;; --- calc widths
 	jsr field_x.calc_window_width_in_bg
 	ldy #0
-	sty <.render_sequence
-	;pha	;width 1n 1st bg
-	sta <.widths+1
+	;sty <.render_sequence
+
+	pha
+	sta <.width_temp
+	lda <.left
+	sta .vram_addr.low+0
+	sta .vram_addr.low+2
+	sta .vram_addr.low+4
+	sta .vram_addr.low+5
+	clc
+	adc <.width_temp
+	sta .vram_addr.low+1
+	sta .vram_addr.low+3
+	pla
+
 	eor #$ff
 	sec
 	adc <.width
-	;pha ;width in 2nd bg
-	sta <.widths
-	beq .calc_heights
+	tax	;; X <- width in 2nd.
+	beq .store_x_mid_length
+		;;required 2nd bg rendering.
 		sty .second_corner_parts
 		sty .second_corner_parts+2
+		inc <.width_temp
+.store_x_mid_length:
+	dex	;; X <- width in 2nd, excluding 2nd corner.
+	stx .uploader_offset+1
+	stx .uploader_offset+3
+	;;X <- width in 1st
+	ldx <.width_temp
+	dex
+	dex	;; X <- width in 1st, excluding both corners.
+	stx .uploader_offset+0
+	stx .uploader_offset+2
+
+	lda <.width
+	clc
+	adc <.left
+	tax
+	dex
+	stx .vram_addr.low+6
+	stx .vram_addr.low+7
+
+;; --- calc heights.
 ;; heights ignore top/bottom border.
 .calc_heights:
-	;; --- calc heights
-	;lda <.height
 	ldx <.height
 	dex
-	dex
+	dex	;; X <- overall height, excluding both corners.
 	txa
 	pha	;height for upper
 	clc
 	adc <.top
+	tax
+	;; X = top + height - 2.
 	;cmp #30
-	cmp #29
-	pla
+	cmp #28
+	pla	;;height.
 	bcc .no_wrap_y
-		;;carry is always set
+		;sec
 		;lda #30
-		lda #29
+		lda #29	;;as crossed the boundary, bottom corner must not be excluded
+		;;carry is always set
 		sbc <.top
 .no_wrap_y:
-	sta <.heights+1	;height in 1st bg
+	;;A = height in 1st bg (excluding both corners)
+	sta .uploader_offset+4
+	sta .uploader_offset+6
+
 	eor #$ff
 	sec
 	adc <.height
-	sec
-	sbc #2	;border excl
-	sta <.heights	;height in 2nd bg
+	sec	
+	sbc #2	;border excl (the height includes both border)
+	;;A = height in 2nd bg (excluding both corners)
+	sta .uploader_offset+5
+	sta .uploader_offset+7
 ;	beq .init_offsets
 ;		sty .second_corner_parts+4
 ;		sty .second_corner_parts+6
-;---
+	;;X = (top + height - 2)
+	inx
+	txa
+	cmp #30
+	bcc .bottom_not_wrapped
+		;;carry is always set
+		sbc #30
+.bottom_not_wrapped:
+	sta .vram_addr.high+2
+	sta .vram_addr.high+3
+	inc .vram_addr.high+4
+	inc .vram_addr.high+6
+	sty .vram_addr.high+5
+	sty .vram_addr.high+7
+	
+;; here these tuples have:
+;; vram.high = Y, vram.low = X, uploader_offset = length
+	ldy #7
+.map_raw_values:
+		sty <.render_sequence
+		;; map length into the offset into generater code.
+		lda .uploader_offset,y
+		bmi .continue
+			eor #$ff
+			sec
+			adc #$1c
+			sta <.width_temp
+			asl A
+			adc <.width_temp
+			sta .uploader_offset,y
+			;; map x,y coordinates into vram address.
+			ldx .vram_addr.low,y
+			lda .vram_addr.high,y
+			jsr field_x.map_coords_to_vram
+			ldy <.render_sequence
+			sta .vram_addr.high,y
+			txa
+			sta .vram_addr.low,y
+	.continue:
+		dey
+		bpl .map_raw_values
+.start_rendering:
+	jsr field_x.begin_ppu_update
+	
+		ldy #4
+	.horz_loop:
+			jsr field_x.do_render_border	
+			dey
+			bne .horz_loop
+		
+		lda #%00000100
+		jsr field_x.switch_vram_addr_mode
+		
+		ldy #4
+	.vert_loop:
+			jsr field_x.do_render_border
+			dey
+			bne .vert_loop
 
+		lda #%00000000
+		jsr field_x.switch_vram_addr_mode
+	jmp field_x.end_ppu_update
+.default_first_corners:
+	;.db $f7,$00,$fc,$00,$f7,$00,$f9,$00
+	.db $f7,$00,$fc,$00,$00,$00,$00,$00
+.default_second_corners:
+	;.db $f9,$f9,$fe,$fe,$fc,$fc,$fe,$fe
+	.db $f9,$f9,$fe,$fe,$00,$00,$00,$00
+
+;in: A = offset Y, X = offset X
+;out: A = vram high, X = vram low
+field_x.map_coords_to_vram:
+;@see $3f:f40a setVramAddrForWindow
+.y_to_addr_low = $f4a1
+.y_to_addr_high = $f4c1
+	cmp #30
+	bcc .no_wrap_y
+		sbc #30	;here carry is always set	
+	.no_wrap_y:
+	tay
+	txa
+	and #$3f	;wrap around
+	cmp #$20	;check which BG X falls in
+	and #$1f	;turn into offset within that BG
+	ora .y_to_addr_low,y
+	tax
+	lda .y_to_addr_high,y
+	bcc .bg_1st
+.bg_2nd:
+		ora #4
+.bg_1st:
+	rts
+;; ------------------------------------------------------------------------
+;; draw strategy:
+;; split up border parts into 8 individual sections:
+;;	1: horizontal, left-top, always on 1st bg
+;;	3: horizontal, left-botttom, always on 1st bg
+;;	needed if the window span across the bg boundary:
+;;	2: horizontal, right-top, either on 1st bg or on 2nd bg
+;;	4: horizontal, right-bottom, either on 1st bg or on 2nd bg
+;;	--- switch vram addr mode to vertical
+;;	5: vertical, left-top, always on 1st bg
+;;	7: vertical, right-top, either on 1st bg or on 2nd bg
+;;	needed if the window span across the bg boundary:
+;;	6: vertical, left-bottom, always on 1st bg, maybe wrapped around from bottom to top
+;;	8: vertical, right-bottom, either on 1st bg or on 2nd bg, maybe wrapped around.
+;; required information to draw each parts:
+;;	{
+;;		u16 vram_address:15,
+;;		u16 skip_rendering:1,
+;;		u8 uploader_offset (3 x length of mid-parts),
+;;		u8 first_corner_parts,
+;;		u8 second_corner_parts,
+;;		u8 middle_parts,	//static
+;;	}
+field_x.do_render_border:
+.generated_code_base = $0780
+.uploader_offset = $07d8
+.vram_addr.high = $07e0
+.vram_addr.low = $07e8
+.first_corner_parts = $07f0
+.second_corner_parts = $07f8
+.render_sequence = $85
+	ldx <.render_sequence
+	lda .uploader_offset,x
+	sta .generated_code_base+1
+	bmi .render_end
+		;; setup vram addr.
+		lda .vram_addr.high,x
+		sta $2006
+		lda .vram_addr.low,x
+		sta $2006
+		;; upload name table values.
+		lda .first_corner_parts,x
+		beq .render_middle
+			sta $2007
+	.render_middle:
+		;;0xff is stored if there is no mid-border rendering required.
+		;bmi	.render_second_corner
+		lda .middle_parts,x
+		jsr .generated_code_base
+	.render_second_corner:
+		lda .second_corner_parts,x	
+		beq .render_end
+			sta $2007
+.render_end:
+	inc <.render_sequence
+	rts
+.middle_parts:
+	.db $f8,$f8,$fd,$fd,$fa,$fa,$fb,$fb
+
+field_x.switch_vram_addr_mode:
+	pha
+	lda <field.ppu_ctrl_cache
+	and #%11111011
+	sta <field.ppu_ctrl_cache
+	pla
+	and #%00000100
+	ora <field.ppu_ctrl_cache
+	sta <field.ppu_ctrl_cache
+	sta $2000
+	rts
+
+
+	.if 0
+;---
 	jsr field_x.begin_ppu_update
 		jsr .render_top_and_bottom
 		lda #%00000100
@@ -278,14 +489,6 @@ field_x.store_PPUDATA = $f7b0
 	;bpl .loop
 	pla	;size (width or height)
 	rts
-.default_first_corners:
-	;.db $f7,$00,$fc,$00,$f7,$00,$f9,$00
-	.db $f7,$00,$fc,$00,$00,$00,$00,$00
-.default_second_corners:
-	;.db $f9,$f9,$fe,$fe,$fc,$fc,$fe,$fe
-	.db $f9,$f9,$fe,$fe,$00,$00,$00,$00
-.middle_parts:
-	.db $f8,$f8,$fd,$fd,$fa,$fa,$fb,$fb
 
 field_x.calc_x_offset:
 .left = $38
@@ -307,50 +510,6 @@ field_x.calc_y_offset:
 	sta <.offset_y
 	rts
 
-field_x.switch_vram_addr_mode:
-	pha
-	lda <field.ppu_ctrl_cache
-	and #%11111011
-	sta <field.ppu_ctrl_cache
-	pla
-	and #%00000100
-	ora <field.ppu_ctrl_cache
-	sta <field.ppu_ctrl_cache
-	sta $2000
-	rts
-
-	.if 0
-;in: A = offset Y, X = offset X
-;out: A = vram high, X = vram low
-field_x.map_coords_to_vram:
-;@see $3f:f40a setVramAddrForWindow
-.y_to_addr_low = $f4a1
-.y_to_addr_high = $f4c1
-;in, out
-.draw_info_index = $3a
-.vram_addr_high = $07d0
-.vram_addr_low = $07e0
-	cmp #30
-	bcc .no_wrap_y
-		sbc #30	;here carry is always set	
-	.no_wrap_y:
-	tay
-	txa
-	and #$3f	;wrap around
-	cmp #$20	;check which BG X falls in
-	and #$1f	;turn into offset within that BG
-	ora .y_to_addr_low,y
-	tax
-	lda .y_to_addr_high,y
-	bcc .bg_1st
-.bg_2nd:
-		ora #4
-.bg_1st:
-	;ldy <.draw_info_index
-	;sta .vram_addr_high,y
-	;txa
-	;sta .vram_addr_low,y
-	rts
 	.endif	;field_x.map_coords_to_vram
 
 	.ifdef TEST_BLACKOUT_ON_WINDOW
