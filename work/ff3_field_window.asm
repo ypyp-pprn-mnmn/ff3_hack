@@ -15,8 +15,9 @@ FIELD_WINDOW_SCROLL_FRAMES = $01
 
 ;--------------------------------------------------------------------------------------------------
 	;INIT_PATCH $3f, $eb2d, $eba9
-	INIT_PATCH $3f, $eb2d, $eefa
-field_x.BULK_PATCH_BEGIN:
+	;INIT_PATCH $3f, $eb2d, $eefa
+	INIT_PATCH_EX field_window, $3f, $eb2d, $eefa, $eb2d
+;field_x.BULK_PATCH_BEGIN:
 
 ;;# $3f:eb2d field.scrolldown_item_window
 ;;<details>
@@ -1114,12 +1115,13 @@ field_x.clc_return:
 	clc
 	rts
 ;--------------------------------------------------------------------------------------------------	
-	VERIFY_PC $eefa
-
+	;VERIFY_PC $eefa
+	VERIFY_PC_TO_PATCH_END field_window
 field_x.BULK_PATCH_FREE_BEGIN:
-field_x.BULK_PATCH_FREE_END = $eefa
+;field_x.BULK_PATCH_FREE_END = $eefa
 
 	.endif	;FAST_FIELD_WINDOW
+;==================================================================================================
 ;==================================================================================================
 ;$3f:f40a setVramAddrForWindow
 ;//	[in] u8 $3a : x offset
