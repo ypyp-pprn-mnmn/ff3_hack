@@ -1131,8 +1131,8 @@ field.setVramAddrForWindow:
 .offsetX = $3a
 	ldy <.offsetX
 field.setVramAddrForWindowEx:
-;[in] a : widthInCurrentBg
-;[in] y : offsetX
+;[in] y : x offset
+;[in] $3b : y offset
 ;[out] y : (offsetX & #$20) ^ #$20
 ;[in]
 .offsetX = $3a

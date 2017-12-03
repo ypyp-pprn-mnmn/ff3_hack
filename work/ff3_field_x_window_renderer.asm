@@ -77,14 +77,13 @@ field_x.render_borders:
 .width = $3c
 .height = $3d
 .generated_code_base = $0780
-;.vram_addr_high = $07d0
-;.vram_addr_low = $07e0
-;.widths = $07d0
-;.heights = $07e0
-;.draw_flags = $07f0
+.first_corner_parts = $07e0
+.second_corner_parts = $07e8
+;.middle_parts = $07f0
 .widths = $80
 .heights = $82
 .code_offset = $84
+.render_sequence = $85
 	;; ------------------------------------------------------------------------
 	;; generate code to upload vram.
 field_x.store_PPUDATA = $f7b0
@@ -120,7 +119,18 @@ field_x.store_PPUDATA = $f7b0
 	;; (vram addr, length, direction, 1st tile, nth tile)
 	;; left top ---> right top ---> right bottom
 	;; --- calc widths
+	ldx #7
+.init_parts:
+		lda .default_first_corners,x
+		sta .first_corner_parts,x
+		lda .default_second_corners,x
+		sta .second_corner_parts,x
+		dex
+		bpl .init_parts
+
 	jsr field_x.calc_window_width_in_bg
+	ldy #0
+	sty <.render_sequence
 	;pha	;width 1n 1st bg
 	sta <.widths+1
 	eor #$ff
@@ -128,6 +138,9 @@ field_x.store_PPUDATA = $f7b0
 	adc <.width
 	;pha ;width in 2nd bg
 	sta <.widths
+	beq .calc_heights
+		sty .second_corner_parts
+.calc_heights:
 	;; --- calc heights
 	lda <.height
 	pha	;height for upper
@@ -136,21 +149,35 @@ field_x.store_PPUDATA = $f7b0
 	cmp #30
 	pla
 	bcc .no_wrap_y
+		;;carry is always set
 		lda #30
 		sbc <.top
 .no_wrap_y:
-	sta <.heights+1
+	sta <.heights+1	;height in 1st bg
 	eor #$ff
 	sec
 	adc <.height
-	sta <.heights
+	sta <.heights	;height in 2nd bg
+;	beq .init_offsets
+;		sty .second_corner_parts+4
 ;---
+.init_offsets:
 	lda <.left
 	sta <.offset_x
 	lda <.top
 	sta <.offset_y
 
 	jsr field_x.begin_ppu_update
+	
+	jsr .do_render
+	;jsr .do_render
+
+	;jsr .do_render
+	;jsr .do_render
+
+	jmp field_x.end_ppu_update
+
+.do_render:
 	ldx #1
 .loop:
 	txa
@@ -160,36 +187,59 @@ field_x.store_PPUDATA = $f7b0
 	beq .skip_draw
 	;---
 		pha
+		;; $3a = x
+		;; $3b = y
 		jsr field.setVramAddrForWindow
-		pla
+		pla	;width
 		pha
-		eor #$ff
-		sec
-		adc #$20	;;note: generated code has only $1f STA's. this is done for accounting 1st byte
-
-		sta <.code_offset
-		asl A
-		adc <.code_offset
-		sta .generated_code_base+1		
-		;update
-		pla
-		;clc
+		clc
 		adc <.offset_x
 		sta <.offset_x
-	;---
+		;;
+		pla
+		eor #$ff
+		sec
+		adc #$1f	;;note: generated code has $1f STA's.
+		sta <.code_offset
+
+		ldx <.render_sequence
+		lda .second_corner_parts,x
+		pha
+		beq .render_first_corner
+			inc <.code_offset
+	.render_first_corner:
 		;; --- 1st byte (left corner)
-		lda #$f7
-		sta $2007
-		;lda #$f8
-		lda #$72
-		jsr .generated_code_base
+		lda .first_corner_parts,x
+		beq .render_middle
+			sta $2007
+			inc <.code_offset
+	.render_middle:
+		lda <.code_offset
+		cmp #$20
+		bcs .render_second_corner
+			asl A
+			adc <.code_offset
+			sta .generated_code_base+1			
+			lda .middle_parts,x
+			jsr .generated_code_base
+	.render_second_corner:
+		pla
+		beq .render_end
+			sta $2007
+	.render_end:
 .skip_draw:
+	inc <.render_sequence
 	pla
 	tax
 	dex
 	bpl .loop
-;---
-	jmp field_x.end_ppu_update
+	rts
+.default_first_corners:
+	.db $f7,$00,$fc,$00,$00,$00,$00,$00
+.default_second_corners:
+	.db $f9,$f9,$fe,$fe,$00,$00,$00,$00
+.middle_parts:
+	.db $f8,$f8,$fd,$fd,$fa,$fa,$fb,$fb
 
 	.if 0
 ;in: A = offset Y, X = offset X
