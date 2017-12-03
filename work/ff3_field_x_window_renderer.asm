@@ -135,6 +135,7 @@ field_x.setup_paramters:
 	;;(left, top+height-1), (left+width_1st, top+height-1)
 	;;(left, top+1), (left, 0 //top+1+height_1st)
 	;;(left+width-1, top+1), (left+width-1, 0 //top+1+height_1st)
+	;; 0-1-2-3-4-6-5-7
 ;; --- calc widths
 	jsr field_x.calc_window_width_in_bg
 	tay	;;temp save
@@ -142,14 +143,15 @@ field_x.setup_paramters:
 	sta <.width_temp
 	lda <.left
 	tax
-	clc
-	adc <.width_temp
 	stx .vram_addr.low+0
-	sta .vram_addr.low+1
 	stx .vram_addr.low+2
-	sta .vram_addr.low+3
 	stx .vram_addr.low+4
 	stx .vram_addr.low+5
+
+	clc
+	adc <.width_temp
+	sta .vram_addr.low+1
+	sta .vram_addr.low+3
 
 	lda <.width
 	clc
@@ -176,10 +178,10 @@ field_x.setup_paramters:
 	ldy <.width_temp
 	dey
 	dey	;; Y <- width in 1st, excluding both corners.
-	sty .uploader_offset+0
 	dex	;; X <- width in 2nd, excluding 2nd corner.
-	stx .uploader_offset+1
+	sty .uploader_offset+0
 	sty .uploader_offset+2
+	stx .uploader_offset+1
 	stx .uploader_offset+3
 
 ;; --- calc heights.
@@ -208,6 +210,8 @@ field_x.setup_paramters:
 		tay
 .no_wrap_y:
 	;;Y = height in 1st bg (excluding both corners)
+	sty .uploader_offset+4
+	sty .uploader_offset+6
 	tya
 	eor #$ff
 	sec
@@ -215,9 +219,7 @@ field_x.setup_paramters:
 	sec	
 	sbc #2	;border excl (the height includes both border)
 	;;A = height in 2nd bg (excluding both corners)
-	sty .uploader_offset+4
 	sta .uploader_offset+5
-	sty .uploader_offset+6
 	sta .uploader_offset+7
 ;	beq .init_offsets
 ;		sty .second_corner_parts+4
@@ -234,8 +236,8 @@ field_x.setup_paramters:
 	sta .vram_addr.high+2
 	sta .vram_addr.high+3
 	inc .vram_addr.high+4
-	sty .vram_addr.high+5
 	inc .vram_addr.high+6
+	sty .vram_addr.high+5
 	sty .vram_addr.high+7
 	
 ;; here these tuples have:
