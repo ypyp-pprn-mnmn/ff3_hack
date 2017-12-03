@@ -54,12 +54,12 @@ CHAR.SETUP_WINDOW1_MENUITEM = $15   ;; command dialog. (menu command, inn (yes/n
 CHAR.SETUP_WINDOW2_MENUITEM = $16   ;; target dialog. (magic, item) + shop offerings.
 CHAR.SETUP_WINDOW3_MENUITEM = $17   ;; item dialog. (cast, use, equip, withdraw, sell)
 
-CHAR.TEXT_REF = $18     ;param = text_id
+CHAR.ITEM_NAME = $18     ;param = item_id (the name will be looked-up via $18:$8800)
 CHAR.ITEM_NAME_IN_SHOP = $19   ;param = index into $7b80(shop items).
 CHAR.ITEM_NAME_IN_MENU = $1a    ;param: item index
 CHAR.ITEM_NAME_IN_STOMACH = $1b   ;;param: index in the stomach. (of fatty choccobo)
-CHAR.ITEM_COUNT = $1c   ;param: item index
-CHAR.ITEM_COUNT_IN_STOMACH = $1d   ;param: index in the stomach. (of fatty choccobo)
+CHAR.ITEM_AMOUNT = $1c   ;param: item index
+CHAR.ITEM_AMOUNT_IN_STOMACH = $1d   ;param: index in the stomach. (of fatty choccobo)
 CHAR.JOB_NAME = $1e     ;param: job_id
 CHAR.JOB_CHANGE_COST = $1f   ;param: job_id
 CHAR.ITEM_NAME_IN_EQUIP_SELECTION = $20 ;param: item index
