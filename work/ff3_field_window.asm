@@ -9,13 +9,13 @@
 ;==================================================================================================
 ff3_field_window_begin:
 ;;# of frames waited before text lines scolled up
-FIELD_WINDOW_SCROLL_FRAMES = $01
+	DEFINE_DEFAULT FIELD_WINDOW_SCROLL_FRAMES, $01
+
+;_FEATURE_BORDER_LOADER
 
 	.ifdef FAST_FIELD_WINDOW
 
 ;--------------------------------------------------------------------------------------------------
-	;INIT_PATCH $3f, $eb2d, $eba9
-	;INIT_PATCH $3f, $eb2d, $eefa
 	INIT_PATCH_EX field_window, $3f, $eb2d, $eefa, $eb2d
 ;field_x.BULK_PATCH_BEGIN:
 
@@ -909,7 +909,7 @@ field_x.get_window_tiles:
 field_x.window_parts:
 	db $f7, $f8, $f9
 	db $fa, $ff, $fb
-	.ifdef IMPL_BORDER_LOADER
+	.ifdef _FEATURE_BORDER_LOADER
 	db $fc, $fd, $fe
 ;;$3f:ee1d field::getWindowTilesForMiddle
 ;;callers:
@@ -926,7 +926,7 @@ field.get_window_bottom_tiles:	;ed3b
 	lda #$03<<1
 	jsr field_x.get_window_tiles
 	bne field_x.get_window_tiles
-	.endif	;.ifdef IMPL_BORDER_LOADER
+	.endif	;.ifdef _FEATURE_BORDER_LOADER
 
 	;VERIFY_PC $ee65
 ;------------------------------------------------------------------------------------------------------
