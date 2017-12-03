@@ -261,24 +261,10 @@ field_x.setup_paramters:
 		bpl .map_raw_values
 .start_rendering:
 	jsr field_x.begin_ppu_update
-	
-		ldy #4
-	.horz_loop:
-			jsr field_x.do_render_border	
-			dey
-			bne .horz_loop
-		
 		lda #%00000100
-		jsr field_x.switch_vram_addr_mode
-		
-		ldy #4
-	.vert_loop:
-			jsr field_x.do_render_border
-			dey
-			bne .vert_loop
-
+		jsr field_x.render_loop
 		lda #%00000000
-		jsr field_x.switch_vram_addr_mode
+		jsr field_x.render_loop
 	jmp field_x.end_ppu_update
 .default_first_corners:
 	;.db $f7,$00,$fc,$00,$f7,$00,$f9,$00
@@ -287,6 +273,16 @@ field_x.setup_paramters:
 	;.db $f9,$f9,$fe,$fe,$fc,$fc,$fe,$fe
 	.db $f9,$f9,$fe,$fe,$00,$00,$00,$00
 
+field_x.render_loop:
+	pha
+	ldy #4
+.render_loop:
+		jsr field_x.do_render_border	
+		dey
+		bne .render_loop
+	
+	pla
+	jmp field_x.switch_vram_addr_mode
 ;in: A = offset Y, X = offset X
 ;out: A = vram high, X = vram low
 field_x.map_coords_to_vram:
