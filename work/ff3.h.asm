@@ -179,6 +179,8 @@ world.map_chip_buffer = $7000; 256 tiles x 15 lines
 ;floor-mode
 floor.npc_params_1 = $7000; 0x10 bytes x 11 npcs
 floor.npc_params_2 = $7100; 0x10 bytes x 11 npcs
+floor.map_chip_buffer = $7400	;0x400 = 32x32 bytes. @see $3e:cbfa. reloaded after backed from menu.
+floor.event_script_buffer = $7b00	;0x40 bytes. @see $3e:ea04.
 ;----------------------------------------------------------------------------------------------------------
 ;menu-mode
 menu.choose_dialog_1 = $7800;
@@ -188,7 +190,7 @@ menu.shop_offerings = $7b80	;[8], item_id
 menu.shop_item_price.low = $7b90;	[8] lower 8-bits of price(24bits)
 menu.shop_item_price.mid = $7b98; [8] middle 8-bites of price(24bits)
 menu.shop_item_price.high = $7ba0; [8] middle 8-bites of price(24bits)
-menu.available_items_in_stomach = $7c00;
+menu.available_items_in_stomach = $7c00; item_id[256]
 ;----------------------------------------------------------------------------------------------------------
 ;in memory structs
 
@@ -198,7 +200,7 @@ enemyBattleParams	= $7675	;$40*8
 ;----------------------------------------------------------------------------------------------------------
 ;string pointers
 textd.message_texts = $8000;
-textd.status_and_area_names = $8200	;$18:8200 = $30200
+textd.status_and_area_names = $8200	;$18:8200 = $30200. see also $3e:d1b1
 textd.item_names = $8800;
 ;----------------------------------------------------------------------------------------------------------
 ;in rom structs

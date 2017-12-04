@@ -61,8 +61,9 @@ party.world_id = $6007	;tbd. $3b:a12b
 party.ally_npc = $600b	;
 party.float_land_X = $600c;	tbd. $3e:c4fc
 party.float_land_Y = $600d;	tbd. $3e:c4fc
-party.leader_offset = $600e	;tbd.
+party.leader_offset = $600e	;tbd. see also $3e:e917.
 party.message_speed = $6010	;tbd.
+;$6011 ;$3e:ddc6
 party.capacity = $601b
 party.gil = $601c	;24bit
 party.event_flags = $6020	; 0x20 bytes (256 flags, including job flags) tbd. $3c:9344
