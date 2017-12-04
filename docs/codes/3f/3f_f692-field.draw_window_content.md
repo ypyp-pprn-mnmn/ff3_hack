@@ -1,6 +1,15 @@
 ﻿
-# $3f:f692 field.draw_window_content
 
+# $3f:f692 field.draw_window_content
+> render window content using tile (i.e., name table index) buffer at $0780-$07bf(inclusive).
+
+### args:
++	in u8 A: text drawing disposition code.
+	- 0x09: draw only lower line (skip upper line)
++	in,out u8 $f0: window scroll frame counter.
+
+### notes:
+the disposition code 0x09 will be returned from `textd.draw_in_box` when char code 0x0a has encountered during processing.
 
 ### code:
 ```js
@@ -17,6 +26,7 @@
 $f6aa:
 }
 ```
+
 
 
 

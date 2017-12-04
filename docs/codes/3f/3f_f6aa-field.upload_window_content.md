@@ -1,11 +1,17 @@
 ﻿
-# $3f:f6aa field.upload_window_content
 
+# $3f:f6aa field.upload_window_content
+> uploads tile (i.e., name table) buffer into vram.
 
 ### args:
++	in u8 A : text drawing disposition.
+	- 0x09: draw only lower line (skip upper line)
 +	[in] u8 $38 : offset x
 +	[in] u8 $39 : offset per 2 line
 +	[in,out] u8 $3b : offset y (wrap-around)
+
+### notes:
+the disposition code 0x09 will be returned from `textd.draw_in_box` when char code 0x0a has encountered during processing.
 
 ### code:
 ```js
@@ -52,6 +58,7 @@ $f715:
 	return;
 }
 ```
+
 
 
 
