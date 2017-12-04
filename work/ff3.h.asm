@@ -173,6 +173,13 @@ soundDriver_control	= $7f42	;01:playNew(7f43) 02:playLast(7f41,saved when 01) 04
 soundDriver_musicId	= $7f43
 soundDriver_effectId= $7f49	;msb should be 1
 ;----------------------------------------------------------------------------------------------------------
+;world-mode
+world.map_chip_buffer = $7000; 256 tiles x 15 lines
+;----------------------------------------------------------------------------------------------------------
+;floor-mode
+floor.npc_params_1 = $7000; 0x10 bytes x 11 npcs
+floor.npc_params_2 = $7100; 0x10 bytes x 11 npcs
+;----------------------------------------------------------------------------------------------------------
 ;menu-mode
 menu.choose_dialog_1 = $7800;
 menu.choose_dialog_2 = $7900;
