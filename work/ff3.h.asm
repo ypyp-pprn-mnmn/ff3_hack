@@ -181,15 +181,21 @@ floor.npc_params_1 = $7000; 0x10 bytes x 11 npcs
 floor.npc_params_2 = $7100; 0x10 bytes x 11 npcs
 floor.map_chip_buffer = $7400	;0x400 = 32x32 bytes. @see $3e:cbfa. reloaded after backed from menu.
 floor.event_script_buffer = $7b00	;0x40 bytes. @see $3e:ea04.
+floor.label_text_buffer = $7b01	;max 0x100 bytes. @see $3e:d1b1.
+floor.tile_pattern_data = $7f00	;tbc. @see $3e:de5a.
 ;----------------------------------------------------------------------------------------------------------
 ;menu-mode
-menu.choose_dialog_1 = $7800;
-menu.choose_dialog_2 = $7900;
-menu.choose_dialog_3 = $7a00;
+menu.job_costs = $7200	;;tbc. $3d:ad85
+menu.choose_dialog_1 = $7800	;; command dialog. (menu command, inn (yes/no), job, shop command, save)
+menu.choose_dialog_2 = $7900	;; target dialog. (of magic, of item) , shop offerings, load
+menu.choose_dialog_3 = $7a00	;; item dialog. (cast, use, equip, withdraw, sell)
 menu.shop_offerings = $7b80	;[8], item_id
 menu.shop_item_price.low = $7b90;	[8] lower 8-bits of price(24bits)
 menu.shop_item_price.mid = $7b98; [8] middle 8-bites of price(24bits)
 menu.shop_item_price.high = $7ba0; [8] middle 8-bites of price(24bits)
+menu.shop_item_ask.low = $7ba8	; [8] @see $3d:b220
+menu.shop_item_ask.mid = $7bb0
+menu.shop_item_ask.high = $7bb8
 menu.available_items_in_stomach = $7c00; item_id[256]
 ;----------------------------------------------------------------------------------------------------------
 ;in memory structs
