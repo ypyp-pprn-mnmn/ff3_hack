@@ -20,7 +20,7 @@ $pandoc_template_dir = "${pandoc_data_dir}/${pandoc_template_dir_name}";
 $pandoc_metadata = "${pandoc_data_dir}/metadata.yaml";
 $pandoc_template = "${pandoc_template_dir}/toc-sidebarL.html";	#'L': self-contained / 'l'ocal, css/js are getting self-contained also
 $pandoc_nav = "${pandoc_template_dir}/nav";
-$pandoc_date = $(date -Format "yyyy-MM-dd hh:mm:ss+0900");
+$pandoc_date = $(date -Format "yyyy-MM-dd HH:mm:ss+0900");
 
 $outpath = "code-reference.html";
 ## parse command line arguments
