@@ -1079,20 +1079,17 @@ field.draw_string_in_window:	;;$eec0
 ;; ---
 	lda <.text_bank
 	jsr call_switch_2banks	;$FF03
-	;lda #$00
-	;sta <$1e
 	lda <.p_text
 	sta <.p_text_line
 	lda <.p_text+1
 	sta <.p_text_line+1
-	;sta <$1D ;;???
 	lda <.window_left	;$38
 	sta <.offset_x		;$3A
 	lda <.window_top	;$39
 	sta <.offset_y		;$3B
 	jsr field.calc_draw_width_and_init_window_tile_buffer	;$f670
 	lda #$00
-	sta <.output_index
+	sta <.output_index	;$90
 	sta <.lines_drawn	;$1F
 	sta <.menu_item_continue_building	;$1e
 	jsr textd.draw_in_box	;$eefa
@@ -1106,15 +1103,19 @@ field.draw_string_in_window:	;;$eec0
 	;sec
 	;rts
 .completed:
-	jsr field.draw_window_content	;$f692
+	.ifdef FAST_FIELD_WINDOW
+		jsr field_x.fill_to_bottom
+	.else
+		jsr field.draw_window_content	;$f692
+	.endif
 	;lda <.program_bank	; $57
 	;jsr call_switch_2banks	;$FF03
 	jmp field.restore_banks	;carry will be implictly cleared
 ;$eef1
-field_x.clc_return:
+;field_x.clc_return:
 	;FIX_OFFSET_ON_CALLER $3f,$eefe+1
-	clc
-	rts
+;	clc
+;	rts
 ;--------------------------------------------------------------------------------------------------	
 	;VERIFY_PC $eefa
 	VERIFY_PC_TO_PATCH_END field_window
@@ -1319,7 +1320,7 @@ field.upload_window_content:
 .lowerLineString = $07a0
 
 ;-----------------------------------------
-	cmp #9
+	cmp #TEXTD_WANT_ONLY_LOWER 
 	beq .draw_lower_line
 		lda #0
 		jsr .draw_line

@@ -10,6 +10,7 @@ STOMACH_RIGHT_COLUMN_NAME = $0f  ;;original = $0f
 STOMACH_LEFT_COLUMN_AMOUNT = $0b ;;original = $0a
 STOMACH_RIGHT_COLUMN_AMOUNT = $19 ;;original = $18
 TEXT_BANK_BASE = $18    ;;$18:8000 => $300000
+TEXTD_WANT_ONLY_LOWER = $09
 
     .ifdef FAST_FIELD_WINDOW
     .ifndef field_x.BULK_PATCH_FREE_BEGIN
@@ -251,10 +252,10 @@ textd_x.continue_from_next_line:
 ; ----------------------------------------------------------------------------
 textd_x.on_code_0a:	;;HANDLE_EXIT_IN_OWN
 	DECLARE_TEXTD_VARIABLES
-.case_0a:	;;paging.
+.case_0a:	;;draw_half
     ;cmp #$0A                            ; EFE4 C9 0A
     ;bne .case_0b                        ; EFE6 D0 04
-    lda #$09                            ; EFE8 A9 09
+    lda #TEXTD_WANT_ONLY_LOWER           ; EFE8 A9 09
 textd_x.clc_return:
     clc ; EFEA 18
     rts ; EFEB 60

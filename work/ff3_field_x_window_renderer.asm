@@ -423,6 +423,43 @@ field_x.switch_vram_addr_mode:
 	sta <field.ppu_ctrl_cache
 	sta $2000
 	rts
+
+field_x.fill_to_bottom.loop:
+.lines_drawn = $1f
+.window_height = $3d
+	ldx #TEXTD_WANT_ONLY_LOWER
+	lsr A
+	beq .do_half
+		ldx #0
+.do_half:
+	txa
+	FALL_THROUGH_TO field_x.fill_to_bottom
+
+field_x.fill_to_bottom:
+.lines_drawn = $1f
+.window_height = $3d
+.p_text = $3e
+	pha
+	jsr field.draw_window_content
+	pla
+	;tax
+	;;assertion the below will be always true.
+	;ldy #0
+	;lda [.p_text],y
+	;bne .done
+
+	inc <.lines_drawn
+	;cpx #TEXTD_WANT_ONLY_LOWER
+	cmp #TEXTD_WANT_ONLY_LOWER
+	beq .test_end
+		inc <.lines_drawn
+.test_end:
+	lda <.window_height
+	sec
+	sbc <.lines_drawn
+	bne field_x.fill_to_bottom.loop
+.done:
+	rts
 ;======================================================================================================
 	.ifdef TEST_BLACKOUT_ON_WINDOW
 field_x.blackout_1frame:
