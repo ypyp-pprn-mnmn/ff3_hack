@@ -1064,6 +1064,7 @@ field.draw_string_in_window:	;;$eec0
 .text_bank = $93
 .p_text = $3e
 .p_text_line = $1c
+.menu_item_continue_building = $1e
 .lines_drawn = $1f
 ;; ---
 .program_bank = $57
@@ -1093,7 +1094,7 @@ field.draw_string_in_window:	;;$eec0
 	lda #$00
 	sta <.output_index
 	sta <.lines_drawn	;$1F
-	sta <$1e
+	sta <.menu_item_continue_building	;$1e
 	jsr textd.draw_in_box	;$eefa
 	;bcs .more_to_draw	;$EEF3
 	bcc .completed
