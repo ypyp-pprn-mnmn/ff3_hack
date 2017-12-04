@@ -201,11 +201,9 @@ field_x.setup_paramters:
 	clc
 	adc <.top
 	sta <.height_temp	;;<- bottom = (top + height -1)
-	cmp #29
+	cmp #30
 	tya	;;A <- Y: height
 	bcc .no_wrap_y
-		;sec
-		;lda #30
 		lda #29	;;as crossed the boundary, bottom corner must not be excluded
 		;;carry is always set
 		sbc <.top
