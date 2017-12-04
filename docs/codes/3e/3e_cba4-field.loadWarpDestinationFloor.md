@@ -1,13 +1,13 @@
 ﻿
-# $3e:cba4 field::loadWarpDestinationFloor
 
+# $3e:cba4 field::loadWarpDestinationFloor
 
 ### args:
 +	[in] u8 $48 : warpId
 +	[in] u8 $78 : world
-//	u8 $00:8a00[0x100] : warp id => floor id for "floating land"
-//	u8 $00:8b00[0x100] : warp id => floor id for "under world"
-//	u16 $11:8000[0x100] : linear offset from $11:8000
++	u8 $00:8a00[0x100] : warp id => floor id for "floating land"
++	u8 $00:8b00[0x100] : warp id => floor id for "under world"
++	u16 $11:8000[0x100] : linear offset from $11:8000
 
 ### code:
 ```js
@@ -48,6 +48,7 @@ $cbf2:
 	return $3a:8503();
 }
 ```
+
 
 
 
