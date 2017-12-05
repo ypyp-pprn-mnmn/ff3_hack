@@ -442,15 +442,15 @@ field_x.fill_to_bottom:
 	pha
 	jsr field.draw_window_content
 	pla
-	;tax
-	;;assertion the below will be always true.
-	;ldy #0
-	;lda [.p_text],y
-	;bne .done
+	tax
+	;; checks if this call is made on the text end
+	ldy #0
+	lda [.p_text],y
+	bne .done
 
 	inc <.lines_drawn
-	;cpx #TEXTD_WANT_ONLY_LOWER
-	cmp #TEXTD_WANT_ONLY_LOWER
+	cpx #TEXTD_WANT_ONLY_LOWER
+	;cmp #TEXTD_WANT_ONLY_LOWER
 	beq .test_end
 		inc <.lines_drawn
 .test_end:
