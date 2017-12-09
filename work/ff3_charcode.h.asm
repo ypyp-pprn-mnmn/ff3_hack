@@ -39,6 +39,10 @@ CHAR.LEADER_NAME = $0c
 CHAR.UNKNOWN_0D = $0d
 CHAR.NOT_IMPL_0E = $0e
 CHAR.DUSTBOX = $0f
+
+    .ifdef STOMACH_AMOUNT_1BYTE
+CHAR_X.ITEM_AMOUNT_IN_STOMACH_1BYTE = $0e
+    .endif
 ;;
 ;;10-13: status of a player character. lower 2-bits represents an index of character.
 CHAR.PLAYER1_PARAMS = $10   ;param = kind of parameter
