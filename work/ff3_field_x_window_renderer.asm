@@ -14,6 +14,9 @@
 
 field_x.RENDERER_BEGIN:
 ;--------------------------------------------------------------------------------------------------
+
+;==================================================================================================
+	.if 0
 field_x.update_ppu_attr_table:
 .left = $38
 .top = $39	;in 8x8
@@ -388,6 +391,9 @@ field_x.do_render_border:
 	inc <.render_sequence
 	rts
 
+	.endif ;0
+
+;==================================================================================================
 ;in: A = offset Y, X = offset X
 ;out: A = vram high, X = vram low
 field_x.map_coords_to_vram:
@@ -460,21 +466,39 @@ field_x.fill_to_bottom:
 	bne field_x.fill_to_bottom.loop
 .done:
 	rts
-;======================================================================================================
-	.ifdef TEST_BLACKOUT_ON_WINDOW
-field_x.blackout_1frame:
-	lda #%00000110
-	sta $2001
+;==================================================================================================
+	.if 0
+	lda <.in_menu_mode
+	bne .post_attr_update
+		jsr field.init_window_attr_buffer	;ed56
+		lda <.height
+		pha
+		ldy <.beginY
+.setupAttributes:
+		sty <.currentY
+		jsr field.update_window_attr_buff	;$c98f
+		ldy <.currentY
+		iny
+		;; field.updateTileAttrCache() isn't prepared for cases that window crosses vertical boundary (which is at 0x1e)
+		;; that is, if currentY > 0x1e, updated attributes are placed 1 row above where it should be in.
+		;; so here handles as a wrokaround wrapping vertical coordinates.
+		cpy #30	;; wrap around
+		bne .no_wrap
+			ldy #0
+	.no_wrap:
+		pla
+		sec
+		sbc #1
+		pha
+		bne .setupAttributes
 
-	jsr waitNmiBySetHandler
-	inc <field.frame_counter
-	jsr field.sync_ppu_scroll	;if omitted, noticable glithces arose in town conversations
-	jsr field.callSoundDriver
-	lda #%00011110
-	sta $2001	
-	rts
-	.endif	;TEST_BLACKOUT_ON_WINDOW
-;======================================================================================================
+	.update_ppu:
+		pla	;dispose
+		jsr field_x.begin_ppu_update	;wait_nmi+do_dma. if omitted dma, sprites are shown on top of window
+		jsr field_x.update_ppu_attr_table
+		jsr field_x.end_ppu_update	;sync_ppu_scroll+call_sound_driver
+	.endif ;0
+;==================================================================================================
     VERIFY_PC_TO_PATCH_END textd
 field_x.RENDERER_END:
     .endif  ;FAST_FIELD_WINDOW
