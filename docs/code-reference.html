@@ -8,7 +8,7 @@
     <meta name="generator" content="pandoc">
     <meta name="description" content>
     <meta name="author" content="ypyp-pprn-mnmn (aka “301”)">
-    <!-- generated-at 2017-12-05 02:18:42+0900 -->
+    <!-- generated-at 2017-12-09 16:20:25+0900 -->
     <title>FF3@FC Original Code Documentation</title>
 
     <!-- Bootstrap core CSS -->
@@ -795,7 +795,7 @@ code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Infor
           <li><a href="#fece5-fielddraw_window_top">$3f:ece5 field::draw_window_top</a></li>
           <li><a href="#fecf5-restore_banks_by_57">$3f:ecf5 restore_banks_by_$57</a></li>
           <li><a href="#fecfa-fielddraw_in_place_window">$3f:ecfa field::draw_in_place_window</a></li>
-          <li><a href="#fed02-fielddraw_window_box">$3f:ed02 field::draw_window_box</a></li>
+          <li><a href="#fed02-field.draw_window_box">$3f:ed02 field.draw_window_box</a></li>
           <li><a href="#fed56-fieldinit_window_attr_buffer">$3f:ed56 field::init_window_attr_buffer</a></li>
           <li><a href="#fed61-fieldget_window_region">$3f:ed61 field::get_window_region</a></li>
           <li><a href="#fedc6-fielddraw_window_row">$3f:edc6 field::draw_window_row</a></li>
@@ -16992,39 +16992,60 @@ $b874:
 <div class="sourceLine" id="cb582-6" data-line-number="6"><span class="op">}</span></div></code></pre>
 <p><strong>fall through</strong></p>
 <hr />
-<h1 id="fed02-fielddraw_window_box">$3f:ed02 field::draw_window_box</h1>
+<h1 id="fed02-field.draw_window_box">$3f:ed02 field.draw_window_box</h1>
+<blockquote>
+<p>Renders window borders and fills inner area with spaces for the given window</p>
+</blockquote>
 <h3 id="args-230">args:</h3>
 <h4 id="in-5">in:</h4>
 <ul>
 <li>u8 $37 : in_menu_mode (1: yes; skip some initializations)</li>
+<li>u8 $96 : window_type (only effective if $37 == 0)</li>
 </ul>
-<h4 id="out-5">out:</h4>
+<h4 id="inout">in/out:</h4>
+<p>if $37 == 1, caller must supply all of the values listed in this secion as with border included. on exit, these values have adjusted to exclude borders.</p>
 <ul>
 <li>u8 $38 : window_left (in 8x8 tile unit)</li>
 <li>u8 $39 : window_top</li>
-<li>u8 $3a : offset_x (or column in drawing)</li>
-<li>u8 $3b : offset_y (or row in drawing)</li>
 <li>u8 $3c : window_width (border excl.)</li>
 <li>u8 $3d : window_height (border excl.)</li>
 </ul>
+<h4 id="local-variables-21">local variables:</h4>
+<ul>
+<li>u8 $3a : offset_x (or column in drawing)</li>
+<li>u8 $3b : offset_y (or row in drawing)</li>
+</ul>
 <h3 id="callers-22">callers:</h3>
 <ul>
-<li>$3c:8efd</li>
-<li>$3c:8f0e</li>
-<li>$3c:8fd5</li>
-<li>$3c:90b1</li>
-<li>$3d:aaf4 (jmp)</li>
+<li><code>1E:8EFD:20 02 ED  JSR field::draw_window_box</code> @ $3c:8ef5 ?; window_type = 0</li>
+<li><code>1E:8F0E:20 02 ED  JSR field::draw_window_box</code> @ $3c:8f04 ?; window_type = 1</li>
+<li><code>1E:8FD5:20 02 ED  JSR field::draw_window_box</code> @ $3c:8fd1 ?; window_type = 3</li>
+<li><code>1E:90B1:20 02 ED  JSR field::draw_window_box</code> @ $3c:90ad ?; window_type = 2</li>
+<li><code>1E:AAF4:4C 02 ED  JMP field::draw_window_box</code> @ $3d:aaf1 field::draw_menu_window</li>
+<li>(by falling through) @$3f:ecfa field::draw_in_place_window</li>
+</ul>
+<h3 id="notes-49">notes:</h3>
+<p>This logic plays key role in drawing window, both for menu windows and in-place (rendered directly on top of floor maps) windows. Usually window drawing is performed as follows:</p>
+<ol type="1">
+<li><p>Call this logic to fill in background with window parts and setup BG attributes if necessary (the in-palce window case). In cases of the menu window, BG attributes have alreday been setup in another logic and should not be changed.</p></li>
+<li><p>Subsequently call other drawing logics which overwrites background with contents (aka “text”) in the window, in 1 frame per 2 consecutive window rows, which is equivalent to 1 text line. These logics rely on window metrics variables, which is initially setup on this logic, and they don’t change BG attributes anyway.</p></li>
+</ol>
+<p>In the scope of this logic, it is safe to use the address range $0780-$07ff (inclusive) in a destructive way. The original code uses this area as temporary buffer for rendering purporses and discards its contents on exit. More specifically, addresses are utilized as follows:</p>
+<ul>
+<li>$0780-$07bf: used for PPU name table buffer,</li>
+<li>$07c0-$07cf: used for PPU attr table buffer,</li>
+<li>$07d0-$07ff: used for 3-tuple of array that in each entry defines (vram address(high&amp;low), value to tranfer)</li>
 </ul>
 <h3 id="code-239">code:</h3>
 <pre class="sourceCode js" id="cb583"><code class="sourceCode javascript"><div class="sourceLine" id="cb583-1" data-line-number="1"><span class="op">{</span></div>
 <div class="sourceLine" id="cb583-2" data-line-number="2">    x <span class="op">=</span> $96<span class="op">;</span></div>
-<div class="sourceLine" id="cb583-3" data-line-number="3">    <span class="at">$ed61</span>()<span class="op">;</span>    <span class="co">//get_window_metrics</span></div>
+<div class="sourceLine" id="cb583-3" data-line-number="3">    <span class="va">field</span>.<span class="at">get_window_region</span>()<span class="op">;</span>  <span class="co">//$ed61</span></div>
 <div class="sourceLine" id="cb583-4" data-line-number="4">    $3b <span class="op">=</span> $39<span class="op">;</span></div>
 <div class="sourceLine" id="cb583-5" data-line-number="5">    <span class="at">$f670</span>()<span class="op">;</span>    <span class="co">//field_calc_draw_width_and_init_window_tile_buffer</span></div>
-<div class="sourceLine" id="cb583-6" data-line-number="6">    <span class="dt">field</span><span class="op">::</span><span class="at">fill_07c0_ff</span>()<span class="op">;</span>  <span class="co">//$ed56</span></div>
-<div class="sourceLine" id="cb583-7" data-line-number="7">    <span class="at">push</span> ( $3d <span class="op">-</span> <span class="dv">2</span> )<span class="op">;</span></div>
+<div class="sourceLine" id="cb583-6" data-line-number="6">    <span class="va">field</span>.<span class="at">init_window_attr_buffer</span>()<span class="op">;</span>    <span class="co">//$ed56</span></div>
+<div class="sourceLine" id="cb583-7" data-line-number="7">    <span class="at">push</span>( $3d <span class="op">-</span> <span class="dv">2</span> )<span class="op">;</span></div>
 <div class="sourceLine" id="cb583-8" data-line-number="8">    <span class="dt">field</span><span class="op">::</span><span class="at">getWindowTilesForTop</span>()<span class="op">;</span>  <span class="co">//$edf6();</span></div>
-<div class="sourceLine" id="cb583-9" data-line-number="9">    <span class="dt">field</span><span class="op">::</span><span class="at">drawWindowLine</span>()<span class="op">;</span>    <span class="co">//$edc6();</span></div>
+<div class="sourceLine" id="cb583-9" data-line-number="9">    <span class="va">field</span>.<span class="at">draw_window_row</span>()<span class="op">;</span>    <span class="co">//$edc6();</span></div>
 <div class="sourceLine" id="cb583-10" data-line-number="10">    a <span class="op">=</span> pop <span class="op">-</span> <span class="dv">2</span><span class="op">;</span></div>
 <div class="sourceLine" id="cb583-11" data-line-number="11">    <span class="cf">if</span> (a <span class="op">!=</span> <span class="dv">0</span>) <span class="op">{</span> <span class="co">//beq ed3b</span></div>
 <div class="sourceLine" id="cb583-12" data-line-number="12"><span class="dt">$ed23</span><span class="op">:</span></div>
@@ -17037,7 +17058,7 @@ $b874:
 <div class="sourceLine" id="cb583-19" data-line-number="19">            <span class="cf">do</span> <span class="op">{</span></div>
 <div class="sourceLine" id="cb583-20" data-line-number="20">                push a<span class="op">;</span></div>
 <div class="sourceLine" id="cb583-21" data-line-number="21">                <span class="dt">field</span><span class="op">::</span><span class="at">getWindowTilesForMiddle</span>()<span class="op">;</span>   <span class="co">//$ee1d();</span></div>
-<div class="sourceLine" id="cb583-22" data-line-number="22">                <span class="dt">field</span><span class="op">::</span><span class="at">drawWindowLine</span>()<span class="op">;</span>    <span class="co">//$edc6();</span></div>
+<div class="sourceLine" id="cb583-22" data-line-number="22">                <span class="va">field</span>.<span class="at">draw_window_row</span>()<span class="op">;</span>    <span class="co">//$edc6();</span></div>
 <div class="sourceLine" id="cb583-23" data-line-number="23">                a <span class="op">=</span> pop a <span class="op">-</span> <span class="dv">2</span><span class="op">;</span></div>
 <div class="sourceLine" id="cb583-24" data-line-number="24">                <span class="cf">if</span> (a <span class="op">==</span> <span class="dv">0</span>) goto $ed3b</div>
 <div class="sourceLine" id="cb583-25" data-line-number="25">            <span class="op">}</span> <span class="cf">while</span> (a <span class="op">&gt;=</span> <span class="dv">0</span>)<span class="op">;</span> <span class="co">//bcs ed2a</span></div>
@@ -17047,12 +17068,12 @@ $b874:
 <div class="sourceLine" id="cb583-29" data-line-number="29">    <span class="op">}</span></div>
 <div class="sourceLine" id="cb583-30" data-line-number="30"><span class="dt">$ed3b</span><span class="op">:</span></div>
 <div class="sourceLine" id="cb583-31" data-line-number="31">    <span class="dt">field</span><span class="op">::</span><span class="at">getWindowTilesForBottom</span>()<span class="co">//$ee3e();</span></div>
-<div class="sourceLine" id="cb583-32" data-line-number="32">    <span class="dt">field</span><span class="op">::</span><span class="at">drawWindowLine</span>()<span class="op">;</span>    <span class="co">//$edc6();</span></div>
+<div class="sourceLine" id="cb583-32" data-line-number="32">    <span class="va">field</span>.<span class="at">draw_window_row</span>()<span class="op">;</span>    <span class="co">//$edc6();</span></div>
 <div class="sourceLine" id="cb583-33" data-line-number="33"><span class="dt">$ed41</span><span class="op">:</span></div>
 <div class="sourceLine" id="cb583-34" data-line-number="34">    $38<span class="op">++;</span> $39<span class="op">++;</span></div>
 <div class="sourceLine" id="cb583-35" data-line-number="35">    $3c <span class="op">-=</span> <span class="dv">2</span><span class="op">;</span></div>
 <div class="sourceLine" id="cb583-36" data-line-number="36">    $3d <span class="op">-=</span> <span class="dv">2</span><span class="op">;</span></div>
-<div class="sourceLine" id="cb583-37" data-line-number="37">    <span class="cf">return</span> <span class="at">restoreBanksBy$57</span>()<span class="op">;</span> <span class="co">//jmp $ecf5();</span></div>
+<div class="sourceLine" id="cb583-37" data-line-number="37">    <span class="cf">return</span> <span class="va">field</span>.<span class="at">restore_banks</span>()<span class="op">;</span>   <span class="co">//jmp $ecf5();</span></div>
 <div class="sourceLine" id="cb583-38" data-line-number="38"><span class="dt">$ed56</span><span class="op">:</span></div>
 <div class="sourceLine" id="cb583-39" data-line-number="39"><span class="op">}</span></div></code></pre>
 <hr />
@@ -17085,7 +17106,7 @@ $b874:
 <li>u8 $2f: floor_scroll_y (in 16x16 unit)</li>
 <li>u8 $37: in_menu_mode</li>
 </ul>
-<h4 id="out-6">out:</h4>
+<h4 id="out-5">out:</h4>
 <ul>
 <li>u8 $38: window_left (border included)</li>
 <li>u8 $39: window_top (border included)</li>
@@ -17102,7 +17123,7 @@ $b874:
 <ul>
 <li>$3f:ed02 field::draw_window_box</li>
 </ul>
-<h3 id="notes-49">notes:</h3>
+<h3 id="notes-50">notes:</h3>
 <ol type="1">
 <li><p>to reflect changes in screen those made by <code>field.hide_sprites_under_window</code>, which is called from within this function, caller must upload sprite attr onto OAM, such as:</p>
 <pre><code>lda #2
@@ -17282,7 +17303,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>u8 $92: string_id</li>
 <li>ptr $94: offset to string ptr table</li>
 </ul>
-<h4 id="out-7">out:</h4>
+<h4 id="out-6">out:</h4>
 <ul>
 <li>bool carry: more_to_draw //flagged cases could be tested at サロニアの図書館(オーエンのほん1)</li>
 <li>ptr $3e: offset to the string, assuming the bank it to be loaded is at 1st page (starting at $8000)</li>
@@ -17393,12 +17414,12 @@ sta $4014   ;DMA</code></pre></li>
 <li><code>1F:F345:4C FA EE  JMP field.eval_and_draw_string</code> @ ?</li>
 <li><code>1F:F387:4C FA EE  JMP field.eval_and_draw_string</code> @ ?</li>
 </ul>
-<h3 id="local-variables-21">local variables:</h3>
+<h3 id="local-variables-22">local variables:</h3>
 <ul>
 <li>u8 $80,81,82,83,85: scratch.</li>
 <li>u8 $84: scratch, usually having a byte immediately following the code byte</li>
 </ul>
-<h3 id="notes-50">notes:</h3>
+<h3 id="notes-51">notes:</h3>
 <p>no cpu registers preserved across the call, and there is no dependency on state of A,X,Y on entry. this somewhat large function is an entry point for individual handlers which process a particular charcter code. As being consisting of many cases, this function is being quite large. in some of those handlers, recursive calls are made to this function to ‘replace’ (or ‘eval’) embedded code. however, as this function depends on many variables, callers must take care of them.</p>
 <h3 id="code-250">code:</h3>
 <pre class="sourceCode js" id="cb595"><code class="sourceCode javascript"><div class="sourceLine" id="cb595-1" data-line-number="1"><span class="op">{</span></div>
@@ -17559,12 +17580,12 @@ sta $4014   ;DMA</code></pre></li>
 <li>u8 $97: window scroll x?</li>
 <li>u8 $98: window scroll y?</li>
 </ul>
-<h3 id="local-variables-22">local variables:</h3>
+<h3 id="local-variables-23">local variables:</h3>
 <ul>
 <li>u8 $80,81,82,83: scratch.</li>
 <li>u8 $84: parameter byte</li>
 </ul>
-<h3 id="notes-51">notes:</h3>
+<h3 id="notes-52">notes:</h3>
 <p>charcodes ranged [10…28) are defined as 2-byte opcodes (or ‘variable replacement’), given that the codes have followed by additional one byte for parameter.</p>
 <p>for code details, please refer to <a href="https://github.com/ypyp-pprn-mnmn/ff3_hack/tree/master/work/ff3_charcode.h.asm">source code from the patch</a>.</p>
 <h3 id="code-251">code:</h3>
@@ -17718,7 +17739,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li><code>jsr field.get_max_available_job_id  ; F17E 20 8A F3</code> @ textd.eval_replacement (handler for 0x1e)</li>
 </ul>
-<h3 id="notes-52">notes:</h3>
+<h3 id="notes-53">notes:</h3>
 <p>this function has also set X to the same value of A on exit, however, no callers uses X as such.</p>
 <h3 id="code-253">code:</h3>
 <pre class="sourceCode js" id="cb598"><code class="sourceCode javascript"><div class="sourceLine" id="cb598-1" data-line-number="1"><span class="op">{</span></div>
@@ -17769,11 +17790,11 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li><code>jsr $F3AC ; F12C 20 AC F3</code> @ textd.eval_replacement (case 0x1b)</li>
 </ul>
-<h3 id="local-variables-23">local variables:</h3>
+<h3 id="local-variables-24">local variables:</h3>
 <ul>
 <li>none. all variables seem to be either set or referenced by functions outside.</li>
 </ul>
-<h3 id="notes-53">notes:</h3>
+<h3 id="notes-54">notes:</h3>
 <p>this function is very similar (or almost identical) to the logic embedded in the handler for char codes 0x15-0x17. only the difference here is that this function expects the parameter byte ($84) contains an index into the item in stomach, whereas another one expects offset to next column.</p>
 <h3 id="pseudocode-53">(pseudo)code:</h3>
 <pre class="sourceCode js" id="cb599"><code class="sourceCode javascript"><div class="sourceLine" id="cb599-1" data-line-number="1"><span class="op">{</span></div>
@@ -17827,9 +17848,9 @@ sta $4014   ;DMA</code></pre></li>
 <li><code>F2D9 20 E4 F3</code></li>
 <li><code>F334 20 E4 F3</code></li>
 </ul>
-<h3 id="local-variables-24">local variables:</h3>
+<h3 id="local-variables-25">local variables:</h3>
 <p>none.</p>
-<h3 id="notes-54">notes:</h3>
+<h3 id="notes-55">notes:</h3>
 <h3 id="pseudocode-54">(pseudo)code:</h3>
 <pre class="sourceCode js" id="cb600"><code class="sourceCode javascript"><div class="sourceLine" id="cb600-1" data-line-number="1"><span class="op">{</span></div>
 <div class="sourceLine" id="cb600-2" data-line-number="2"><span class="co">/*</span></div>
@@ -17859,9 +17880,9 @@ sta $4014   ;DMA</code></pre></li>
 <li><code>F342 20 ED F3</code></li>
 <li><code>F0DB 20 ED F3</code></li>
 </ul>
-<h3 id="local-variables-25">local variables:</h3>
+<h3 id="local-variables-26">local variables:</h3>
 <p>none.</p>
-<h3 id="notes-55">notes:</h3>
+<h3 id="notes-56">notes:</h3>
 <h3 id="pseudocode-55">(pseudo)code:</h3>
 <pre class="sourceCode js" id="cb601"><code class="sourceCode javascript"><div class="sourceLine" id="cb601-1" data-line-number="1"><span class="op">{</span></div>
 <div class="sourceLine" id="cb601-2" data-line-number="2"><span class="co">/*</span></div>
@@ -18011,7 +18032,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>$3f:ef73 @ field::eval_replacement</li>
 <li>$3f:f5b8 @ floor::getTreasure</li>
 </ul>
-<h3 id="notes-56">notes:</h3>
+<h3 id="notes-57">notes:</h3>
 <p>caller expects y has been unchanged</p>
 <h3 id="code-257">code:</h3>
 <pre class="sourceCode js" id="cb605"><code class="sourceCode javascript"><div class="sourceLine" id="cb605-1" data-line-number="1"><span class="op">{</span></div>
@@ -18104,7 +18125,7 @@ sta $4014   ;DMA</code></pre></li>
 </ul></li>
 <li>in,out u8 $f0: window scroll frame counter.</li>
 </ul>
-<h3 id="notes-57">notes:</h3>
+<h3 id="notes-58">notes:</h3>
 <p>the disposition code 0x09 will be returned from <code>textd.draw_in_box</code> when char code 0x0a has encountered during processing.</p>
 <h3 id="code-262">code:</h3>
 <pre class="sourceCode js" id="cb610"><code class="sourceCode javascript"><div class="sourceLine" id="cb610-1" data-line-number="1"><span class="op">{</span></div>
@@ -18134,7 +18155,7 @@ sta $4014   ;DMA</code></pre></li>
 <li><a href="#in-2">in</a> u8 $39 : offset per 2 line</li>
 <li>[in,out] u8 $3b : offset y (wrap-around)</li>
 </ul>
-<h3 id="notes-58">notes:</h3>
+<h3 id="notes-59">notes:</h3>
 <p>the disposition code 0x09 will be returned from <code>textd.draw_in_box</code> when char code 0x0a has encountered during processing.</p>
 <h3 id="code-263">code:</h3>
 <pre class="sourceCode js" id="cb611"><code class="sourceCode javascript"><div class="sourceLine" id="cb611-1" data-line-number="1"><span class="op">{</span></div>
@@ -18181,7 +18202,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb611-42" data-line-number="42"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ff727-switch_to_character_logics_bank">$3f:f727 switch_to_character_logics_bank</h1>
-<h3 id="notes-59">notes:</h3>
+<h3 id="notes-60">notes:</h3>
 <p>This logic’s implementation is identical to <code>$3f:eb28 switch_to_floor_logics_bank</code>. It might not be a bug, as how the banks are arranged to place the logic is completely physical matter, hence it is irrevant to programmers’ original intention.</p>
 <h3 id="code-264">code:</h3>
 <pre class="sourceCode js" id="cb612"><code class="sourceCode javascript"><div class="sourceLine" id="cb612-1" data-line-number="1"><span class="op">{</span></div>
@@ -18296,11 +18317,11 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li>yet to be investigated</li>
 </ul>
-<h3 id="local-variables-26">local variables:</h3>
+<h3 id="local-variables-27">local variables:</h3>
 <ul>
 <li>none</li>
 </ul>
-<h3 id="notes-60">notes:</h3>
+<h3 id="notes-61">notes:</h3>
 <h3 id="pseudocode-56">(pseudo)code:</h3>
 <pre class="sourceCode js" id="cb620"><code class="sourceCode javascript"><div class="sourceLine" id="cb620-1" data-line-number="1"><span class="op">{</span></div>
 <div class="sourceLine" id="cb620-2" data-line-number="2">    <span class="va">ppud</span>.<span class="at">await_nmi_completion</span>()<span class="op">;</span>    <span class="co">//$fb80</span></div>
@@ -18504,7 +18525,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li><a href="#in-2">in</a> u8 A : 9d53_param</li>
 </ul>
-<h3 id="notes-61">notes:</h3>
+<h3 id="notes-62">notes:</h3>
 <p>各種ゲームシーン表示系のルーチンから呼ばれる</p>
 <h3 id="code-282">code:</h3>
 <pre class="sourceCode js" id="cb631"><code class="sourceCode javascript"><div class="sourceLine" id="cb631-1" data-line-number="1"><span class="op">{</span></div>
@@ -18528,7 +18549,7 @@ sta $4014   ;DMA</code></pre></li>
 <li><a href="#in-2">in</a> x : backgroound sight graphics</li>
 <li><a href="#in-2">in</a> y : battleMode?</li>
 </ul>
-<h3 id="notes-62">notes:</h3>
+<h3 id="notes-63">notes:</h3>
 <pre><code>least value of S = $1a = $20 - 6</code></pre>
 <h3 id="code-284">code:</h3>
 <pre class="sourceCode js" id="cb634"><code class="sourceCode javascript"><div class="sourceLine" id="cb634-1" data-line-number="1"><span class="op">{</span></div>
@@ -18623,7 +18644,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li>[in,out] u8</li>
 </ul>
-<h3 id="notes-63">notes:</h3>
+<h3 id="notes-64">notes:</h3>
 <p>戦闘中のハンドラ。 バンク変更中を考慮している。</p>
 <h3 id="code-289">code:</h3>
 <pre class="sourceCode js" id="cb639"><code class="sourceCode javascript"><div class="sourceLine" id="cb639-1" data-line-number="1"><span class="op">{</span></div>
@@ -18660,7 +18681,7 @@ sta $4014   ;DMA</code></pre></li>
 <li><a href="#out-2">out</a> u8 $02: irq countdown?</li>
 <li><a href="#in-2">in</a> u8 $03: irq countdown?</li>
 </ul>
-<h3 id="notes-64">notes:</h3>
+<h3 id="notes-65">notes:</h3>
 <ul>
 <li>the ppu set VBlank flag at 2nd tick of scanline 241, where the VBlank NMI also occurs.</li>
 <li>cpu cycles this handler takes to execute is depending on the value at $7cf3:
@@ -18697,7 +18718,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>otherwise: pending nmi completion</li>
 </ul></li>
 </ul>
-<h3 id="notes-65">notes:</h3>
+<h3 id="notes-66">notes:</h3>
 <p>$05 is set by <code>$3f:fb57 ppud.nmi_handler</code></p>
 <h3 id="code-291">code:</h3>
 <pre class="sourceCode js" id="cb641"><code class="sourceCode javascript"><div class="sourceLine" id="cb641-1" data-line-number="1"><span class="op">{</span></div>
@@ -18726,7 +18747,7 @@ sta $4014   ;DMA</code></pre></li>
 <li><a href="#in-2">in</a> u8 A : bankNo (per <em>16k</em> unit)</li>
 <li><a href="#out-2">out</a> u8 $ab : per16kBankNo</li>
 </ul>
-<h3 id="local-variables-27">local variables:</h3>
+<h3 id="local-variables-28">local variables:</h3>
 <ul>
 <li>u8 $a9 : page_lock (コマンド発行中のみincr) <span class="citation" data-cites="see">@see</span> <code>$3f$fb87 switch_16k_synchronized</code></li>
 </ul>
@@ -18799,7 +18820,7 @@ sta $4014   ;DMA</code></pre></li>
 <li><a href="#in-2">in</a> u8 $21 : randSystemIndex?</li>
 <li><a href="#out-2">out</a> u8 A : rand [x-a] の乱数値 上限も含む</li>
 </ul>
-<h3 id="notes-66">notes:</h3>
+<h3 id="notes-67">notes:</h3>
 <pre><code>上位8bitを$21で指定した系列から取得した乱数(0x00-0xFF),下位8bitを0x80とした16bit値(A)と最大と最小の差分(8bit)(B)を掛けて
 結果のbit16-23の8bitを乱数の基本値として採用する。
 結果のbit8-15=(diff*baseRand + diff&gt;&gt;1)が

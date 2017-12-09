@@ -84,7 +84,7 @@ $7000-$7f00 is available to both mode.
 
 ### disadvantages
 -   バッファが足らない(´・ω・)
--   枠と中身の合成が面倒( ˘•ω•˘ ).｡oஇ
+-   枠と中身の合成が面倒 パレットはもっと面倒( ˘•ω•˘ ).｡oஇ
 
 # 必要なモノ
 ## buffer
@@ -96,7 +96,8 @@ $7000-$7f00 is available to both mode.
     - 10 bytes = `lda #xx; sta $2006` x 2
     - window metricsから都度計算
 - attr変更は1/8tiles相当
-    - sourceは$03c0
+    - sourceは$0300 (画面全体のcache. 0x40 bytes x 2 BGs.)
+        - $07c0にも1行分あるけど、枠描画のタイミングで設定するので向いてない
 
 ## queing
 `$1f: lines_drawn`で行判定
@@ -109,13 +110,16 @@ $7000-$7f00 is available to both mode.
         - rtsを後ろにつけたコードを後ろから展開していけば自動的にそうなるのでよさげ(ﾉ・ω・)ﾉ
 - バッファが一杯になったらnmiを待つ
 - nmi handlerはバッファにあるだけ描画して、自身をハンドラから取り除く(平時のハンドラに戻す)
-    - 通常のハンドラの機能を実行するかは要検討
-        - sprite dma
-        - sound driver
-        - frame counter
+    - 通常のハンドラの機能を実行するかは要検討(基本的に`$3f:f692 field.draw_window_content`と同等にする)
+        - sprite dma　($f692はやってない。`$3f:edc6 field.draw_window_row`はやってる)
+            - window描画はmodal(=game stateのupdateがない)なので最初に1回やったら要らないかも…？
+            - field_x.advance_frameでもやってない(paging中にtextをscrollするためによぶやつ)
+        - sound driver (やってる)
+        - frame counter (やってる)
+        - reset scroll (やってる、というか描画したら必須)
 
 ## uploader code
-1. attr属性変更(2行ごと)
+1. attr属性変更(初回+2行ごと。1fで描画を4行以上できるなら、4行ごとでok)
     - vram addr
     - attr value
 
