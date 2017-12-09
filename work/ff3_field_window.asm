@@ -19,6 +19,103 @@ ff3_field_window_begin:
 	INIT_PATCH_EX field_window, $3f, $eb2d, $eefa, $eb2d
 ;field_x.BULK_PATCH_BEGIN:
 
+;------------------------------------------------------------------------------------------------------
+;;$3f:ecfa field::draw_in_place_window
+;;	typically called when object's message is to be shown
+;;callers:
+;;	$3f:ec8d field::show_window (original implementation only)
+;;	$3f:ec83 field::show_message_UNKNOWN
+field.draw_inplace_window:
+;; patch out external callers {
+;;}
+.window_id = $96
+	sta <.window_id
+	lda #0
+	sta <$24
+	sta <$25
+	;;originally fall through to $3f:ed02 field::draw_window_box
+	FALL_THROUGH_TO field.draw_window_box
+
+	;VERIFY_PC $ed02
+;------------------------------------------------------------------------------------------------------
+	;INIT_PATCH $3f,$ed02,$ed56
+	;INIT_PATCH $3f,$ed02,$ee9a
+;;$3f:ed02 field::draw_window_box
+;;	This logic plays key role in drawing window, both for menu windows and in-place windows.
+;;	Usually window drawing is performed as follows:
+;;	1)	Call this logic to fill in background with window parts
+;;		and setup BG attributes if necessary (the in-palce window case).
+;;		In cases of the menu window, BG attributes have alreday been setup in another logic
+;;		and should not be changed.
+;;	2)	Subsequently call other drawing logics which overwrites background with
+;;		content (aka string) in the window, 2 consecutive window rows,
+;;		which is equivalent to 1 text line, per 1 frame.
+;;		These logics rely on window metrics variables, which is initially setup on this logic,
+;;		and they don't change BG attributes anyway.
+;;NOTEs:
+;;	in the scope of this logic, it is safe to use the address range $0780-$07ff (inclusive) in a destructive way.
+;;	The original code uses this area as temporary buffer for rendering purporses
+;;	and discards its contents on exit.
+;;	more specifically, address are utilized as follows:
+;;		$0780-$07bf: used for PPU name table buffer,
+;;		$07c0-$07cf: used for PPU attr table buffer,
+;;		$07d0-$07ff: used for 3-tuple of array that in each entry defines
+;;			(vram address(high&low), value to tranfer)
+;;callers:
+;;	1E:8EFD:20 02 ED  JSR field::draw_window_box	@ $3c:8ef5 ?; window_type = 0
+;;	1E:8F0E:20 02 ED  JSR field::draw_window_box	@ $3c:8f04 ?; window_type = 1
+;;	1E:8FD5:20 02 ED  JSR field::draw_window_box	@ $3c:8fd1 ?; window_type = 3
+;;	1E:90B1:20 02 ED  JSR field::draw_window_box	@ $3c:90ad ?; window_type = 2
+;;	1E:AAF4:4C 02 ED  JMP field::draw_window_box	@ $3d:aaf1 field::draw_menu_window_box
+;;	(by falling through) @$3f:ecfa field::draw_in_place_window
+field.draw_window_box:	;;$ed02
+;; patch out external callers {
+	FIX_ADDR_ON_CALLER $3c,$8efd+1
+	FIX_ADDR_ON_CALLER $3c,$8f0e+1
+	FIX_ADDR_ON_CALLER $3c,$8fd5+1
+	FIX_ADDR_ON_CALLER $3c,$90b1+1
+	FIX_ADDR_ON_CALLER $3d,$aaf4+1
+;;}
+;;[in]
+.window_type = $96
+	ldx <.window_type
+	jsr field.get_window_region	;$ed61
+
+field_x.draw_window_box_with_region:
+.in_menu_mode = $37
+;; defer all rendering to $3f:f692 field.draw_window_content
+; adjust metrics as borders don't need further drawing...
+	jsr field_x.shrink_window_metrics
+	jmp field.restore_banks	;$ecf5
+
+	;VERIFY_PC $ed56
+;------------------------------------------------------------------------------------------------------
+	;INIT_PATCH $3f,$edc6,$ede1
+	.ifndef FAST_FIELD_WINDOW
+field.draw_window_row:	;;$3f:edc6 field::draw_window_row
+;;callers:
+;;	$3f:ece5 field::draw_window_top
+;;	$3f:ed02 field::draw_window_box (only the original implementation)
+.width = $3c
+.iChar = $90
+	lda <.width
+	sta <.iChar
+	;jsr field.updateTileAttrCache	;$c98f
+	jsr field_x.begin_ppu_update
+	jsr field.upload_window_content	;$f6aa
+	;jsr field.setTileAttrForWindow	;$c9a9
+	;;fall through.
+	.endif	;;FAST_FIELD_WINDOW
+
+field_x.end_ppu_update:
+	jsr field.sync_ppu_scroll	;$ede1
+	jmp field.callSoundDriver	;$c750
+
+field_x.begin_ppu_update:
+	jsr waitNmiBySetHandler	;$ff00
+	jmp ppud.do_sprite_dma
+	;VERIFY_PC $ede1
+;--------------------------------------------------------------------------------------------------
 ;;# $3f:eb2d field.scrolldown_item_window
 ;;<details>
 ;;
@@ -295,118 +392,6 @@ field_x.unseek_window_text:
 ;;below 2 logics are moved for space optimization:
 ;;# $3f:ec0c field::show_sprites_on_lower_half_screen
 ;;# $3f:ec12 field::show_sprites_on_region7 (bug?)
-;------------------------------------------------------------------------------------------------------
-;;$3f:ecfa field::draw_in_place_window
-;;	typically called when object's message is to be shown
-;;callers:
-;;	$3f:ec8d field::show_window (original implementation only)
-;;	$3f:ec83 field::show_message_UNKNOWN
-field.draw_inplace_window:
-;; patch out external callers {
-;;}
-.window_id = $96
-	sta <.window_id
-	lda #0
-	sta <$24
-	sta <$25
-	;;originally fall through to $3f:ed02 field::draw_window_box
-	FALL_THROUGH_TO field.draw_window_box
-
-	;VERIFY_PC $ed02
-;------------------------------------------------------------------------------------------------------
-	;INIT_PATCH $3f,$ed02,$ed56
-	;INIT_PATCH $3f,$ed02,$ee9a
-;;$3f:ed02 field::draw_window_box
-;;	This logic plays key role in drawing window, both for menu windows and in-place windows.
-;;	Usually window drawing is performed as follows:
-;;	1)	Call this logic to fill in background with window parts
-;;		and setup BG attributes if necessary (the in-palce window case).
-;;		In cases of the menu window, BG attributes have alreday been setup in another logic
-;;		and should not be changed.
-;;	2)	Subsequently call other drawing logics which overwrites background with
-;;		content (aka string) in the window, 2 consecutive window rows,
-;;		which is equivalent to 1 text line, per 1 frame.
-;;		These logics rely on window metrics variables, which is initially setup on this logic,
-;;		and they don't change BG attributes anyway.
-;;NOTEs:
-;;	in the scope of this logic, it is safe to use the address range $0780-$07ff (inclusive) in a destructive way.
-;;	The original code uses this area as temporary buffer for rendering purporses
-;;	and discards its contents on exit.
-;;	more specifically, address are utilized as follows:
-;;		$0780-$07bf: used for PPU name table buffer,
-;;		$07c0-$07cf: used for PPU attr table buffer,
-;;		$07d0-$07ff: used for 3-tuple of array that in each entry defines
-;;			(vram address(high&low), value to tranfer)
-;;callers:
-;;	1E:8EFD:20 02 ED  JSR field::draw_window_box	@ $3c:8ef5 ?; window_type = 0
-;;	1E:8F0E:20 02 ED  JSR field::draw_window_box	@ $3c:8f04 ?; window_type = 1
-;;	1E:8FD5:20 02 ED  JSR field::draw_window_box	@ $3c:8fd1 ?; window_type = 3
-;;	1E:90B1:20 02 ED  JSR field::draw_window_box	@ $3c:90ad ?; window_type = 2
-;;	1E:AAF4:4C 02 ED  JMP field::draw_window_box	@ $3d:aaf1 field::draw_menu_window_box
-;;	(by falling through) @$3f:ecfa field::draw_in_place_window
-field.draw_window_box:	;;$ed02
-;; patch out external callers {
-	FIX_ADDR_ON_CALLER $3c,$8efd+1
-	FIX_ADDR_ON_CALLER $3c,$8f0e+1
-	FIX_ADDR_ON_CALLER $3c,$8fd5+1
-	FIX_ADDR_ON_CALLER $3c,$90b1+1
-	FIX_ADDR_ON_CALLER $3d,$aaf4+1
-;;}
-;;[in]
-.window_type = $96
-	ldx <.window_type
-	jsr field.get_window_region	;$ed61
-
-field_x.draw_window_box_with_region:
-.skipAttrUpdate = $37	;;or in more conceptual, 'is in menu window'
-;;[in,out]
-.beginX = $38	;loaded by field.get_window_region
-.beginY = $39	;loaded by field.get_window_region
-.currentY = $3b
-.width = $3c	;loaded by field.get_window_region
-.height = $3d	;loaded by field.get_window_region
-.attrCache = $0300	;128bytes. 1st 64bytes for 1st BG, 2nd for 2nd.
-.newAttrBuffer = $07c0	;16bytes. only for 1 line (2 consecutive window row)
-;---
-	;jsr field.calc_draw_width_and_init_window_tile_buffer ;	$f670
-;---
-	lda <.skipAttrUpdate
-	bne .post_attr_update
-		jsr field.init_window_attr_buffer	;ed56
-		lda <.height
-		pha
-		ldy <.beginY
-.setupAttributes:
-		sty <.currentY
-		jsr field.update_window_attr_buff	;$c98f
-		ldy <.currentY
-		iny
-		;; field.updateTileAttrCache() isn't prepared for cases that window crosses vertical boundary (which is at 0x1e)
-		;; that is, if currentY > 0x1e, updated attributes are placed 1 row above where it should be in.
-		;; so here handles as a wrokaround wrapping vertical coordinates.
-		cpy #30	;; wrap around
-		bne .no_wrap
-			ldy #0
-	.no_wrap:
-		pla
-		sec
-		sbc #1
-		pha
-		bne .setupAttributes
-
-	.update_ppu:
-		pla	;dispose
-		jsr field_x.begin_ppu_update	;wait_nmi+do_dma. if omitted dma, sprites are shown on top of window
-		jsr field_x.update_ppu_attr_table
-		jsr field_x.end_ppu_update	;sync_ppu_scroll+call_sound_driver
-
-.post_attr_update:
-	jsr field_x.render_borders
-; adjust metrics as borders don't need further drawing...
-	jsr field_x.shrink_window_metrics
-	jmp field.restore_banks	;$ecf5
-
-	;VERIFY_PC $ed56
 ;--------------------------------------------------------------------------------------------------
 ;$3f:ed61 field::get_window_region
 ;//[in]
@@ -754,12 +739,14 @@ field.draw_window_top:
 ;;}
 .window_top = $39
 .window_row_in_drawing = $3b
-	lda <.window_top
-	sta <.window_row_in_drawing
-	jsr field.calc_draw_width_and_init_window_tile_buffer
-	;jsr field.init_window_attr_buffer	;;unnecessary
-	jsr field.get_window_top_tiles
-	jsr field.draw_window_row
+;; TODO
+	brk
+;	lda <.window_top
+;	sta <.window_row_in_drawing
+;	jsr field.calc_draw_width_and_init_window_tile_buffer
+;	;jsr field.init_window_attr_buffer	;;unnecessary
+;	jsr field.get_window_top_tiles
+;	jsr field.draw_window_row
 	;; fall through (into $ecf5: field.restore_banks)
 	;jmp field.restore_banks	;$ecf5
 	FALL_THROUGH_TO field.restore_banks
@@ -800,30 +787,6 @@ field.init_window_attr_buffer:
 
 ;;for optimzation,
 ;;$3f$ed61 field.get_window_metrics is relocated to nearby $3f$ec1a field.showhide_sprites_by_region
-
-;------------------------------------------------------------------------------------------------------
-	;INIT_PATCH $3f,$edc6,$ede1
-field.draw_window_row:	;;$3f:edc6 field::draw_window_row
-;;callers:
-;;	$3f:ece5 field::draw_window_top
-;;	$3f:ed02 field::draw_window_box (only the original implementation)
-.width = $3c
-.iChar = $90
-	lda <.width
-	sta <.iChar
-	;jsr field.updateTileAttrCache	;$c98f
-	jsr field_x.begin_ppu_update
-	jsr field.upload_window_content	;$f6aa
-	;jsr field.setTileAttrForWindow	;$c9a9
-	;;fall through.
-field_x.end_ppu_update:
-	jsr field.sync_ppu_scroll	;$ede1
-	jmp field.callSoundDriver	;$c750
-
-field_x.begin_ppu_update:
-	jsr waitNmiBySetHandler	;$ff00
-	jmp ppud.do_sprite_dma
-	;VERIFY_PC $ede1
 ;------------------------------------------------------------------------------------------------------
 ;$3f:ede1 field::sync_ppu_scroll
 ;{
@@ -842,9 +805,9 @@ field_x.begin_ppu_update:
 ;;	$3f:edc6 field.draw_window_row
 ;;	$3f:f692 field.draw_window_content
 field.sync_ppu_scroll:
-.skip_attr_update = $37
+.in_menu_mode = $37
 .ppu_ctrl_cache = $ff
-	lda <.skip_attr_update
+	lda <.in_menu_mode
 	bne .set_ppu_ctrl
 		jmp field.sync_ppu_scroll_with_player	;$e571
 .set_ppu_ctrl:
@@ -1169,7 +1132,7 @@ field.setVramAddrForWindowEx:
 	VERIFY_PC $f435
 ;------------------------------------------------------------------------------------------------------
 	.ifdef FAST_FIELD_WINDOW
-	;INIT_PATCH $3f,$f670,$f692
+	
 	INIT_PATCH $3f,$f670,$f727
 
 field_x.calc_window_width_in_bg:
@@ -1243,21 +1206,8 @@ field.init_window_tile_buffer:
 ;------------------------------------------------------------------------------------------------------
 	;INIT_PATCH $3f,$f692,$f6aa
 ;;$3f:f692 field::draw_window_content
-;{
-;	push a;
-;	waitNmiBySetHandler();	//$ff00
-;	$f0++;
-;	pop a;
-;	putWindowTiles();	//$f6aa
-;$f69c
-;	field::sync_ppu_scroll();	//$ede1();
-;	field::callSoundDriver();
-;	call_switch_2banks(per8kbank:a = $93);	//$ff03
-;	return $f683();	//??? a= ($93+1)
-;$f6aa:
-;}
 ;; [in]
-;;	u8 a: ?
+;;	u8 a: rendering disposition.
 ;;	u8 $f0: frame_counter
 ;;	u8 $93: per8k bank
 ;;callers:
@@ -1272,19 +1222,31 @@ field.draw_window_content:
 	;FIX_ADDR_ON_CALLER $3f,$efde+1
 	FIX_ADDR_ON_CALLER $3f,$f48e+1
 ;;}
-	pha
-	jsr waitNmiBySetHandler	;ff00
-	inc <field.frame_counter
-	pla
-	jsr field.upload_window_content	;f6aa
-	;jsr field.sync_ppu_scroll	;ede1
-	;jsr field.callSoundDriver	;c750
-	jsr field_x.end_ppu_update	;sync_ppu_scroll+call_sound_driver
-	;lda <.string_bank
-	;jsr call_switch_2banks		;ff03
-	jsr field_x.switch_to_text_bank
-	jmp field.init_window_tile_buffer	;f683
+	.ifndef FAST_FIELD_WINDOW
 
+		pha
+		jsr waitNmiBySetHandler	;ff00
+		inc <field.frame_counter
+		pla
+		jsr field.upload_window_content	;f6aa
+		jsr field_x.end_ppu_update	;sync_ppu_scroll+call_sound_driver
+		jsr field_x.switch_to_text_bank
+		jmp field.init_window_tile_buffer	;f683
+	
+	.else	;FAST_FIELD_WINDOW
+	
+		pha
+		jsr waitNmiBySetHandler	;ff00
+		inc <field.frame_counter
+		pla
+		jsr field.upload_window_content	;f6aa
+		jsr field_x.end_ppu_update	;sync_ppu_scroll+call_sound_driver
+		jsr field_x.switch_to_text_bank
+		jmp field.init_window_tile_buffer	;f683
+
+
+	.endif ;FAST_FIELD_WINDOW
+;------------------------------------------------------------------------------------------------------	
 	;VERIFY_PC $f6aa
 	.endif	;FAST_FIELD_WINDOW
 ;------------------------------------------------------------------------------------------------------
@@ -1306,6 +1268,7 @@ field.draw_window_content:
 ;;callers:
 ;;	$3f:edc6 field.draw_window_row
 ;;	$3f:f692 field.draw_window_content
+	.ifndef OMIT_COMPATIBLE_FIELD_WINDOW
 field.upload_window_content:
 ;[in]
 .left = $38
@@ -1401,7 +1364,8 @@ field.upload_window_content:
 	bne .copy_loop_0
 
 	rts
-	;VERIFY_PC $f727
+	.endif	;ifndef FAST_FIELD_WINDOW
+;--------------------------------------------------------------------------------------------------
 field_x.shrink_window_metrics:
 .left = $38	;loaded by field.getWindowMetrics
 .top = $39	;loaded by field.getWindowMetrics
