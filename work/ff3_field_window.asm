@@ -934,7 +934,7 @@ field.get_window_bottom_tiles:	;ed3b
 ;;$3f:ee65 field::stream_string_in_window
 ;;callers:
 ;;	1E:9109:4C 65 EE  JMP $EE65 @ $3c:90ff	? 
-;;	1E:A675:4C 65 EE  JMP $EE65	@ $3d:a666 field.draw_menu_window
+;;	1E:A675:4C 65 EE  JMP $EE65	@ $3d:a66b field.draw_menu_window_content
 ;;	1F:EC88:4C 65 EE  JMP $EE65 @ $3f:ec83 field::show_off_message_window
 ;;	1F:EC90:20 65 EE  JSR $EE65 @ $3f:ec8b field::show_message_window
 field.stream_string_in_window:
