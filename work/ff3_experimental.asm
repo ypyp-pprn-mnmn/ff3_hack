@@ -1,3 +1,4 @@
+;; encoding: utf-8
 ; ff3_experimental.asm
 ;
 ;	experimental code
@@ -283,10 +284,10 @@ nmi_counter16 = $0106
 			jsr .stopMusic
 			pla
 			;valid id:00-40
-			sta soundDriver_musicId
+			sta sound.next_music_id
 			pha
-			lda #1	;play
-			sta soundDriver_control
+			lda #SOUND_PLAY_NEXT	;1	;play
+			sta sound.request
 			jmp .input_handler
 		.OnSelect:
 			pla
@@ -295,10 +296,10 @@ nmi_counter16 = $0106
 			sta <$50
 			rts
 		.stopMusic:
-			lda #4
-			sta soundDriver_control
+			lda #SOUND_STOP	;4
+			sta sound.request
 		.wait_for_music_end:
-				lda soundDriver_playingMusicId
+				lda sound.music_id
 			bmi .wait_for_music_end	
 			rts
 	.ENDIF
