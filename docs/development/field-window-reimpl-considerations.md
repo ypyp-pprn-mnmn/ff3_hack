@@ -98,6 +98,15 @@ $7000-$7f00 is available to both mode.
 - attr変更は1/8tiles相当
     - sourceは$0300 (画面全体のcache. 0x40 bytes x 2 BGs.)
         - $07c0にも1行分あるけど、枠描画のタイミングで設定するので向いてない
+            - 1行ごとに呼び出しながら拾えばokだし、描画と設定のタイミングもあわせられるような
+
+### buffer探し
+dmaなしで20scanlines分(2266clocks)描画に使える仮定とすると...
+-   8cycles/byteなら256+ (lda $xxxx,x; sta $2007)
+    描画分のデータ+あまりをコード 
+
+-   6cycles/byteなら320+ (lda #xx; sta $2007)
+    32bytesに必要なバッファはbgをまたぐケースで250bytes = 5 x (14(attr)+36(name table))
 
 ## queing
 `$1f: lines_drawn`で行判定
@@ -114,15 +123,16 @@ $7000-$7f00 is available to both mode.
         - sprite dma　($f692はやってない。`$3f:edc6 field.draw_window_row`はやってる)
             - window描画はmodal(=game stateのupdateがない)なので最初に1回やったら要らないかも…？
             - field_x.advance_frameでもやってない(paging中にtextをscrollするためによぶやつ)
+            - 元のロジックは描画しながら重なるスプライトを裏に隠していくので1回だけだと不自然になる可能性
         - sound driver (やってる)
         - frame counter (やってる)
         - reset scroll (やってる、というか描画したら必須)
 
 ## uploader code
 1. attr属性変更(初回+2行ごと。1fで描画を4行以上できるなら、4行ごとでok)
-    - vram addr
-    - attr value
+    - vram addr (2)
+    - attr value (8)
 
 2. name table
-    - vram addr
-    - namt table index
+    - vram addr (2)
+    - namt table index (width)

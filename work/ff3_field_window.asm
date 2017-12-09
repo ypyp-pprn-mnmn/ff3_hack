@@ -342,7 +342,7 @@ field.draw_inplace_window:
 ;;	1E:8F0E:20 02 ED  JSR field::draw_window_box	@ $3c:8f04 ?; window_type = 1
 ;;	1E:8FD5:20 02 ED  JSR field::draw_window_box	@ $3c:8fd1 ?; window_type = 3
 ;;	1E:90B1:20 02 ED  JSR field::draw_window_box	@ $3c:90ad ?; window_type = 2
-;;	1E:AAF4:4C 02 ED  JMP field::draw_window_box	@ $3d:aaf1 field::draw_menu_window
+;;	1E:AAF4:4C 02 ED  JMP field::draw_window_box	@ $3d:aaf1 field::draw_menu_window_box
 ;;	(by falling through) @$3f:ecfa field::draw_in_place_window
 field.draw_window_box:	;;$ed02
 ;; patch out external callers {
@@ -934,7 +934,7 @@ field.get_window_bottom_tiles:	;ed3b
 ;;$3f:ee65 field::stream_string_in_window
 ;;callers:
 ;;	1E:9109:4C 65 EE  JMP $EE65 @ $3c:90ff	? 
-;;	1E:A675:4C 65 EE  JMP $EE65	@ $3d:a666	? (load menu)
+;;	1E:A675:4C 65 EE  JMP $EE65	@ $3d:a666 field.draw_menu_window
 ;;	1F:EC88:4C 65 EE  JMP $EE65 @ $3f:ec83 field::show_off_message_window
 ;;	1F:EC90:20 65 EE  JSR $EE65 @ $3f:ec8b field::show_message_window
 field.stream_string_in_window:
