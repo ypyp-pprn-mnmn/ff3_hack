@@ -167,11 +167,11 @@ play_protectionTargetBits = $7edf
 effect.protection_causal_bits = $7ee0
 play_segmentedGroup = $7ee1
 
-soundDriver_playingMusicId = $7f40
-soundDriver_lastMusicId = $7f41
-soundDriver_control	= $7f42	;01:playNew(7f43) 02:playLast(7f41,saved when 01) 04:stop 80:playOn
-soundDriver_musicId	= $7f43
-soundDriver_effectId= $7f49	;msb should be 1
+sound.music_id = $7f40
+sound.previous_music_id = $7f41
+sound.request = $7f42	;01:play next(7f43) 02:play previous(7f41,saved when 01) 04:stop 80:play on
+sound.next_music_id = $7f43;
+sound.effect_id = $7f49	;msb should be 1
 ;----------------------------------------------------------------------------------------------------------
 ;world-mode
 world.map_chip_buffer = $7000; 256 tiles x 15 lines
@@ -185,7 +185,14 @@ floor.label_text_buffer = $7b01	;max 0x100 bytes. @see $3e:d1b1.
 floor.tile_pattern_data = $7f00	;tbc. @see $3e:de5a.
 ;----------------------------------------------------------------------------------------------------------
 ;menu-mode
-menu.job_costs = $7200	;;tbc. $3d:ad85
+menu.job.costs = $7200	;;tbc. $3d:ad85
+;; copied from $6000. 0x400 bytes. details tbc. copies happen at $3d:aa2b
+;; copied back to $6000 at $3d:aa08. both are called when the save menu is to be loaded
+menu.save.game_state_copy = $7400
+;;@see $3f:fb17 saveFieldVars for below two.
+menu.saved_field_variables_E0_FF = $7550	;0x20 bytes. $7470+E0+x.
+menu.saved_field_variables_00_CF = $7480	;0xd0 bytes
+;; working sets for dialogs
 menu.choose_dialog_1 = $7800	;; command dialog. (menu command, inn (yes/no), job, shop command, save)
 menu.choose_dialog_2 = $7900	;; target dialog. (of magic, of item) , shop offerings, load
 menu.choose_dialog_3 = $7a00	;; item dialog. (cast, use, equip, withdraw, sell)
@@ -197,6 +204,7 @@ menu.shop_item_ask.low = $7ba8	; [8] @see $3d:b220
 menu.shop_item_ask.mid = $7bb0
 menu.shop_item_ask.high = $7bb8
 menu.available_items_in_stomach = $7c00; item_id[256]
+menu.job.params = $7c00	;details tbc. $3d:adf2 get_job_parameter
 ;----------------------------------------------------------------------------------------------------------
 ;in memory structs
 

@@ -10,6 +10,7 @@
 	.include "ff3_floor.h"
 ff3_floor_treasure_begin:
 
+	;INIT_PATCH_EX treasure,$3f,$e917,$e9bb,$e917
 	INIT_PATCH $3f,$e917,$e9bb
 
 ;e917
@@ -73,7 +74,7 @@ floor_processChipEvent:
 	beq .no_event
 ;has treasure
 	lda #$3f | $80
-	sta soundDriver_effectId
+	sta sound.effect_id
 
 	lda <.isTreasureNaked
 	bmi .fetch_treasure
@@ -319,8 +320,11 @@ floor.get_item_price:
 ;$3f:f5ff incrementGil
 ;//	[in] u24 $80 : gil
 ;	INIT_PATCH $3f,$f5ff,$f670
-
+	;.bank	$3d
+	;.org	$b1c2
+	;jsr floor_incrementPartyGil
 floor_incrementPartyGil:
+	FIX_ADDR_ON_CALLER $3d,$b1c2+1
 ;[in]
 .gil = $80
 .partyGil = $601c
@@ -359,12 +363,9 @@ floor_incrementPartyGil:
 	.db $7f,$96,$98	;9999999
 
 	VERIFY_PC $f670
+	;VERIFY_PC_TO_PATCH_END treasure
 floor_treasure_free_begin:
 floor_treasure_free_end = $f670
 
-
-	.bank	$3d
-	.org	$b1c2
-	jsr floor_incrementPartyGil
 ;=====================================================================================================
 	RESTORE_PC ff3_floor_treasure_begin

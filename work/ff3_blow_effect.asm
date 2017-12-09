@@ -2,7 +2,7 @@
 ; ff3_blow_effect.asm
 ;
 ; description:
-;	replaces blow-effect playing code
+;	replaces codes around blow-effect playing
 ;	
 ; version:
 ;	0.04 (2017-11-25)
@@ -106,7 +106,7 @@ blowEffect_type07	;shuriken
 	
 	jsr beginSwingFrame	;a059
 	lda #$af
-	sta soundDriver_effectId
+	sta sound.effect_id
 ;$a1ff:
 .frame_loop:
 		jsr $a05e	;;fill_A0hBytes_f0_at$0200andSet$c8_0
@@ -158,7 +158,7 @@ blowEffect_doSwing_type09:	;09=claw also 00(fist),08(arrow)
 .swing_loop:
 		jsr beginSwingFrame	;a059
 		lda #$8a
-		sta soundDriver_effectId	;$7f49
+		sta sound.effect_id	;$7f49
 	.frame_loop:
 			jsr	$a05e	;fill_A0hBytes_f0_at$0200andSet$c8_0
 			lda <.hand
@@ -249,7 +249,7 @@ blowEffect_doSwing_type0102:
 		jsr beginSwingFrame	;$a059
 		sta <$b9
 		lda #$b6
-		sta soundDriver_effectId	;$7f49
+		sta sound.effect_id	;$7f49
 	.frame_loop:	;$a38e:
 			jsr $a05e	;fill_A0hBytes_f0_at$0200andSet$c8_0();
 			lda <.frameCount

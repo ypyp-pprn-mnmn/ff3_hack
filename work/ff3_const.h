@@ -83,6 +83,14 @@ FIELD_WINDOW_GIL = $03
 FIELD_WINDOW_FLOOR_TITLE = $04
 
 ;--------------------------------------------------------------------------------
+; sound driver request codes
+;01:play next(7f43) 02:play previous(7f41,saved when 01) 04:stop 80:play on
+SOUND_PLAY_NEXT = $01
+SOUND_PLAY_PREV = $02
+SOUND_STOP = $04
+SOUND_CONTINUE = $80
+
+;--------------------------------------------------------------------------------
 ; extention to original
 
 ;EXSTATUS_OFFSET_PARAM	= $1e
