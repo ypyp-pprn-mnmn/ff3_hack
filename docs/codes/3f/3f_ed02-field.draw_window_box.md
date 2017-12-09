@@ -1,8 +1,7 @@
 ﻿
 
-
 # $3f:ed02 field.draw_window_box
-> Renders window borders and fills inner area with spaces for the given window
+> IDで指定されたウインドウの枠を描画し、その背景を空白で埋める。
 
 ### args:
 
@@ -28,7 +27,7 @@ on exit, these values have adjusted to exclude borders.
 +	`1E:8F0E:20 02 ED  JSR field::draw_window_box`	@ $3c:8f04 ?; window_type = 1
 +	`1E:8FD5:20 02 ED  JSR field::draw_window_box`	@ $3c:8fd1 ?; window_type = 3
 +	`1E:90B1:20 02 ED  JSR field::draw_window_box`	@ $3c:90ad ?; window_type = 2
-+	`1E:AAF4:4C 02 ED  JMP field::draw_window_box`	@ $3d:aaf1 field::draw_menu_window
++	`1E:AAF4:4C 02 ED  JMP field::draw_window_box`	@ $3d:aaf1 field::draw_menu_window_box
 +	(by falling through) @$3f:ecfa field::draw_in_place_window
 
 ### notes:
@@ -98,6 +97,7 @@ $ed41:
 $ed56:
 }
 ```
+
 
 
 
