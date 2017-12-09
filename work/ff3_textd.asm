@@ -197,7 +197,12 @@ textd_x.just_invoke_handlers:
 		;jmp textd.eval_replacement          ; EF42 4C 2A F0
 		;pha ; F02A 48
 		ldx <.cached_param                  ; F02B A6 67
-		cmp #$1D                            ; F02D C9 1D
+        ;; this seems to be workaround for the bug exist in $3d:b570.
+        ;; if charcode == CHAR.ITEM_AMOUNT_IN_STOMACH
+        ;; then ignore parameter byte embedded in the text stream,
+        ;; but use the value seen in previous replacement code.
+        ;; 
+		cmp #CHAR.ITEM_AMOUNT_IN_STOMACH    ; F02D C9 1D
 		beq .L_F034                         ; F02F F0 03
 		lda [.p_text],y                     ; F031 B1 3E
 		tax ; F033 AA
@@ -208,7 +213,7 @@ textd_x.just_invoke_handlers:
 		;bne .L_F03E                         ; F03A D0 02
 		;inc <.p_text+1                      ; F03C E6 3F
 	;.L_F03E:
-		jsr textd_x.seek_source_buffer
+		jsr textd_x.seek_source_buffer  ;A and X will left unchanged.
 		;pla ; F03E 68
 .dispatch_handler:
 	pla
