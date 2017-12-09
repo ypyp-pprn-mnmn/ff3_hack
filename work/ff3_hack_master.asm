@@ -71,6 +71,7 @@
 		;v0.8.0:
 		.include "ff3_textd.asm"	;save
 		.include "ff3_field_x_window_renderer.asm"	;consume
+		.include "ff3_menu_of_stomach.asm"
 		;;
 		.include "ff3_interrupt.asm"
 		.ifdef EXPERIMENTAL
