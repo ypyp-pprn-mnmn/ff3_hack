@@ -1,6 +1,7 @@
 ﻿
-# $3d:a52f fieldMenu::main
 
+# $3d:a52f menu.main_loop
+> フィールドでstartボタンを押したときに実行され、メインメニューのUI処理を行うメインのループ。
 
 ### (pseudo)code:
 ```js
@@ -129,6 +130,7 @@ $a646:
 	return $8f58();
 }
 ```
+
 
 
 

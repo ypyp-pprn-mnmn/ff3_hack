@@ -1,5 +1,6 @@
 ﻿
 
+
 # $3e:d1b1 field.load_label_text_into_buffer
 > loads into buffer 'label text' specified by string_id.
 
@@ -10,8 +11,9 @@
 
 ### notes:
 this function is very similar to these logics:
-- $3f:ee9a field.load_and_draw_string
-- text loaders for particular char codes, found in $3f:eefa textd.draw_in_box.
+
+- `$3f:ee9a field.load_and_draw_string`
+- text loaders for particular char codes, found in `$3f:eefa textd.draw_in_box`.
 
 ### code:
 ```js
@@ -53,6 +55,7 @@ $d208:
 	return call_switch_2banks({per8kBank: a = 0x3c});	//jmp ff03
 }
 ```
+
 
 
 
