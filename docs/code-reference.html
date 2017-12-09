@@ -8,7 +8,7 @@
     <meta name="generator" content="pandoc">
     <meta name="description" content>
     <meta name="author" content="ypyp-pprn-mnmn (aka “301”)">
-    <!-- generated-at 2017-12-09 16:20:25+0900 -->
+    <!-- generated-at 2017-12-09 18:48:30+0900 -->
     <title>FF3@FC Original Code Documentation</title>
 
     <!-- Bootstrap core CSS -->
@@ -667,8 +667,8 @@ code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Infor
           <li><a href="#c962f-jobmenumain">$3c:962f jobMenu::main</a></li>
           <li><a href="#da2df-checkmagic">$3d:a2df checkmagic</a></li>
           <li><a href="#da52f-fieldmenumain">$3d:a52f fieldMenu::main</a></li>
-          <li><a href="#da666">$3d:a666</a></li>
-          <li><a href="#da66b">$3d:a66b</a></li>
+          <li><a href="#da666-field.draw_menu_window">$3d:a666 field.draw_menu_window</a></li>
+          <li><a href="#da66b-field.draw_menu_window_content">$3d:a66b field.draw_menu_window_content</a></li>
           <li><a href="#da6b4-fieldmenuselectcharacter">$3d:a6b4 fieldMenu::selectCharacter</a></li>
           <li><a href="#da87a-fieldloadanddrawstring">$3d:a87a field::loadAndDrawString</a></li>
           <li><a href="#da88c-savemenuclose">$3d:a88c saveMenu::close</a></li>
@@ -676,7 +676,7 @@ code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Infor
           <li><a href="#daa67">$3d:aa67</a></li>
           <li><a href="#daaa6">$3d:aaa6</a></li>
           <li><a href="#daabc-fieldget_menu_window_metrics">$3d:aabc field::get_menu_window_metrics</a></li>
-          <li><a href="#daaf1-fielddraw_menu_window">$3d:aaf1 field::draw_menu_window</a></li>
+          <li><a href="#daaf1-field.draw_menu_window_box">$3d:aaf1 field.draw_menu_window_box</a></li>
           <li><a href="#daaf7-fieldmenu_window_metrics">$3d:aaf7 field::menu_window_metrics</a></li>
           <li><a href="#dab8f">$3d:ab8f</a></li>
           <li><a href="#daba3">$3d:aba3</a></li>
@@ -14040,23 +14040,52 @@ $b874:
 <div class="sourceLine" id="cb454-123" data-line-number="123">    <span class="cf">return</span> <span class="at">$8f58</span>()<span class="op">;</span></div>
 <div class="sourceLine" id="cb454-124" data-line-number="124"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="da666">$3d:a666</h1>
+<h1 id="da666-field.draw_menu_window">$3d:a666 field.draw_menu_window</h1>
+<blockquote>
+<p>指定のタイプのウインドウを描画する。枠と中身の両方。</p>
+</blockquote>
+<h3 id="args-173">args:</h3>
+<h4 id="in-5">in:</h4>
+<ul>
+<li>u8 x : window_type</li>
+<li>u8 a : text_id, specifies the text to be rendered in the window</li>
+</ul>
 <h3 id="pseudocode-29">(pseudo)code:</h3>
 <pre class="sourceCode js" id="cb455"><code class="sourceCode javascript"><div class="sourceLine" id="cb455-1" data-line-number="1"><span class="op">{</span></div>
-<div class="sourceLine" id="cb455-2" data-line-number="2">    </div>
-<div class="sourceLine" id="cb455-3" data-line-number="3"><span class="op">}</span></div></code></pre>
+<div class="sourceLine" id="cb455-2" data-line-number="2">    <span class="at">push</span>(A)<span class="op">;</span></div>
+<div class="sourceLine" id="cb455-3" data-line-number="3">    <span class="va">field</span>.<span class="at">draw_menu_window_box</span>()<span class="op">;</span>   <span class="co">//$ed02</span></div>
+<div class="sourceLine" id="cb455-4" data-line-number="4">    <span class="cf">return</span> <span class="va">field</span>.<span class="at">draw_menu_window_contents</span>(<span class="op">{</span><span class="dt">text_id</span><span class="op">:</span> A <span class="op">=</span> <span class="at">pop</span>()<span class="op">}</span>)<span class="op">;</span>  <span class="co">//fall through into $a66b.</span></div>
+<div class="sourceLine" id="cb455-5" data-line-number="5"><span class="co">/*</span></div>
+<div class="sourceLine" id="cb455-6" data-line-number="6"><span class="co">1E:A666:48        PHA</span></div>
+<div class="sourceLine" id="cb455-7" data-line-number="7"><span class="co">1E:A667:20 F1 AA  JSR field.draw_menu_window</span></div>
+<div class="sourceLine" id="cb455-8" data-line-number="8"><span class="co">1E:A66A:68        PLA</span></div>
+<div class="sourceLine" id="cb455-9" data-line-number="9"><span class="co">*/</span></div>
+<div class="sourceLine" id="cb455-10" data-line-number="10"><span class="op">}</span></div></code></pre>
 <p><strong>fall through</strong></p>
 <hr />
-<h1 id="da66b">$3d:a66b</h1>
+<h1 id="da66b-field.draw_menu_window_content">$3d:a66b field.draw_menu_window_content</h1>
+<blockquote>
+<p>(枠と背景は描画済みの)メニューのウインドウ内に指定のテキストを描画する。</p>
+</blockquote>
+<h3 id="args-174">args:</h3>
+<h4 id="in-6">in:</h4>
+<ul>
+<li>u8 a : text_id, specifies the text to be rendered in the window</li>
+</ul>
+<h3 id="local-variables-20">local variables:</h3>
+<ul>
+<li>u8 $92: text_id will be given into <code>field.stream_String_in_window</code></li>
+<li>ptr $94: text_ptr_table = #$8200, will be given into <code>field.stream_String_in_window</code></li>
+</ul>
 <h3 id="pseudocode-30">(pseudo)code:</h3>
 <pre class="sourceCode js" id="cb456"><code class="sourceCode javascript"><div class="sourceLine" id="cb456-1" data-line-number="1"><span class="op">{</span></div>
-<div class="sourceLine" id="cb456-2" data-line-number="2">    $92 <span class="op">=</span> a<span class="op">;</span></div>
-<div class="sourceLine" id="cb456-3" data-line-number="3">    $94<span class="op">,</span><span class="dv">95</span> <span class="op">=</span> #<span class="dv">8200</span></div>
-<div class="sourceLine" id="cb456-4" data-line-number="4">    <span class="cf">return</span> <span class="at">$ee65</span>()<span class="op">;</span></div>
+<div class="sourceLine" id="cb456-2" data-line-number="2">    $92 <span class="op">=</span> A<span class="op">;</span></div>
+<div class="sourceLine" id="cb456-3" data-line-number="3">    [$94<span class="op">,</span>$95] <span class="op">=</span> [<span class="bn">0x00</span><span class="op">,</span> <span class="bn">0x82</span>]<span class="op">;</span></div>
+<div class="sourceLine" id="cb456-4" data-line-number="4">    <span class="cf">return</span> <span class="va">field</span>.<span class="at">stream_string_in_window</span>()<span class="op">;</span> <span class="co">//$ee65</span></div>
 <div class="sourceLine" id="cb456-5" data-line-number="5"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="da6b4-fieldmenuselectcharacter">$3d:a6b4 fieldMenu::selectCharacter</h1>
-<h3 id="args-173">args:</h3>
+<h3 id="args-175">args:</h3>
 <h4 id="out-4">out:</h4>
 <ul>
 <li>bool carry : canceled</li>
@@ -14192,15 +14221,18 @@ $b874:
 <div class="sourceLine" id="cb463-10" data-line-number="10">    <span class="cf">return</span><span class="op">;</span></div>
 <div class="sourceLine" id="cb463-11" data-line-number="11"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="daaf1-fielddraw_menu_window">$3d:aaf1 field::draw_menu_window</h1>
-<h3 id="args-174">args:</h3>
+<h1 id="daaf1-field.draw_menu_window_box">$3d:aaf1 field.draw_menu_window_box</h1>
+<blockquote>
+<p>各種メニューにおいて各ウインドウの枠と背景を描画する</p>
+</blockquote>
+<h3 id="args-176">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> x : window id</li>
 </ul>
 <h3 id="pseudocode-38">(pseudo)code:</h3>
 <pre class="sourceCode js" id="cb464"><code class="sourceCode javascript"><div class="sourceLine" id="cb464-1" data-line-number="1"><span class="op">{</span></div>
-<div class="sourceLine" id="cb464-2" data-line-number="2">    <span class="dt">field</span><span class="op">::</span><span class="at">getWindowParam</span>()<span class="op">;</span>    <span class="co">//$aabc();</span></div>
-<div class="sourceLine" id="cb464-3" data-line-number="3">    <span class="cf">return</span> <span class="dt">field</span><span class="op">::</span><span class="at">drawWindow</span>()<span class="op">;</span> <span class="co">//$ed02();</span></div>
+<div class="sourceLine" id="cb464-2" data-line-number="2">    <span class="va">field</span>.<span class="at">get_menu_window_metrics</span>()<span class="op">;</span>    <span class="co">//$aabc();</span></div>
+<div class="sourceLine" id="cb464-3" data-line-number="3">    <span class="cf">return</span> <span class="va">field</span>.<span class="at">draw_window_box</span>()<span class="op">;</span> <span class="co">//$ed02();</span></div>
 <div class="sourceLine" id="cb464-4" data-line-number="4"><span class="dt">$aaf7</span><span class="op">:</span></div>
 <div class="sourceLine" id="cb464-5" data-line-number="5"><span class="op">}</span></div></code></pre>
 <hr />
@@ -14224,7 +14256,7 @@ $b874:
 <div class="sourceLine" id="cb467-6" data-line-number="6"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="dac31">$3d:ac31</h1>
-<h3 id="args-175">args:</h3>
+<h3 id="args-177">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> $87 = lv</li>
 </ul>
@@ -14251,7 +14283,7 @@ $b874:
 <div class="sourceLine" id="cb469-4" data-line-number="4"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="dad85-jobmenugetcosts">$3d:ad85 jobMenu::getCosts</h1>
-<h3 id="args-176">args:</h3>
+<h3 id="args-178">args:</h3>
 <ul>
 <li><a href="#out-2">out</a> u8 $7200[0x17] : costs</li>
 </ul>
@@ -14285,7 +14317,7 @@ $b874:
 <div class="sourceLine" id="cb470-27" data-line-number="27"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="dadf2-getjobparameter">$3d:adf2 getJobParameter</h1>
-<h3 id="args-177">args:</h3>
+<h3 id="args-179">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $7f : offset of character</li>
 <li><a href="#in-2">in</a> u8 $8f : jobId</li>
@@ -14352,7 +14384,7 @@ $b874:
 <div class="sourceLine" id="cb473-15" data-line-number="15"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="db248-floorshopgetsellingprice">$3d:b248 floor::shop::getSellingPrice</h1>
-<h3 id="args-178">args:</h3>
+<h3 id="args-180">args:</h3>
 <ul>
 <li><a href="#out-2">out</a> u24 $61 : price</li>
 <li><a href="#in-2">in</a> u8 $64 : bulk selling?</li>
@@ -14378,7 +14410,7 @@ $b874:
 <div class="sourceLine" id="cb474-17" data-line-number="17"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="db270-floorshopgetitemvalue">$3d:b270 floor::shop::getItemValue</h1>
-<h3 id="args-179">args:</h3>
+<h3 id="args-181">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 a : itemid??</li>
 <li><a href="#out-2">out</a> u24 $61 : gil?</li>
@@ -14451,7 +14483,7 @@ $b874:
 <div class="sourceLine" id="cb479-3" data-line-number="3"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="dbdb9-isencounteroccured">$3d:bdb9 isEncounterOccured</h1>
-<h3 id="args-180">args:</h3>
+<h3 id="args-182">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $48 : warpId</li>
 <li><a href="#in-2">in</a> u8 $f8 : bound</li>
@@ -14477,7 +14509,7 @@ $b874:
 <div class="sourceLine" id="cb480-18" data-line-number="18"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ec049-beginbattle">$3e:c049 beginBattle</h1>
-<h3 id="args-181">args:</h3>
+<h3 id="args-183">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> $6a : encounter id</li>
 <li><a href="#in-2">in</a> $6b : background view (00-step 01-sand 07-mountain)</li>
@@ -14537,7 +14569,7 @@ $b874:
 <div class="sourceLine" id="cb482-31" data-line-number="31"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ec1bb-fieldenterdungeon">$3e:c1bb field::enterDungeon</h1>
-<h3 id="args-182">args:</h3>
+<h3 id="args-184">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $78 : world (00:floating land)</li>
 </ul>
@@ -14678,7 +14710,7 @@ $b874:
 <div class="sourceLine" id="cb493-10" data-line-number="10"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ec4fc-fieldonmove">$3e:c4fc field::OnMove</h1>
-<h3 id="args-183">args:</h3>
+<h3 id="args-185">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $42 : vehicle
 <ul>
@@ -14764,7 +14796,7 @@ $b874:
 <div class="sourceLine" id="cb494-75" data-line-number="75"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ec65d">$3e:c65d</h1>
-<h3 id="args-184">args:</h3>
+<h3 id="args-186">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 a : inputBits (see $3e:d281 field::getInput)</li>
 <li><a href="#in-2">in</a> u8 $27 : screen left (not character pos)</li>
@@ -14813,7 +14845,7 @@ $b874:
 <hr />
 <h1 id="ec6b9-field">$3e:c6b9 field</h1>
 <p>// $44 &lt; 0 &amp;&amp; $45 &gt;= 0</p>
-<h3 id="args-185">args:</h3>
+<h3 id="args-187">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $42 : vehicle?</li>
 <li><a href="#in-2">in</a> u8 $78 : world</li>
@@ -14875,7 +14907,7 @@ $b874:
 <div class="sourceLine" id="cb498-16" data-line-number="16"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ec72c-floorgetobjecteventptr">$3e:c72c floor::getObjectEventPtr</h1>
-<h3 id="args-186">args:</h3>
+<h3 id="args-188">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 a : index (= $6c)</li>
 <li><a href="#out-2">out</a> ptr $72 : = $2c:8600[index]</li>
@@ -14929,7 +14961,7 @@ $b874:
 <div class="sourceLine" id="cb502-3" data-line-number="3"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ec98f-fieldupdate_window_attr_buff">$3e:c98f field::update_window_attr_buff</h1>
-<h3 id="args-187">args:</h3>
+<h3 id="args-189">args:</h3>
 <h3 id="section-8"></h3>
 <ul>
 <li>in u8 $37: skip_window_attr_update</li>
@@ -14950,7 +14982,7 @@ $b874:
 <div class="sourceLine" id="cb503-10" data-line-number="10"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ec9a9-fieldset_bg_attr_for_window">$3e:c9a9 field::set_bg_attr_for_window</h1>
-<h3 id="args-188">args:</h3>
+<h3 id="args-190">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $37 :</li>
 <li><a href="#in-2">in</a> u8 $3c : palette entry count * 2</li>
@@ -14983,7 +15015,7 @@ $b874:
 <p>//$3e:cab1 setPalatte</p>
 <hr />
 <h1 id="ecab1-fieldmerge_bg_attributes_with_buffer">$3e:cab1 field::merge_bg_attributes_with_buffer</h1>
-<h3 id="args-189">args:</h3>
+<h3 id="args-191">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $2d : ??? (1 if caller is: $3e:c98f field::update_window_attr_buff)</li>
 <li><a href="#in-2">in</a> u8 $30 : tile.y (in 16x16) (== $3b &gt;&gt; 1)</li>
@@ -15069,7 +15101,7 @@ $b874:
 <div class="sourceLine" id="cb506-71" data-line-number="71"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ecb6b-fieldcopytovramwith_07d0">$3e:cb6b field::copyToVramWith_07d0</h1>
-<h3 id="args-190">args:</h3>
+<h3 id="args-192">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> x : last entry (max = #0f)</li>
 </ul>
@@ -15087,7 +15119,7 @@ $b874:
 <div class="sourceLine" id="cb507-11" data-line-number="11"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ecba4-fieldloadwarpdestinationfloor">$3e:cba4 field::loadWarpDestinationFloor</h1>
-<h3 id="args-191">args:</h3>
+<h3 id="args-193">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $48 : warpId</li>
 <li><a href="#in-2">in</a> u8 $78 : world</li>
@@ -15137,7 +15169,7 @@ $b874:
 <blockquote>
 <p>32x32のフロアデータを読み込む</p>
 </blockquote>
-<h3 id="args-192">args:</h3>
+<h3 id="args-194">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> y : initial offset</li>
 <li><a href="#in-2">in</a> ptr $80 : src</li>
@@ -15210,7 +15242,7 @@ $b874:
 <div class="sourceLine" id="cb510-29" data-line-number="29"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="eccbb-fieldgetmapdatapointers">$3e:ccbb field::getMapDataPointers</h1>
-<h3 id="args-193">args:</h3>
+<h3 id="args-195">args:</h3>
 <ul>
 <li><a href="#out-2">out</a> ptr $82 : pDest</li>
 <li><a href="#out-2">out</a> ptr $80 : pSrc</li>
@@ -15250,7 +15282,7 @@ $b874:
 <div class="sourceLine" id="cb512-3" data-line-number="3"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ecd7e-getvehiclespeed">$3e:cd7e getVehicleSpeed</h1>
-<h3 id="args-194">args:</h3>
+<h3 id="args-196">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $42 : vehicle</li>
 <li><a href="#in-2">in</a> u8 $78 : world</li>
@@ -15283,7 +15315,7 @@ $b874:
 <div class="sourceLine" id="cb513-23" data-line-number="23"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ece7a-gettileparamsvertical">$3e:ce7a getTileParamsVertical</h1>
-<h3 id="args-195">args:</h3>
+<h3 id="args-197">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> ptr $80 : pMapData (7000-7eff)</li>
 </ul>
@@ -15304,7 +15336,7 @@ $b874:
 <blockquote>
 <p>loads into buffer ‘label text’ specified by string_id.</p>
 </blockquote>
-<h3 id="args-196">args:</h3>
+<h3 id="args-198">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> a : string id (ptrTable = $30200)</li>
 <li><a href="#out-2">out</a> u8 $7b00 : = 0</li>
@@ -15352,7 +15384,7 @@ $b874:
 <div class="sourceLine" id="cb515-37" data-line-number="37">}</div></code></pre>
 <hr />
 <h1 id="ed219-floorgetinputorfireobjectevent">$3e:d219 floor::getInputOrFireObjectEvent</h1>
-<h3 id="args-197">args:</h3>
+<h3 id="args-199">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> ptr $72 : object event param ptr</li>
 </ul>
@@ -15399,7 +15431,7 @@ $b874:
 <div class="sourceLine" id="cb517-6" data-line-number="6"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ed281-fieldget_input">$3e:d281 field::get_input</h1>
-<h3 id="args-198">args:</h3>
+<h3 id="args-200">args:</h3>
 <ul>
 <li><a href="#out-2">out</a> u8 $20 : inputBits (bit7&lt; A B select start up down left right &gt;bit0)</li>
 </ul>
@@ -15471,7 +15503,7 @@ $b874:
 <div class="sourceLine" id="cb520-2" data-line-number="2"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ed381-field.upload_palette">$3e:d381 field.upload_palette</h1>
-<h3 id="args-199">args:</h3>
+<h3 id="args-201">args:</h3>
 <ul>
 <li>in nes_palette_entry $03f0[16]: palette entry.</li>
 </ul>
@@ -15514,7 +15546,7 @@ $b874:
 <div class="sourceLine" id="cb522-19" data-line-number="19"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ed83c">$3e:d83c</h1>
-<h3 id="args-200">args:</h3>
+<h3 id="args-202">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $42 : vehicle</li>
 </ul>
@@ -15526,7 +15558,7 @@ $b874:
 <div class="sourceLine" id="cb523-5" data-line-number="5"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ed85a">$3e:d85a</h1>
-<h3 id="args-201">args:</h3>
+<h3 id="args-203">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $78 : world</li>
 </ul>
@@ -15538,7 +15570,7 @@ $b874:
 <div class="sourceLine" id="cb524-5" data-line-number="5"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="eda3a-floor.load_object_sprite_into_buffer">$3e:da3a floor.load_object_sprite_into_buffer</h1>
-<h3 id="args-202">args:</h3>
+<h3 id="args-204">args:</h3>
 <ul>
 <li><a href="#out-2">out</a> nes_sprite_attr $0200[4]: sprite attribute buffer, indexed with the offset ($26), to be updated with 4 entries of attributes which as a whole forming mob character’s sprite (or “npc”)</li>
 <li>[in,out] u8 $26 : sprite offset</li>
@@ -15611,7 +15643,7 @@ $b874:
 <div class="sourceLine" id="cb527-20" data-line-number="20"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ede0f-loadpatterntovramex">$3e:de0f loadPatternToVramEx</h1>
-<h3 id="args-203">args:</h3>
+<h3 id="args-205">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 a : vramAddrHigh (low=00)</li>
 </ul>
@@ -15623,7 +15655,7 @@ $b874:
 <p><strong>fall through</strong></p>
 <hr />
 <h1 id="ede1a-loadpatterntovram">$3e:de1a loadPatternToVram</h1>
-<h3 id="args-204">args:</h3>
+<h3 id="args-206">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 x : len (per256bytes)</li>
 <li><a href="#in-2">in</a> ptr $80 : pPattern</li>
@@ -15643,7 +15675,7 @@ $b874:
 <div class="sourceLine" id="cb529-12" data-line-number="12"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ede2a-loadsmallpatterntovram">$3e:de2a loadSmallPatternToVram</h1>
-<h3 id="args-205">args:</h3>
+<h3 id="args-207">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> ptr $80 : pattern</li>
 <li><a href="#in-2">in</a> u8 x : len</li>
@@ -15659,7 +15691,7 @@ $b874:
 <div class="sourceLine" id="cb530-7" data-line-number="7"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ede5a-floorloadpatternfortiles">$3e:de5a floor::loadPatternForTiles</h1>
-<h3 id="args-206">args:</h3>
+<h3 id="args-208">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $48 : warpId</li>
 <li><a href="#in-2">in</a> u8 $78 : world</li>
@@ -15712,7 +15744,7 @@ $b874:
 <div class="sourceLine" id="cb531-43" data-line-number="43"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="edeea-loadtilepatterntovram">$3e:deea loadTilePatternToVram</h1>
-<h3 id="args-207">args:</h3>
+<h3 id="args-209">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> x : tileCount</li>
 <li><a href="#in-2">in</a> ptr $80 : pPattern</li>
@@ -15741,7 +15773,7 @@ $b874:
 <div class="sourceLine" id="cb533-3" data-line-number="3"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="edf08-floorloadobjectpatterns">$3e:df08 floor::loadObjectPatterns</h1>
-<h3 id="args-208">args:</h3>
+<h3 id="args-210">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $78 : world</li>
 </ul>
@@ -15767,7 +15799,7 @@ $b874:
 <div class="sourceLine" id="cb535-3" data-line-number="3"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="edf41-floorloadobjectpattern">$3e:df41 floor::loadObjectPattern</h1>
-<h3 id="args-209">args:</h3>
+<h3 id="args-211">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $8a : vramoffset high (base = #1200)</li>
 <li><a href="#in-2">in</a> u8 $8b : objectOffset</li>
@@ -15833,7 +15865,7 @@ $b874:
 <div class="sourceLine" id="cb537-14" data-line-number="14"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fe1dc-dungeonmainloop">$3f:e1dc dungeon::mainLoop</h1>
-<h3 id="args-210">args:</h3>
+<h3 id="args-212">args:</h3>
 <pre><code>least value of S = $1e = $20 - 2</code></pre>
 <ul>
 <li><a href="#in-2">in</a> u8 $48 : warpId</li>
@@ -15998,7 +16030,7 @@ $b874:
 <div class="sourceLine" id="cb540-54" data-line-number="54"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fe396-floorfireonmove">$3f:e396 floor::fireOnMove</h1>
-<h3 id="args-211">args:</h3>
+<h3 id="args-213">args:</h3>
 <ul>
 <li><a href="#out-2">out</a> bool carry : ?</li>
 </ul>
@@ -16053,7 +16085,7 @@ $b874:
 <div class="sourceLine" id="cb541-48" data-line-number="48"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fe4e9-floorgeteventsourcecoodinates">$3f:e4e9 floor::getEventSourceCoodinates</h1>
-<h3 id="args-212">args:</h3>
+<h3 id="args-214">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> a : input bits?</li>
 <li><a href="#out-2">out</a> $84 : mapX</li>
@@ -16081,7 +16113,7 @@ $b874:
 <div class="sourceLine" id="cb542-19" data-line-number="19"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fe51c-floorgetchipevent">$3f:e51c floor::getChipEvent</h1>
-<h3 id="args-213">args:</h3>
+<h3 id="args-215">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $84,$85 : chip position(x,y)</li>
 <li>[ou] y : chipId</li>
@@ -16207,7 +16239,7 @@ $b874:
 <div class="sourceLine" id="cb551-12" data-line-number="12"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fe8a5">$3f:e8a5</h1>
-<h3 id="args-214">args:</h3>
+<h3 id="args-216">args:</h3>
 <ul>
 <li><a href="#out-2">out</a> u8 $f8 : encounter bound</li>
 </ul>
@@ -16227,7 +16259,7 @@ $b874:
 <div class="sourceLine" id="cb552-13" data-line-number="13"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fe917-floorprocesschipevent">$3f:e917 floor::processChipEvent</h1>
-<h3 id="args-215">args:</h3>
+<h3 id="args-217">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $49 : warpparam.+01 &amp; 0x20</li>
 <li><a href="#out-2">out</a> bool carry : event fired (1=yes)</li>
@@ -16279,7 +16311,7 @@ $b874:
 <div class="sourceLine" id="cb553-43" data-line-number="43"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fe982-ontreasure">$3f:e982 OnTreasure</h1>
-<h3 id="args-216">args:</h3>
+<h3 id="args-218">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $ba : 00: chipId=d0-df ff:chipId=e0-ef</li>
 </ul>
@@ -16312,7 +16344,7 @@ $b874:
 <div class="sourceLine" id="cb554-26" data-line-number="26"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fe9bb-floorgetobjectevent">$3f:e9bb floor::getObjectEvent</h1>
-<h3 id="args-217">args:</h3>
+<h3 id="args-219">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 x : object offset</li>
 </ul>
@@ -16354,7 +16386,7 @@ $b874:
 <div class="sourceLine" id="cb555-35" data-line-number="35"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fea04-floorloadeventscriptstream">$3f:ea04 floor::loadEventScriptStream</h1>
-<h3 id="args-218">args:</h3>
+<h3 id="args-220">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 a : scriptId (= runtimeobject.+00)</li>
 <li><a href="#in-2">in</a> u8 x : ptr address high ($78 == 0 then #82, otherwise #84)</li>
@@ -16438,7 +16470,7 @@ $b874:
 <div class="sourceLine" id="cb560-13" data-line-number="13"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="feb2d-field.scrolldown_item_window">$3f:eb2d field.scrolldown_item_window</h1>
-<h3 id="args-219">args:</h3>
+<h3 id="args-221">args:</h3>
 <ul>
 <li>[in,out] ptr $1c: pointer to text</li>
 <li>[in,out] ptr $3e: pointer to text</li>
@@ -16468,7 +16500,7 @@ $b874:
 <p><strong>fall through</strong></p>
 <hr />
 <h1 id="feb3c-field.abort_item_window_scroll">$3f:eb3c field.abort_item_window_scroll</h1>
-<h3 id="args-220">args:</h3>
+<h3 id="args-222">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $57: bank number to restore</li>
 <li><a href="#out-2">out</a> bool carry: always 1. (scroll aborted)</li>
@@ -16489,7 +16521,7 @@ $b874:
 <div class="sourceLine" id="cb562-9" data-line-number="9"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="feb43-field.do_scrolldown_item_window">$3f:eb43 field.do_scrolldown_item_window</h1>
-<h3 id="args-221">args:</h3>
+<h3 id="args-223">args:</h3>
 <ul>
 <li><a href="#out-2">out</a> bool carry: always 0. (= scroll successful)</li>
 </ul>
@@ -16518,7 +16550,7 @@ $b874:
 <p><strong>fall through</strong></p>
 <hr />
 <h1 id="feb61-field.reflect_window_scroll">$3f:eb61 field.reflect_window_scroll</h1>
-<h3 id="args-222">args:</h3>
+<h3 id="args-224">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $57: bank number to restore</li>
 <li><a href="#out-2">out</a> bool carry: always 0. (= scroll successful)</li>
@@ -16543,7 +16575,7 @@ $b874:
 <div class="sourceLine" id="cb564-7" data-line-number="7"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="feb69-field.scrollup_item_window">$3f:eb69 field.scrollup_item_window</h1>
-<h3 id="args-223">args:</h3>
+<h3 id="args-225">args:</h3>
 <ul>
 <li>[in,out] ptr $1c: pointer to text</li>
 <li><a href="#in-2">in</a> u8 $93: bank number of the text</li>
@@ -16592,7 +16624,7 @@ $b874:
 <div class="sourceLine" id="cb565-33" data-line-number="33"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="feba9-fieldseek_text_to_next_line">$3f:eba9 field::seek_text_to_next_line</h1>
-<h3 id="args-224">args:</h3>
+<h3 id="args-226">args:</h3>
 <ul>
 <li>[in,out] ptr $1c: pointer to text to seek with</li>
 <li><a href="#out-2">out</a> ptr $3e: pointer to the text, pointing the beginning of next line</li>
@@ -16629,7 +16661,7 @@ $b874:
 <div class="sourceLine" id="cb566-24" data-line-number="24"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="febd1-fieldunseek_text_to_line_beginning">$3f:ebd1 field::unseek_text_to_line_beginning</h1>
-<h3 id="args-225">args:</h3>
+<h3 id="args-227">args:</h3>
 <ul>
 <li>[in,out] ptr $1c: pointer to text to seek with</li>
 <li><a href="#out-2">out</a> ptr $3e: pointer to the text, pointing the beginning of line</li>
@@ -16735,7 +16767,7 @@ $b874:
 <div class="sourceLine" id="cb569-8" data-line-number="8"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fec18-fieldhide_sprites_under_window">$3f:ec18 field::hide_sprites_under_window</h1>
-<h3 id="args-226">args:</h3>
+<h3 id="args-228">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 X: window_type (0…4)</li>
 </ul>
@@ -16751,7 +16783,7 @@ $b874:
 <p><strong>fall through</strong></p>
 <hr />
 <h1 id="fec1a-fieldshowhide_sprites_by_region">$3f:ec1a field::showhide_sprites_by_region</h1>
-<h3 id="args-227">args:</h3>
+<h3 id="args-229">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 A: show/hide.
 <ul>
@@ -16766,7 +16798,7 @@ $b874:
 <li>$3f:ec12 field::show_sprites_on_region7 (with X set to 7)</li>
 <li>$3f:ec18 field::showhide_sprites_by_window_region</li>
 </ul>
-<h3 id="local-variables-20">local variables:</h3>
+<h3 id="local-variables-21">local variables:</h3>
 <ul>
 <li>u8 $80: region boundary in pixels, left, inclusive.</li>
 <li>u8 $81: region boundary in pixels, right, exclusive.</li>
@@ -16859,7 +16891,7 @@ $b874:
 <ul>
 <li><code>1F:E264:20 8D EC  JSR $EC8D</code></li>
 </ul>
-<h3 id="args-228">args:</h3>
+<h3 id="args-230">args:</h3>
 <ul>
 <li>u8 A : window_type</li>
 </ul>
@@ -16979,7 +17011,7 @@ $b874:
 <div class="sourceLine" id="cb581-3" data-line-number="3"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fecfa-fielddraw_in_place_window">$3f:ecfa field::draw_in_place_window</h1>
-<h3 id="args-229">args:</h3>
+<h3 id="args-231">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 A: window_type</li>
 </ul>
@@ -16994,10 +17026,10 @@ $b874:
 <hr />
 <h1 id="fed02-field.draw_window_box">$3f:ed02 field.draw_window_box</h1>
 <blockquote>
-<p>Renders window borders and fills inner area with spaces for the given window</p>
+<p>IDで指定されたウインドウの枠を描画し、その背景を空白で埋める。</p>
 </blockquote>
-<h3 id="args-230">args:</h3>
-<h4 id="in-5">in:</h4>
+<h3 id="args-232">args:</h3>
+<h4 id="in-7">in:</h4>
 <ul>
 <li>u8 $37 : in_menu_mode (1: yes; skip some initializations)</li>
 <li>u8 $96 : window_type (only effective if $37 == 0)</li>
@@ -17010,7 +17042,7 @@ $b874:
 <li>u8 $3c : window_width (border excl.)</li>
 <li>u8 $3d : window_height (border excl.)</li>
 </ul>
-<h4 id="local-variables-21">local variables:</h4>
+<h4 id="local-variables-22">local variables:</h4>
 <ul>
 <li>u8 $3a : offset_x (or column in drawing)</li>
 <li>u8 $3b : offset_y (or row in drawing)</li>
@@ -17021,7 +17053,7 @@ $b874:
 <li><code>1E:8F0E:20 02 ED  JSR field::draw_window_box</code> @ $3c:8f04 ?; window_type = 1</li>
 <li><code>1E:8FD5:20 02 ED  JSR field::draw_window_box</code> @ $3c:8fd1 ?; window_type = 3</li>
 <li><code>1E:90B1:20 02 ED  JSR field::draw_window_box</code> @ $3c:90ad ?; window_type = 2</li>
-<li><code>1E:AAF4:4C 02 ED  JMP field::draw_window_box</code> @ $3d:aaf1 field::draw_menu_window</li>
+<li><code>1E:AAF4:4C 02 ED  JMP field::draw_window_box</code> @ $3d:aaf1 field::draw_menu_window_box</li>
 <li>(by falling through) @$3f:ecfa field::draw_in_place_window</li>
 </ul>
 <h3 id="notes-49">notes:</h3>
@@ -17091,8 +17123,8 @@ $b874:
 <blockquote>
 <p>マップのスクロールも考慮して、ウインドウの描画に用いる各種値(座標etc)を取得する。 あわせて、ウインドウ領域の内外に基づいてオブジェクトの属性を変更する。</p>
 </blockquote>
-<h3 id="args-231">args:</h3>
-<h4 id="in-6">in:</h4>
+<h3 id="args-233">args:</h3>
+<h4 id="in-8">in:</h4>
 <ul>
 <li>u8 X: window_type (0…4)
 <ul>
@@ -17184,7 +17216,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb588-8" data-line-number="8"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fedf6-fieldgetwindowtilesfortop">$3f:edf6 field::getWindowTilesForTop</h1>
-<h3 id="args-232">args:</h3>
+<h3 id="args-234">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $3c : width (border incl)</li>
 </ul>
@@ -17297,8 +17329,8 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb592-37" data-line-number="37"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fee9a-fieldload_and_draw_string">$3f:ee9a field::load_and_draw_string</h1>
-<h3 id="args-233">args:</h3>
-<h4 id="in-7">in:</h4>
+<h3 id="args-235">args:</h3>
+<h4 id="in-9">in:</h4>
 <ul>
 <li>u8 $92: string_id</li>
 <li>ptr $94: offset to string ptr table</li>
@@ -17333,7 +17365,7 @@ sta $4014   ;DMA</code></pre></li>
 <p><strong>fall through</strong></p>
 <hr />
 <h1 id="feec0-field.draw_string_in_window">$3f:eec0 field.draw_string_in_window</h1>
-<h3 id="args-234">args:</h3>
+<h3 id="args-236">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> ptr $3e : string offset</li>
 <li><a href="#in-2">in</a> u8 $93 : string bank</li>
@@ -17374,7 +17406,7 @@ sta $4014   ;DMA</code></pre></li>
 <blockquote>
 <p>render a text in the specified box (i.e., window) by filling up the shared buffer (at $0780,07a0).</p>
 </blockquote>
-<h3 id="args-235">args:</h3>
+<h3 id="args-237">args:</h3>
 <ul>
 <li><a href="#out-2">out</a> bool carry: more_to_draw.
 <ul>
@@ -17414,7 +17446,7 @@ sta $4014   ;DMA</code></pre></li>
 <li><code>1F:F345:4C FA EE  JMP field.eval_and_draw_string</code> @ ?</li>
 <li><code>1F:F387:4C FA EE  JMP field.eval_and_draw_string</code> @ ?</li>
 </ul>
-<h3 id="local-variables-22">local variables:</h3>
+<h3 id="local-variables-23">local variables:</h3>
 <ul>
 <li>u8 $80,81,82,83,85: scratch.</li>
 <li>u8 $84: scratch, usually having a byte immediately following the code byte</li>
@@ -17567,7 +17599,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb595-143" data-line-number="143"><span class="dt">$f02a</span><span class="op">:</span></div></code></pre>
 <hr />
 <h1 id="ff02a-textd.eval_replacement">$3f:f02a textd.eval_replacement</h1>
-<h3 id="args-236">args:</h3>
+<h3 id="args-238">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> a: charcode</li>
 <li><a href="#in-2">in</a> y: offset into the string pointed to by $3e.</li>
@@ -17580,7 +17612,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>u8 $97: window scroll x?</li>
 <li>u8 $98: window scroll y?</li>
 </ul>
-<h3 id="local-variables-23">local variables:</h3>
+<h3 id="local-variables-24">local variables:</h3>
 <ul>
 <li>u8 $80,81,82,83: scratch.</li>
 <li>u8 $84: parameter byte</li>
@@ -17730,7 +17762,7 @@ sta $4014   ;DMA</code></pre></li>
 <blockquote>
 <p>calculates the maximum job_id available to palyer, and returns it in the register A.</p>
 </blockquote>
-<h3 id="args-237">args:</h3>
+<h3 id="args-239">args:</h3>
 <ul>
 <li>in u8 $6021 : event flags, […fffff] where lower 5 bits represents each Crystal event</li>
 <li>out u8 A : maximum available job_id in accordance with game flags</li>
@@ -17769,7 +17801,7 @@ sta $4014   ;DMA</code></pre></li>
 <blockquote>
 <p>co-routine of charcode 0x1b, ‘item name of which is stored in the fatty choccobo’.</p>
 </blockquote>
-<h3 id="args-238">args:</h3>
+<h3 id="args-240">args:</h3>
 <ul>
 <li>in u8 $84: parameter byte of char code 0x1b</li>
 <li>in,out u8 $1e: is_initilized. 0: not initialized, otherwise: initizalied.</li>
@@ -17790,7 +17822,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li><code>jsr $F3AC ; F12C 20 AC F3</code> @ textd.eval_replacement (case 0x1b)</li>
 </ul>
-<h3 id="local-variables-24">local variables:</h3>
+<h3 id="local-variables-25">local variables:</h3>
 <ul>
 <li>none. all variables seem to be either set or referenced by functions outside.</li>
 </ul>
@@ -17836,7 +17868,7 @@ sta $4014   ;DMA</code></pre></li>
 <blockquote>
 <p>Saves current text pointer (at $3e) to temporary store</p>
 </blockquote>
-<h3 id="args-239">args:</h3>
+<h3 id="args-241">args:</h3>
 <ul>
 <li>in string* $3e: pointer to save</li>
 <li>out string* $99: saved pointer</li>
@@ -17848,7 +17880,7 @@ sta $4014   ;DMA</code></pre></li>
 <li><code>F2D9 20 E4 F3</code></li>
 <li><code>F334 20 E4 F3</code></li>
 </ul>
-<h3 id="local-variables-25">local variables:</h3>
+<h3 id="local-variables-26">local variables:</h3>
 <p>none.</p>
 <h3 id="notes-55">notes:</h3>
 <h3 id="pseudocode-54">(pseudo)code:</h3>
@@ -17869,7 +17901,7 @@ sta $4014   ;DMA</code></pre></li>
 <blockquote>
 <p>Restores text pointer previously saved with <code>$3f:f3e4 textd.save_text_ptr</code>.</p>
 </blockquote>
-<h3 id="args-240">args:</h3>
+<h3 id="args-242">args:</h3>
 <ul>
 <li>out string* $3e: restored pointer</li>
 <li>in string* $99: saved pointer previously saved with <code>$3f:f3e4 textd.save_text_ptr</code>.</li>
@@ -17880,7 +17912,7 @@ sta $4014   ;DMA</code></pre></li>
 <li><code>F342 20 ED F3</code></li>
 <li><code>F0DB 20 ED F3</code></li>
 </ul>
-<h3 id="local-variables-26">local variables:</h3>
+<h3 id="local-variables-27">local variables:</h3>
 <p>none.</p>
 <h3 id="notes-56">notes:</h3>
 <h3 id="pseudocode-55">(pseudo)code:</h3>
@@ -17896,7 +17928,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb601-10" data-line-number="10"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ff40a-setvramaddrforwindow">$3f:f40a setVramAddrForWindow</h1>
-<h3 id="args-241">args:</h3>
+<h3 id="args-243">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $3a : x offset</li>
 <li><a href="#in-2">in</a> u8 $3b : y</li>
@@ -17919,7 +17951,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb602-15" data-line-number="15"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ff549-floor.get_treasure">$3f:f549 floor.get_treasure</h1>
-<h3 id="args-242">args:</h3>
+<h3 id="args-244">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $0710[0x10] : treasureIds</li>
 <li><a href="#in-2">in</a> u8 $45 : eventParam</li>
@@ -17999,7 +18031,7 @@ sta $4014   ;DMA</code></pre></li>
 <blockquote>
 <p>getTreasureParam</p>
 </blockquote>
-<h3 id="args-243">args:</h3>
+<h3 id="args-245">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> x : treasureId</li>
 <li><a href="#out-2">out</a> a : itemId</li>
@@ -18020,7 +18052,7 @@ sta $4014   ;DMA</code></pre></li>
 <blockquote>
 <p>getTreasureGil</p>
 </blockquote>
-<h3 id="args-244">args:</h3>
+<h3 id="args-246">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> x : item_id</li>
 <li><a href="#out-2">out</a> u24 $80 : = $10:9e00[x]</li>
@@ -18052,7 +18084,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb605-15" data-line-number="15"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ff5ff-increment_gil">$3f:f5ff increment_gil</h1>
-<h3 id="args-245">args:</h3>
+<h3 id="args-247">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u24 $80 : gil</li>
 </ul>
@@ -18117,7 +18149,7 @@ sta $4014   ;DMA</code></pre></li>
 <blockquote>
 <p>render window content using tile (i.e., name table index) buffer at $0780-$07bf(inclusive).</p>
 </blockquote>
-<h3 id="args-246">args:</h3>
+<h3 id="args-248">args:</h3>
 <ul>
 <li>in u8 A: text drawing disposition code.
 <ul>
@@ -18145,7 +18177,7 @@ sta $4014   ;DMA</code></pre></li>
 <blockquote>
 <p>uploads tile (i.e., name table) buffer into vram.</p>
 </blockquote>
-<h3 id="args-247">args:</h3>
+<h3 id="args-249">args:</h3>
 <ul>
 <li>in u8 A : text drawing disposition.
 <ul>
@@ -18248,7 +18280,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb615-8" data-line-number="8"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ff854-call_32_8000">$3f:f854 call_32_8000</h1>
-<h3 id="args-248">args:</h3>
+<h3 id="args-250">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 a,x : param</li>
 <li><a href="#in-2">in</a> u8 $7cf6 : currentBank (bankToRestore)</li>
@@ -18268,7 +18300,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb616-12" data-line-number="12"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ff897-ppud.upload_palette">$3f:f897 ppud.upload_palette</h1>
-<h3 id="args-249">args:</h3>
+<h3 id="args-251">args:</h3>
 <ul>
 <li>in u8 $7cf7[0x20]: NES color indexes</li>
 </ul>
@@ -18293,7 +18325,7 @@ sta $4014   ;DMA</code></pre></li>
 <blockquote>
 <p>awaits nmi, then updates sprites and palette.</p>
 </blockquote>
-<h3 id="args-250">args:</h3>
+<h3 id="args-252">args:</h3>
 <ul>
 <li><span class="citation" data-cites="see">@see [$3f:f897 ppud.up*load*_palette]</span></li>
 </ul>
@@ -18309,7 +18341,7 @@ sta $4014   ;DMA</code></pre></li>
 <blockquote>
 <p>awaits nmi, then barely updates palette.</p>
 </blockquote>
-<h3 id="args-251">args:</h3>
+<h3 id="args-253">args:</h3>
 <ul>
 <li>see [$3f:f897 ppud.up<em>load</em>_palette]</li>
 </ul>
@@ -18317,7 +18349,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li>yet to be investigated</li>
 </ul>
-<h3 id="local-variables-27">local variables:</h3>
+<h3 id="local-variables-28">local variables:</h3>
 <ul>
 <li>none</li>
 </ul>
@@ -18330,7 +18362,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb620-5" data-line-number="5"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ff8c5-ppud.update_sprites_after_nmi">$3f:f8c5 ppud.update_sprites_after_nmi</h1>
-<h3 id="args-252">args:</h3>
+<h3 id="args-254">args:</h3>
 <ul>
 <li>in u8 $06: ppu ctrl cache</li>
 <li>in u8 $09: ppu mask cache</li>
@@ -18347,7 +18379,7 @@ sta $4014   ;DMA</code></pre></li>
 <p><strong>fall through</strong></p>
 <hr />
 <h1 id="ff8cb-ppud.sync_registers_with_cache">$3f:f8cb ppud.sync_registers_with_cache</h1>
-<h3 id="args-253">args:</h3>
+<h3 id="args-255">args:</h3>
 <ul>
 <li>in u8 $06: ppu ctrl cache</li>
 <li>in u8 $09: ppu mask cache</li>
@@ -18364,7 +18396,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb622-7" data-line-number="7"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ff8e0-ppud.set_vram_addr">$3f:f8e0 ppud.set_vram_addr</h1>
-<h3 id="args-254">args:</h3>
+<h3 id="args-256">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 a : addr(high byte)</li>
 <li><a href="#in-2">in</a> u8 x : addr(low byte)</li>
@@ -18377,7 +18409,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb623-5" data-line-number="5"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ff8ea-mul8x8_reg">$3f:f8ea mul8x8_reg</h1>
-<h3 id="args-255">args:</h3>
+<h3 id="args-257">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 a : multicand</li>
 <li><a href="#in-2">in</a> u8 x : multiplier</li>
@@ -18402,7 +18434,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb626-3" data-line-number="3"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ff92f-memcpy">$3f:f92f memcpy</h1>
-<h3 id="args-256">args:</h3>
+<h3 id="args-258">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u16 $7e : sourceAddr</li>
 <li><a href="#in-2">in</a> u16 $80 : destAddr</li>
@@ -18449,7 +18481,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb629-4" data-line-number="4"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ff970-copytovram">$3f:f970 copyToVram</h1>
-<h3 id="args-257">args:</h3>
+<h3 id="args-259">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u16 $7e : sourceBuffer</li>
 <li><a href="#in-2">in</a> u16 $80 : destVramAddr</li>
@@ -18521,7 +18553,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb630-59" data-line-number="59"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ffa0e-call_2e_9d53">$3f:fa0e call_2e_9d53</h1>
-<h3 id="args-258">args:</h3>
+<h3 id="args-260">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 A : 9d53_param</li>
 </ul>
@@ -18543,7 +18575,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb632-3" data-line-number="3"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ffa26-dobattle">$3f:fa26 doBattle</h1>
-<h3 id="args-259">args:</h3>
+<h3 id="args-261">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> a : encounter id</li>
 <li><a href="#in-2">in</a> x : backgroound sight graphics</li>
@@ -18640,7 +18672,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb638-9" data-line-number="9"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ffb30-irq_handler">$3f:fb30 irq_handler</h1>
-<h3 id="args-260">args:</h3>
+<h3 id="args-262">args:</h3>
 <ul>
 <li>[in,out] u8</li>
 </ul>
@@ -18669,7 +18701,7 @@ sta $4014   ;DMA</code></pre></li>
 <blockquote>
 <p>戦闘モード時のnmiハンドラ</p>
 </blockquote>
-<h3 id="args-261">args:</h3>
+<h3 id="args-263">args:</h3>
 <ul>
 <li>[in,out] u8 $05: nmi_pending (<span class="citation" data-cites="see">@see</span> <code>$3f:fb80 ppud.await_nmi_completion</code>)</li>
 <li><a href="#in-2">in</a> u8 $7cf3: ?</li>
@@ -18710,7 +18742,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb640-17" data-line-number="17"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ffb80-ppud.await_nmi_completion">$3f:fb80 ppud.await_nmi_completion</h1>
-<h3 id="args-262">args:</h3>
+<h3 id="args-264">args:</h3>
 <ul>
 <li>in,out u8 $05: pending_nmi
 <ul>
@@ -18728,7 +18760,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb641-5" data-line-number="5"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ffb87-switch_16k_synchronized">$3f:fb87 switch_16k_synchronized</h1>
-<h3 id="args-263">args:</h3>
+<h3 id="args-265">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 A : bankNo (per <em>16k</em> unit)</li>
 <li><a href="#out-2">out</a> u8 $ab : per16kBankNo</li>
@@ -18742,12 +18774,12 @@ sta $4014   ;DMA</code></pre></li>
 <p><strong>fall through</strong></p>
 <hr />
 <h1 id="ffb89-switch_16k_synchronized_nocache">$3f:fb89 switch_16k_synchronized_nocache</h1>
-<h3 id="args-264">args:</h3>
+<h3 id="args-266">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 A : bankNo (per <em>16k</em> unit)</li>
 <li><a href="#out-2">out</a> u8 $ab : per16kBankNo</li>
 </ul>
-<h3 id="local-variables-28">local variables:</h3>
+<h3 id="local-variables-29">local variables:</h3>
 <ul>
 <li>u8 $a9 : page_lock (コマンド発行中のみincr) <span class="citation" data-cites="see">@see</span> <code>$3f$fb87 switch_16k_synchronized</code></li>
 </ul>
@@ -18770,7 +18802,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb643-17" data-line-number="17"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ffbaa-getpad1input">$3f:fbaa getPad1Input()</h1>
-<h3 id="args-265">args:</h3>
+<h3 id="args-267">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $13 : inputMask?</li>
 <li><a href="#out-2">out</a> u8 $12 : inputFlag(bit7 &gt; &lt; v ^ st sel b a bit0)</li>
@@ -18813,7 +18845,7 @@ sta $4014   ;DMA</code></pre></li>
 <blockquote>
 <p>指定した乱数系列から乱数値を一つ取得する</p>
 </blockquote>
-<h3 id="args-266">args:</h3>
+<h3 id="args-268">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 A : max?</li>
 <li><a href="#in-2">in</a> u8 X : min?</li>
@@ -18892,7 +18924,7 @@ $fc3b a9 01</code></pre>
 <blockquote>
 <p>筆算的に割り算</p>
 </blockquote>
-<h3 id="args-267">args:</h3>
+<h3 id="args-269">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u16 $18 dividend</li>
 <li><a href="#in-2">in</a> u16 $1a divisor</li>
@@ -18927,7 +18959,7 @@ $fc3b a9 01</code></pre>
 <blockquote>
 <p>筆算的掛け算(8bit*8bit)</p>
 </blockquote>
-<h3 id="args-268">args:</h3>
+<h3 id="args-270">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 a : multicand</li>
 <li><a href="#in-2">in</a> u8 x : multiplier</li>
@@ -18952,7 +18984,7 @@ $fc3b a9 01</code></pre>
 <blockquote>
 <p>筆算の要領で掛け算をする(16bit*16bit)</p>
 </blockquote>
-<h3 id="args-269">args:</h3>
+<h3 id="args-271">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u16 $18 multicand</li>
 <li><a href="#in-2">in</a> u16 $1a multiplier</li>
@@ -19012,7 +19044,7 @@ $fc3b a9 01</code></pre>
 <div class="sourceLine" id="cb656-8" data-line-number="8"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ffd4a-copyto_7ad7_x_until0">$3f:fd4a copyTo_$7ad7_x_Until0</h1>
-<h3 id="args-270">args:</h3>
+<h3 id="args-272">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 A : sourceBank(per16k)</li>
 <li>[in,out] u8 X : destOffset</li>
@@ -19034,7 +19066,7 @@ $fc3b a9 01</code></pre>
 <div class="sourceLine" id="cb657-11" data-line-number="11"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ffd60-get2byteatbank18">$3f:fd60 get2byteAtBank18</h1>
-<h3 id="args-271">args:</h3>
+<h3 id="args-273">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u16 $18 : baseOffset</li>
 <li><a href="#in-2">in</a> u8 $1a : index</li>
@@ -19051,7 +19083,7 @@ $fc3b a9 01</code></pre>
 <div class="sourceLine" id="cb658-8" data-line-number="8"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ffd8b">$3f:fd8b</h1>
-<h3 id="args-272">args:</h3>
+<h3 id="args-274">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> x : userTypeId (itemParam[7])</li>
 </ul>
@@ -19061,7 +19093,7 @@ $fc3b a9 01</code></pre>
 <div class="sourceLine" id="cb659-3" data-line-number="3"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ffda6-loadto7400ex">$3f:fda6 loadTo7400Ex</h1>
-<h3 id="args-273">args:</h3>
+<h3 id="args-275">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $18 : index</li>
 <li><a href="#in-2">in</a> u8 $1a : dataSize</li>
@@ -19093,7 +19125,7 @@ $fc3b a9 01</code></pre>
 <div class="sourceLine" id="cb660-19" data-line-number="19"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ffddc-copyto7400">$3f:fddc copyTo7400</h1>
-<h3 id="args-274">args:</h3>
+<h3 id="args-276">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u16 $46 : sourceBasePtr</li>
 <li><a href="#in-2">in</a> u8 $4a : bankToRestore</li>
@@ -19161,7 +19193,7 @@ $fc3b a9 01</code></pre>
 <li>zero: usually 0 as long as caller supplies valid bank number (00-3f).</li>
 <li>negative: depends on the bank number given, usually 0 as valid bank number fall in positibe range (00-3F.) rest are unaffected.</li>
 </ul>
-<h3 id="args-275">args:</h3>
+<h3 id="args-277">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 a : basebank (per 8k)</li>
 </ul>
