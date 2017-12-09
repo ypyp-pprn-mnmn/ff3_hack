@@ -108,6 +108,8 @@ dmaなしで20scanlines分(2266clocks)描画に使える仮定とすると...
 -   6cycles/byteなら320+ (lda #xx; sta $2007)
     32bytesに必要なバッファはbgをまたぐケースで250bytes = 5 x (14(attr)+36(name table))
 
+⇒ $7300-$73ff以外は厳しそうなので8cyclesのほうで
+
 ## queing
 `$1f: lines_drawn`で行判定
 
