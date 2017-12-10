@@ -16,6 +16,12 @@ field_x.RENDERER_BEGIN:
 ;--------------------------------------------------------------------------------------------------
 field_x.deferred_renderer:
 .addr_index = $83
+	pha
+	txa
+	pha
+	tya
+	pha
+
 	lda $2002	;dummy read to ensure unset nmi flag 
 	inc <field.frame_counter
 	;; do rendering.
@@ -27,6 +33,12 @@ field_x.deferred_renderer:
 	jsr field_x.remove_nmi_handler
 
 	jsr field.restore_banks
+
+	pla
+	tay
+	pla
+	tax
+	pla
 	rti
 
 field_x.render_deferred_contents:
@@ -117,7 +129,8 @@ field_x.render.upload_loop:
 ;--------------------------------------------------------------------------------------------------
 field_x.queue_vram_addr:
 	DECLARE_WINDOW_VARIABLES
-	lda field_x.render.next_line
+	;lda field_x.render.next_line
+	lda <.offset_y
 	ldx <.window_left
 	dex
 	jsr field_x.map_coords_to_vram
@@ -137,7 +150,10 @@ field_x.queue_top_border:
 	dey
 	tya
 	ldx #2
-	bne field_x.queue_border
+	jsr field_x.queue_border
+	ldy <.window_top
+	sty <.offset_y
+	rts
 
 field_x.queue_bottom_border:
 	DECLARE_WINDOW_VARIABLES

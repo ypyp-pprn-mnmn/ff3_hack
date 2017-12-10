@@ -1438,6 +1438,7 @@ field.draw_window_content:
 ;--------------------------------------------------------------------------------------------------
 field_x.init_and_draw_window_content
 	DECLARE_WINDOW_VARIABLES
+	lda #(field_x.NO_BORDERS)
 	jsr field_x.init_deferred_rendering
 	jmp field.draw_window_content
 ;--------------------------------------------------------------------------------------------------
