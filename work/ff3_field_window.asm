@@ -45,6 +45,7 @@ field_x.render.init_flags = $73ff
 field_x.NEED_TOP_BORDER = $80
 field_x.PENDING_INIT = $40
 field_x.NEED_SPRITE_DMA = $20
+field_x.NEED_RESET = $10
 field_x.NO_BORDERS = $02
 field_x.NEED_BOTTOM_BORDER = $01
 ;field_x.BUFFER_CAPACITY = $c0
@@ -268,7 +269,11 @@ field.reflect_window_scroll:	;;$3f$eb61
 	FIX_ADDR_ON_CALLER $3d,$b624+1
 	FIX_ADDR_ON_CALLER $3d,$bc0f+1
 ;; ---
-	jsr field.draw_string_in_window	;$eec0
+	.ifdef DEFERRED_RENDERING
+		jsr field_x.defer_window_text_without_border
+	.else
+		jsr field.draw_string_in_window	;$eec0
+	.endif
 	;clc	;successfully scrolled the item window
 	;bcc field_x.restore_banks_with_status
 	jmp field.restore_banks	;carry will be cleared by this routine
@@ -870,7 +875,7 @@ field.sync_ppu_scroll:
 	rts
 	;VERIFY_PC $edf6
 ;------------------------------------------------------------------------------------------------------
-	.ifndef FAST_FIELD_WINDOW
+	.ifndef DEFERRED_RENDERING
 	;INIT_PATCH $3f,$edf6,$ee65
 ;;$3f:edf6 field::getWindowTilesForTop
 ;;callers:
@@ -938,7 +943,7 @@ field.get_window_bottom_tiles:	;ed3b
 	jsr field_x.get_window_tiles
 	bne field_x.get_window_tiles
 	.endif	;.ifdef _FEATURE_BORDER_LOADER
-	.endif	;.ifndef FAST_FIELD_WINDOW
+	.endif	;.ifndef DEFERRED_RENDERING
 
 field_x.window_parts:
 	db $f7, $f8, $f9
@@ -1032,11 +1037,6 @@ field.load_and_draw_string:	;;$ee9a
 .text_bank = $93
 .p_text_table = $94	;;stores offset from $30000(18:8000) to the text 
 ;; ---
-	.ifdef FAST_FIELD_WINDOW
-	lda #field_x.NO_BORDERS
-	jsr field_x.init_deferred_rendering
-	.endif	;FAST_FIELD_WINDOW
-;; ---
 	lda #$18
 	jsr call_switch1stBank
 	lda <.text_id
@@ -1064,8 +1064,14 @@ field.load_and_draw_string:	;;$ee9a
 	adc #$18
 	sta <.text_bank
 	;;fall through.
-	FALL_THROUGH_TO field.draw_string_in_window
-
+	;FALL_THROUGH_TO field.draw_string_in_window
+	FALL_THROUGH_TO field_x.defer_window_text_without_border
+;------------------------------------------------------------------------------------------------------
+field_x.defer_window_text_without_border:
+	.ifdef DEFERRED_RENDERING
+	lda #field_x.NO_BORDERS
+	jsr field_x.init_deferred_rendering
+	.endif	;DEFERRED_RENDERING
 ;------------------------------------------------------------------------------------------------------
 	;INIT_PATCH $3f,$eec0,$eefa
 ;;# $3f:eec0 field.draw_string_in_window
@@ -1193,7 +1199,6 @@ field.setVramAddrForWindowEx:
 
 ;--------------------------------------------------------------------------------------------------
 	.ifdef FAST_FIELD_WINDOW
-	;.if 0
 
 	INIT_PATCH_EX menu.erase, $3f, $f44b, $f4a1, $f44b
 menu.savefile.erase_window:
@@ -1235,10 +1240,11 @@ menu.erase_box_of_width_1e:
 menu.erase_box_from_bottom:
 	DECLARE_WINDOW_VARIABLES
 .output_index = $90
+.width_in_1st = $91
 	pha				; F47A 48
 	lda <.window_width         ; F47B A5 3C
 	sta <.output_index         ; F47D 85 90
-	sta <$91         ; F47F 85 91
+	sta <.width_in_1st         ; F47F 85 91
 	ldy #$1D        ; F481 A0 1D
 	lda #$00        ; F483 A9 00
 .l_F485:
@@ -1246,7 +1252,8 @@ menu.erase_box_from_bottom:
 		sta $07A0,y     ; F488 99 A0 07
 		dey 			; F48B 88
 		bpl .l_F485     ; F48C 10 F7
-	jsr field.draw_window_content       ; F48E 20 92 F6
+	;jsr field.draw_window_content       ; F48E 20 92 F6
+	jsr field_x.init_and_draw_window_content
 	lda <.offset_y         ; F491 A5 3B
 	sec 			; F493 38
 	sbc #$04        ; F494 E9 04
@@ -1336,17 +1343,18 @@ field.init_window_tile_buffer:
 ;;	1F:EEE9:20 92 F6  JSR field::draw_window_content @ $3f:eec0 field.draw_string_in_window
 ;;	1F:EF49:20 92 F6  JSR field::draw_window_content @ $3f:eefa textd.draw_in_box
 ;;	1F:EFDE:20 92 F6  JSR field::draw_window_content @ ? (sub routine of $eefa)
-;;	1F:F48E:20 92 F6  JSR field::draw_window_content @ 
+;;	1F:F48E:20 92 F6  JSR field::draw_window_content @ $3f:f47a menu.erase_box_from_bottom
 field.draw_window_content:
 ;; patch out external callers {
 	;FIX_ADDR_ON_CALLER $3f,$eee9+1
 	;FIX_ADDR_ON_CALLER $3f,$ef49+1
 	;FIX_ADDR_ON_CALLER $3f,$efde+1
-	FIX_ADDR_ON_CALLER $3f,$f48e+1
+	;FIX_ADDR_ON_CALLER $3f,$f48e+1
 ;;}
 	DECLARE_WINDOW_VARIABLES
+.output_index = $90
 ;; ---
-	.ifndef FAST_FIELD_WINDOW
+	.ifndef DEFERRED_RENDERING
 	;.if 1
 
 		pha
@@ -1358,13 +1366,18 @@ field.draw_window_content:
 		jsr field_x.switch_to_text_bank
 		jmp field.init_window_tile_buffer	;f683
 	
-	.else	;FAST_FIELD_WINDOW
+	.else	;DEFERRED_RENDERING
 	
 		;; 1. if required, capture attribute and write it into the buffer.
 		;; 2. composite borders with content.
 		;; 3. write the result into the buffer.
 		;; 4. update number of available bytes to notify it of renderer.
 		tax
+
+		lda field_x.render.init_flags
+		and #(field_x.NEED_RESET)
+		bne .oops
+
 		lda <.lines_drawn
 		pha
 		txa
@@ -1408,13 +1421,25 @@ field.draw_window_content:
 			beq .remove_handler
 				jsr field_x.await_complete_rendering	
 		.remove_handler:
-			;jsr field_x.remove_nmi_handler
+			lda field_x.NEED_RESET
+			sta field_x.render.init_flags
 	.update_queue_status:
 		pla
 		sta <.lines_drawn	;restore the original
 		;jsr field_x.set_deferred_renderer
+		;; reset output index. callers rely on this to continue parse
+		lda #0
+		sta <.output_index	;;originally, 'field.upload_window_content's role
+
 		jsr field_x.switch_to_text_bank
 		jmp field.init_window_tile_buffer
+	.oops:
+		brk
+;--------------------------------------------------------------------------------------------------
+field_x.init_and_draw_window_content
+	DECLARE_WINDOW_VARIABLES
+	jsr field_x.init_deferred_rendering
+	jmp field.draw_window_content
 ;--------------------------------------------------------------------------------------------------
 field_x.ensure_buffer_available:
 	DECLARE_WINDOW_VARIABLES
@@ -1438,27 +1463,12 @@ field_x.await_complete_rendering:
 field_x.render.rts_1:
 	rts
 
-field_x.remove_nmi_handler:
-	lda #$40	;RTI
-	sta nmi_handler_entry
-	rts
-
-field_x.set_deferred_renderer:
-	jsr field_x.remove_nmi_handler
-	lda #HIGH(field_x.deferred_renderer)
-	sta nmi_handler_entry+2
-	lda #LOW(field_x.deferred_renderer)
-	sta nmi_handler_entry+1
-	lda #$4c	;JMP
-	sta nmi_handler_entry
-	rts
-
-	.endif ;FAST_FIELD_WINDOW
+	.endif ;DEFERRED_RENDERING
 ;--------------------------------------------------------------------------------------------------
 	;VERIFY_PC $f6aa
 	.endif	;FAST_FIELD_WINDOW
 ;--------------------------------------------------------------------------------------------------
-	.ifndef FAST_FIELD_WINDOW
+	.ifndef DEFERRED_RENDERING
 	INIT_PATCH	$3f,$f6aa,$f727
 	.endif	;ifndef FAST_FIELD_WINDOW
 ;$3f:f6aa field::upload_window_content
@@ -1573,7 +1583,7 @@ field.upload_window_content:
 	bne .copy_loop_0
 
 	rts
-	.endif	;ifndef FAST_FIELD_WINDOW
+	.endif	;ifndef DEFERRED_RENDERING
 
 	VERIFY_PC $f727
 ;======================================================================================================

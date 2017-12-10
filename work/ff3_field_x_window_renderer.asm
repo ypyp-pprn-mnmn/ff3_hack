@@ -300,6 +300,21 @@ field_x.init_deferred_rendering:
 	sta <.window_width
 .done:
 	rts
+;--------------------------------------------------------------------------------------------------
+field_x.remove_nmi_handler:
+	lda #$40	;RTI
+	sta nmi_handler_entry
+	rts
+
+field_x.set_deferred_renderer:
+	jsr field_x.remove_nmi_handler
+	lda #HIGH(field_x.deferred_renderer)
+	sta nmi_handler_entry+2
+	lda #LOW(field_x.deferred_renderer)
+	sta nmi_handler_entry+1
+	lda #$4c	;JMP
+	sta nmi_handler_entry
+	rts
 ;==================================================================================================
 	.if 0
 field_x.update_ppu_attr_table:

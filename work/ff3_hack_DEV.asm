@@ -13,5 +13,6 @@ EXPERIMENT_IMPL = 5	; encount test
 
 FAST_FIELD_WINDOW
 STOMACH_AMOUNT_1BYTE
+DEFERRED_RENDERING
 ; the below should be final line of this file
 	.include "ff3_hack_beta.asm"
