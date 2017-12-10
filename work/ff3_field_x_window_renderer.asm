@@ -14,6 +14,285 @@
 
 field_x.RENDERER_BEGIN:
 ;--------------------------------------------------------------------------------------------------
+field_x.deferred_renderer:
+	lda $2002	;dummy read to ensure unset nmi flag 
+	inc <field.frame_counter
+	;; do rendering.
+	lda #0
+	jsr field_x.render_deferred_contents
+	;;
+	jsr field_x.end_ppu_update	;sync_ppu_scroll+call_sound_driver
+	jsr field_x.remove_nmi_handler
+	lda #0
+	sta field_x.renderer_available_bytes
+	jsr field.restore_banks
+	rti
+	
+field_x.ensure_buffer_available:
+	DECLARE_WINDOW_VARIABLES
+	lda field_x.renderer_available_bytes
+	clc
+	adc <.window_width
+	cmp #$c0
+	bcc .ok
+		jsr field_x.set_deferred_renderer
+.wait_nmi:
+		lda field_x.renderer_available_bytes
+		bne .wait_nmi
+.ok:
+	rts
+
+field_x.remove_nmi_handler:
+	lda #$40	;RTI
+	sta nmi_handler_entry
+	rts
+
+field_x.set_deferred_renderer:
+	jsr field_x.remove_nmi_handler
+	lda #HIGH(field_x.deferred_renderer)
+	sta nmi_handler_entry+2
+	lda #LOW(field_x.deferred_renderer)
+	sta nmi_handler_entry+1
+	lda #$4c	;JMP
+	sta nmi_handler_entry
+	rts
+
+field_x.render_deferred_contents:
+	DECLARE_WINDOW_VARIABLES
+.eol_offset = $82
+.p_jump = $84
+	pha
+	lda field_x.renderer_next_line
+	ldx <.window_left
+	dex
+	jsr field_x.map_coords_to_vram
+	sta $2006
+	stx $2006
+
+	inc field_x.renderer_next_line
+
+	pla
+	pha
+	clc
+	adc <.window_width
+	clc
+	adc #($10+2)
+	sta <.eol_offset
+	pla
+	pha
+	clc
+	adc field_x.renderer_buffer_bias
+	tax
+	jmp [field_x.renderer_uploader_addr]
+
+field_x.renderer_upload_next:
+	DECLARE_WINDOW_VARIABLES
+	pla
+	clc
+	adc #$2
+	clc
+	adc <.window_width
+	cpx field_x.renderer_available_bytes
+	bcc field_x.render_deferred_contents
+	rts
+
+field_x.renderer_upload_loop:
+.eol_offset = $82
+.p_jump = $84
+	lda field_x.renderer_tile_buffer-$10,x
+	sta $2007
+	lda field_x.renderer_tile_buffer-$0f,x
+	sta $2007
+	lda field_x.renderer_tile_buffer-$0e,x
+	sta $2007
+	lda field_x.renderer_tile_buffer-$0d,x
+	sta $2007
+	lda field_x.renderer_tile_buffer-$0c,x
+	sta $2007
+	lda field_x.renderer_tile_buffer-$0b,x
+	sta $2007
+	lda field_x.renderer_tile_buffer-$0a,x
+	sta $2007
+	lda field_x.renderer_tile_buffer-$09,x
+	sta $2007
+	lda field_x.renderer_tile_buffer-$08,x
+	sta $2007
+	lda field_x.renderer_tile_buffer-$07,x
+	sta $2007
+	lda field_x.renderer_tile_buffer-$06,x
+	sta $2007
+	lda field_x.renderer_tile_buffer-$05,x
+	sta $2007
+	lda field_x.renderer_tile_buffer-$04,x
+	sta $2007
+	lda field_x.renderer_tile_buffer-$03,x
+	sta $2007
+	lda field_x.renderer_tile_buffer-$02,x
+	sta $2007
+	lda field_x.renderer_tile_buffer-$01,x
+	sta $2007
+
+	txa
+	clc
+	adc #$10
+	tax
+	cpx <.eol_offset
+	bne field_x.renderer_upload_loop
+	beq field_x.renderer_upload_next
+
+field_x.init_deferred_rendering:
+	DECLARE_WINDOW_VARIABLES
+.p_jump = $80
+;; init deferred drawing.
+	lda #(field_x.NEED_TOP_BORDER|field_x.NEED_BOTTOM_BORDER)
+	ldx <.in_menu_mode
+	bne .store_init_flags
+		ora #(field_x.NEED_SPRITE_DMA)
+.store_init_flags:
+	sta field_x.renderer_init_flags
+	lda #0
+	sta field_x.renderer_available_bytes
+	ldx <.window_top
+	dex
+	stx field_x.renderer_next_line
+	lda <.window_width
+	pha
+	tax
+	inx
+	inx
+	stx <.window_width
+	jsr field_x.calc_window_width_in_bg
+	sta field_x.renderer_width_1st
+;;
+	lda <.window_width
+	pha
+	clc
+	and #$f
+	bne .align
+		ora #$10
+.align:
+	sta field_x.renderer_buffer_bias
+	pla
+	eor #$0f
+	clc
+	adc #1
+	and #$0f
+	sta <.p_jump
+	tax
+	lda <.p_jump
+	asl A
+	clc
+	adc <.p_jump
+	asl A
+	adc #LOW(field_x.renderer_upload_loop)
+	sta field_x.renderer_uploader_addr
+	lda #0
+	adc #HIGH(field_x.renderer_upload_loop)
+	sta field_x.renderer_uploader_addr+1
+
+	pla
+	sta <.window_width
+	rts
+;--------------------------------------------------------------------------------------------------
+field_x.queue_top_border:
+	DECLARE_WINDOW_VARIABLES
+	ldy <.window_top
+	dey
+	tya
+	ldx #2
+	bne field_x.queue_border
+
+field_x.queue_bottom_border:
+	DECLARE_WINDOW_VARIABLES
+	lda <.window_top
+	clc
+	adc <.window_height
+	ldx #8
+	FALL_THROUGH_TO field_x.queue_border
+
+field_x.queue_border:
+	DECLARE_WINDOW_VARIABLES
+	sta <.offset_y
+;; --- check if there enough space remaining in the buffer.
+	jsr field_x.ensure_buffer_available
+;; --- attr check.
+	jsr field_x.queue_attributes
+;; --- queue tiles.
+.put_borders:
+	ldy #3
+.get_parts:
+		lda field_x.window_parts,x
+		pha
+		dex
+		dey
+		bne .get_parts
+	ldx field_x.renderer_available_bytes
+	pla
+	jsr field_x.queue_byte
+
+	pla
+	ldy <.window_width
+.put_middles:
+		jsr field_x.queue_byte
+		dey
+		bne .put_middles
+	pla
+	;jmp field_x.queue_byte
+	FALL_THROUGH_TO field_x.queue_byte
+
+field_x.queue_byte:
+	sta field_x.renderer_tile_buffer,x
+	inx
+	stx field_x.renderer_available_bytes
+	;inc field_x.renderer_available_bytes
+	rts
+
+field_x.queue_content:
+	DECLARE_WINDOW_VARIABLES
+.p_source = $80
+	clc
+	adc #$80
+	sta <.p_source
+	lda #$07
+	sta <.p_source+1
+;; --- check if there enough space remaining in the buffer.
+	jsr field_x.ensure_buffer_available
+;; --- attr check.
+	jsr field_x.queue_attributes
+;; --- 
+	inc <.offset_y	;;originally 'field.upload_window_content's role
+;; --- queue tiles.
+	ldx field_x.renderer_available_bytes
+
+	lda #$fa
+	jsr field_x.queue_byte
+
+	ldy #0
+.put_middles:
+		lda [.p_source],y
+		jsr field_x.queue_byte
+		iny
+		cpy <.window_width
+		bne .put_middles
+
+	lda #$fb
+	jmp field_x.queue_byte
+
+;; on entry, offset_y will have valid value.
+field_x.queue_attributes:
+	DECLARE_WINDOW_VARIABLES
+	lda <.in_menu_mode
+	bne .done
+		;; in-place window. need attr updates
+		lda <.offset_y
+		lsr A
+		bcs .done
+			;; only update attr if the line on even boundary
+			jsr field.init_window_attr_buffer	;ed56
+			jsr field.update_window_attr_buff	;$c98f
+			;field.bg_attr_table_cache
+.done:
+	rts
 
 ;==================================================================================================
 	.if 0
