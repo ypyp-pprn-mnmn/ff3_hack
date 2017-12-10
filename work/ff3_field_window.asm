@@ -126,7 +126,7 @@ field_x.draw_window_box_with_region:
 	jsr field_x.shrink_window_metrics
 
 	.ifdef FAST_FIELD_WINDOW
-	lda #(field_x.NEED_TOP_BORDER|field_x.NEED_BOTTOM_BORDER)
+	lda #(field_x.NEED_TOP_BORDER|field_x.NEED_BOTTOM_BORDER|field_x.PENDING_INIT)
 	jsr field_x.setup_deferred_rendering
 	.endif	;FAST_FIELD_WINDOW
 
@@ -799,9 +799,10 @@ field.draw_window_top:
 .window_row_in_drawing = $3b
 ;; TODO
 	jsr field_x.shrink_window_metrics
-	lda #(field_x.NEED_TOP_BORDER)
-	jsr field_x.setup_deferred_rendering
-	jsr field.draw_window_content
+	lda #(field_x.NEED_TOP_BORDER|field_x.PENDING_INIT)
+	;jsr field_x.setup_deferred_rendering
+	;jsr field.draw_window_content
+	jsr field_x.init_and_draw_window_content
 	
 ;	lda <.window_top
 ;	sta <.window_row_in_drawing
@@ -1075,7 +1076,7 @@ field.load_and_draw_string:	;;$ee9a
 ;------------------------------------------------------------------------------------------------------
 field_x.defer_window_text_without_border:
 	.ifdef DEFERRED_RENDERING
-	lda #(field_x.NO_BORDERS)
+	lda #(field_x.NO_BORDERS|field_x.PENDING_INIT)
 	jsr field_x.setup_deferred_rendering
 	.endif	;DEFERRED_RENDERING
 ;------------------------------------------------------------------------------------------------------
@@ -1259,7 +1260,7 @@ menu.erase_box_from_bottom:
 		dey 			; F48B 88
 		bpl .l_F485     ; F48C 10 F7
 	;jsr field.draw_window_content       ; F48E 20 92 F6
-	jsr field_x.init_and_draw_window_content
+	jsr field_x.setup_deferred_erase
 	;jmp .noop_continue
 .noop_continue:
 	lda <.offset_y         ; F491 A5 3B
@@ -1453,9 +1454,10 @@ field.draw_window_content:
 	.oops:
 		brk
 ;--------------------------------------------------------------------------------------------------
-field_x.init_and_draw_window_content
+field_x.setup_deferred_erase:
 	DECLARE_WINDOW_VARIABLES
-	lda #(field_x.NO_BORDERS)
+	lda #(field_x.NO_BORDERS|field_x.PENDING_INIT)
+field_x.init_and_draw_window_content:
 	jsr field_x.setup_deferred_rendering
 	jmp field.draw_window_content
 ;--------------------------------------------------------------------------------------------------
