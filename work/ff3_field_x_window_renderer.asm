@@ -358,13 +358,17 @@ field_x.setup_deferred_rendering:
 	clc
 	adc #1
 	and #$0f
-	sta <.p_jump
-	tax
-	lda <.p_jump
+	;sta <.p_jump
+	;tax
+	;lda <.p_jump
+	;asl A
+	;clc
+	;adc <.p_jump
+	;asl A
 	asl A
-	clc
-	adc <.p_jump
+	sta <.p_jump	;;x2
 	asl A
+	adc <.p_jump	;;x2+x4
 	adc #LOW(field_x.render.upload_loop)
 	sta field_x.render.uploader_addr
 	lda #0
