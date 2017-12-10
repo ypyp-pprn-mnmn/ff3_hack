@@ -47,7 +47,7 @@ field_x.render.init_flags = $7300	;;this address isn't touched by floor's logic
 field_x.NO_BORDERS = $80
 field_x.PENDING_INIT = $40
 field_x.NEED_SPRITE_DMA = $20
-field_x.NEED_RESET = $10
+field_x.RENDER_RUNNING = $10	;;or 'completed'
 field_x.NEED_TOP_BORDER = $02
 field_x.NEED_BOTTOM_BORDER = $01
 ;field_x.BUFFER_CAPACITY = $c0
@@ -126,7 +126,7 @@ field_x.draw_window_box_with_region:
 	jsr field_x.shrink_window_metrics
 
 	.ifdef FAST_FIELD_WINDOW
-	ldx #(field_x.NEED_TOP_BORDER|field_x.NEED_BOTTOM_BORDER|field_x.PENDING_INIT)
+	ldx #(field_x.NEED_TOP_BORDER|field_x.NEED_BOTTOM_BORDER|field_x.PENDING_INIT|field_x.RENDER_RUNNING)
 	jsr field_x.setup_deferred_rendering
 	.endif	;FAST_FIELD_WINDOW
 
@@ -799,7 +799,7 @@ field.draw_window_top:
 .window_row_in_drawing = $3b
 ;; TODO
 	jsr field_x.shrink_window_metrics
-	ldx #(field_x.NEED_TOP_BORDER|field_x.PENDING_INIT)
+	ldx #(field_x.NEED_TOP_BORDER|field_x.PENDING_INIT|field_x.RENDER_RUNNING)
 	;jsr field_x.setup_deferred_rendering
 	;jsr field.draw_window_content
 	jsr field_x.init_and_draw_window_content
@@ -1076,7 +1076,7 @@ field.load_and_draw_string:	;;$ee9a
 ;------------------------------------------------------------------------------------------------------
 field_x.defer_window_text_without_border:
 	.ifdef DEFERRED_RENDERING
-	ldx #(field_x.NO_BORDERS|field_x.PENDING_INIT)
+	ldx #(field_x.NO_BORDERS|field_x.PENDING_INIT|field_x.RENDER_RUNNING)
 	jsr field_x.setup_deferred_rendering
 	.endif	;DEFERRED_RENDERING
 ;------------------------------------------------------------------------------------------------------
@@ -1160,7 +1160,6 @@ field_x.BULK_PATCH_FREE_BEGIN:
 
 	.endif	;FAST_FIELD_WINDOW
 ;==================================================================================================
-;==================================================================================================
 ;$3f:f40a setVramAddrForWindow
 ;//	[in] u8 $3a : x offset
 ;//	[in] u8 $3b : y
@@ -1204,7 +1203,7 @@ field.setVramAddrForWindowEx:
 
 	VERIFY_PC $f435
 
-;--------------------------------------------------------------------------------------------------
+;==================================================================================================
 	.ifdef FAST_FIELD_WINDOW
 
 	INIT_PATCH_EX menu.erase, $3f, $f44b, $f4a1, $f44b
@@ -1248,21 +1247,30 @@ menu.erase_box_from_bottom:
 	DECLARE_WINDOW_VARIABLES
 .output_index = $90
 .width_in_1st = $91
+	;pha
+	ldx #(field_x.NO_BORDERS|field_x.PENDING_INIT|field_x.RENDER_RUNNING)
+	jsr field_x.setup_deferred_rendering	;;preserves A.
+	;pla
+.erase_loop:
 	pha				; F47A 48
 	lda <.window_width         ; F47B A5 3C
 	sta <.output_index         ; F47D 85 90
 	sta <.width_in_1st         ; F47F 85 91
-	ldy #$1D        ; F481 A0 1D
-	lda #$00        ; F483 A9 00
-.l_F485:
-		sta $0780,y     ; F485 99 80 07
-		sta $07A0,y     ; F488 99 A0 07
-		dey 			; F48B 88
-		bpl .l_F485     ; F48C 10 F7
-	;jsr field.draw_window_content       ; F48E 20 92 F6
-	jsr field_x.setup_deferred_erase
-	;jmp .noop_continue
-.noop_continue:
+
+;	ldy #$1D        ; F481 A0 1D
+;	lda #$00        ; F483 A9 00
+;.l_F485:
+;		sta $0780,y     ; F485 99 80 07
+;		sta $07A0,y     ; F488 99 A0 07
+;		dey 			; F48B 88
+;		bpl .l_F485     ; F48C 10 F7
+	;;as `field.draw_window_content` fill up the buffer with default background,
+	;;it is needed to fill up with '0' for each time.
+	lda #0
+	jsr field_x.fill_tile_buffer_with
+	jsr field.draw_window_content       ; F48E 20 92 F6
+	;jsr field_x.setup_deferred_erase
+
 	lda <.offset_y         ; F491 A5 3B
 	sec 			; F493 38
 	sbc #$04        ; F494 E9 04
@@ -1270,7 +1278,8 @@ menu.erase_box_from_bottom:
 	pla 			; F498 68
 	sec 			; F499 38
 	sbc #$01        ; F49A E9 01
-	bne menu.erase_box_from_bottom     ; F49C D0 DC
+	;bne menu.erase_box_from_bottom     ; F49C D0 DC
+	bne .erase_loop
 	jmp field.restore_banks  ; F49E 4C F5 EC
 
 	VERIFY_PC_TO_PATCH_END menu.erase
@@ -1319,8 +1328,8 @@ field.calc_draw_width_and_init_window_tile_buffer:
 ;;	$3f:f692 field.draw_window_content
 field.init_window_tile_buffer:
 ;;[in]
-.tiles_1st = $0780
-.tiles_2nd = $07a0
+;.tiles_1st = $0780
+;.tiles_2nd = $07a0
 ;$f683
 ;	a = #ff
 ;	for (y = #1d;y >= 0;y--) {
@@ -1331,10 +1340,12 @@ field.init_window_tile_buffer:
 ;	return;
 ;$f692:
 	lda #$ff
+field_x.fill_tile_buffer_with:
+.tile_buffer = $0780
 	;ldy #$1d
 	ldy #$3d
 .copy_loop:
-		sta .tiles_1st,y
+		sta .tile_buffer,y
 		;sta .tiles_2nd,y
 		dey
 		bpl .copy_loop
@@ -1384,8 +1395,8 @@ field.draw_window_content:
 		tax
 
 		lda field_x.render.init_flags
-		and #(field_x.NEED_RESET)
-		bne .oops
+		and #(field_x.RENDER_RUNNING)
+		beq .oops
 
 		lda <.lines_drawn
 		pha
@@ -1439,7 +1450,8 @@ field.draw_window_content:
 			beq .remove_handler
 				jsr field_x.await_complete_rendering	
 		.remove_handler:
-			lda field_x.NEED_RESET
+			;lda field_x.NEED_RESET
+			lda #0
 			sta field_x.render.init_flags
 	.update_queue_status:
 		pla
@@ -1454,9 +1466,7 @@ field.draw_window_content:
 	.oops:
 		brk
 ;--------------------------------------------------------------------------------------------------
-field_x.setup_deferred_erase:
-	DECLARE_WINDOW_VARIABLES
-	ldx #(field_x.NO_BORDERS|field_x.PENDING_INIT)
+;; in X: init flags, A: text rendering disposition.
 field_x.init_and_draw_window_content:
 	jsr field_x.setup_deferred_rendering
 	jmp field.draw_window_content
