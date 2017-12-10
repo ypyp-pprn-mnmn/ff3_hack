@@ -126,7 +126,7 @@ field_x.draw_window_box_with_region:
 	jsr field_x.shrink_window_metrics
 
 	.ifdef FAST_FIELD_WINDOW
-	lda #(field_x.NEED_TOP_BORDER|field_x.NEED_BOTTOM_BORDER|field_x.PENDING_INIT)
+	ldx #(field_x.NEED_TOP_BORDER|field_x.NEED_BOTTOM_BORDER|field_x.PENDING_INIT)
 	jsr field_x.setup_deferred_rendering
 	.endif	;FAST_FIELD_WINDOW
 
@@ -799,7 +799,7 @@ field.draw_window_top:
 .window_row_in_drawing = $3b
 ;; TODO
 	jsr field_x.shrink_window_metrics
-	lda #(field_x.NEED_TOP_BORDER|field_x.PENDING_INIT)
+	ldx #(field_x.NEED_TOP_BORDER|field_x.PENDING_INIT)
 	;jsr field_x.setup_deferred_rendering
 	;jsr field.draw_window_content
 	jsr field_x.init_and_draw_window_content
@@ -1076,7 +1076,7 @@ field.load_and_draw_string:	;;$ee9a
 ;------------------------------------------------------------------------------------------------------
 field_x.defer_window_text_without_border:
 	.ifdef DEFERRED_RENDERING
-	lda #(field_x.NO_BORDERS|field_x.PENDING_INIT)
+	ldx #(field_x.NO_BORDERS|field_x.PENDING_INIT)
 	jsr field_x.setup_deferred_rendering
 	.endif	;DEFERRED_RENDERING
 ;------------------------------------------------------------------------------------------------------
@@ -1456,7 +1456,7 @@ field.draw_window_content:
 ;--------------------------------------------------------------------------------------------------
 field_x.setup_deferred_erase:
 	DECLARE_WINDOW_VARIABLES
-	lda #(field_x.NO_BORDERS|field_x.PENDING_INIT)
+	ldx #(field_x.NO_BORDERS|field_x.PENDING_INIT)
 field_x.init_and_draw_window_content:
 	jsr field_x.setup_deferred_rendering
 	jmp field.draw_window_content

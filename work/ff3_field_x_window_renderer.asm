@@ -312,12 +312,12 @@ field_x.render.on_opening_enter:
 	sta field_x.render.init_flags
 	jmp $C49E	;;some ppu initialiation
 
+;; in X: init flags
 field_x.setup_deferred_rendering:
 	DECLARE_WINDOW_VARIABLES
 .p_jump = $80
 ;; init deferred drawing.
-	;ora #(field_x.PENDING_INIT)
-	;tax
+	pha
 	bit field_x.render.init_flags
 	bvs	.done	;; already requested init
 	;txa
@@ -325,7 +325,7 @@ field_x.setup_deferred_rendering:
 	;bne .store_init_flags
 	;	ora #(field_x.NEED_SPRITE_DMA)
 .store_init_flags:
-	sta field_x.render.init_flags
+	stx field_x.render.init_flags
 	;lda #0
 	;sta field_x.render.available_bytes
 	;sta field_x.redner.addr_index
@@ -376,6 +376,7 @@ field_x.setup_deferred_rendering:
 	pla
 	sta <.window_width
 .done:
+	pla
 	rts
 ;--------------------------------------------------------------------------------------------------
 field_x.remove_nmi_handler:
