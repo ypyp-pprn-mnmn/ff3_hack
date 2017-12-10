@@ -14,6 +14,21 @@ ff3_field_window_begin:
 ;_FEATURE_BORDER_LOADER
 ;OMIT_COMPATIBLE_FIELD_WINDOW
 
+DECLARE_WINDOW_VARIABLES	.macro
+.lines_drawn = $1f
+.in_menu_mode = $37
+.window_left = $38
+.window_top = $39
+.offset_x = $3a
+.offset_y = $3b
+.window_width = $3c
+.window_height = $3d
+.p_text = $3e
+;;
+.tile_buffer_upper = $0780
+.tile_buffer_lower = $07a0
+	.endm
+
 	.ifdef FAST_FIELD_WINDOW
 
 field_x.render.tile_buffer = $7300	;max 0xc0 bytes = 192 titles.
@@ -36,20 +51,6 @@ field_x.NEED_BOTTOM_BORDER = $01
 field_x.BUFFER_CAPACITY = $80
 field_x.ADDR_CAPACITY = $0c
 
-DECLARE_WINDOW_VARIABLES	.macro
-.lines_drawn = $1f
-.in_menu_mode = $37
-.window_left = $38
-.window_top = $39
-.offset_x = $3a
-.offset_y = $3b
-.window_width = $3c
-.window_height = $3d
-.p_text = $3e
-;;
-.tile_buffer_upper = $0780
-.tile_buffer_lower = $07a0
-	.endm
 ;--------------------------------------------------------------------------------------------------
 	INIT_PATCH_EX field_window, $3f, $eb2d, $eefa, $eb2d
 ;field_x.BULK_PATCH_BEGIN:
@@ -1191,37 +1192,49 @@ field.setVramAddrForWindowEx:
 	VERIFY_PC $f435
 
 ;--------------------------------------------------------------------------------------------------
+	.ifdef FAST_FIELD_WINDOW
+
 	INIT_PATCH_EX menu.erase, $3f, $f44b, $f4a1, $f44b
 menu.savefile.erase_window:
+	DECLARE_WINDOW_VARIABLES
 	lda #$02        ; F44B A9 02
-	sta $39         ; F44D 85 39
-	sta $3B         ; F44F 85 3B
+	sta <.window_top         ; F44D 85 39
+	sta <.offset_y         ; F44F 85 3B
 	lda #$09        ; F451 A9 09
-	sta $38         ; F453 85 38
+	sta <.window_left         ; F453 85 38
 	lda #$16        ; F455 A9 16
-	sta $3C         ; F457 85 3C
+	sta <.window_width         ; F457 85 3C
 	lda #$04        ; F459 A9 04
-	sta $3D         ; F45B 85 3D
+	sta <.window_height         ; F45B 85 3D
 	lda #$02        ; F45D A9 02
 	bne menu.erase_box_from_bottom    ; F45F D0 19
+
 menu.erase_box_1e_x_1c:
+	DECLARE_WINDOW_VARIABLES
 	lda #$1C        ; F465 A9 1C
+	FALL_THROUGH_TO menu.erase_box_of_width_1e
+
 menu.erase_box_of_width_1e:
-	sta $3D         ; F467 85 3D
+	DECLARE_WINDOW_VARIABLES
+	sta <.window_height         ; F467 85 3D
 	lda #$1B        ; F469 A9 1B
-	sta $39         ; F46B 85 39
-	sta $3B         ; F46D 85 3B
+	sta <.window_top         ; F46B 85 39
+	sta <.offset_y         ; F46D 85 3B
 	lda #$01        ; F46F A9 01
-	sta $38         ; F471 85 38
+	sta <.window_left         ; F471 85 38
 	lda #$1E        ; F473 A9 1E
-	sta $3c         ; F475 85 3C
-	lda $3d			; F477 A5 3D
+	sta <.window_width         ; F475 85 3C
+	lda <.window_height			; F477 A5 3D
 	lsr a           ; F479 4A
+	FALL_THROUGH_TO menu.erase_box_from_bottom
+
 menu.erase_box_from_bottom:
+	DECLARE_WINDOW_VARIABLES
+.output_index = $90
 	pha				; F47A 48
-	lda $3C         ; F47B A5 3C
-	sta $90         ; F47D 85 90
-	sta $91         ; F47F 85 91
+	lda <.window_width         ; F47B A5 3C
+	sta <.output_index         ; F47D 85 90
+	sta <$91         ; F47F 85 91
 	ldy #$1D        ; F481 A0 1D
 	lda #$00        ; F483 A9 00
 .l_F485:
@@ -1230,10 +1243,10 @@ menu.erase_box_from_bottom:
 		dey 			; F48B 88
 		bpl .l_F485     ; F48C 10 F7
 	jsr field.draw_window_content       ; F48E 20 92 F6
-	lda $3B         ; F491 A5 3B
+	lda <.offset_y         ; F491 A5 3B
 	sec 			; F493 38
 	sbc #$04        ; F494 E9 04
-	sta $3B         ; F496 85 3B
+	sta <.offset_y         ; F496 85 3B
 	pla 			; F498 68
 	sec 			; F499 38
 	sbc #$01        ; F49A E9 01
@@ -1241,7 +1254,7 @@ menu.erase_box_from_bottom:
 	jmp field.restore_banks  ; F49E 4C F5 EC
 
 	VERIFY_PC_TO_PATCH_END menu.erase
-
+	.endif	;;FAST_FIELD_WINDOW
 ;------------------------------------------------------------------------------------------------------
 	.ifdef FAST_FIELD_WINDOW
 	
