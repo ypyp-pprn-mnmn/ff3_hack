@@ -12,9 +12,36 @@ ff3_field_window_begin:
 	DEFINE_DEFAULT FIELD_WINDOW_SCROLL_FRAMES, $01
 
 ;_FEATURE_BORDER_LOADER
+;OMIT_COMPATIBLE_FIELD_WINDOW
 
 	.ifdef FAST_FIELD_WINDOW
 
+field_x.renderer_tile_buffer = $7300	;max 0xc0 bytes = 192 titles.
+field_x.renderer_attr_buffer = $73c0 ;max 0x30 bytes = 2 x 3 x 8 attrs. (ie, 6 rows)
+field_x.renderer_buffer_bias = $73f9
+field_x.renderer_uploader_addr = $73fa
+field_x.renderer_next_line = $73fc
+field_x.renderer_width_1st = $73fd
+field_x.renderer_available_bytes = $73fe
+field_x.renderer_init_flags = $73ff
+field_x.NEED_TOP_BORDER = $80
+field_x.NEED_SPRITE_DMA = $40
+field_x.NEED_BOTTOM_BORDER = $01
+
+DECLARE_WINDOW_VARIABLES	.macro
+.lines_drawn = $1f
+.in_menu_mode = $37
+.window_left = $38
+.window_top = $39
+.offset_x = $3a
+.offset_y = $3b
+.window_width = $3c
+.window_height = $3d
+.p_text = $3e
+;;
+.tile_buffer_upper = $0780
+.tile_buffer_lower = $07a0
+	.endm
 ;--------------------------------------------------------------------------------------------------
 	INIT_PATCH_EX field_window, $3f, $eb2d, $eefa, $eb2d
 ;field_x.BULK_PATCH_BEGIN:
@@ -82,10 +109,21 @@ field.draw_window_box:	;;$ed02
 	jsr field.get_window_region	;$ed61
 
 field_x.draw_window_box_with_region:
-.in_menu_mode = $37
-;; defer all rendering to $3f:f692 field.draw_window_content
-; adjust metrics as borders don't need further drawing...
-	jsr field_x.shrink_window_metrics
+	DECLARE_WINDOW_VARIABLES
+;; ---
+	;jsr field_x.shrink_window_metrics
+
+;--------------------------------------------------------------------------------------------------
+;field_x.shrink_window_metrics:
+
+	inc <.window_left
+	inc <.window_top
+	dec <.window_width
+	dec <.window_width
+	dec <.window_height
+	dec <.window_height
+	;rts
+
 	jmp field.restore_banks	;$ecf5
 
 	;VERIFY_PC $ed56
@@ -819,7 +857,7 @@ field.sync_ppu_scroll:
 	rts
 	;VERIFY_PC $edf6
 ;------------------------------------------------------------------------------------------------------
-	;.ifdef FAST_FIELD_WINDOW
+	.ifndef FAST_FIELD_WINDOW
 	;INIT_PATCH $3f,$edf6,$ee65
 ;;$3f:edf6 field::getWindowTilesForTop
 ;;callers:
@@ -869,11 +907,8 @@ field_x.get_window_tiles:
 	;adc #$22	;effectively +23
 	adc #$06
 	rts
-field_x.window_parts:
-	db $f7, $f8, $f9
-	db $fa, $ff, $fb
+
 	.ifdef _FEATURE_BORDER_LOADER
-	db $fc, $fd, $fe
 ;;$3f:ee1d field::getWindowTilesForMiddle
 ;;callers:
 ;;	$3f:ed02 field::draw_window_box
@@ -890,7 +925,12 @@ field.get_window_bottom_tiles:	;ed3b
 	jsr field_x.get_window_tiles
 	bne field_x.get_window_tiles
 	.endif	;.ifdef _FEATURE_BORDER_LOADER
+	.endif	;.ifndef FAST_FIELD_WINDOW
 
+field_x.window_parts:
+	db $f7, $f8, $f9
+	db $fa, $ff, $fb
+	db $fc, $fd, $fe
 	;VERIFY_PC $ee65
 ;------------------------------------------------------------------------------------------------------
 	;INIT_PATCH $3f,$ee65,$ee9a
@@ -914,6 +954,9 @@ field.stream_string_in_window:
 .window_height = $3d
 .offset_x = $97
 .offset_y = $98
+;; ---
+	;jsr field_x.init_deferred_rendering
+;; ---
 	jsr field.load_and_draw_string	;$ee9a.
 	;; on exit from above, carry has a boolean value.
 	;; 1: more to draw, 0: completed drawing.
@@ -975,6 +1018,10 @@ field.load_and_draw_string:	;;$ee9a
 .text_id = $92
 .text_bank = $93
 .p_text_table = $94	;;stores offset from $30000(18:8000) to the text 
+;; ---
+	.ifdef FAST_FIELD_WINDOW
+	jsr field_x.init_deferred_rendering
+	.endif	;FAST_FIELD_WINDOW
 ;; ---
 	lda #$18
 	jsr call_switch1stBank
@@ -1083,7 +1130,6 @@ field.draw_string_in_window:	;;$eec0
 	;VERIFY_PC $eefa
 	VERIFY_PC_TO_PATCH_END field_window
 field_x.BULK_PATCH_FREE_BEGIN:
-;field_x.BULK_PATCH_FREE_END = $eefa
 
 	.endif	;FAST_FIELD_WINDOW
 ;==================================================================================================
@@ -1152,6 +1198,7 @@ field_x.calc_window_width_in_bg:
 .store_result:
 	rts
 
+;--------------------------------------------------------------------------------------------------
 ;;callers:
 ;;	1F:ECE9:20 70 F6  JSR field::calc_size_and_init_buff @ $3f:ece5 field::draw_window_top
 ;;	1F:EEDB:20 70 F6  JSR field::calc_size_and_init_buff @ $3f:eec0 field::draw_string_in_window
@@ -1163,19 +1210,11 @@ field.calc_draw_width_and_init_window_tile_buffer:
 ;.left = $38
 ;.width = $3c
 .width_for_current_bg = $91
-;$3f:f670
-;{
-;	$91 = $3c;
-;	if ( ($38 & #1f) ^ #1f + 1 < $3c) {
-;		$91 = a;
-;	}
-;$f683:
-;}
 	jsr field_x.calc_window_width_in_bg
 .store_result:
 	sta <.width_for_current_bg
 	;; fall through into $3f:f683 field::init_window_tile_buffer
-;------------------------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------
 ;;$3f:f683 field::init_window_tile_buffer:
 ;;caller:
 ;;	$3f:f692 field.draw_window_content
@@ -1203,7 +1242,7 @@ field.init_window_tile_buffer:
 	clc
 	rts
 	;VERIFY_PC $f692
-;------------------------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------
 	;INIT_PATCH $3f,$f692,$f6aa
 ;;$3f:f692 field::draw_window_content
 ;; [in]
@@ -1222,7 +1261,10 @@ field.draw_window_content:
 	;FIX_ADDR_ON_CALLER $3f,$efde+1
 	FIX_ADDR_ON_CALLER $3f,$f48e+1
 ;;}
+	DECLARE_WINDOW_VARIABLES
+;; ---
 	.ifndef FAST_FIELD_WINDOW
+	;.if 1
 
 		pha
 		jsr waitNmiBySetHandler	;ff00
@@ -1235,15 +1277,43 @@ field.draw_window_content:
 	
 	.else	;FAST_FIELD_WINDOW
 	
+		;; 1. if required, capture attribute and write it into the buffer.
+		;; 2. composite borders with content.
+		;; 3. write the result into the buffer.
+		;; 4. update number of available bytes to notify it of renderer.
 		pha
-		jsr waitNmiBySetHandler	;ff00
-		inc <field.frame_counter
-		pla
-		jsr field.upload_window_content	;f6aa
-		jsr field_x.end_ppu_update	;sync_ppu_scroll+call_sound_driver
+	.composite_top:
+		lda field_x.renderer_init_flags
+		bpl .composite_middle
+			;; queue top border
+			and #(~field_x.NEED_TOP_BORDER)
+			sta field_x.renderer_init_flags
+			jsr field_x.queue_top_border
+	.composite_middle:
+		pla	;; A <-- rendering disposition.
+		cmp #TEXTD_WANT_ONLY_LOWER
+		beq .lower_half
+			lda #0
+			jsr field_x.queue_content
+	.lower_half:
+		lda #$20
+		jsr field_x.queue_content
+	.composite_bottom:
+		ldx field_x.renderer_init_flags
+		txa
+		and #field_x.NEED_BOTTOM_BORDER
+		beq .update_queue_status
+			ldy <.lines_drawn
+			cpy <.window_height
+			bne .update_queue_status
+				;; queue bottom border
+				dex
+				stx field_x.renderer_init_flags
+				jsr field_x.queue_bottom_border
+	.update_queue_status:
+		jsr field_x.set_deferred_renderer
 		jsr field_x.switch_to_text_bank
-		jmp field.init_window_tile_buffer	;f683
-
+		jmp field.init_window_tile_buffer
 
 	.endif ;FAST_FIELD_WINDOW
 ;------------------------------------------------------------------------------------------------------	
@@ -1268,7 +1338,8 @@ field.draw_window_content:
 ;;callers:
 ;;	$3f:edc6 field.draw_window_row
 ;;	$3f:f692 field.draw_window_content
-	.ifndef OMIT_COMPATIBLE_FIELD_WINDOW
+	;.ifndef OMIT_COMPATIBLE_FIELD_WINDOW
+	.if 0
 field.upload_window_content:
 ;[in]
 .left = $38
@@ -1365,19 +1436,6 @@ field.upload_window_content:
 
 	rts
 	.endif	;ifndef FAST_FIELD_WINDOW
-;--------------------------------------------------------------------------------------------------
-field_x.shrink_window_metrics:
-.left = $38	;loaded by field.getWindowMetrics
-.top = $39	;loaded by field.getWindowMetrics
-.width = $3c	;loaded by field.getWindowMetrics
-.height = $3d	;loaded by field.getWindowMetrics
-	inc <.left
-	inc <.top
-	dec <.width
-	dec <.width
-	dec <.height
-	dec <.height
-	rts
 
 	VERIFY_PC $f727
 ;======================================================================================================

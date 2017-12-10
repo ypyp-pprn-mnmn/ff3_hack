@@ -96,6 +96,7 @@ call_switch2ndBank			= $ff09	; => jmp $ff1f
 ;----------------------------------------------------------------------------------------------------------
 ;well known vars
 pNmiHandler			= $0101	;$0100 jmp xxxx, sometimes just rti :$0100 rti (0x40)
+nmi_handler_entry	= $0100
 pIrqHandler			= $0104	;$0103 jmp xxxx, sometimes just rti :$0103 rti
 irqFlag				= $00
 enableScanlineCounter = $01	;mmc3's irq
