@@ -1193,6 +1193,7 @@ field.setVramAddrForWindowEx:
 
 ;--------------------------------------------------------------------------------------------------
 	.ifdef FAST_FIELD_WINDOW
+	;.if 0
 
 	INIT_PATCH_EX menu.erase, $3f, $f44b, $f4a1, $f44b
 menu.savefile.erase_window:
@@ -1208,6 +1209,9 @@ menu.savefile.erase_window:
 	sta <.window_height         ; F45B 85 3D
 	lda #$02        ; F45D A9 02
 	bne menu.erase_box_from_bottom    ; F45F D0 19
+
+	lda #$14 ; F461 A9 14
+    bne menu.erase_box_of_width_1e ; F463 D0 02
 
 menu.erase_box_1e_x_1c:
 	DECLARE_WINDOW_VARIABLES
