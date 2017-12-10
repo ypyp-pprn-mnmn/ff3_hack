@@ -24,22 +24,25 @@ field_x.deferred_renderer:
 	jsr field_x.end_ppu_update	;sync_ppu_scroll+call_sound_driver
 	jsr field_x.remove_nmi_handler
 	lda #0
-	sta field_x.renderer_available_bytes
+	sta field_x.render.available_bytes
 	jsr field.restore_banks
 	rti
 	
 field_x.ensure_buffer_available:
 	DECLARE_WINDOW_VARIABLES
-	lda field_x.renderer_available_bytes
+	lda field_x.render.available_bytes
 	clc
 	adc <.window_width
-	cmp #$c0
-	bcc .ok
+	cmp #field_x.BUFFER_CAPACITY
+	bcc field_x.render.rts_1
+
+field_x.await_complete_rendering:
 		jsr field_x.set_deferred_renderer
 .wait_nmi:
-		lda field_x.renderer_available_bytes
+		lda field_x.render.available_bytes
 		bne .wait_nmi
-.ok:
+
+field_x.render.rts_1:
 	rts
 
 field_x.remove_nmi_handler:
@@ -61,15 +64,16 @@ field_x.render_deferred_contents:
 	DECLARE_WINDOW_VARIABLES
 .eol_offset = $82
 .p_jump = $84
+	
 	pha
-	lda field_x.renderer_next_line
+	lda field_x.render.next_line
 	ldx <.window_left
 	dex
 	jsr field_x.map_coords_to_vram
 	sta $2006
 	stx $2006
 
-	inc field_x.renderer_next_line
+	inc field_x.render.next_line
 
 	pla
 	pha
@@ -81,55 +85,55 @@ field_x.render_deferred_contents:
 	pla
 	pha
 	clc
-	adc field_x.renderer_buffer_bias
+	adc field_x.render.buffer_bias
 	tax
-	jmp [field_x.renderer_uploader_addr]
+	jmp [field_x.render.uploader_addr]
 
-field_x.renderer_upload_next:
+field_x.render.upload_next:
 	DECLARE_WINDOW_VARIABLES
 	pla
 	clc
 	adc #$2
 	clc
 	adc <.window_width
-	cpx field_x.renderer_available_bytes
+	cpx field_x.render.available_bytes
 	bcc field_x.render_deferred_contents
 	rts
 
-field_x.renderer_upload_loop:
+field_x.render.upload_loop:
 .eol_offset = $82
 .p_jump = $84
-	lda field_x.renderer_tile_buffer-$10,x
+	lda field_x.render.tile_buffer-$10,x
 	sta $2007
-	lda field_x.renderer_tile_buffer-$0f,x
+	lda field_x.render.tile_buffer-$0f,x
 	sta $2007
-	lda field_x.renderer_tile_buffer-$0e,x
+	lda field_x.render.tile_buffer-$0e,x
 	sta $2007
-	lda field_x.renderer_tile_buffer-$0d,x
+	lda field_x.render.tile_buffer-$0d,x
 	sta $2007
-	lda field_x.renderer_tile_buffer-$0c,x
+	lda field_x.render.tile_buffer-$0c,x
 	sta $2007
-	lda field_x.renderer_tile_buffer-$0b,x
+	lda field_x.render.tile_buffer-$0b,x
 	sta $2007
-	lda field_x.renderer_tile_buffer-$0a,x
+	lda field_x.render.tile_buffer-$0a,x
 	sta $2007
-	lda field_x.renderer_tile_buffer-$09,x
+	lda field_x.render.tile_buffer-$09,x
 	sta $2007
-	lda field_x.renderer_tile_buffer-$08,x
+	lda field_x.render.tile_buffer-$08,x
 	sta $2007
-	lda field_x.renderer_tile_buffer-$07,x
+	lda field_x.render.tile_buffer-$07,x
 	sta $2007
-	lda field_x.renderer_tile_buffer-$06,x
+	lda field_x.render.tile_buffer-$06,x
 	sta $2007
-	lda field_x.renderer_tile_buffer-$05,x
+	lda field_x.render.tile_buffer-$05,x
 	sta $2007
-	lda field_x.renderer_tile_buffer-$04,x
+	lda field_x.render.tile_buffer-$04,x
 	sta $2007
-	lda field_x.renderer_tile_buffer-$03,x
+	lda field_x.render.tile_buffer-$03,x
 	sta $2007
-	lda field_x.renderer_tile_buffer-$02,x
+	lda field_x.render.tile_buffer-$02,x
 	sta $2007
-	lda field_x.renderer_tile_buffer-$01,x
+	lda field_x.render.tile_buffer-$01,x
 	sta $2007
 
 	txa
@@ -137,8 +141,8 @@ field_x.renderer_upload_loop:
 	adc #$10
 	tax
 	cpx <.eol_offset
-	bne field_x.renderer_upload_loop
-	beq field_x.renderer_upload_next
+	bne field_x.render.upload_loop
+	beq field_x.render.upload_next
 
 field_x.init_deferred_rendering:
 	DECLARE_WINDOW_VARIABLES
@@ -149,12 +153,12 @@ field_x.init_deferred_rendering:
 	bne .store_init_flags
 		ora #(field_x.NEED_SPRITE_DMA)
 .store_init_flags:
-	sta field_x.renderer_init_flags
+	sta field_x.render.init_flags
 	lda #0
-	sta field_x.renderer_available_bytes
+	sta field_x.render.available_bytes
 	ldx <.window_top
 	dex
-	stx field_x.renderer_next_line
+	stx field_x.render.next_line
 	lda <.window_width
 	pha
 	tax
@@ -162,7 +166,7 @@ field_x.init_deferred_rendering:
 	inx
 	stx <.window_width
 	jsr field_x.calc_window_width_in_bg
-	sta field_x.renderer_width_1st
+	sta field_x.render.width_1st
 ;;
 	lda <.window_width
 	pha
@@ -171,7 +175,7 @@ field_x.init_deferred_rendering:
 	bne .align
 		ora #$10
 .align:
-	sta field_x.renderer_buffer_bias
+	sta field_x.render.buffer_bias
 	pla
 	eor #$0f
 	clc
@@ -184,11 +188,11 @@ field_x.init_deferred_rendering:
 	clc
 	adc <.p_jump
 	asl A
-	adc #LOW(field_x.renderer_upload_loop)
-	sta field_x.renderer_uploader_addr
+	adc #LOW(field_x.render.upload_loop)
+	sta field_x.render.uploader_addr
 	lda #0
-	adc #HIGH(field_x.renderer_upload_loop)
-	sta field_x.renderer_uploader_addr+1
+	adc #HIGH(field_x.render.upload_loop)
+	sta field_x.render.uploader_addr+1
 
 	pla
 	sta <.window_width
@@ -213,11 +217,6 @@ field_x.queue_bottom_border:
 field_x.queue_border:
 	DECLARE_WINDOW_VARIABLES
 	sta <.offset_y
-;; --- check if there enough space remaining in the buffer.
-	jsr field_x.ensure_buffer_available
-;; --- attr check.
-	jsr field_x.queue_attributes
-;; --- queue tiles.
 .put_borders:
 	ldy #3
 .get_parts:
@@ -226,7 +225,14 @@ field_x.queue_border:
 		dex
 		dey
 		bne .get_parts
-	ldx field_x.renderer_available_bytes
+
+;; --- check if there enough space remaining in the buffer.
+	jsr field_x.ensure_buffer_available
+;; --- attr check.
+	jsr field_x.queue_attributes
+;; --- queue tiles.
+
+	ldx field_x.render.available_bytes
 	pla
 	jsr field_x.queue_byte
 
@@ -241,10 +247,10 @@ field_x.queue_border:
 	FALL_THROUGH_TO field_x.queue_byte
 
 field_x.queue_byte:
-	sta field_x.renderer_tile_buffer,x
+	sta field_x.render.tile_buffer,x
 	inx
-	stx field_x.renderer_available_bytes
-	;inc field_x.renderer_available_bytes
+	stx field_x.render.available_bytes
+	;inc field_x.render.available_bytes
 	rts
 
 field_x.queue_content:
@@ -261,8 +267,9 @@ field_x.queue_content:
 	jsr field_x.queue_attributes
 ;; --- 
 	inc <.offset_y	;;originally 'field.upload_window_content's role
+	inc <.lines_drawn	;;originally caller's responsibility, it remains true but for bottom border we need prospective value
 ;; --- queue tiles.
-	ldx field_x.renderer_available_bytes
+	ldx field_x.render.available_bytes
 
 	lda #$fa
 	jsr field_x.queue_byte

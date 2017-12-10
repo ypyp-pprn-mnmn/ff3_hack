@@ -16,17 +16,21 @@ ff3_field_window_begin:
 
 	.ifdef FAST_FIELD_WINDOW
 
-field_x.renderer_tile_buffer = $7300	;max 0xc0 bytes = 192 titles.
-field_x.renderer_attr_buffer = $73c0 ;max 0x30 bytes = 2 x 3 x 8 attrs. (ie, 6 rows)
-field_x.renderer_buffer_bias = $73f9
-field_x.renderer_uploader_addr = $73fa
-field_x.renderer_next_line = $73fc
-field_x.renderer_width_1st = $73fd
-field_x.renderer_available_bytes = $73fe
-field_x.renderer_init_flags = $73ff
+field_x.render.tile_buffer = $7300	;max 0xc0 bytes = 192 titles.
+field_x.render.attr_buffer = $73c0 ;max 0x30 bytes = 2 x 3 x 8 attrs. (ie, 6 rows)
+field_x.render.vram.high = $07d0
+field_x.render.vram.low = $07e0
+field_x.render.buffer_bias = $73f9
+field_x.render.uploader_addr = $73fa
+field_x.render.next_line = $73fc
+field_x.render.width_1st = $73fd
+field_x.render.available_bytes = $73fe
+field_x.render.init_flags = $73ff
 field_x.NEED_TOP_BORDER = $80
 field_x.NEED_SPRITE_DMA = $40
 field_x.NEED_BOTTOM_BORDER = $01
+;field_x.BUFFER_CAPACITY = $c0
+field_x.BUFFER_CAPACITY = $80
 
 DECLARE_WINDOW_VARIABLES	.macro
 .lines_drawn = $1f
@@ -1281,13 +1285,17 @@ field.draw_window_content:
 		;; 2. composite borders with content.
 		;; 3. write the result into the buffer.
 		;; 4. update number of available bytes to notify it of renderer.
+		tax
+		lda <.lines_drawn
+		pha
+		txa
 		pha
 	.composite_top:
-		lda field_x.renderer_init_flags
+		lda field_x.render.init_flags
 		bpl .composite_middle
 			;; queue top border
 			and #(~field_x.NEED_TOP_BORDER)
-			sta field_x.renderer_init_flags
+			sta field_x.render.init_flags
 			jsr field_x.queue_top_border
 	.composite_middle:
 		pla	;; A <-- rendering disposition.
@@ -1299,19 +1307,27 @@ field.draw_window_content:
 		lda #$20
 		jsr field_x.queue_content
 	.composite_bottom:
-		ldx field_x.renderer_init_flags
-		txa
-		and #field_x.NEED_BOTTOM_BORDER
-		beq .update_queue_status
-			ldy <.lines_drawn
-			cpy <.window_height
-			bne .update_queue_status
+		ldy <.lines_drawn
+		cpy <.window_height
+		bne .update_queue_status
+			ldx field_x.render.init_flags
+			txa
+			and #field_x.NEED_BOTTOM_BORDER
+			beq .finalize_this_rendering
 				;; queue bottom border
 				dex
-				stx field_x.renderer_init_flags
+				stx field_x.render.init_flags
 				jsr field_x.queue_bottom_border
+		.finalize_this_rendering:
+			lda field_x.render.available_bytes
+			beq .remove_handler
+				jsr field_x.await_complete_rendering	
+		.remove_handler:
+			;jsr field_x.remove_nmi_handler
 	.update_queue_status:
-		jsr field_x.set_deferred_renderer
+		pla
+		sta <.lines_drawn	;restore the original
+		;jsr field_x.set_deferred_renderer
 		jsr field_x.switch_to_text_bank
 		jmp field.init_window_tile_buffer
 
