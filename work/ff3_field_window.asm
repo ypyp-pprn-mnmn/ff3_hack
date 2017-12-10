@@ -18,8 +18,9 @@ ff3_field_window_begin:
 
 field_x.render.tile_buffer = $7300	;max 0xc0 bytes = 192 titles.
 field_x.render.attr_buffer = $73c0 ;max 0x30 bytes = 2 x 3 x 8 attrs. (ie, 6 rows)
-field_x.render.vram.high = $07d0
-field_x.render.vram.low = $07e0
+field_x.render.vram.high = $73d0
+field_x.render.vram.low = $73e0
+field_x.render.addr_index = $73f8
 field_x.render.buffer_bias = $73f9
 field_x.render.uploader_addr = $73fa
 field_x.render.next_line = $73fc
@@ -27,10 +28,13 @@ field_x.render.width_1st = $73fd
 field_x.render.available_bytes = $73fe
 field_x.render.init_flags = $73ff
 field_x.NEED_TOP_BORDER = $80
-field_x.NEED_SPRITE_DMA = $40
+field_x.PENDING_INIT = $40
+field_x.NEED_SPRITE_DMA = $20
+field_x.NO_BORDERS = $02
 field_x.NEED_BOTTOM_BORDER = $01
 ;field_x.BUFFER_CAPACITY = $c0
 field_x.BUFFER_CAPACITY = $80
+field_x.ADDR_CAPACITY = $0c
 
 DECLARE_WINDOW_VARIABLES	.macro
 .lines_drawn = $1f
@@ -127,6 +131,10 @@ field_x.draw_window_box_with_region:
 	dec <.window_height
 	dec <.window_height
 	;rts
+	.ifdef FAST_FIELD_WINDOW
+	lda #0
+	jsr field_x.init_deferred_rendering
+	.endif	;FAST_FIELD_WINDOW
 
 	jmp field.restore_banks	;$ecf5
 
@@ -1024,6 +1032,7 @@ field.load_and_draw_string:	;;$ee9a
 .p_text_table = $94	;;stores offset from $30000(18:8000) to the text 
 ;; ---
 	.ifdef FAST_FIELD_WINDOW
+	lda #field_x.NO_BORDERS
 	jsr field_x.init_deferred_rendering
 	.endif	;FAST_FIELD_WINDOW
 ;; ---
@@ -1292,6 +1301,9 @@ field.draw_window_content:
 		pha
 	.composite_top:
 		lda field_x.render.init_flags
+		;; mask off init-pending flag
+		and #(~field_x.PENDING_INIT)
+		sta field_x.render.init_flags
 		bpl .composite_middle
 			;; queue top border
 			and #(~field_x.NEED_TOP_BORDER)
@@ -1330,12 +1342,49 @@ field.draw_window_content:
 		;jsr field_x.set_deferred_renderer
 		jsr field_x.switch_to_text_bank
 		jmp field.init_window_tile_buffer
+;--------------------------------------------------------------------------------------------------
+field_x.ensure_buffer_available:
+	DECLARE_WINDOW_VARIABLES
+	jsr field_x.remove_nmi_handler
+	lda field_x.render.available_bytes
+	clc
+	adc <.window_width
+	cmp #field_x.BUFFER_CAPACITY
+	bcs field_x.await_complete_rendering
+
+	lda field_x.render.addr_index
+	cmp #field_x.ADDR_CAPACITY	;;rendering up to X lines at once (or exceed the nmi duration)
+	bcc field_x.render.rts_1
+
+field_x.await_complete_rendering:
+		jsr field_x.set_deferred_renderer
+.wait_nmi:
+		lda field_x.render.available_bytes
+		bne .wait_nmi
+
+field_x.render.rts_1:
+	rts
+
+field_x.remove_nmi_handler:
+	lda #$40	;RTI
+	sta nmi_handler_entry
+	rts
+
+field_x.set_deferred_renderer:
+	jsr field_x.remove_nmi_handler
+	lda #HIGH(field_x.deferred_renderer)
+	sta nmi_handler_entry+2
+	lda #LOW(field_x.deferred_renderer)
+	sta nmi_handler_entry+1
+	lda #$4c	;JMP
+	sta nmi_handler_entry
+	rts
 
 	.endif ;FAST_FIELD_WINDOW
-;------------------------------------------------------------------------------------------------------	
+;--------------------------------------------------------------------------------------------------
 	;VERIFY_PC $f6aa
 	.endif	;FAST_FIELD_WINDOW
-;------------------------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------
 	.ifndef FAST_FIELD_WINDOW
 	INIT_PATCH	$3f,$f6aa,$f727
 	.endif	;ifndef FAST_FIELD_WINDOW

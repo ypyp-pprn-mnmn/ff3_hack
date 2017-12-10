@@ -15,66 +15,32 @@
 field_x.RENDERER_BEGIN:
 ;--------------------------------------------------------------------------------------------------
 field_x.deferred_renderer:
+.addr_index = $83
 	lda $2002	;dummy read to ensure unset nmi flag 
 	inc <field.frame_counter
 	;; do rendering.
 	lda #0
+	sta <.addr_index
 	jsr field_x.render_deferred_contents
 	;;
 	jsr field_x.end_ppu_update	;sync_ppu_scroll+call_sound_driver
 	jsr field_x.remove_nmi_handler
-	lda #0
-	sta field_x.render.available_bytes
+
 	jsr field.restore_banks
 	rti
-	
-field_x.ensure_buffer_available:
-	DECLARE_WINDOW_VARIABLES
-	lda field_x.render.available_bytes
-	clc
-	adc <.window_width
-	cmp #field_x.BUFFER_CAPACITY
-	bcc field_x.render.rts_1
-
-field_x.await_complete_rendering:
-		jsr field_x.set_deferred_renderer
-.wait_nmi:
-		lda field_x.render.available_bytes
-		bne .wait_nmi
-
-field_x.render.rts_1:
-	rts
-
-field_x.remove_nmi_handler:
-	lda #$40	;RTI
-	sta nmi_handler_entry
-	rts
-
-field_x.set_deferred_renderer:
-	jsr field_x.remove_nmi_handler
-	lda #HIGH(field_x.deferred_renderer)
-	sta nmi_handler_entry+2
-	lda #LOW(field_x.deferred_renderer)
-	sta nmi_handler_entry+1
-	lda #$4c	;JMP
-	sta nmi_handler_entry
-	rts
 
 field_x.render_deferred_contents:
 	DECLARE_WINDOW_VARIABLES
 .eol_offset = $82
 .p_jump = $84
-	
+.addr_index = $83
 	pha
-	lda field_x.render.next_line
-	ldx <.window_left
-	dex
-	jsr field_x.map_coords_to_vram
+	ldy <.addr_index
+	lda field_x.render.vram.high,y
 	sta $2006
-	stx $2006
-
-	inc field_x.render.next_line
-
+	lda field_x.render.vram.low,y
+	sta $2006
+	inc <.addr_index
 	pla
 	pha
 	clc
@@ -96,8 +62,13 @@ field_x.render.upload_next:
 	adc #$2
 	clc
 	adc <.window_width
-	cpx field_x.render.available_bytes
+	;cpx field_x.render.available_bytes
+	cmp field_x.render.available_bytes
 	bcc field_x.render_deferred_contents
+
+	lda #0
+	sta field_x.render.addr_index
+	sta field_x.render.available_bytes	;;this frees up a waiting thread
 	rts
 
 field_x.render.upload_loop:
@@ -143,61 +114,23 @@ field_x.render.upload_loop:
 	cpx <.eol_offset
 	bne field_x.render.upload_loop
 	beq field_x.render.upload_next
-
-field_x.init_deferred_rendering:
-	DECLARE_WINDOW_VARIABLES
-.p_jump = $80
-;; init deferred drawing.
-	lda #(field_x.NEED_TOP_BORDER|field_x.NEED_BOTTOM_BORDER)
-	ldx <.in_menu_mode
-	bne .store_init_flags
-		ora #(field_x.NEED_SPRITE_DMA)
-.store_init_flags:
-	sta field_x.render.init_flags
-	lda #0
-	sta field_x.render.available_bytes
-	ldx <.window_top
-	dex
-	stx field_x.render.next_line
-	lda <.window_width
-	pha
-	tax
-	inx
-	inx
-	stx <.window_width
-	jsr field_x.calc_window_width_in_bg
-	sta field_x.render.width_1st
-;;
-	lda <.window_width
-	pha
-	clc
-	and #$f
-	bne .align
-		ora #$10
-.align:
-	sta field_x.render.buffer_bias
-	pla
-	eor #$0f
-	clc
-	adc #1
-	and #$0f
-	sta <.p_jump
-	tax
-	lda <.p_jump
-	asl A
-	clc
-	adc <.p_jump
-	asl A
-	adc #LOW(field_x.render.upload_loop)
-	sta field_x.render.uploader_addr
-	lda #0
-	adc #HIGH(field_x.render.upload_loop)
-	sta field_x.render.uploader_addr+1
-
-	pla
-	sta <.window_width
-	rts
 ;--------------------------------------------------------------------------------------------------
+field_x.queue_vram_addr:
+	DECLARE_WINDOW_VARIABLES
+	lda field_x.render.next_line
+	ldx <.window_left
+	dex
+	jsr field_x.map_coords_to_vram
+	ldy field_x.render.addr_index
+	sta field_x.render.vram.high,y
+	txa
+	sta field_x.render.vram.low,y
+	;sta $2006
+	;stx $2006
+	inc field_x.render.next_line
+	inc field_x.render.addr_index
+	rts
+
 field_x.queue_top_border:
 	DECLARE_WINDOW_VARIABLES
 	ldy <.window_top
@@ -230,8 +163,10 @@ field_x.queue_border:
 	jsr field_x.ensure_buffer_available
 ;; --- attr check.
 	jsr field_x.queue_attributes
+;; --- queue the addr to render.
+	jsr field_x.queue_vram_addr	
 ;; --- queue tiles.
-
+	
 	ldx field_x.render.available_bytes
 	pla
 	jsr field_x.queue_byte
@@ -265,6 +200,9 @@ field_x.queue_content:
 	jsr field_x.ensure_buffer_available
 ;; --- attr check.
 	jsr field_x.queue_attributes
+;; --- queue the addr to render.
+	jsr field_x.queue_vram_addr	
+
 ;; --- 
 	inc <.offset_y	;;originally 'field.upload_window_content's role
 	inc <.lines_drawn	;;originally caller's responsibility, it remains true but for bottom border we need prospective value
@@ -300,7 +238,68 @@ field_x.queue_attributes:
 			;field.bg_attr_table_cache
 .done:
 	rts
+;--------------------------------------------------------------------------------------------------
+field_x.init_deferred_rendering:
+	DECLARE_WINDOW_VARIABLES
+.p_jump = $80
+;; init deferred drawing.
+	ora #(field_x.NEED_TOP_BORDER|field_x.NEED_BOTTOM_BORDER|field_x.PENDING_INIT)
+	;tax
+	;bit field_x.render.init_flags
+	;bvs	.done	;; already requested init
+	;txa
+	ldx <.in_menu_mode
+	bne .store_init_flags
+		ora #(field_x.NEED_SPRITE_DMA)
+.store_init_flags:
+	sta field_x.render.init_flags
+	;lda #0
+	;sta field_x.render.available_bytes
+	;sta field_x.redner.addr_index
+	ldx <.window_top
+	dex
+	stx field_x.render.next_line
+	lda <.window_width
+	pha
+	tax
+	inx
+	inx
+	stx <.window_width
+	jsr field_x.calc_window_width_in_bg
+	sta field_x.render.width_1st
+;;
+	lda <.window_width
+	pha
+	clc
+	and #$f
+	bne .align
+		ora #$10
+.align:
+	sta field_x.render.buffer_bias
+	pla
+	eor #$0f
+	clc
+	adc #1
+	and #$0f
+	sta <.p_jump
+	tax
+	lda <.p_jump
+	asl A
+	clc
+	adc <.p_jump
+	asl A
+	adc #LOW(field_x.render.upload_loop)
+	sta field_x.render.uploader_addr
+	lda #0
+	sta field_x.render.available_bytes
+	sta field_x.render.addr_index
+	adc #HIGH(field_x.render.upload_loop)
+	sta field_x.render.uploader_addr+1
 
+	pla
+	sta <.window_width
+.done:
+	rts
 ;==================================================================================================
 	.if 0
 field_x.update_ppu_attr_table:
