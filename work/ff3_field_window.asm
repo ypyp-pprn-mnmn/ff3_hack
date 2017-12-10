@@ -1278,6 +1278,7 @@ menu.erase_box_from_bottom:
 	sbc #$01        ; F49A E9 01
 	;bne menu.erase_box_from_bottom     ; F49C D0 DC
 	bne .erase_loop
+	jsr field_x.render.finalize
 	jmp field.restore_banks  ; F49E 4C F5 EC
 
 	VERIFY_PC_TO_PATCH_END menu.erase
