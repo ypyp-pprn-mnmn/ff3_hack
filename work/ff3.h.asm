@@ -21,7 +21,9 @@ field.merge_bg_attr_with_buffer = $cab1
 field.update_vram_by_07d0	= $cb6b	;[in] $07d0[16]: vram address low, $07e0[16]: vram high, $07f0[16]: vram value
 field.get_input				= $d281	;$3e:d281 field::get_input
 ;;
+floor.main_loop = $e1dc
 field.sync_ppu_scroll_with_player	= $e571
+floor.load_data = $e7ec
 ;field.seek_text_to_next_line = $eba9
 ;field.hide_sprites_under_window = $ec18
 ;field.await_and_get_next_input	= $ecab

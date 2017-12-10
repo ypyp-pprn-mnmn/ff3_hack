@@ -31,22 +31,24 @@ DECLARE_WINDOW_VARIABLES	.macro
 
 	.ifdef FAST_FIELD_WINDOW
 
-field_x.render.tile_buffer = $7300	;max 0xc0 bytes = 192 titles.
+field_x.render.tile_buffer = $7310	;max 0xc0 bytes = 192 titles.
 field_x.render.attr_buffer = $73c0 ;max 0x30 bytes = 2 x 3 x 8 attrs. (ie, 6 rows)
 field_x.render.vram.high = $73d0
 field_x.render.vram.low = $73e0
-field_x.render.addr_index = $73f8
-field_x.render.buffer_bias = $73f9
-field_x.render.uploader_addr = $73fa
-field_x.render.next_line = $73fc
-field_x.render.width_1st = $73fd
-field_x.render.available_bytes = $73fe
-field_x.render.init_flags = $73ff
-field_x.NEED_TOP_BORDER = $80
+
+field_x.render.addr_index = $7308
+field_x.render.buffer_bias = $7309
+field_x.render.uploader_addr = $730a
+;field_x.render.next_line = $73fc
+field_x.render.stride = $730c
+field_x.render.width_1st = $730d
+field_x.render.available_bytes = $730e
+field_x.render.init_flags = $7300	;;this address isn't touched by floor's logic
+field_x.NO_BORDERS = $80
 field_x.PENDING_INIT = $40
 field_x.NEED_SPRITE_DMA = $20
 field_x.NEED_RESET = $10
-field_x.NO_BORDERS = $02
+field_x.NEED_TOP_BORDER = $02
 field_x.NEED_BOTTOM_BORDER = $01
 ;field_x.BUFFER_CAPACITY = $c0
 field_x.BUFFER_CAPACITY = $80
@@ -121,26 +123,26 @@ field.draw_window_box:	;;$ed02
 field_x.draw_window_box_with_region:
 	DECLARE_WINDOW_VARIABLES
 ;; ---
-	;jsr field_x.shrink_window_metrics
+	jsr field_x.shrink_window_metrics
 
+	.ifdef FAST_FIELD_WINDOW
+	lda #(field_x.NEED_TOP_BORDER|field_x.NEED_BOTTOM_BORDER)
+	jsr field_x.setup_deferred_rendering
+	.endif	;FAST_FIELD_WINDOW
+
+	jmp field.restore_banks	;$ecf5
+
+	;VERIFY_PC $ed56
 ;--------------------------------------------------------------------------------------------------
-;field_x.shrink_window_metrics:
-
+field_x.shrink_window_metrics:
+	DECLARE_WINDOW_VARIABLES
 	inc <.window_left
 	inc <.window_top
 	dec <.window_width
 	dec <.window_width
 	dec <.window_height
 	dec <.window_height
-	;rts
-	.ifdef FAST_FIELD_WINDOW
-	lda #0
-	jsr field_x.init_deferred_rendering
-	.endif	;FAST_FIELD_WINDOW
-
-	jmp field.restore_banks	;$ecf5
-
-	;VERIFY_PC $ed56
+	rts
 ;------------------------------------------------------------------------------------------------------
 	;INIT_PATCH $3f,$edc6,$ede1
 	.ifndef FAST_FIELD_WINDOW
@@ -796,7 +798,11 @@ field.draw_window_top:
 .window_top = $39
 .window_row_in_drawing = $3b
 ;; TODO
-	brk
+	jsr field_x.shrink_window_metrics
+	lda #(field_x.NEED_TOP_BORDER)
+	jsr field_x.setup_deferred_rendering
+	jsr field.draw_window_content
+	
 ;	lda <.window_top
 ;	sta <.window_row_in_drawing
 ;	jsr field.calc_draw_width_and_init_window_tile_buffer
@@ -973,7 +979,7 @@ field.stream_string_in_window:
 .offset_x = $97
 .offset_y = $98
 ;; ---
-	;jsr field_x.init_deferred_rendering
+	;jsr field_x.setup_deferred_rendering
 ;; ---
 	jsr field.load_and_draw_string	;$ee9a.
 	;; on exit from above, carry has a boolean value.
@@ -1069,8 +1075,8 @@ field.load_and_draw_string:	;;$ee9a
 ;------------------------------------------------------------------------------------------------------
 field_x.defer_window_text_without_border:
 	.ifdef DEFERRED_RENDERING
-	lda #field_x.NO_BORDERS
-	jsr field_x.init_deferred_rendering
+	lda #(field_x.NO_BORDERS)
+	jsr field_x.setup_deferred_rendering
 	.endif	;DEFERRED_RENDERING
 ;------------------------------------------------------------------------------------------------------
 	;INIT_PATCH $3f,$eec0,$eefa
@@ -1254,6 +1260,8 @@ menu.erase_box_from_bottom:
 		bpl .l_F485     ; F48C 10 F7
 	;jsr field.draw_window_content       ; F48E 20 92 F6
 	jsr field_x.init_and_draw_window_content
+	;jmp .noop_continue
+.noop_continue:
 	lda <.offset_y         ; F491 A5 3B
 	sec 			; F493 38
 	sbc #$04        ; F494 E9 04
@@ -1387,11 +1395,15 @@ field.draw_window_content:
 		;; mask off init-pending flag
 		and #(~field_x.PENDING_INIT)
 		sta field_x.render.init_flags
-		bpl .composite_middle
+		bmi .composite_middle
 			;; queue top border
-			and #(~field_x.NEED_TOP_BORDER)
-			sta field_x.render.init_flags
-			jsr field_x.queue_top_border
+			tax
+			and #(field_x.NEED_TOP_BORDER)
+			beq .composite_middle
+				txa
+				and #(~field_x.NEED_TOP_BORDER)
+				sta field_x.render.init_flags
+				jsr field_x.queue_top_border
 	.composite_middle:
 		pla	;; A <-- rendering disposition.
 		cmp #TEXTD_WANT_ONLY_LOWER
@@ -1402,8 +1414,13 @@ field.draw_window_content:
 		lda #$20
 		jsr field_x.queue_content
 	.composite_bottom:
-		;;
-		jsr field_x.set_deferred_renderer
+		;; further optimizations could be achieved
+		;; thru enabling the below line.
+		;; however, the more asynchronous, the more timing issues.
+		;; there indeed is a timing depedent glitches
+		;; and some of callers which do scrolling are
+		;; not ready for such a asynchronousity.
+		;;jsr field_x.set_deferred_renderer
 		;;
 		ldy <.lines_drawn
 		cpy <.window_height
@@ -1439,7 +1456,7 @@ field.draw_window_content:
 field_x.init_and_draw_window_content
 	DECLARE_WINDOW_VARIABLES
 	lda #(field_x.NO_BORDERS)
-	jsr field_x.init_deferred_rendering
+	jsr field_x.setup_deferred_rendering
 	jmp field.draw_window_content
 ;--------------------------------------------------------------------------------------------------
 field_x.ensure_buffer_available:
@@ -1447,7 +1464,7 @@ field_x.ensure_buffer_available:
 	jsr field_x.remove_nmi_handler
 	lda field_x.render.available_bytes
 	clc
-	adc <.window_width
+	adc field_x.render.stride
 	cmp #field_x.BUFFER_CAPACITY
 	bcs field_x.await_complete_rendering
 
