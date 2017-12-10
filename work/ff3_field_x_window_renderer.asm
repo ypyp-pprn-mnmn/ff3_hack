@@ -318,20 +318,21 @@ field_x.setup_deferred_rendering:
 .p_jump = $80
 ;; init deferred drawing.
 	pha
-	bit field_x.render.init_flags
-	bvs	.done	;; already requested init
+	;bit field_x.render.init_flags
+	lda field_x.render.init_flags
+	asl A
+	bmi	.done	;; already requested init
+
+	asl A
+	bpl .store_init_flags
+		;jsr field_x.render.finalize
 	;txa
 	;ldx <.in_menu_mode
 	;bne .store_init_flags
 	;	ora #(field_x.NEED_SPRITE_DMA)
 .store_init_flags:
 	stx field_x.render.init_flags
-	;lda #0
-	;sta field_x.render.available_bytes
-	;sta field_x.redner.addr_index
-	;ldx <.window_top
-	;dex
-	;stx field_x.render.next_line
+
 	lda <.window_width
 	pha
 	tax
