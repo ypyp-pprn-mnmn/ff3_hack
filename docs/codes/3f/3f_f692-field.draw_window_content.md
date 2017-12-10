@@ -1,5 +1,4 @@
 ﻿
-
 # $3f:f692 field.draw_window_content
 > render window content using tile (i.e., name table index) buffer at $0780-$07bf(inclusive).
 
@@ -7,6 +6,12 @@
 +	in u8 A: text drawing disposition code.
 	- 0x09: draw only lower line (skip upper line)
 +	in,out u8 $f0: window scroll frame counter.
+
+### callers:
++	`1F:EEE9:20 92 F6  JSR field::draw_window_content` @ $3f:eec0 field.draw_string_in_window
++	`1F:EF49:20 92 F6  JSR field::draw_window_content` @ $3f:eefa textd.draw_in_box
++	`1F:EFDE:20 92 F6  JSR field::draw_window_content` @ ? (sub routine of $eefa)
++	`1F:F48E:20 92 F6  JSR field::draw_window_content` @ $3f:f47a menu.erase_box_from_bottom
 
 ### notes:
 the disposition code 0x09 will be returned from `textd.draw_in_box` when char code 0x0a has encountered during processing.
@@ -26,8 +31,5 @@ the disposition code 0x09 will be returned from `textd.draw_in_box` when char co
 $f6aa:
 }
 ```
-
-
-
 
 
