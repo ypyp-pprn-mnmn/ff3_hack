@@ -46,8 +46,8 @@ field_x.render.available_bytes = $730e
 field_x.render.init_flags = $7300	;;this address isn't touched by floor's logic
 field_x.NO_BORDERS = $80
 field_x.PENDING_INIT = $40
-field_x.NEED_SPRITE_DMA = $20
-field_x.RENDER_RUNNING = $10	;;or 'completed'
+field_x.RENDER_RUNNING = $20	;;or 'completed'
+field_x.NEED_SPRITE_DMA = $04
 field_x.NEED_TOP_BORDER = $02
 field_x.NEED_BOTTOM_BORDER = $01
 ;field_x.BUFFER_CAPACITY = $c0
@@ -980,8 +980,6 @@ field.stream_string_in_window:
 .offset_x = $97
 .offset_y = $98
 ;; ---
-	;jsr field_x.setup_deferred_rendering
-;; ---
 	jsr field.load_and_draw_string	;$ee9a.
 	;; on exit from above, carry has a boolean value.
 	;; 1: more to draw, 0: completed drawing.
@@ -1432,7 +1430,7 @@ field.draw_window_content:
 		;; there indeed is a timing depedent glitches
 		;; and some of callers which do scrolling are
 		;; not ready for such a asynchronousity.
-		;;jsr field_x.set_deferred_renderer
+		;jsr field_x.set_deferred_renderer
 		;;
 		ldy <.lines_drawn
 		cpy <.window_height
@@ -1446,17 +1444,10 @@ field.draw_window_content:
 				stx field_x.render.init_flags
 				jsr field_x.queue_bottom_border
 		.finalize_this_rendering:
-			lda field_x.render.available_bytes
-			beq .remove_handler
-				jsr field_x.await_complete_rendering	
-		.remove_handler:
-			;lda field_x.NEED_RESET
-			lda #0
-			sta field_x.render.init_flags
+			jsr field_x.render.finalize	
 	.update_queue_status:
 		pla
 		sta <.lines_drawn	;restore the original
-		;jsr field_x.set_deferred_renderer
 		;; reset output index. callers rely on this to continue parse
 		lda #0
 		sta <.output_index	;;originally, 'field.upload_window_content's role
@@ -1470,6 +1461,17 @@ field.draw_window_content:
 field_x.init_and_draw_window_content:
 	jsr field_x.setup_deferred_rendering
 	jmp field.draw_window_content
+
+;--------------------------------------------------------------------------------------------------
+field_x.render.finalize:
+	lda field_x.render.available_bytes
+	beq .completed
+		jsr field_x.await_complete_rendering
+.completed:
+	;lda field_x.NEED_RESET
+	lda #0
+	sta field_x.render.init_flags
+	rts
 ;--------------------------------------------------------------------------------------------------
 field_x.ensure_buffer_available:
 	DECLARE_WINDOW_VARIABLES
