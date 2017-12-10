@@ -298,24 +298,32 @@ field_x.render.on_floor_enter:
 ;;1E:A53B:8D F0 79  STA $79F0 = #$00
 ;;1E:A53E:8D F0 7A  STA $7AF0 = #$00
 ;;1E:A541:20 06 DD  JSR $DD06
-field_x.render.on_manu_enter:
+field_x.render.on_menu_enter:
 	FIX_ADDR_ON_CALLER $3d,$a541+1
 	;;assume A == 0
 	sta field_x.render.init_flags
-	jmp $dd06	;;?
+	jmp $dd06	;;? $dfd6() + call sounddriver + $dff8()
+
+;;1F:C08E:A9 00     LDA #$00
+;;1F:C090:20 9E C4  JSR $C49E
+field_x.render.on_opening_enter:
+	FIX_ADDR_ON_CALLER $3e,$c090+1
+	;;assume A == 0
+	sta field_x.render.init_flags
+	jmp $C49E	;;some ppu initialiation
 
 field_x.setup_deferred_rendering:
 	DECLARE_WINDOW_VARIABLES
 .p_jump = $80
 ;; init deferred drawing.
-	ora #(field_x.PENDING_INIT)
-	tax
+	;ora #(field_x.PENDING_INIT)
+	;tax
 	bit field_x.render.init_flags
 	bvs	.done	;; already requested init
-	txa
-	ldx <.in_menu_mode
-	bne .store_init_flags
-		ora #(field_x.NEED_SPRITE_DMA)
+	;txa
+	;ldx <.in_menu_mode
+	;bne .store_init_flags
+	;	ora #(field_x.NEED_SPRITE_DMA)
 .store_init_flags:
 	sta field_x.render.init_flags
 	;lda #0
