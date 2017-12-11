@@ -158,16 +158,7 @@ field_x.draw_window_box_with_region:
 	jmp field.restore_banks	;$ecf5
 
 	;VERIFY_PC $ed56
-;--------------------------------------------------------------------------------------------------
-field_x.shrink_window_metrics:
-	DECLARE_WINDOW_VARIABLES
-	inc <.window_left
-	inc <.window_top
-	dec <.window_width
-	dec <.window_width
-	dec <.window_height
-	dec <.window_height
-	rts
+
 ;------------------------------------------------------------------------------------------------------
 	;INIT_PATCH $3f,$edc6,$ede1
 	.ifndef FAST_FIELD_WINDOW
@@ -188,7 +179,7 @@ field.draw_window_row:	;;$3f:edc6 field::draw_window_row
 
 field_x.end_ppu_update:
 	jsr field.sync_ppu_scroll	;$ede1
-	jmp field.callSoundDriver	;$c750
+	jmp field.call_sound_driver	;$c750
 
 field_x.begin_ppu_update:
 	jsr waitNmiBySetHandler	;$ff00
@@ -789,8 +780,9 @@ field_x.switch_to_text_bank:
 
 field_x.advance_frame:
 	jsr waitNmiBySetHandler
+field_x.advance_frame_no_wait:
 	inc <field.frame_counter
-	jmp field.callSoundDriver
+	jmp field.call_sound_driver
 
 field_x.get_input_with_result:
 .field.pad1_inputs = $20	;bit7 <- A ...  -> bit0
