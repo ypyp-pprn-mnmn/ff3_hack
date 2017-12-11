@@ -47,8 +47,8 @@ floor.load_data = $e7ec
 ;textd.draw_player_name = $f316
 ;field.get_max_available_job_id = $f38a
 ;textd.setup_output_ptr_to_next_column = $f3ac
-textd.save_text_ptr = $f3e4
-textd.restore_text_ptr = $f3ed
+;textd.save_text_ptr = $f3e4
+;textd.restore_text_ptr = $f3ed
 
 textd.tile_map_lower = $F4E1	;static table that maps charcode into tile id
 textd.tile_map_upper = $f515	;static table that maps charcode into tile id

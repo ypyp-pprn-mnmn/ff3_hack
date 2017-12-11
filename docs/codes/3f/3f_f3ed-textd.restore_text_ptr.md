@@ -1,4 +1,5 @@
 ﻿
+
 # $3f:f3ed textd.restore_text_ptr
 > Restores text pointer previously saved with `$3f:f3e4 textd.save_text_ptr`.
 
@@ -29,4 +30,5 @@ none.
 */
 }
 ```
+
 
