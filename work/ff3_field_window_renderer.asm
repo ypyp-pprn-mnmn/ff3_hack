@@ -133,8 +133,11 @@ menu.erase_box_from_bottom:
 	;;it is needed to fill up with '0' for each time.
 	lda #0
 	jsr field_x.fill_tile_buffer_with
+	;; XXX:
+	;;	with combined auto-rundown mechanics ('RENDER_RUNNING'), this:
+	;;	1) causes crash on item window when swap or use performed
 	jsr field.draw_window_content       ; F48E 20 92 F6
-	;jsr field_x.setup_deferred_erase
+	
 
 	lda <.offset_y         ; F491 A5 3B
 	sec 			; F493 38
@@ -329,17 +332,6 @@ field.draw_window_content:
 field_x.init_and_draw_window_content:
 	jsr field_x.setup_deferred_rendering
 	jmp field.draw_window_content
-
-;--------------------------------------------------------------------------------------------------
-field_x.render.finalize:
-	lda field_x.render.available_bytes
-	beq .completed
-		jsr field_x.await_complete_rendering
-.completed:
-	;lda field_x.NEED_RESET
-	lda #0
-	sta field_x.render.init_flags
-	rts
 ;--------------------------------------------------------------------------------------------------
 field_x.ensure_buffer_available:
 	DECLARE_WINDOW_VARIABLES

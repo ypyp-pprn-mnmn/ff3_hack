@@ -312,6 +312,19 @@ field_x.render.on_opening_enter:
 	sta field_x.render.init_flags
 	jmp $C49E	;;some ppu initialiation
 
+;--------------------------------------------------------------------------------------------------
+field_x.render.finalize:
+	lda field_x.render.available_bytes
+	beq .completed
+		jsr field_x.await_complete_rendering
+.completed:
+	;; XXX:
+	;;  in cases of paging in window,
+	;;	the rendering continues even if it reached the bottom of window.
+	;lda #0
+	;sta field_x.render.init_flags
+	rts
+;--------------------------------------------------------------------------------------------------
 ;; in X: init flags
 field_x.setup_deferred_rendering:
 	DECLARE_WINDOW_VARIABLES
