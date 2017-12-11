@@ -327,11 +327,7 @@ field.draw_window_content:
 		jmp field.init_window_tile_buffer
 	.oops:
 		brk
-;--------------------------------------------------------------------------------------------------
-;; in X: init flags, A: text rendering disposition.
-field_x.init_and_draw_window_content:
-	jsr field_x.setup_deferred_rendering
-	jmp field.draw_window_content
+
 ;--------------------------------------------------------------------------------------------------
 field_x.ensure_buffer_available:
 	DECLARE_WINDOW_VARIABLES
