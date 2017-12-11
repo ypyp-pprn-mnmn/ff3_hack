@@ -68,6 +68,7 @@ field.set_vram_addr_for_window	;;$f40a
 	rts
 
 	.endif ;;DEFERRED_RENDERING
+field.window.renderer.FREE_BEGIN:
 	VERIFY_PC_TO_PATCH_END field.window.renderer
 	.endif	;;FAST_FIELD_WINDOW
 ;==================================================================================================
@@ -110,11 +111,14 @@ menu.erase_box_of_width_1e:
 	lsr a           ; F479 4A
 	FALL_THROUGH_TO menu.erase_box_from_bottom
 
+;; in:
+;;	A: width
 menu.erase_box_from_bottom:
 	DECLARE_WINDOW_VARIABLES
 	;pha
 	ldx #(field_x.NO_BORDERS|field_x.PENDING_INIT|field_x.RENDER_RUNNING)
-	jsr field_x.setup_deferred_rendering	;;preserves A.
+	;jsr field_x.setup_deferred_rendering	;;preserves A.
+	jsr field_x.render.stack_and_setup
 	;pla
 .erase_loop:
 	pha				; F47A 48
@@ -138,7 +142,6 @@ menu.erase_box_from_bottom:
 	;;	1) causes crash on item window when swap or use performed
 	jsr field.draw_window_content       ; F48E 20 92 F6
 	
-
 	lda <.offset_y         ; F491 A5 3B
 	sec 			; F493 38
 	sbc #$04        ; F494 E9 04
@@ -148,7 +151,8 @@ menu.erase_box_from_bottom:
 	sbc #$01        ; F49A E9 01
 	;bne menu.erase_box_from_bottom     ; F49C D0 DC
 	bne .erase_loop
-	jsr field_x.render.finalize
+	;jsr field_x.render.finalize
+	jsr field_x.render.finalize_and_unstack
 	jmp field.restore_banks  ; F49E 4C F5 EC
 
 	VERIFY_PC_TO_PATCH_END menu.erase
@@ -329,28 +333,28 @@ field.draw_window_content:
 		brk
 
 ;--------------------------------------------------------------------------------------------------
-field_x.ensure_buffer_available:
-	DECLARE_WINDOW_VARIABLES
-	jsr field_x.remove_nmi_handler
-	lda field_x.render.available_bytes
-	clc
-	adc field_x.render.stride
-	cmp #field_x.BUFFER_CAPACITY
-	bcs field_x.await_complete_rendering
+field_x.render.stack_and_setup:
+	pha
+	ldy #$0f
+.stack_loop:
+		lda field_x.render.init_flags,y
+		sta field_x.render.init_flags+$10,y
+		lda #0
+		sta field_x.render.init_flags,y
+		dey
+		bpl .stack_loop
+	pla
+	jmp field_x.setup_deferred_rendering
 
-	lda field_x.render.addr_index
-	cmp #field_x.ADDR_CAPACITY	;;rendering up to X lines at once (or exceed the nmi duration)
-	bcc field_x.render.rts_1
-
-field_x.await_complete_rendering:
-		jsr field_x.set_deferred_renderer
-.wait_nmi:
-		lda field_x.render.available_bytes
-		bne .wait_nmi
-
-field_x.render.rts_1:
+field_x.render.finalize_and_unstack
+	jsr field_x.render.finalize
+	ldy #$0f
+.stack_loop:
+		lda field_x.render.init_flags+$10,y
+		sta field_x.render.init_flags,y
+		dey
+		bpl .stack_loop
 	rts
-
 	.endif ;DEFERRED_RENDERING
 ;--------------------------------------------------------------------------------------------------
 	;VERIFY_PC $f6aa
