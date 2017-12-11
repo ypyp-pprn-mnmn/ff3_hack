@@ -1257,7 +1257,7 @@ textd_x.code_10_13.param_03_07:
 ;;  X: high byte of offset table
 ;;  A: text_id
 ;; out:
-;;  ptr $3c
+;;  ptr $3e
 ;;  ptr $99 (via textd.save_text_ptr)
 ;;  bool zero: always false. (the side effect of last callout to call_switch_2banks)
 ;; uses:
@@ -1269,19 +1269,26 @@ textd_x.stack_load_text_ptr:
     jsr textd.save_text_ptr ;;preserves X and Y
     pla
 
+    ldy #$00
     jsr textd_x.load_text_ptr
     ;;here A = text_bank
     jmp call_switch_2banks
 
-;; in: A: text_id, X: high byte of ptr table address
-;; out: A: text_bank
+;; in:
+;;  A: text_id
+;;  X: high byte of ptr table address
+;;  Y: low byte of ptr table address
+;; out:
+;;  A: text_bank
+;;  $3e: p_text
 textd_x.load_text_ptr:
     DECLARE_TEXTD_VARIABLES
 .p_text_table_temp = $80
     pha
     stx <.p_text_table_temp+1
-    ldx #$00
-    stx <.p_text_table_temp
+    ;ldx #$00
+    ;stx <.p_text_table_temp
+    sty <.p_text_table_temp
     lda #TEXT_BANK_BASE
     jsr call_switch_2banks
     pla ;text_id
