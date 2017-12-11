@@ -10,7 +10,8 @@
     .ifndef textd.BULK_PATCH_FREE_BEGIN
         .fail
     .endif
-    RESTORE_PC textd.BULK_PATCH_FREE_BEGIN
+    ;RESTORE_PC textd.BULK_PATCH_FREE_BEGIN
+	RESTORE_PC field.window.renderer.FREE_BEGIN
 
 field_x.RENDERER_BEGIN:
 ;--------------------------------------------------------------------------------------------------
@@ -136,6 +137,28 @@ field_x.render.upload_loop:
 	cpx <.eol_offset
 	bne field_x.render.upload_loop
 	beq field_x.render.upload_next
+;--------------------------------------------------------------------------------------------------
+field_x.ensure_buffer_available:
+	DECLARE_WINDOW_VARIABLES
+	jsr field_x.remove_nmi_handler
+	lda field_x.render.available_bytes
+	clc
+	adc field_x.render.stride
+	cmp #field_x.BUFFER_CAPACITY
+	bcs field_x.await_complete_rendering
+
+	lda field_x.render.addr_index
+	cmp #field_x.ADDR_CAPACITY	;;rendering up to X lines at once (or exceed the nmi duration)
+	bcc field_x.render.rts_1
+
+field_x.await_complete_rendering:
+		jsr field_x.set_deferred_renderer
+.wait_nmi:
+		lda field_x.render.available_bytes
+		bne .wait_nmi
+
+field_x.render.rts_1:
+	rts
 ;--------------------------------------------------------------------------------------------------
 field_x.begin_queueing:
 ;; --- check if there enough space remaining in the buffer.
@@ -577,6 +600,7 @@ field_x.switch_vram_addr_mode:
 		jsr field_x.end_ppu_update	;sync_ppu_scroll+call_sound_driver
 	.endif ;0
 ;==================================================================================================
-    VERIFY_PC_TO_PATCH_END textd
+    ;VERIFY_PC_TO_PATCH_END textd
+	VERIFY_PC_TO_PATCH_END field.window.renderer
 field_x.RENDERER_END:
     .endif  ;FAST_FIELD_WINDOW

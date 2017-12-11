@@ -66,6 +66,10 @@ RESTORE_PC	.macro
 	.org	\1
 		.endm
 		
+RESTORE_PC_TO_PATCH_END	.macro
+		RESTORE_PC __patch_end_\1
+	.endm
+
 INIT_PATCH	.macro
 	.bank	\1
 	.org	\2
