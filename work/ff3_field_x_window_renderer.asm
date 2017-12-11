@@ -15,6 +15,14 @@
 
 field_x.RENDERER_BEGIN:
 ;--------------------------------------------------------------------------------------------------
+;;
+;; 	the nmi handler for deferred rendering.
+;;	other functions called within this function,
+;;	must preserve all variables in order to keep consistency
+;; 	across NMIs.
+;;	if not, those functions not specially designed to variable volatility,
+;;	will see undefined value and will eventually crash.
+;;
 field_x.deferred_renderer:
 .addr_index = $83
 	pha
@@ -138,27 +146,7 @@ field_x.render.upload_loop:
 	bne field_x.render.upload_loop
 	beq field_x.render.upload_next
 ;--------------------------------------------------------------------------------------------------
-field_x.ensure_buffer_available:
-	DECLARE_WINDOW_VARIABLES
-	jsr field_x.remove_nmi_handler
-	lda field_x.render.available_bytes
-	clc
-	adc field_x.render.stride
-	cmp #field_x.BUFFER_CAPACITY
-	bcs field_x.await_complete_rendering
 
-	lda field_x.render.addr_index
-	cmp #field_x.ADDR_CAPACITY	;;rendering up to X lines at once (or exceed the nmi duration)
-	bcc field_x.render.rts_1
-
-field_x.await_complete_rendering:
-		jsr field_x.set_deferred_renderer
-.wait_nmi:
-		lda field_x.render.available_bytes
-		bne .wait_nmi
-
-field_x.render.rts_1:
-	rts
 ;--------------------------------------------------------------------------------------------------
 field_x.begin_queueing:
 ;; --- check if there enough space remaining in the buffer.
