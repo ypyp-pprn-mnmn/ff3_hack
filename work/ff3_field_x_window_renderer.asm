@@ -69,9 +69,9 @@ field_x.render_deferred_contents:
 	pla
 	pha
 	clc
-	adc field_x.render.buffer_bias
+	adc field_x.render.1st.buffer_bias
 	tax
-	jmp [field_x.render.uploader_addr]
+	jmp [field_x.render.1st.uploader_addr]
 
 field_x.render.upload_next:
 	DECLARE_WINDOW_VARIABLES
@@ -346,6 +346,10 @@ field_x.setup_deferred_rendering:
 .store_init_flags:
 	stx field_x.render.init_flags
 
+	lda <.window_left
+	pha
+	tay
+
 	lda <.window_width
 	pha
 	tax
@@ -353,11 +357,13 @@ field_x.setup_deferred_rendering:
 	bmi .no_borders
 		inx
 		inx
+		dey
+		sty <.window_left
 .no_borders:
 	stx <.window_width
 	stx field_x.render.stride
 	jsr field_x.calc_window_width_in_bg
-	sta field_x.render.width_1st
+	sta field_x.render.1st.stride
 ;;
 	lda <.window_width
 	pha
@@ -366,35 +372,32 @@ field_x.setup_deferred_rendering:
 	bne .align
 		ora #$10
 .align:
-	sta field_x.render.buffer_bias
+	sta field_x.render.1st.buffer_bias
+
 	pla
 	eor #$0f
 	clc
 	adc #1
 	and #$0f
-	;sta <.p_jump
-	;tax
-	;lda <.p_jump
-	;asl A
-	;clc
-	;adc <.p_jump
-	;asl A
 	asl A
 	sta <.p_jump	;;x2
 	asl A
 	adc <.p_jump	;;x2+x4
 	adc #LOW(field_x.render.upload_loop)
-	sta field_x.render.uploader_addr
+	sta field_x.render.1st.uploader_addr
+
 	lda #0
 	sta field_x.render.available_bytes
 	sta field_x.render.addr_index
 	adc #HIGH(field_x.render.upload_loop)
-	sta field_x.render.uploader_addr+1
+	sta field_x.render.1st.uploader_addr+1
 
 	pla
 	sta <.window_width
-.done:
 	pla
+	sta <.window_left
+.done:
+	pla	;;initial A
 	rts
 ;--------------------------------------------------------------------------------------------------
 field_x.remove_nmi_handler:

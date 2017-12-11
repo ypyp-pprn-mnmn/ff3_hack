@@ -41,22 +41,29 @@ DECLARE_WINDOW_VARIABLES	.macro
 
 	.ifdef FAST_FIELD_WINDOW
 
-field_x.render.tile_buffer = $7310	;max 0xc0 bytes = 192 titles.
+field_x.render.tile_buffer = $7320	;max 0xc0 bytes = 192 titles.
 field_x.render.attr_buffer = $73c0 ;max 0x30 bytes = 2 x 3 x 8 attrs. (ie, 6 rows)
 field_x.render.vram.high = $73d0
 field_x.render.vram.low = $73e0
 
-field_x.render.addr_index = $7308
-field_x.render.buffer_bias = $7309
-field_x.render.uploader_addr = $730a
-;field_x.render.next_line = $73fc
-field_x.render.stride = $730c
-field_x.render.width_1st = $730d
-field_x.render.available_bytes = $730e
 field_x.render.init_flags = $7300	;;this address isn't touched by floor's logic
+field_x.render.available_bytes = $7301
+field_x.render.addr_index = $7302
+field_x.render.stride = $7303
+field_x.render.1st.stride = $7304
+field_x.render.1st.buffer_bias = $7305
+field_x.render.1st.uploader_addr = $7306
+field_x.render.2nd.stride = $7308
+field_x.render.2nd.buffer_bias = $7309
+field_x.render.2nd.uploader_addr = $730a
+
+
+
+
 field_x.NO_BORDERS = $80
 field_x.PENDING_INIT = $40
 field_x.RENDER_RUNNING = $20	;;or 'completed'
+field_x.SKIP_CONTENTS = $08
 field_x.NEED_SPRITE_DMA = $04
 field_x.NEED_TOP_BORDER = $02
 field_x.NEED_BOTTOM_BORDER = $01
@@ -135,10 +142,18 @@ field_x.draw_window_box_with_region:
 ;; ---
 	jsr field_x.shrink_window_metrics
 
-	.ifdef FAST_FIELD_WINDOW
-	ldx #(field_x.NEED_TOP_BORDER|field_x.NEED_BOTTOM_BORDER|field_x.PENDING_INIT|field_x.RENDER_RUNNING)
+	.ifdef DEFERRED_RENDERING
+	;; XXX:
+	;;	the initialization made here will interfere with `menu.erase_box_from_bottom`
+	;;	and may result in glitches on screen or even worse, crashing the game.
+	;;	however, it is necessary to tell the renderer to draw border
+	;;	in order to avoid hacking on all of the caller.
+	;;	here is a very good place to do so,
+	;;	since all rendering request for window will come in.
+	;ldx #(field_x.NEED_TOP_BORDER|field_x.NEED_BOTTOM_BORDER|field_x.PENDING_INIT|field_x.RENDER_RUNNING)
+	ldx #(field_x.NEED_TOP_BORDER|field_x.NEED_BOTTOM_BORDER|field_x.RENDER_RUNNING)
 	jsr field_x.setup_deferred_rendering
-	.endif	;FAST_FIELD_WINDOW
+	.endif	;DEFERRED_RENDERING
 
 	jmp field.restore_banks	;$ecf5
 
@@ -807,12 +822,13 @@ field.draw_window_top:
 ;;}
 .window_top = $39
 .window_row_in_drawing = $3b
-;; TODO
 	jsr field_x.shrink_window_metrics
-	ldx #(field_x.NEED_TOP_BORDER|field_x.PENDING_INIT|field_x.RENDER_RUNNING)
-	;jsr field_x.setup_deferred_rendering
-	;jsr field.draw_window_content
-	jsr field_x.init_and_draw_window_content
+	ldx #(field_x.NEED_TOP_BORDER|field_x.PENDING_INIT|field_x.RENDER_RUNNING|field_x.SKIP_CONTENTS)
+	jsr field_x.setup_deferred_rendering
+	;; contents of the item window will be redrawn after the border rendered.
+	;; so it is ok to fill content area with empty background, though not looking good.
+	jsr field.draw_window_content
+	jsr field_x.render.finalize
 	
 ;	lda <.window_top
 ;	sta <.window_row_in_drawing
@@ -1059,8 +1075,8 @@ field.load_and_draw_string:	;;$ee9a
 	;; unlike the original implementation, the below function destructs $80,81.
 	;; as these are generic temporary variable, this should be fine.
 	jsr textd_x.load_text_ptr
+	;; here A = text_bank.
 	sta <.text_bank
-	;;fall through.
 	;FALL_THROUGH_TO field.draw_string_in_window
 	FALL_THROUGH_TO field_x.defer_window_text_without_border
 ;------------------------------------------------------------------------------------------------------
