@@ -1266,11 +1266,22 @@ textd_x.stack_load_text_ptr:
     DECLARE_TEXTD_VARIABLES
 .p_text_table_temp = $80
     pha
+    jsr textd.save_text_ptr ;;preserves X and Y
+    pla
+
+    jsr textd_x.load_text_ptr
+    ;;here A = text_bank
+    jmp call_switch_2banks
+
+;; in: A: text_id, X: high byte of ptr table address
+;; out: A: text_bank
+textd_x.load_text_ptr:
+    DECLARE_TEXTD_VARIABLES
+.p_text_table_temp = $80
+    pha
     stx <.p_text_table_temp+1
     ldx #$00
     stx <.p_text_table_temp
-    jsr textd.save_text_ptr
-
     lda #TEXT_BANK_BASE
     jsr call_switch_2banks
     pla ;text_id
@@ -1292,7 +1303,7 @@ textd_x.stack_load_text_ptr:
 	jsr shiftRight6+1
     clc
     adc #TEXT_BANK_BASE
-    jmp call_switch_2banks
+    rts
 
 ; =================================================================================================
 textd_x.ctrl_code_handlers.low:
