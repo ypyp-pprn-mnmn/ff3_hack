@@ -13,13 +13,13 @@ TEXT_BANK_BASE = $18    ;;$18:8000 => $30000
 TEXTD_WANT_ONLY_LOWER = $09
 
     .ifdef FAST_FIELD_WINDOW
-    .ifndef field_x.BULK_PATCH_FREE_BEGIN
+    .ifndef field.window.driver.BULK_PATCH_FREE_BEGIN
         .fail
     .endif
 ;-------------------------------------------------------------------------------------------------- 
 ;; locating...
 	;INIT_PATCH $3f,$eefa,$f38a
-    INIT_PATCH_EX textd,$3f,$eefa,$f40a,field_x.BULK_PATCH_FREE_BEGIN
+    INIT_PATCH_EX textd,$3f,$eefa,$f40a,field.window.driver.BULK_PATCH_FREE_BEGIN
 
 ;; -------------------------
 DECLARE_TEXTD_VARIABLES	.macro
@@ -1597,6 +1597,5 @@ textd.restore_text_ptr:
 
 ; ================================================================================================= 
     VERIFY_PC_TO_PATCH_END textd
-textd.BULK_PATCH_FREE_BEGIN:
-
 	.endif	;FAST_FIELD_WINDOW
+textd.BULK_PATCH_FREE_BEGIN:
