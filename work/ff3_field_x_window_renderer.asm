@@ -13,6 +13,8 @@
     ;RESTORE_PC textd.BULK_PATCH_FREE_BEGIN
 	RESTORE_PC field.window.renderer.FREE_BEGIN
 
+field_x.render.NMI_LOCALS = $8
+
 field_x.RENDERER_BEGIN:
 ;--------------------------------------------------------------------------------------------------
 ;;
@@ -25,24 +27,45 @@ field_x.RENDERER_BEGIN:
 ;;
 field_x.deferred_renderer:
 .addr_index = $83
+;; preserve general-purpose registers.
 	pha
 	txa
 	pha
 	tya
 	pha
-
-	lda $2002	;dummy read to ensure unset nmi flag 
-	inc <field.frame_counter
-	;; do rendering.
+;; dummy read to ensure unset nmi flag.
+	lda $2002	
+;; preserve local variables.
+	ldx #(field_x.render.NMI_LOCALS-1)
+.push_variables:
+		lda <$80,x
+		pha
+		dex
+		bpl .push_variables
+;; do rendering.
 	lda #0
 	sta <.addr_index
 	jsr field_x.render_deferred_contents
-	;;
-	jsr field_x.end_ppu_update	;sync_ppu_scroll+call_sound_driver
+	;; as calling sound driver need change of program bank,
+	;; we can't safely call the driver from within nmi handler,
+	;; unless under the situation which is known to
+	;; the program bank has a particular deterministic value.
+	;inc <field.frame_counter
+	;jsr field_x.end_ppu_update	;sync_ppu_scroll+call_sound_driver
+	jsr field.sync_ppu_scroll
 	jsr field_x.remove_nmi_handler
 
-	jsr field.restore_banks
+	;; there is no reliable way (found so far) to preserve program bank.
+	;; so here can't safely restore banks.
+	;jsr field.restore_banks
 
+;; restore local variables.
+	ldx #~(field_x.render.NMI_LOCALS-1)
+.pop_variables:
+		pla
+		sta <$80+(field_x.render.NMI_LOCALS),x
+		inx
+		bne .pop_variables
 	pla
 	tay
 	pla
@@ -234,7 +257,7 @@ field_x.render.rts_2:
 
 field_x.queue_content:
 	DECLARE_WINDOW_VARIABLES
-.p_source = $80		;; nmi handler potentially modify this
+.p_source = $80
 	pha
 	jsr field_x.begin_queueing
 

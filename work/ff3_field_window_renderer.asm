@@ -305,7 +305,7 @@ field.draw_window_content:
 		;; there indeed is a timing depedent glitches
 		;; and some of callers which do scrolling are
 		;; not ready for such a asynchronousity.
-		;jsr field_x.set_deferred_renderer
+		jsr field_x.set_deferred_renderer
 		;;
 		ldy <.lines_drawn
 		cpy <.window_height
@@ -351,8 +351,19 @@ field_x.await_complete_rendering:
 .wait_nmi:
 		lda field_x.render.available_bytes
 		bne .wait_nmi
-
+		;; FIXME: this is a temporary measure to workaround PRG bank mismatch on nmi
+		jsr field_x.advance_frame_no_wait	;;inc <.frame_counter + call sound driver
 field_x.render.rts_1:
+	rts
+;--------------------------------------------------------------------------------------------------
+field_x.shrink_window_metrics:
+	DECLARE_WINDOW_VARIABLES
+	inc <.window_left
+	inc <.window_top
+	dec <.window_width
+	dec <.window_width
+	dec <.window_height
+	dec <.window_height
 	rts
 	.endif ;DEFERRED_RENDERING
 ;--------------------------------------------------------------------------------------------------
