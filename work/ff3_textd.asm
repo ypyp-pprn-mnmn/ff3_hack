@@ -19,7 +19,7 @@ TEXTD_WANT_ONLY_LOWER = $09
 ;-------------------------------------------------------------------------------------------------- 
 ;; locating...
 	;INIT_PATCH $3f,$eefa,$f38a
-    INIT_PATCH_EX textd,$3f,$eefa,$f3e4,field_x.BULK_PATCH_FREE_BEGIN
+    INIT_PATCH_EX textd,$3f,$eefa,$f40a,field_x.BULK_PATCH_FREE_BEGIN
 
 ;; -------------------------
 DECLARE_TEXTD_VARIABLES	.macro
@@ -28,6 +28,7 @@ DECLARE_TEXTD_VARIABLES	.macro
 .text_id = $92
 .text_bank = $93
 .p_text_table = $94	;;stores offset from $30000(18:8000) to the text 
+.p_text_saved = $99
 ;; floor
 .inn_charge = $61	;24 bits.
 .treasure_item_id = $bb
@@ -1507,7 +1508,94 @@ field.get_max_available_job_id:
 ;	sta $7A03,x                         ; F3E0 9D 03 7A
 ;	rts ; F3E3 60
 ; =================================================================================================
-    ;VERIFY_PC $f3e4
+    
+;;# $3f:f3e4 textd.save_text_ptr
+;;> Saves current text pointer (at $3e) to temporary store
+;;
+;;### args:
+;;+	in string* $3e: pointer to save
+;;+	out string* $99: saved pointer
+;;
+;;### callers:
+;;+	`F0A4 20 E4 F3`
+;;+	`F20D 20 E4 F3`
+;;+	`F2D9 20 E4 F3`
+;;+	`F334 20 E4 F3`
+;;
+;;### local variables:
+;;none.
+;;
+;;### notes:
+textd.save_text_ptr:
+    DECLARE_TEXTD_VARIABLES
+;; fixups
+; all of callers have re-implemented.
+;;
+	lda <.p_text            ; F3E4 A5 3E
+	sta <.p_text_saved      ; F3E6 85 99
+	lda <.p_text+1          ; F3E8 A5 3F
+	sta <.p_text_saved+1    ; F3EA 85 9A
+	rts                     ; F3EC 60
+; -------------------------------------------------------------------------------------------------
+;;# $3f:f3ed textd.restore_text_ptr
+;;> Restores text pointer previously saved with `$3f:f3e4 textd.save_text_ptr`.
+;;
+;;### args:
+;;+	out string* $3e: restored pointer
+;;+	in string* $99: saved pointer previously saved with `$3f:f3e4 textd.save_text_ptr`.
+;;+	in u8 $93: bank number which the text pointed to is stored
+;;
+;;### callers:
+;;+	`F342 20 ED F3`
+;;+	`F0DB 20 ED F3`
+;;
+;;### local variables:
+;;none.
+;;
+;;### notes:
+textd.restore_text_ptr:
+    DECLARE_TEXTD_VARIABLES
+;; fixups
+; all of callers have re-implemented.
+;;
+	lda <.p_text_saved      ; F3ED A5 99
+	sta <.p_text            ; F3EF 85 3E
+	lda <.p_text_saved+1    ; F3F1 A5 9A
+	sta <.p_text+1          ; F3F3 85 3F
+	lda <.text_bank         ; F3F5 A5 93
+	jmp call_switch_2banks  ; F3F7 4C 03 FF
+
+; -------------------------------------------------------------------------------------------------
+;;# $3f:f3fa textd.trim_name_left
+;;
+;;### args:
+;;+	in,out u8 $5a[6]: player character name
+;;
+;;### callers:
+;;none?
+;;there is no byte patterns matched with '4c fa f3' or '20 fa f3' and
+;;no branches pointing to the range of code nearby.
+;;
+;;### local variables:
+;;none.
+;;
+;;### notes:
+;;write notes here
+
+;; decomissioned as unused
+;	ldx #$05        ; F3FA A2 05
+;.L_F3FC:
+;	lda $5A,x       ; F3FC B5 5A
+;	cmp #$FF        ; F3FE C9 FF
+;	bne LF409       ; F400 D0 07
+;	lda #$00        ; F402 A9 00
+;	sta $5A,x       ; F404 95 5A
+;	dex 			; F406 CA
+;	bpl .L_F3FC       ; F407 10 F3
+;.L_F409:
+;	rts 			; F409 60
+
+; ================================================================================================= 
     VERIFY_PC_TO_PATCH_END textd
 textd.BULK_PATCH_FREE_BEGIN:
 
