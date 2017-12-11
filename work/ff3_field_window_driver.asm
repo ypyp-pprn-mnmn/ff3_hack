@@ -960,6 +960,7 @@ field.get_window_bottom_tiles:	;ed3b
 	jsr field_x.get_window_tiles
 	bne field_x.get_window_tiles
 	.endif	;.ifdef _FEATURE_BORDER_LOADER
+
 	.endif	;.ifndef DEFERRED_RENDERING
 
 field_x.window_parts:
@@ -1052,31 +1053,12 @@ field.load_and_draw_string:	;;$ee9a
 .text_bank = $93
 .p_text_table = $94	;;stores offset from $30000(18:8000) to the text 
 ;; ---
-	lda #$18
-	jsr call_switch1stBank
 	lda <.text_id
-	asl A
-	tay
-	bcc .lower_half
-	inc <.p_text_table+1
-.lower_half:
-	lda [.p_text_table],Y
-	sta <.p_text
-	iny
-	lda [.p_text_table],Y
-	pha
-	and #$1F
-	ora #$80
-	sta <.p_text+1	;store pointer as an offset from $8000, the bank will be always mapped to there.
-	pla	;high byte of the offset (from $30000 == $18:8000)
-	;lsr A
-	;lsr A
-	;lsr A
-	;lsr A
-	;lsr A
-	jsr shiftRight6+1	;; A >> 5
-	clc
-	adc #$18
+	ldx <.p_text_table+1
+	ldy <.p_text_table
+	;; unlike the original implementation, the below function destructs $80,81.
+	;; as these are generic temporary variable, this should be fine.
+	jsr textd_x.load_text_ptr
 	sta <.text_bank
 	;;fall through.
 	;FALL_THROUGH_TO field.draw_string_in_window
