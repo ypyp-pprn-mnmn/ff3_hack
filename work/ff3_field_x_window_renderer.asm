@@ -48,8 +48,8 @@ field_x.deferred_renderer:
 	jsr field_x.render_deferred_contents
 	;; as calling sound driver need change of program bank,
 	;; we can't safely call the driver from within nmi handler,
-	;; unless under the situation which is known to
-	;; the program bank has a particular deterministic value.
+	;; unless under the situation which is known
+	;; that the program bank has a particular deterministic value.
 	;inc <field.frame_counter
 	;jsr field_x.end_ppu_update	;sync_ppu_scroll+call_sound_driver
 	jsr field.sync_ppu_scroll
