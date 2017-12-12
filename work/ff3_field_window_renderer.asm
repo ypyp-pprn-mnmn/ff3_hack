@@ -17,7 +17,7 @@ ff3_field_window_renderer_begin:
 ;==================================================================================================
 
 	.ifdef FAST_FIELD_WINDOW
-	INIT_PATCH_EX field.window.renderer, $3f, $f40a, $f435, textd.BULK_PATCH_FREE_BEGIN
+	INIT_PATCH_EX field.window.renderer, $3f, $f40a, $f44b, textd.BULK_PATCH_FREE_BEGIN
 	.ifndef DEFERRED_RENDERING
 ;;# $3f:f40a field.set_vram_addr_for_window
 ;;### args:
@@ -66,8 +66,24 @@ field.set_vram_addr_for_window	;;$f40a
 	tay
 
 	rts
-
 	.endif ;;DEFERRED_RENDERING
+
+;;field.get_vram_addr_of_line_above:
+;;	DECLARE_WINDOW_VARIABLES
+;;	ldx <.offset_y  ; F435 A6 3B
+;;	dex             ; F437 CA
+;;	bpl .positive   ; F438 10 02
+;;	ldx <.offset_y  ; F43A A6 3B
+;;.positive:
+;;	lda <.offset_x  ; F43C A5 3A
+;;	and #$1F        ; F43E 29 1F
+;;	ora $F4A1,x     ; F440 1D A1 F4
+;;	sta <$54        ; F443 85 54
+;;	lda $F4C1,x     ; F445 BD C1 F4
+;;	sta <$55        ; F448 85 55
+;;	rts             ; F44A 60
+
+	
 field.window.renderer.FREE_BEGIN:
 	VERIFY_PC_TO_PATCH_END field.window.renderer
 	.endif	;;FAST_FIELD_WINDOW
