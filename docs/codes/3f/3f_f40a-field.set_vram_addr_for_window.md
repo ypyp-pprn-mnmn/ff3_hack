@@ -1,4 +1,5 @@
 ﻿
+
 # $3f:f40a field.set_vram_addr_for_window
 > ウインドウ行の左端の座標($3a,$3bで指定)になるようppuのvram addrを変更する
 
@@ -7,8 +8,8 @@
 +	[in] u8 $3b : y offset
 
 ### static references:
-+	u8 $f4a1[32]: vram address low (index := x coords)
-+	u8 $f4c1[30]: vram address high (index := y coords)
++	u8 $f4a1[32]: vram address low (index := Y coords)
++	u8 $f4c1[32]: vram address high (index := Y coords)
 
 ### callers:
 `1F:F6B2:20 0A F4  JSR $F40A` @ $3f:f6aa field.upload_window_content
@@ -38,9 +39,5 @@ $f423:
 $f435:
 }
 ```
-
-
-
-
 
 

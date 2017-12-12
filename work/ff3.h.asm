@@ -50,7 +50,8 @@ floor.load_data = $e7ec
 ;textd.setup_output_ptr_to_next_column = $f3ac
 ;textd.save_text_ptr = $f3e4
 ;textd.restore_text_ptr = $f3ed
-
+field.vram_addr_map.high = $f4a1	;;static table that maps Y coords into addr
+field.vram_addr_map.low = $f4c1		;;static table that maps Y coords into addr
 textd.tile_map_lower = $F4E1	;static table that maps charcode into tile id
 textd.tile_map_upper = $f515	;static table that maps charcode into tile id
 
