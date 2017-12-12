@@ -8,7 +8,7 @@
     <meta name="generator" content="pandoc">
     <meta name="description" content>
     <meta name="author" content="ypyp-pprn-mnmn (aka “301”)">
-    <!-- generated-at 2017-12-13 06:55:48+0900 -->
+    <!-- generated-at 2017-12-13 07:10:24+0900 -->
     <title>FF3@FC Original Code Documentation</title>
 
     <!-- Bootstrap core CSS -->
@@ -18393,7 +18393,12 @@ sta $4014   ;DMA</code></pre></li>
 <li>u8 $f4c1[32]: vram address high (index := Y coords)</li>
 </ul>
 <h3 id="callers-43">callers:</h3>
-<p><code>1F:F6B2:20 0A F4  JSR $F40A</code> @ $3f:f6aa field.upload_window_content <code>1F:F6CE:20 0A F4  JSR $F40A</code> @ $3f:f6aa field.upload_window_content <code>1F:F6E9:20 0A F4  JSR $F40A</code> @ $3f:f6aa field.upload_window_content <code>1F:F705:20 0A F4  JSR $F40A</code> @ $3f:f6aa field.upload_window_content</p>
+<ul>
+<li><code>1F:F6B2:20 0A F4  JSR $F40A</code> @ $3f:f6aa field.upload_window_content</li>
+<li><code>1F:F6CE:20 0A F4  JSR $F40A</code> @ $3f:f6aa field.upload_window_content</li>
+<li><code>1F:F6E9:20 0A F4  JSR $F40A</code> @ $3f:f6aa field.upload_window_content</li>
+<li><code>1F:F705:20 0A F4  JSR $F40A</code> @ $3f:f6aa field.upload_window_content</li>
+</ul>
 <h3 id="notes-65">notes:</h3>
 <p>this logic wraps X around the BG boundary (0x20) and handles it correctly as in 2nd BG. however, it doesn’t wraps Y. (boundary = 0x1e)</p>
 <h3 id="code-254">code:</h3>
