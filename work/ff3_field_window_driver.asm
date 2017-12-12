@@ -150,8 +150,8 @@ field_x.draw_window_box_with_region:
 	;;	in order to avoid hacking on all of the caller.
 	;;	here is a very good place to do so,
 	;;	since all rendering request for window will come in.
-	;ldx #(field_x.NEED_TOP_BORDER|field_x.NEED_BOTTOM_BORDER|field_x.PENDING_INIT|field_x.RENDER_RUNNING)
-	ldx #(field_x.NEED_TOP_BORDER|field_x.NEED_BOTTOM_BORDER|field_x.RENDER_RUNNING)
+	ldx #(field_x.NEED_TOP_BORDER|field_x.NEED_BOTTOM_BORDER|field_x.PENDING_INIT|field_x.RENDER_RUNNING)
+	;ldx #(field_x.NEED_TOP_BORDER|field_x.NEED_BOTTOM_BORDER|field_x.RENDER_RUNNING)
 	jsr field_x.setup_deferred_rendering
 	.endif	;DEFERRED_RENDERING
 
