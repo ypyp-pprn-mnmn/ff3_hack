@@ -12,10 +12,10 @@
 +	u8 $f4c1[32]: vram address high (index := Y coords)
 
 ### callers:
-`1F:F6B2:20 0A F4  JSR $F40A` @ $3f:f6aa field.upload_window_content
-`1F:F6CE:20 0A F4  JSR $F40A` @ $3f:f6aa field.upload_window_content
-`1F:F6E9:20 0A F4  JSR $F40A` @ $3f:f6aa field.upload_window_content
-`1F:F705:20 0A F4  JSR $F40A` @ $3f:f6aa field.upload_window_content
++   `1F:F6B2:20 0A F4  JSR $F40A` @ $3f:f6aa field.upload_window_content
++   `1F:F6CE:20 0A F4  JSR $F40A` @ $3f:f6aa field.upload_window_content
++   `1F:F6E9:20 0A F4  JSR $F40A` @ $3f:f6aa field.upload_window_content
++   `1F:F705:20 0A F4  JSR $F40A` @ $3f:f6aa field.upload_window_content
 
 ### notes:
 this logic wraps X around the BG boundary (0x20) and handles it correctly as in 2nd BG.
