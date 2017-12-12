@@ -143,16 +143,17 @@ field_x.draw_window_box_with_region:
 	jsr field_x.shrink_window_metrics
 
 	.ifdef DEFERRED_RENDERING
-	;; XXX:
-	;;	the initialization made here will interfere with `menu.erase_box_from_bottom`
+	;; notes:
+	;;	initializing renderer here will interfere with `menu.erase_box_from_bottom`
 	;;	and may result in glitches on screen or even worse, crashing the game.
-	;;	however, it is necessary to tell the renderer to draw border
-	;;	in order to avoid hacking on all of the caller.
-	;;	here is a very good place to do so,
-	;;	since all rendering request for window will come in.
-	ldx #(field_x.NEED_TOP_BORDER|field_x.NEED_BOTTOM_BORDER|field_x.PENDING_INIT|field_x.RENDER_RUNNING)
-	;ldx #(field_x.NEED_TOP_BORDER|field_x.NEED_BOTTOM_BORDER|field_x.RENDER_RUNNING)
-	jsr field_x.setup_deferred_rendering
+	;;	it is necessary to tell the renderer to draw border in somewhere before rendering,
+	;;	but doing it here is not reliable as it can't be assumed that
+	;; 	rendering of a box and its contents is always tightly coupled.
+	;;	there exists cases out-of-order execution of the following:
+	;;		1. render a box
+	;;		2. erase a box (possibly not the same as #1)
+	;;		3. render contents in a box (possibly not the same as #1)
+	;;	thus, it is deliberately chosen not to make the init here.
 	.endif	;DEFERRED_RENDERING
 
 	jmp field.restore_banks	;$ecf5
@@ -261,6 +262,15 @@ field.do_scrolldown_item_window:	;;$3f$eb43
 field_x.reflect_item_window_scroll:
 	lda #$c0
 	sta <$b4
+	.ifdef DEFERRED_RENDERING
+		;;note:
+		;;	the item window could be rendered with border
+		;;	and doing so does not impact the resulting screen.
+		;;	however, borders takes extra 1f to render.
+		;;	so here request to omit borders as a speed optimizaion.
+		;;	this logic is called on both in menu mode and in floor (use item to object)
+		jsr field_x.render.init_as_no_borders
+	.endif
 
 	FALL_THROUGH_TO field.reflect_window_scroll
 ;--------------------------------------------------------------------------------------------------
@@ -288,7 +298,10 @@ field.reflect_window_scroll:	;;$3f$eb61
 	FIX_ADDR_ON_CALLER $3d,$bc0f+1
 ;; ---
 	.ifdef DEFERRED_RENDERING
-		jsr field_x.defer_window_text_without_border
+		;; as name entry window is solely rendered with this function,
+		;; it is required to default to be with border here, in order to render safaly.
+		jsr field_x.defer_window_text_with_border
+
 	.else
 		jsr field.draw_string_in_window	;$eec0
 	.endif
@@ -999,6 +1012,7 @@ field.stream_string_in_window:
 .offset_x = $97
 .offset_y = $98
 ;; ---
+	;; all of the callers are fine to render with borders (the default of 'load_and_draw_string').
 	jsr field.load_and_draw_string	;$ee9a.
 	;; on exit from above, carry has a boolean value.
 	;; 1: more to draw, 0: completed drawing.
@@ -1046,15 +1060,20 @@ field.stream_string_in_window:
 ;;+	u8 $93: bank number which the string would be loaded from
 ;;
 ;;### callers:
-;;+	`1F:C036:20 9A EE  JSR field::load_and_draw_string`
+;;+	`1F:C036:20 9A EE  JSR field::load_and_draw_string` @ opening title
 ;;+	`1F:EE65:20 9A EE  JSR field::load_and_draw_string` @ $3f:ee65 field::stream_string_in_window
-;;+	`3c:9116  jmp $EE9A `   
-;;+	`3d:a682  jmp $EE9A `
+;;+	`3c:9116  jmp $EE9A `   @ some menu content
+;;+	`3d:a682  jmp $EE9A `	@ some menu content (nearby but not $3d:a66b field.draw_menu_window_content)
+field_x.load_and_draw_string_without_border:
+	FIX_ADDR_ON_CALLER $3e, $c036+1
+	;; opening title roll should be rendered without border.
+	jsr field_x.render.init_as_no_borders
+
 field.load_and_draw_string:	;;$ee9a
 ;; fixups.
-	FIX_ADDR_ON_CALLER $3c, $9116+1
-	FIX_ADDR_ON_CALLER $3d, $a682+1
-	FIX_ADDR_ON_CALLER $3e, $c036+1
+	FIX_ADDR_ON_CALLER $3c, $9116+1		;;menu content
+	FIX_ADDR_ON_CALLER $3d, $a682+1		;;menu content
+	;FIX_ADDR_ON_CALLER $3e, $c036+1
 ;; ---
 .p_text = $3e
 .text_id = $92
@@ -1070,11 +1089,13 @@ field.load_and_draw_string:	;;$ee9a
 	;; here A = text_bank.
 	sta <.text_bank
 	;FALL_THROUGH_TO field.draw_string_in_window
-	FALL_THROUGH_TO field_x.defer_window_text_without_border
+	FALL_THROUGH_TO field_x.defer_window_text_with_border
 ;------------------------------------------------------------------------------------------------------
-field_x.defer_window_text_without_border:
+field_x.defer_window_text_with_border:
 	.ifdef DEFERRED_RENDERING
-	ldx #(field_x.NO_BORDERS|field_x.PENDING_INIT|field_x.RENDER_RUNNING)
+	;; request deferred rendering with borders.
+	;ldx #(field_x.NO_BORDERS|field_x.PENDING_INIT|field_x.RENDER_RUNNING)
+	ldx #(field_x.PENDING_INIT|field_x.RENDER_RUNNING|field_x.NEED_TOP_BORDER|field_x.NEED_BOTTOM_BORDER)
 	jsr field_x.setup_deferred_rendering
 	.endif	;DEFERRED_RENDERING
 ;------------------------------------------------------------------------------------------------------
