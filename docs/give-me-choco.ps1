@@ -114,7 +114,7 @@ function make_me_happy($bank, $addr, $tuple) {
 			if ($tuple[1] -eq $null) {
 				get_template $bank $addr | Out-File -Encoding utf8 -FilePath $outpath -Append;
 			} else {
-				$(Get-Content -Path $tuple[1][1].fullname -Encoding utf8)  | Out-File -Encoding utf8 -FilePath $outpath -Append -NoNewline;
+				$(Get-Content -Path $tuple[1][1].fullname -Encoding utf8)  | Out-File -Encoding utf8 -FilePath $outpath -Append;
 			}
 			if ($tuple[2][1] -ne $null) {
 				"".PadRight(80, "_") | Out-File -Encoding utf8 -FilePath $outpath -Append;
