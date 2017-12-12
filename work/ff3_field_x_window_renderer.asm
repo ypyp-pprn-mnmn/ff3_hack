@@ -359,6 +359,9 @@ field_x.render.finalize:
 	;sta field_x.render.init_flags
 	rts
 ;--------------------------------------------------------------------------------------------------
+field_x.render.init_as_no_borders:
+	ldx #(field_x.NO_BORDERS|field_x.PENDING_INIT|field_x.RENDER_RUNNING)
+	FALL_THROUGH_TO field_x.setup_deferred_rendering
 ;; in X: init flags
 field_x.setup_deferred_rendering:
 	DECLARE_WINDOW_VARIABLES
@@ -368,11 +371,11 @@ field_x.setup_deferred_rendering:
 	;bit field_x.render.init_flags
 	lda field_x.render.init_flags
 	asl A
-	;bmi	.done	;; already requested init
-	bpl .first_init
+	bmi	.done	;; already requested init
+	;bpl .first_init
 		;; HACK: a quick dirty fix for border.
 		;; if we received second init request, don't overwrite flags but do recalc metrics.
-		ldx field_x.render.init_flags
+		;ldx field_x.render.init_flags
 .first_init:
 	asl A
 	bpl .store_init_flags
@@ -476,7 +479,7 @@ field_x.await_complete_rendering:
 		jsr field_x.advance_frame_no_wait	;;inc <.frame_counter + call sound driver
 field_x.render.rts_1:
 	rts
-	
+
 ;==================================================================================================
 ;in: A = offset Y, X = offset X
 ;out: A = vram high, X = vram low
