@@ -117,8 +117,8 @@ menu.erase_box_from_bottom:
 	DECLARE_WINDOW_VARIABLES
 	;pha
 	ldx #(field_x.NO_BORDERS|field_x.PENDING_INIT|field_x.RENDER_RUNNING)
-	jsr field_x.setup_deferred_rendering	;;preserves A.
-	;jsr field_x.render.stack_and_setup
+	;jsr field_x.setup_deferred_rendering	;;preserves A.
+	jsr field_x.render.stack_and_setup
 	;pla
 .erase_loop:
 	pha				; F47A 48
@@ -151,8 +151,8 @@ menu.erase_box_from_bottom:
 	sbc #$01        ; F49A E9 01
 	;bne menu.erase_box_from_bottom     ; F49C D0 DC
 	bne .erase_loop
-	jsr field_x.render.finalize
-	;jsr field_x.render.finalize_and_unstack
+	;jsr field_x.render.finalize
+	jsr field_x.render.finalize_and_unstack
 	jmp field.restore_banks  ; F49E 4C F5 EC
 
 	VERIFY_PC_TO_PATCH_END menu.erase
@@ -333,28 +333,21 @@ field.draw_window_content:
 		brk
 
 ;--------------------------------------------------------------------------------------------------
-field_x.ensure_buffer_available:
-	DECLARE_WINDOW_VARIABLES
-	jsr field_x.remove_nmi_handler
-	lda field_x.render.available_bytes
-	clc
-	adc field_x.render.stride
-	cmp #field_x.BUFFER_CAPACITY
-	bcs field_x.await_complete_rendering
+field_x.render.stack_and_setup:
+.temp_store = $82	;;this must not interfere with init routines
+	ldy field_x.render.init_flags
+	sty <.temp_store
+	ldy #0
+	sty field_x.render.init_flags
+	jmp field_x.setup_deferred_rendering
 
-	lda field_x.render.addr_index
-	cmp #field_x.ADDR_CAPACITY	;;rendering up to X lines at once (or exceed the nmi duration)
-	bcc field_x.render.rts_1
-
-field_x.await_complete_rendering:
-		jsr field_x.set_deferred_renderer
-.wait_nmi:
-		lda field_x.render.available_bytes
-		bne .wait_nmi
-		;; FIXME: this is a temporary measure to workaround PRG bank mismatch on nmi
-		jsr field_x.advance_frame_no_wait	;;inc <.frame_counter + call sound driver
-field_x.render.rts_1:
+field_x.render.finalize_and_unstack:
+.temp_store = $82	;;this must not interfere with init routines
+	jsr field_x.render.finalize
+	lda <.temp_store
+	sta field_x.render.init_flags
 	rts
+
 ;--------------------------------------------------------------------------------------------------
 field_x.shrink_window_metrics:
 	DECLARE_WINDOW_VARIABLES

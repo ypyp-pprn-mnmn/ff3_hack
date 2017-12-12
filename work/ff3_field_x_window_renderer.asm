@@ -368,8 +368,12 @@ field_x.setup_deferred_rendering:
 	;bit field_x.render.init_flags
 	lda field_x.render.init_flags
 	asl A
-	bmi	.done	;; already requested init
-
+	;bmi	.done	;; already requested init
+	bpl .first_init
+		;; HACK: a quick dirty fix for border.
+		;; if we received second init request, don't overwrite flags but do recalc metrics.
+		ldx field_x.render.init_flags
+.first_init:
 	asl A
 	bpl .store_init_flags
 		;jsr field_x.render.finalize
@@ -449,6 +453,30 @@ field_x.set_deferred_renderer:
 	sta nmi_handler_entry
 	rts
 
+;--------------------------------------------------------------------------------------------------
+field_x.ensure_buffer_available:
+	DECLARE_WINDOW_VARIABLES
+	jsr field_x.remove_nmi_handler
+	lda field_x.render.available_bytes
+	clc
+	adc field_x.render.stride
+	cmp #field_x.BUFFER_CAPACITY
+	bcs field_x.await_complete_rendering
+
+	lda field_x.render.addr_index
+	cmp #field_x.ADDR_CAPACITY	;;rendering up to X lines at once (or exceed the nmi duration)
+	bcc field_x.render.rts_1
+
+field_x.await_complete_rendering:
+		jsr field_x.set_deferred_renderer
+.wait_nmi:
+		lda field_x.render.available_bytes
+		bne .wait_nmi
+		;; FIXME: this is a temporary measure to workaround PRG bank mismatch on nmi
+		jsr field_x.advance_frame_no_wait	;;inc <.frame_counter + call sound driver
+field_x.render.rts_1:
+	rts
+	
 ;==================================================================================================
 ;in: A = offset Y, X = offset X
 ;out: A = vram high, X = vram low
