@@ -207,6 +207,7 @@ render_x.set_deferred_renderer:
 	sta nmi_handler_entry+1
 	lda #$4c	;JMP
 	sta nmi_handler_entry
+render_x.rts_1:
 	rts
 ;--------------------------------------------------------------------------------------------------
 ;; in A: bytes to ensure
@@ -237,8 +238,11 @@ render_x.ensure_buffer_available:
 		adc render_x.q.fuel
 .available:
 	sta render_x.q.fuel
-render_x.rts_1:	
-	rts
+	bit $2002
+	bpl render_x.rts_1
+		jmp field_x.advance_frame_no_wait
+
+	;rts
 
 render_x.await_complete_rendering:
 	jsr render_x.set_deferred_renderer
@@ -301,7 +305,7 @@ render_x.queue_bottom_border:
 	lda <.window_top
 	clc
 	adc <.window_height
-	ldx #8
+	ldx #5
 	FALL_THROUGH_TO render_x.queue_border
 ;--------------------------------------------------------------------------------------------------
 render_x.queue_border:
@@ -379,7 +383,7 @@ render_x.begin_queueing:
 	pha ;;left
 ;; --- check if there enough space remaining in the buffer.
 	lda render_x.q.stride,y
-	jsr render_x.ensure_buffer_available	;;X & Y are preserved.
+	jsr render_x.ensure_buffer_available
 ;; --- queue the addr to render.
 	pla	;;left
 	tax
@@ -431,6 +435,7 @@ render_x.build_temp_buffer:
 ;; on entry, offset_y will have valid value.
 render_x.queue_attributes:
 	DECLARE_WINDOW_VARIABLES
+	.if 0
 	lda <.in_menu_mode
 	bne .done
 		;; in-place window. need attr updates
@@ -441,6 +446,7 @@ render_x.queue_attributes:
 			jsr field.init_window_attr_buffer	;ed56
 			jsr field.update_window_attr_buff	;$c98f
 			;field.bg_attr_table_cache
+	.endif
 .done:
 	rts
 

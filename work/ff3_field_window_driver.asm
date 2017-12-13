@@ -906,6 +906,13 @@ field_x.get_window_tiles:
 	rts
 
 	.ifdef _FEATURE_BORDER_LOADER
+;;$3f:ee3e field::getWindowTilesForBottom
+;;callers:
+;;	$3f:ed02 field::draw_window_box
+field.get_window_bottom_tiles:	;ed3b
+	lda #$03<<1
+	jsr field_x.get_window_tiles
+	bne field_x.get_window_tiles
 ;;$3f:ee1d field::getWindowTilesForMiddle
 ;;callers:
 ;;	$3f:ed02 field::draw_window_box
@@ -914,21 +921,21 @@ field.get_window_middle_tiles:	;ee1d
 	jsr field_x.get_window_tiles
 	lda #$03<<1|1
 	bne field_x.get_window_tiles
-;;$3f:ee3e field::getWindowTilesForBottom
-;;callers:
-;;	$3f:ed02 field::draw_window_box
-field.get_window_bottom_tiles:	;ed3b
-	lda #$03<<1
-	jsr field_x.get_window_tiles
-	bne field_x.get_window_tiles
 	.endif	;.ifdef _FEATURE_BORDER_LOADER
-
-	.endif	;.ifndef _FEATURE_DEFERRED_RENDERING
 
 field_x.window_parts:
 	db $f7, $f8, $f9
 	db $fa, $ff, $fb
 	db $fc, $fd, $fe
+	.else	;.ifndef _FEATURE_DEFERRED_RENDERING
+
+field_x.window_parts:
+	db $f7, $f8, $f9
+	db $fc, $fd, $fe
+
+	.endif	;.ifndef _FEATURE_DEFERRED_RENDERING
+
+
 	;VERIFY_PC $ee65
 ;------------------------------------------------------------------------------------------------------
 	;INIT_PATCH $3f,$ee65,$ee9a
