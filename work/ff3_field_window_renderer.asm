@@ -18,7 +18,7 @@ ff3_field_window_renderer_begin:
 
 	.ifdef FAST_FIELD_WINDOW
 	INIT_PATCH_EX field.window.renderer, $3f, $f40a, $f44b, textd.BULK_PATCH_FREE_BEGIN
-	.ifndef DEFERRED_RENDERING
+	.ifndef _FEATURE_DEFERRED_RENDERING
 ;;# $3f:f40a field.set_vram_addr_for_window
 ;;### args:
 ;;+	[in] u8 $3a : x offset
@@ -66,7 +66,7 @@ field.set_vram_addr_for_window	;;$f40a
 	tay
 
 	rts
-	.endif ;;DEFERRED_RENDERING
+	.endif ;;_FEATURE_DEFERRED_RENDERING
 
 ;;field.get_vram_addr_of_line_above:
 ;;	DECLARE_WINDOW_VARIABLES
@@ -263,7 +263,7 @@ field.draw_window_content:
 	DECLARE_WINDOW_VARIABLES
 .output_index = $90
 ;; ---
-	.ifndef DEFERRED_RENDERING
+	.ifndef _FEATURE_DEFERRED_RENDERING
 	;.if 1
 
 		pha
@@ -275,7 +275,7 @@ field.draw_window_content:
 		jsr field_x.switch_to_text_bank
 		jmp field.init_window_tile_buffer	;f683
 	
-	.else	;DEFERRED_RENDERING
+	.else	;_FEATURE_DEFERRED_RENDERING
 	
 		;; 1. if required, capture attribute and write it into the buffer.
 		;; 2. composite borders with content.
@@ -360,12 +360,12 @@ field_x.shrink_window_metrics:
 	dec <.window_height
 	dec <.window_height
 	rts
-	.endif ;DEFERRED_RENDERING
+	.endif ;_FEATURE_DEFERRED_RENDERING
 ;--------------------------------------------------------------------------------------------------
 	;VERIFY_PC $f6aa
 	.endif	;FAST_FIELD_WINDOW
 ;--------------------------------------------------------------------------------------------------
-	.ifndef DEFERRED_RENDERING
+	.ifndef _FEATURE_DEFERRED_RENDERING
 	INIT_PATCH	$3f,$f6aa,$f727
 	.endif	;ifndef FAST_FIELD_WINDOW
 ;$3f:f6aa field::upload_window_content
@@ -480,8 +480,8 @@ field.upload_window_content:
 	bne .copy_loop_0
 
 	rts
-	.endif	;ifndef DEFERRED_RENDERING
+	.endif	;ifndef _FEATURE_DEFERRED_RENDERING
 
 	VERIFY_PC $f727
 ;======================================================================================================
-	RESTORE_PC ff3_field_window_begin
+	RESTORE_PC ff3_field_window_driver_begin

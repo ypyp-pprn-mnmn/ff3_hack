@@ -44,4 +44,4 @@ await_nmi_by_set_handler:
 	;jmp disable_handler_and_return_from_nmi
 	VERIFY_PC $ff48
 ;------------------------------------------------------------------------------------------------------
-	RESTORE_PC ff3_field_window_begin
+	;RESTORE_PC ff3_field_window_begin

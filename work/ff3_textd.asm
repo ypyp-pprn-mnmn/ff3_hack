@@ -197,7 +197,7 @@ textd_x.just_invoke_handlers:
 	bcc .dispatch_handler
 		;jmp textd.eval_replacement          ; EF42 4C 2A F0
 		;pha ; F02A 48
-        .ifndef STOMACH_AMOUNT_1BYTE
+        .ifndef _FEATURE_STOMACH_AMOUNT_1BYTE
             ;; this seems to be workaround for the bug exist in $3d:b570.
             ;; if charcode == CHAR.ITEM_AMOUNT_IN_STOMACH
             ;; then ignore parameter byte embedded in the text stream,
@@ -206,7 +206,7 @@ textd_x.just_invoke_handlers:
             ldx <.cached_param                  ; F02B A6 67
             cmp #CHAR.ITEM_AMOUNT_IN_STOMACH    ; F02D C9 1D
             beq .L_F034                         ; F02F F0 03
-        .endif  ;;STOMACH_AMOUNT_1BYTE
+        .endif  ;;_FEATURE_STOMACH_AMOUNT_1BYTE
 		lda [.p_text],y                     ; F031 B1 3E
 		tax ; F033 AA
 	.L_F034:
@@ -220,13 +220,13 @@ textd_x.just_invoke_handlers:
 		;pla ; F03E 68
 .dispatch_handler:
 	pla
-    .ifdef STOMACH_AMOUNT_1BYTE
+    .ifdef _FEATURE_STOMACH_AMOUNT_1BYTE
         cmp #CHAR_X.ITEM_AMOUNT_IN_STOMACH_1BYTE
         bne .do_dispatch
             ldx <.cached_param 
             stx <.parameter_byte
 .do_dispatch:
-    .endif ;;STOMACH_AMOUNT_1BYTE
+    .endif ;;_FEATURE_STOMACH_AMOUNT_1BYTE
     ;;A = code byte, X = param byte (if any)
 	jmp [.p_handler]
 ; ----------------------------------------------------------------------------
@@ -1328,7 +1328,7 @@ textd_x.ctrl_code_handlers.low:
 	.db LOW(textd_x.on_code_0b)
 	.db LOW(textd_x.on_code_0c)
 	.db LOW(textd_x.on_code_0d)
-    .ifdef STOMACH_AMOUNT_1BYTE
+    .ifdef _FEATURE_STOMACH_AMOUNT_1BYTE
         .db LOW(textd_x.on_code_1d)
     .else
 	    .db LOW(textd_x.on_code_0e)
@@ -1386,7 +1386,7 @@ textd_x.ctrl_code_handlers.high_and_flags:
 	;.db ((HIGH(textd_x.on_code_0c) - HIGH(textd_x.code_handlers_base)) & $07) | ((textd_x.JUST_CONTINUE)<<4)
 	.db ((HIGH(textd_x.on_code_0c) - HIGH(textd_x.code_handlers_base)) & $07) | ((textd_x.HANDLE_EXIT_IN_OWN)<<4)
 	.db ((HIGH(textd_x.on_code_0d) - HIGH(textd_x.code_handlers_base)) & $07) | ((textd_x.CONTINUE_WITH_TEXT)<<4)
-    .ifdef STOMACH_AMOUNT_1BYTE
+    .ifdef _FEATURE_STOMACH_AMOUNT_1BYTE
         .db ((HIGH(textd_x.on_code_1d) - HIGH(textd_x.code_handlers_base)) & $07) | ((textd_x.CONTINUE_WITH_TEXT)<<4)
     .else
 	    .db ((HIGH(textd_x.on_code_0e) - HIGH(textd_x.code_handlers_base)) & $07) | ((textd_x.JUST_CONTINUE)<<4)
