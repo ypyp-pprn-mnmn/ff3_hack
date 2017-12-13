@@ -48,8 +48,9 @@ render_x.SKIP_CONTENTS = $08
 render_x.NEED_SPRITE_DMA = $04
 render_x.NEED_TOP_BORDER = $02
 render_x.NEED_BOTTOM_BORDER = $01
+;; capacity limits.
 ;render_x.BUFFER_CAPACITY = $c0
-render_x.BUFFER_CAPACITY = $c0
+render_x.BUFFER_CAPACITY = $80
 render_x.ADDR_CAPACITY = $0c
 
 ;; buffer and addresses are shared among for name table and attributes.
@@ -57,11 +58,12 @@ render_x.q.vram.buffer = $7320	;max 0xc0 bytes = 192 titles.
 ;; max 16 addresses.
 render_x.q.vram.high = $73e0	
 render_x.q.vram.low = $73f0
-
+;; state controls
 render_x.q.init_flags = $7300	;;this address isn't touched by floor's logic
 render_x.q.available_bytes = $7301
 render_x.q.addr_index = $7302
-render_x.q.stride = $7303
+render_x.q.gas = $7303	;;if exhausted, then flush queue (await completion of pending rendering)
+render_x.q.stride = $7307
 
 ;; pre-calculated internal parameters.
 render_x.q.1st.nt.stride = $7308
