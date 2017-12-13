@@ -62,8 +62,8 @@ render_x.FUEL_FOR_OVERHEAD = ((120 >> 3) + 1)
 
 ;; ------------------------------------------------------------------------------------------------
 render_x.nmi.LOCALS_COUNT = $8
-render_x.nmi.STATE_VARIABLES_BASE = $7302
-render_x.nmi.STATE_VARIABLES_END = $7310
+render_x.nmi.STATE_VARIABLES_BASE = $c2
+render_x.nmi.STATE_VARIABLES_END = $d0
 
 render_x.nmi.eol_offset = $80
 render_x.nmi.sequence = $81
@@ -72,11 +72,11 @@ render_x.nmi.target_index = $83
 ;; ------------------------------------------------------------------------------------------------
 
 ;; state controls
-render_x.q.init_flags = $7300	;;this address isn't touched by floor's logic
-render_x.q.fuel = $7301	;;if exhausted, then flush queue (await completion of pending rendering)
-render_x.q.available_bytes = $7302
-render_x.q.addr_index = $7303
-render_x.q.target_index = $7304	;;12bytes.
+render_x.q.init_flags = $c0	;;this address isn't touched by floor's logic
+render_x.q.fuel = $c1	;;if exhausted, then flush queue (await completion of pending rendering)
+render_x.q.available_bytes = $c2
+render_x.q.addr_index = $c3
+render_x.q.target_index = $c4	;;12bytes.
 ;render_x.q.attr_pending = $7308	;;2bytes. 1bit per vertical line. lower first.
 
 ;; pre-calculated internal parameters.

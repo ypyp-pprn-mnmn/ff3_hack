@@ -138,19 +138,19 @@ render_x.upload_next:
 	pla	;;bytes have been uploaded.		;;	4
 	clc									;;	6
 	adc render_x.q.stride,y				;;	10
-	cmp render_x.q.available_bytes		;;	14
+	cmp <render_x.q.available_bytes		;;	14
 	bcc render_x.render_deferred_contents
 
 ;; out:
 ;;	A: #0
 render_x.reset_states:
 	lda #render_x.FULL_OF_FUEL
-	sta render_x.q.fuel
+	sta <render_x.q.fuel
 	lda #0
 	ldy #(render_x.nmi.STATE_VARIABLES_END - render_x.nmi.STATE_VARIABLES_BASE)
 .reset:
 		sta render_x.nmi.STATE_VARIABLES_BASE-1,y
-		;sta render_x.q.available_bytes	;;this frees up a waiting thread
+		;sta <render_x.q.available_bytes	;;this frees up a waiting thread
 		dey
 		bne .reset
 	rts
@@ -215,29 +215,29 @@ render_x.ensure_buffer_available:
 	DECLARE_WINDOW_VARIABLES
 	jsr render_x.remove_nmi_handler	;; preserves A.
 
-	;lda render_x.q.available_bytes
+	;lda <render_x.q.available_bytes
 	;clc
-	;adc render_x.q.stride
+	;adc <render_x.q.stride
 	;cmp #render_x.BUFFER_CAPACITY
 	;bcs render_x.await_complete_rendering
 
-	;lda render_x.q.addr_index
+	;lda <render_x.q.addr_index
 	;cmp #render_x.ADDR_CAPACITY	;;rendering up to X lines at once (or exceed the nmi duration)
 	;bcc render_x.rts_1
 	clc
 	adc #render_x.FUEL_FOR_OVERHEAD
 	eor #$ff
 	tax
-	adc render_x.q.fuel
+	adc <render_x.q.fuel
 	bcs .available	;;ok. carry set = adding negative value resulted in overflow.
 		txa
 		pha
 		jsr render_x.await_complete_rendering
 		pla
 		clc
-		adc render_x.q.fuel
+		adc <render_x.q.fuel
 .available:
-	sta render_x.q.fuel
+	sta <render_x.q.fuel
 	bit $2002
 	bpl render_x.rts_1
 		jmp field_x.advance_frame_no_wait
@@ -247,7 +247,7 @@ render_x.ensure_buffer_available:
 render_x.await_complete_rendering:
 	jsr render_x.set_deferred_renderer
 .wait_nmi:
-	lda render_x.q.available_bytes
+	lda <render_x.q.available_bytes
 	bne .wait_nmi
 	;; FIXME: this is a temporary measure to workaround PRG bank mismatch on nmi
 	jmp field_x.advance_frame_no_wait	;;inc <.frame_counter + call sound driver
@@ -264,7 +264,7 @@ render_x.queue_content:
 ;; --- build final contents onto temporary buffer.
 	ldy #0
 	ldx #0
-	bit render_x.q.init_flags
+	bit <render_x.q.init_flags
 	php
 	bmi .put_middles
 		lda #$fa
@@ -323,7 +323,7 @@ render_x.queue_border:
 	;jsr render_x.begin_queueing
 ;; --- queue tiles.
 	
-	;ldx render_x.q.available_bytes
+	;ldx <render_x.q.available_bytes
 	ldx #0
 	pla
 	jsr render_x.build_temp_buffer
@@ -343,7 +343,7 @@ render_x.queue_bytes_from_buffer:
 	DECLARE_WINDOW_VARIABLES
 .source_index = $85
 	ldx <.window_left
-	bit render_x.q.init_flags
+	bit <render_x.q.init_flags
 	bmi .queue_bytes
 		dex
 .queue_bytes:
@@ -391,7 +391,7 @@ render_x.begin_queueing:
 	lda <.offset_y
 	;; X = window left
 	jsr field_x.map_coords_to_vram
-	ldy render_x.q.addr_index
+	ldy <render_x.q.addr_index
 	sta render_x.q.vram.high,y
 	txa
 	sta render_x.q.vram.low,y
@@ -400,7 +400,7 @@ render_x.begin_queueing:
 	pla ;; target index
 ;render_x.queue_target_index:
 	sta render_x.q.target_index,y
-	inc render_x.q.addr_index
+	inc <render_x.q.addr_index
 
 	pla	;;width
 	clc
@@ -412,7 +412,7 @@ render_x.begin_queueing:
 render_x.queue_bytes:
 .source_index = $85
 .temp_buffer = $7d0
-	ldx render_x.q.available_bytes
+	ldx <render_x.q.available_bytes
 .loop:
 		lda .temp_buffer,y
 		sta render_x.q.vram.buffer,x
@@ -420,7 +420,7 @@ render_x.queue_bytes:
 		iny
 		cpy <.source_index
 		bne .loop
-	stx render_x.q.available_bytes
+	stx <render_x.q.available_bytes
 	;sty render_x.q.source_index
 render_x.rts_2:
 	rts
@@ -452,7 +452,7 @@ render_x.queue_attributes:
 
 ;--------------------------------------------------------------------------------------------------
 render_x.finalize:
-	lda render_x.q.available_bytes
+	lda <render_x.q.available_bytes
 	beq .completed
 		jsr render_x.await_complete_rendering
 .completed:
@@ -460,7 +460,7 @@ render_x.finalize:
 	;;  in cases of paging in window,
 	;;	the rendering continues even if it reached the bottom of window.
 	;lda #0
-	;sta render_x.q.init_flags
+	;sta <render_x.q.init_flags
 	rts
 ;--------------------------------------------------------------------------------------------------
 render_x.init_as_no_borders:
@@ -472,7 +472,7 @@ render_x.setup_deferred_rendering:
 ;; init deferred drawing.
 	pha
 
-	lda render_x.q.init_flags
+	lda <render_x.q.init_flags
 	asl A
 	bmi	.done	;; already requested init
 
@@ -485,7 +485,7 @@ render_x.setup_deferred_rendering:
 	;bne .store_init_flags
 	;	ora #(render_x.NEED_SPRITE_DMA)
 .store_init_flags:
-	stx render_x.q.init_flags
+	stx <render_x.q.init_flags
 	
 	jsr render_x.reset_states
 
@@ -494,7 +494,7 @@ render_x.setup_deferred_rendering:
 	pha	;;width
 
 	tax
-	bit render_x.q.init_flags
+	bit <render_x.q.init_flags
 	bmi .no_borders
 		inx
 		inx
