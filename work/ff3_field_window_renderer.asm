@@ -132,9 +132,9 @@ menu.erase_box_of_width_1e:
 menu.erase_box_from_bottom:
 	DECLARE_WINDOW_VARIABLES
 	;pha
-	ldx #(field_x.NO_BORDERS|field_x.PENDING_INIT|field_x.RENDER_RUNNING)
-	jsr field_x.setup_deferred_rendering	;;preserves A.
-	;jsr field_x.render.stack_and_setup
+	ldx #(render_x.NO_BORDERS|render_x.PENDING_INIT|render_x.RENDER_RUNNING)
+	jsr render_x.setup_deferred_rendering	;;preserves A.
+	;jsr render_x.stack_and_setup
 	;pla
 .erase_loop:
 	pha				; F47A 48
@@ -167,8 +167,8 @@ menu.erase_box_from_bottom:
 	sbc #$01        ; F49A E9 01
 	;bne menu.erase_box_from_bottom     ; F49C D0 DC
 	bne .erase_loop
-	jsr field_x.render.finalize
-	;jsr field_x.render.finalize_and_unstack
+	jsr render_x.finalize
+	;jsr render_x.finalize_and_unstack
 	jmp field.restore_banks  ; F49E 4C F5 EC
 
 	VERIFY_PC_TO_PATCH_END menu.erase
@@ -283,8 +283,8 @@ field.draw_window_content:
 		;; 4. update number of available bytes to notify it of renderer.
 		tax
 
-		lda field_x.render.init_flags
-		and #(field_x.RENDER_RUNNING)
+		lda render_x.q.init_flags
+		and #(render_x.RENDER_RUNNING)
 		beq .oops
 
 		lda <.lines_drawn
@@ -292,28 +292,28 @@ field.draw_window_content:
 		txa
 		pha
 	.composite_top:
-		lda field_x.render.init_flags
+		lda render_x.q.init_flags
 		;; mask off init-pending flag
-		and #(~field_x.PENDING_INIT)
-		sta field_x.render.init_flags
+		and #(~render_x.PENDING_INIT)
+		sta render_x.q.init_flags
 		bmi .composite_middle
 			;; queue top border
 			tax
-			and #(field_x.NEED_TOP_BORDER)
+			and #(render_x.NEED_TOP_BORDER)
 			beq .composite_middle
 				txa
-				and #(~field_x.NEED_TOP_BORDER)
-				sta field_x.render.init_flags
-				jsr field_x.queue_top_border
+				and #(~render_x.NEED_TOP_BORDER)
+				sta render_x.q.init_flags
+				jsr render_x.queue_top_border
 	.composite_middle:
 		pla	;; A <-- rendering disposition.
 		cmp #TEXTD_WANT_ONLY_LOWER
 		beq .lower_half
 			lda #0
-			jsr field_x.queue_content
+			jsr render_x.queue_content
 	.lower_half:
 		lda #$20
-		jsr field_x.queue_content
+		jsr render_x.queue_content
 	.composite_bottom:
 		;; further optimizations could be achieved
 		;; thru enabling the below line.
@@ -321,21 +321,21 @@ field.draw_window_content:
 		;; there indeed is a timing depedent glitches
 		;; and some of callers which do scrolling are
 		;; not ready for such a asynchronousity.
-		jsr field_x.set_deferred_renderer
+		jsr render_x.set_deferred_renderer
 		;;
 		ldy <.lines_drawn
 		cpy <.window_height
 		bne .update_queue_status
-			ldx field_x.render.init_flags
+			ldx render_x.q.init_flags
 			txa
-			and #field_x.NEED_BOTTOM_BORDER
+			and #render_x.NEED_BOTTOM_BORDER
 			beq .finalize_this_rendering
 				;; queue bottom border
 				dex
-				stx field_x.render.init_flags
-				jsr field_x.queue_bottom_border
+				stx render_x.q.init_flags
+				jsr render_x.queue_bottom_border
 		.finalize_this_rendering:
-			jsr field_x.render.finalize	
+			jsr render_x.finalize	
 	.update_queue_status:
 		pla
 		sta <.lines_drawn	;restore the original

@@ -41,35 +41,38 @@ DECLARE_WINDOW_VARIABLES	.macro
 
 	.ifdef FAST_FIELD_WINDOW
 
-field_x.render.tile_buffer = $7320	;max 0xc0 bytes = 192 titles.
-field_x.render.attr_buffer = $73c0 ;max 0x30 bytes = 2 x 3 x 8 attrs. (ie, 6 rows)
-field_x.render.vram.high = $73d0
-field_x.render.vram.low = $73e0
+;; buffer and addresses are shared among for name table and attributes.
+render_x.q.vram.buffer = $7320	;max 0xc0 bytes = 192 titles.
+;; max 16 addresses.
+render_x.q.vram.high = $73e0	
+render_x.q.vram.low = $73f0
 
-field_x.render.init_flags = $7300	;;this address isn't touched by floor's logic
-field_x.render.available_bytes = $7301
-field_x.render.addr_index = $7302
-field_x.render.stride = $7303
-field_x.render.1st.stride = $7304
-field_x.render.1st.buffer_bias = $7305
-field_x.render.1st.uploader_addr = $7306
-field_x.render.2nd.stride = $7308
-field_x.render.2nd.buffer_bias = $7309
-field_x.render.2nd.uploader_addr = $730a
+render_x.q.init_flags = $7300	;;this address isn't touched by floor's logic
+render_x.q.available_bytes = $7301
+render_x.q.addr_index = $7302
+render_x.q.stride = $7303
+
+;; pre-calculated internal parameters.
+render_x.q.1st.nt.stride = $7308
+render_x.q.1st.nt.buffer_bias = $7309
+render_x.q.1st.nt.uploader_addr = $730a
+render_x.q.2nd.nt.stride = $730c
+render_x.q.2nd.nt.buffer_bias = $730d
+render_x.q.2nd.uploader_addr = $730e
 
 
 
 
-field_x.NO_BORDERS = $80
-field_x.PENDING_INIT = $40
-field_x.RENDER_RUNNING = $20	;;or 'completed'
-field_x.SKIP_CONTENTS = $08
-field_x.NEED_SPRITE_DMA = $04
-field_x.NEED_TOP_BORDER = $02
-field_x.NEED_BOTTOM_BORDER = $01
-;field_x.BUFFER_CAPACITY = $c0
-field_x.BUFFER_CAPACITY = $80
-field_x.ADDR_CAPACITY = $0c
+render_x.NO_BORDERS = $80
+render_x.PENDING_INIT = $40
+render_x.RENDER_RUNNING = $20	;;or 'completed'
+render_x.SKIP_CONTENTS = $08
+render_x.NEED_SPRITE_DMA = $04
+render_x.NEED_TOP_BORDER = $02
+render_x.NEED_BOTTOM_BORDER = $01
+;render_x.BUFFER_CAPACITY = $c0
+render_x.BUFFER_CAPACITY = $80
+render_x.ADDR_CAPACITY = $0c
 
 ;--------------------------------------------------------------------------------------------------
 	INIT_PATCH_EX field.window.driver, $3f, $eb2d, $eefa, $eb2d
@@ -269,7 +272,7 @@ field_x.reflect_item_window_scroll:
 		;;	however, borders takes extra 1f to render.
 		;;	so here request to omit borders as a speed optimizaion.
 		;;	this logic is called on both in menu mode and in floor (use item to object)
-		jsr field_x.render.init_as_no_borders
+		jsr render_x.init_as_no_borders
 	.endif
 
 	FALL_THROUGH_TO field.reflect_window_scroll
@@ -300,7 +303,7 @@ field.reflect_window_scroll:	;;$3f$eb61
 	.ifdef DEFERRED_RENDERING
 		;; as name entry window is solely rendered with this function,
 		;; it is required to default to be with border here, in order to render safaly.
-		jsr field_x.defer_window_text_with_border
+		jsr render_x.defer_window_text_with_border
 
 	.else
 		jsr field.draw_string_in_window	;$eec0
@@ -828,12 +831,12 @@ field.draw_window_top:
 .window_top = $39
 .window_row_in_drawing = $3b
 	jsr field_x.shrink_window_metrics
-	ldx #(field_x.NEED_TOP_BORDER|field_x.PENDING_INIT|field_x.RENDER_RUNNING|field_x.SKIP_CONTENTS)
-	jsr field_x.setup_deferred_rendering
+	ldx #(render_x.NEED_TOP_BORDER|render_x.PENDING_INIT|render_x.RENDER_RUNNING|render_x.SKIP_CONTENTS)
+	jsr render_x.setup_deferred_rendering
 	;; contents of the item window will be redrawn after the border rendered.
 	;; so it is ok to fill content area with empty background, though not looking good.
 	jsr field.draw_window_content
-	jsr field_x.render.finalize
+	jsr render_x.finalize
 	
 ;	lda <.window_top
 ;	sta <.window_row_in_drawing
@@ -1067,7 +1070,7 @@ field.stream_string_in_window:
 field_x.load_and_draw_string_without_border:
 	FIX_ADDR_ON_CALLER $3e, $c036+1
 	;; opening title roll should be rendered without border.
-	jsr field_x.render.init_as_no_borders
+	jsr render_x.init_as_no_borders
 
 field.load_and_draw_string:	;;$ee9a
 ;; fixups.
@@ -1089,14 +1092,14 @@ field.load_and_draw_string:	;;$ee9a
 	;; here A = text_bank.
 	sta <.text_bank
 	;FALL_THROUGH_TO field.draw_string_in_window
-	FALL_THROUGH_TO field_x.defer_window_text_with_border
+	FALL_THROUGH_TO render_x.defer_window_text_with_border
 ;------------------------------------------------------------------------------------------------------
-field_x.defer_window_text_with_border:
+render_x.defer_window_text_with_border:
 	.ifdef DEFERRED_RENDERING
 	;; request deferred rendering with borders.
-	;ldx #(field_x.NO_BORDERS|field_x.PENDING_INIT|field_x.RENDER_RUNNING)
-	ldx #(field_x.PENDING_INIT|field_x.RENDER_RUNNING|field_x.NEED_TOP_BORDER|field_x.NEED_BOTTOM_BORDER)
-	jsr field_x.setup_deferred_rendering
+	;ldx #(render_x.NO_BORDERS|render_x.PENDING_INIT|render_x.RENDER_RUNNING)
+	ldx #(render_x.PENDING_INIT|render_x.RENDER_RUNNING|render_x.NEED_TOP_BORDER|render_x.NEED_BOTTOM_BORDER)
+	jsr render_x.setup_deferred_rendering
 	.endif	;DEFERRED_RENDERING
 ;------------------------------------------------------------------------------------------------------
 	;INIT_PATCH $3f,$eec0,$eefa
