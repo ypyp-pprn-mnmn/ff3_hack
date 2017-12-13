@@ -169,27 +169,28 @@ render_x.render_deferred_contents:
 	sta $2006						;;	22
 	inc <render_x.nmi.sequence		;;	27
 	;; determine the target.
-	lsr render_x.q.is_2nd+1			;;	33
-	ror render_x.q.is_2nd			;;	39
-	rol A							;;	41
-	lsr render_x.q.is_attr+1		;;	47
-	ror render_x.q.is_attr			;;	53
-	rol A							;;	55
-	and #3							;;	57
-	tay								;;	59
-	pla								;;	63
+	;lsr render_x.q.is_2nd+1			;;	33
+	;ror render_x.q.is_2nd			;;	39
+	;rol A							;;	41
+	;lsr render_x.q.is_attr+1		;;	47
+	;ror render_x.q.is_attr			;;	53
+	;rol A							;;	55
+	;and #3							;;	57
+	lda render_x.q.target_index,y	;;	31
+	tay								;;	33
+	pla								;;	37
 	
-	pha								;;	66
-	clc								;;	68
-	adc render_x.q.stride,y			;;	72
-	clc
-	adc #($10)
-	sta <render_x.nmi.eol_offset
-	pla
-	pha
-	clc
-	adc render_x.q.buffer_bias,y
-	tax
+	pha								;;	3
+	clc								;;	5
+	adc render_x.q.stride,y			;;	9
+	clc								;;	11
+	adc #($10)						;;	13
+	sta <render_x.nmi.eol_offset	;;	16
+	pla								;;	20
+	pha								;;	23
+	clc								;;	25
+	adc render_x.q.buffer_bias,y	;;	29
+	tax								;;	31
 	;; do indirect jump.
 	lda render_x.q.start_addr.high,y
 	pha
@@ -262,18 +263,36 @@ render_x.begin_queueing:
 	bit render_x.q.init_flags
 	bmi .skip_borders
 		dex
+.skip_borders:
 	txa
+
 	pha
+	ldy #0
 	ldx render_x.q.stride+0	;;1st bg
 	jsr .push_addrs
 	pla
+	
 	;; A <-- windowleft
 	clc
 	adc render_x.q.stride+0	;;1st bg
 	and #$3f
+	ldy #2
 	ldx render_x.q.stride+2	;;2nd bg
+
+;; in:
+;;	A: left
+;;	X: width
+;;	Y: target index
+;;	P: result of bit test against the width
 .push_addrs:
+;.temp_target = $83
+	beq render_x.rts_2
 	pha
+	
+	tya
+	ldy render_x.q.addr_index
+	sta render_x.q.target_index,y
+
 	txa
 	jsr render_x.ensure_buffer_available
 ;; --- attr check.
@@ -281,11 +300,13 @@ render_x.begin_queueing:
 ;; --- queue the addr to render.
 	pla
 	tax
-.skip_borders:
+
 	FALL_THROUGH_TO render_x.queue_vram_addr
 
 ;; X = window left
+;; $80 = target index
 render_x.queue_vram_addr:
+.temp_target = $83
 	DECLARE_WINDOW_VARIABLES
 	lda <.offset_y
 	jsr field_x.map_coords_to_vram
@@ -487,7 +508,7 @@ render_x.setup_deferred_rendering:
 
 	ldy <.window_left
 	lda <.window_width
-	pha
+	pha	;;width
 
 	tax
 	bit render_x.q.init_flags
@@ -501,9 +522,9 @@ render_x.setup_deferred_rendering:
 	jsr field_x.calc_available_width_in_bg
 	;; A = width 1st
 	ldy #0
-	pha
+	pha	;;width_1st
 	jsr render_x.precalc_params
-	pla	;width 1st
+	pla	;width_1st
 	eor #$ff
 	sec
 	adc <.window_width
