@@ -77,11 +77,7 @@ render_x.q.fuel = $7301	;;if exhausted, then flush queue (await completion of pe
 render_x.q.available_bytes = $7302
 render_x.q.addr_index = $7303
 render_x.q.target_index = $7304	;;12bytes.
-render_x.q.source_index = $732c
-;render_x.q.is_attr = $7304	;;2bytes. 1bit per addr index. lower first.
-;render_x.q.is_2nd = $7306	;;2bytes. 1bit per addr index. lower first.
 ;render_x.q.attr_pending = $7308	;;2bytes. 1bit per vertical line. lower first.
-;render_x.q.stride = $7307
 
 ;; pre-calculated internal parameters.
 ;; index order:
