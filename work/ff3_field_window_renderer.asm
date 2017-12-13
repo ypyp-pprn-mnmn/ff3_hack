@@ -178,23 +178,29 @@ menu.erase_box_from_bottom:
 	
 	INIT_PATCH $3f,$f670,$f727
 
-field_x.calc_window_width_in_bg:
-.left = $38
-.width = $3c
+field_x.get_available_width_in_bg:
+	DECLARE_WINDOW_VARIABLES
+;.left = $38
+;.width = $3c
 	;; if window across BG boundary (left + width >= 0x20)
 	;; then adjust the width to fit just enough to the BG
-	lda <.left
+	lda <.window_left
+	FALL_THROUGH_TO field_x.calc_available_width_in_bg
+;; in
+;;	A : box left
+field_x.calc_available_width_in_bg
+	DECLARE_WINDOW_VARIABLES
 	and #$1f	;take mod of 0x20 to wrap around
 	eor #$1f	;negate...
 	clc			;
 	adc #1		;...done. A = (0x20 - left) % 0x20
-	cmp <.width
+	cmp <.window_width
 	bcc .store_result
 		;; there is enough space to draw entirely
-		lda <.width
+		lda <.window_width
 .store_result:
 	rts
-
+	
 ;--------------------------------------------------------------------------------------------------
 ;;callers:
 ;;	1F:ECE9:20 70 F6  JSR field::calc_size_and_init_buff @ $3f:ece5 field::draw_window_top
@@ -207,7 +213,7 @@ field.calc_draw_width_and_init_window_tile_buffer:
 ;.left = $38
 ;.width = $3c
 .width_for_current_bg = $91
-	jsr field_x.calc_window_width_in_bg
+	jsr field_x.get_available_width_in_bg
 .store_result:
 	sta <.width_for_current_bg
 	;; fall through into $3f:f683 field::init_window_tile_buffer
@@ -349,7 +355,29 @@ field.draw_window_content:
 		brk
 
 ;--------------------------------------------------------------------------------------------------
-
+;in: A = offset Y, X = offset X
+;out: A = vram high, X = vram low
+field_x.map_coords_to_vram:
+;@see $3f:f40a setVramAddrForWindow
+.y_to_addr_low = $f4a1
+.y_to_addr_high = $f4c1
+	cmp #30
+	bcc .no_wrap_y
+		sbc #30	;here carry is always set	
+	.no_wrap_y:
+	tay
+	txa
+	and #$3f	;wrap around
+	cmp #$20	;check which BG X falls in
+	and #$1f	;turn into offset within that BG
+	ora .y_to_addr_low,y
+	tax
+	lda .y_to_addr_high,y
+	bcc .bg_1st
+.bg_2nd:
+		ora #4
+.bg_1st:
+	rts
 ;--------------------------------------------------------------------------------------------------
 field_x.shrink_window_metrics:
 	DECLARE_WINDOW_VARIABLES
