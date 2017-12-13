@@ -8,6 +8,7 @@
 	.include "ff3_const.h"
 	.include "ff3_charcode.h.asm"
 	.include "ff3_party_and_player.h.asm"
+	.include "ff3_field_window.h.asm"
 ;proc addrs
 	.include "ff3_30-31.h"
 	.include "ff3_32-33.h"

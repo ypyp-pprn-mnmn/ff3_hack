@@ -10,71 +10,9 @@
 ; version:
 ;	0.2.0
 ;==================================================================================================
-ff3_field_window_begin:
-;;# of frames waited before text lines scolled up
-	DEFINE_DEFAULT FIELD_WINDOW_SCROLL_FRAMES, $01
-
-;_FEATURE_BORDER_LOADER
-;OMIT_COMPATIBLE_FIELD_WINDOW
-
-DECLARE_WINDOW_VARIABLES	.macro
-.menu_item_continue_building = $1e
-.lines_drawn = $1f
-.in_menu_mode = $37
-.window_left = $38
-.window_top = $39
-.offset_x = $3a
-.offset_y = $3b
-.window_width = $3c
-.window_height = $3d
-.p_text = $3e
-.output_index = $90
-.width_in_1st = $91
-.text_id = $92
-.text_bank = $93
-.p_text_table = $94	;;stores offset from $30000(18:8000) to the text 
-.window_type = $96
-;;
-.tile_buffer_upper = $0780
-.tile_buffer_lower = $07a0
-	.endm
-
-	.ifdef FAST_FIELD_WINDOW
-
-;; buffer and addresses are shared among for name table and attributes.
-render_x.q.vram.buffer = $7320	;max 0xc0 bytes = 192 titles.
-;; max 16 addresses.
-render_x.q.vram.high = $73e0	
-render_x.q.vram.low = $73f0
-
-render_x.q.init_flags = $7300	;;this address isn't touched by floor's logic
-render_x.q.available_bytes = $7301
-render_x.q.addr_index = $7302
-render_x.q.stride = $7303
-
-;; pre-calculated internal parameters.
-render_x.q.1st.nt.stride = $7308
-render_x.q.1st.nt.buffer_bias = $7309
-render_x.q.1st.nt.uploader_addr = $730a
-render_x.q.2nd.nt.stride = $730c
-render_x.q.2nd.nt.buffer_bias = $730d
-render_x.q.2nd.uploader_addr = $730e
-
-
-
-
-render_x.NO_BORDERS = $80
-render_x.PENDING_INIT = $40
-render_x.RENDER_RUNNING = $20	;;or 'completed'
-render_x.SKIP_CONTENTS = $08
-render_x.NEED_SPRITE_DMA = $04
-render_x.NEED_TOP_BORDER = $02
-render_x.NEED_BOTTOM_BORDER = $01
-;render_x.BUFFER_CAPACITY = $c0
-render_x.BUFFER_CAPACITY = $80
-render_x.ADDR_CAPACITY = $0c
-
+ff3_field_window_driver_begin:
 ;--------------------------------------------------------------------------------------------------
+	.ifdef FAST_FIELD_WINDOW
 	INIT_PATCH_EX field.window.driver, $3f, $eb2d, $eefa, $eb2d
 ;field_x.BULK_PATCH_BEGIN:
 
@@ -145,7 +83,7 @@ field_x.draw_window_box_with_region:
 ;; ---
 	jsr field_x.shrink_window_metrics
 
-	.ifdef DEFERRED_RENDERING
+	.ifdef _FEATURE_DEFERRED_RENDERING
 	;; notes:
 	;;	initializing renderer here will interfere with `menu.erase_box_from_bottom`
 	;;	and may result in glitches on screen or even worse, crashing the game.
@@ -157,7 +95,7 @@ field_x.draw_window_box_with_region:
 	;;		2. erase a box (possibly not the same as #1)
 	;;		3. render contents in a box (possibly not the same as #1)
 	;;	thus, it is deliberately chosen not to make the init here.
-	.endif	;DEFERRED_RENDERING
+	.endif	;_FEATURE_DEFERRED_RENDERING
 
 	jmp field.restore_banks	;$ecf5
 
@@ -265,7 +203,7 @@ field.do_scrolldown_item_window:	;;$3f$eb43
 field_x.reflect_item_window_scroll:
 	lda #$c0
 	sta <$b4
-	.ifdef DEFERRED_RENDERING
+	.ifdef _FEATURE_DEFERRED_RENDERING
 		;;note:
 		;;	the item window could be rendered with border
 		;;	and doing so does not impact the resulting screen.
@@ -300,7 +238,7 @@ field.reflect_window_scroll:	;;$3f$eb61
 	FIX_ADDR_ON_CALLER $3d,$b624+1
 	FIX_ADDR_ON_CALLER $3d,$bc0f+1
 ;; ---
-	.ifdef DEFERRED_RENDERING
+	.ifdef _FEATURE_DEFERRED_RENDERING
 		;; as name entry window is solely rendered with this function,
 		;; it is required to default to be with border here, in order to render safaly.
 		jsr render_x.defer_window_text_with_border
@@ -916,7 +854,7 @@ field.sync_ppu_scroll:
 	rts
 	;VERIFY_PC $edf6
 ;------------------------------------------------------------------------------------------------------
-	.ifndef DEFERRED_RENDERING
+	.ifndef _FEATURE_DEFERRED_RENDERING
 	;INIT_PATCH $3f,$edf6,$ee65
 ;;$3f:edf6 field::getWindowTilesForTop
 ;;callers:
@@ -985,7 +923,7 @@ field.get_window_bottom_tiles:	;ed3b
 	bne field_x.get_window_tiles
 	.endif	;.ifdef _FEATURE_BORDER_LOADER
 
-	.endif	;.ifndef DEFERRED_RENDERING
+	.endif	;.ifndef _FEATURE_DEFERRED_RENDERING
 
 field_x.window_parts:
 	db $f7, $f8, $f9
@@ -1095,12 +1033,12 @@ field.load_and_draw_string:	;;$ee9a
 	FALL_THROUGH_TO render_x.defer_window_text_with_border
 ;------------------------------------------------------------------------------------------------------
 render_x.defer_window_text_with_border:
-	.ifdef DEFERRED_RENDERING
+	.ifdef _FEATURE_DEFERRED_RENDERING
 	;; request deferred rendering with borders.
 	;ldx #(render_x.NO_BORDERS|render_x.PENDING_INIT|render_x.RENDER_RUNNING)
 	ldx #(render_x.PENDING_INIT|render_x.RENDER_RUNNING|render_x.NEED_TOP_BORDER|render_x.NEED_BOTTOM_BORDER)
 	jsr render_x.setup_deferred_rendering
-	.endif	;DEFERRED_RENDERING
+	.endif	;_FEATURE_DEFERRED_RENDERING
 ;------------------------------------------------------------------------------------------------------
 	;INIT_PATCH $3f,$eec0,$eefa
 ;;# $3f:eec0 field.draw_string_in_window
@@ -1183,4 +1121,4 @@ field.window.driver.BULK_PATCH_FREE_BEGIN:
 	.endif	;FAST_FIELD_WINDOW
 
 ;======================================================================================================
-	RESTORE_PC ff3_field_window_begin
+	;RESTORE_PC ff3_field_window_driver_begin

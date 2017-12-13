@@ -5,14 +5,7 @@
 ;   re-implementation of fatty choccobo's (aka 'stomach') menu.
 ;
 ;==================================================================================================
-
-    .ifdef FAST_FIELD_WINDOW
-        .ifndef STOMACH_AMOUNT_1BYTE
-            .fail
-        .endif
-    .endif
-
-    .ifdef STOMACH_AMOUNT_1BYTE
+    .ifdef _FEATURE_STOMACH_AMOUNT_1BYTE
 STOMACH_TEXT_BUFFER = $7400   ;;original = $7300
     ;; 1E:B432:A9 73     LDA #$73
         .bank $3d
@@ -80,7 +73,7 @@ menu.stomach.build_content_text:
         sta [.p_text_buffer],y
         iny
 
-    .ifdef STOMACH_AMOUNT_1BYTE
+    .ifdef _FEATURE_STOMACH_AMOUNT_1BYTE
         lda #CHAR_X.ITEM_AMOUNT_IN_STOMACH_1BYTE
         sta [.p_text_buffer],y
         iny
@@ -92,7 +85,7 @@ menu.stomach.build_content_text:
         txa
         sta [.p_text_buffer],y
         iny
-    .endif  ;;STOMACH_AMOUNT_1BYTE
+    .endif  ;;_FEATURE_STOMACH_AMOUNT_1BYTE
 
         txa
         inx
@@ -102,11 +95,11 @@ menu.stomach.build_content_text:
         ;;item will be at right column.
         lda #CHAR.EOL
         sta [.p_text_buffer],y
-    .ifdef STOMACH_AMOUNT_1BYTE
+    .ifdef _FEATURE_STOMACH_AMOUNT_1BYTE
         ADD16by8 <.p_text_buffer, #7
     .else
         ADD16by8 <.p_text_buffer, #9
-    .endif  ;;STOMACH_AMOUNT_1BYTE
+    .endif  ;;_FEATURE_STOMACH_AMOUNT_1BYTE
         ldy #0
         beq .build_text_lines
 .terminate:

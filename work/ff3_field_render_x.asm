@@ -10,10 +10,17 @@
     .ifndef textd.BULK_PATCH_FREE_BEGIN
         .fail
     .endif
+
+    
+    .ifndef _FEATURE_STOMACH_AMOUNT_1BYTE
+		;;	it is needed to move and free up the buffer at $7300
+		;;	in order for the logics implemente in this file to work correctly.
+		;;	these logics rely on that buffer is stable across rendering.
+    	.fail
+    .endif
+    
     ;RESTORE_PC textd.BULK_PATCH_FREE_BEGIN
 	RESTORE_PC field.window.renderer.FREE_BEGIN
-
-render_x.NMI_LOCALS_COUNT = $8
 
 render_x.RENDERER_BEGIN:
 ;--------------------------------------------------------------------------------------------------
