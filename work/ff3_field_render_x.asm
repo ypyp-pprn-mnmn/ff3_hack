@@ -33,7 +33,6 @@ render_x.RENDERER_BEGIN:
 ;;	will see undefined value and will eventually crash.
 ;;
 render_x.deferred_renderer:
-.addr_index = $83
 ;; preserve general-purpose registers.
 	pha
 	txa
@@ -43,7 +42,7 @@ render_x.deferred_renderer:
 ;; dummy read to ensure unset nmi flag.
 	lda $2002	
 ;; preserve local variables.
-	ldx #(render_x.NMI_LOCALS_COUNT-1)
+	ldx #(render_x.nmi.LOCALS_COUNT-1)
 .push_variables:
 		lda <$80,x
 		pha
@@ -51,7 +50,7 @@ render_x.deferred_renderer:
 		bpl .push_variables
 ;; do rendering.
 	lda #0
-	sta <.addr_index
+	sta <render_x.nmi.sequence
 	jsr render_x.render_deferred_contents
 	;; as calling sound driver need change of program bank,
 	;; we can't safely call the driver from within nmi handler,
@@ -67,10 +66,10 @@ render_x.deferred_renderer:
 	;jsr field.restore_banks
 
 ;; restore local variables.
-	ldx #~(render_x.NMI_LOCALS_COUNT-1)
+	ldx #~(render_x.nmi.LOCALS_COUNT-1)
 .pop_variables:
 		pla
-		sta <$80+(render_x.NMI_LOCALS_COUNT),x
+		sta <$80+(render_x.nmi.LOCALS_COUNT),x
 		inx
 		bne .pop_variables
 	pla
@@ -79,10 +78,11 @@ render_x.deferred_renderer:
 	tax
 	pla
 	rti
-
+;--------------------------------------------------------------------------------------------------
+;; A = scratch.
+;; X = buffer offset.
+;; Y = sequence index.
 render_x.upload_loop:
-.eol_offset = $82
-.p_jump = $84
 	lda render_x.q.vram.buffer-$10,x
 	sta $2007
 	lda render_x.q.vram.buffer-$0f,x
@@ -117,65 +117,86 @@ render_x.upload_loop:
 	sta $2007
 
 ;; overhead = 13-14 cpu cycles
+;; A = scratch.
+;; X = buffer offset.
+;; Y = render target index.
 .next:
 	txa
 	clc
 	adc #$10
 	tax
-	cpx <.eol_offset
+	cpx <render_x.nmi.eol_offset
 	bne render_x.upload_loop
 	;beq render_x.upload_next
 
 ;; overhead = 32 cpu cycles.
+;; A = scratch.
+;; X = buffer offset.
+;; Y = render target index.
 render_x.upload_next:
 	DECLARE_WINDOW_VARIABLES
-	pla
-;	bit render_x.q.init_flags
-;	bmi .skip_borders
-;	clc
-;	adc #$2
-;.skip_borders:
+	pla	;;bytes have been uploaded.
 	clc
-;	adc <.window_width
-	adc render_x.q.stride
-	;cpx render_x.q.available_bytes
+	adc render_x.q.stride,y
 	cmp render_x.q.available_bytes
 	bcc render_x.render_deferred_contents
 
+;; out:
+;;	A: #0
 render_x.reset_states:
 	lda #render_x.FULL_OF_FUEL
 	sta render_x.q.fuel
 	lda #0
-	sta render_x.q.addr_index
-	sta render_x.q.available_bytes	;;this frees up a waiting thread
+	ldy #(render_x.nmi.STATE_VARIABLES_END - render_x.nmi.STATE_VARIABLES_BASE)
+.reset:
+		sta render_x.nmi.STATE_VARIABLES_BASE-1,y
+		;sta render_x.q.available_bytes	;;this frees up a waiting thread
+		dey
+		bne .reset
 	rts
 
 ;; overhead = 46 cpu cycles.
+;; in:
+;;	A = bytes uploaded, as loop counter
 render_x.render_deferred_contents:
 	DECLARE_WINDOW_VARIABLES
-.eol_offset = $82
-.p_jump = $84
-.addr_index = $83
 	pha								;;	3
-	ldy <.addr_index				;;	6
+	;; setup vram address.
+	ldy <render_x.nmi.sequence		;;	6
 	lda render_x.q.vram.high,y		;;	10
 	sta $2006						;;	14
 	lda render_x.q.vram.low,y		;;	18
 	sta $2006						;;	22
-	inc <.addr_index				;;	27
-	pla								;;	31
-	pha								;;	34
-	clc								;;	36
-	adc render_x.q.stride			;;
+	inc <render_x.nmi.sequence		;;	27
+	;; determine the target.
+	lsr render_x.q.is_2nd+1			;;	33
+	ror render_x.q.is_2nd			;;	39
+	rol A							;;	41
+	lsr render_x.q.is_attr+1		;;	47
+	ror render_x.q.is_attr			;;	53
+	rol A							;;	55
+	and #3							;;	57
+	tay								;;	59
+	pla								;;	63
+	
+	pha								;;	66
+	clc								;;	68
+	adc render_x.q.stride,y			;;	72
 	clc
 	adc #($10)
-	sta <.eol_offset
+	sta <render_x.nmi.eol_offset
 	pla
 	pha
 	clc
-	adc render_x.q.1st.nt.buffer_bias
+	adc render_x.q.buffer_bias,y
 	tax
-	jmp [render_x.q.1st.nt.uploader_addr]
+	;; do indirect jump.
+	lda render_x.q.start_addr.high,y
+	pha
+	lda render_x.q.start_addr.low,y
+	pha
+	rts	;;indirect jump
+	;jmp [render_x.q.1st.nt.uploader_addr]
 ;--------------------------------------------------------------------------------------------------
 render_x.remove_nmi_handler:
 	pha
@@ -237,15 +258,29 @@ render_x.await_complete_rendering:
 render_x.begin_queueing:
 	DECLARE_WINDOW_VARIABLES
 ;; --- check if there enough space remaining in the buffer.
-	lda render_x.q.stride
-	jsr render_x.ensure_buffer_available
-;; --- attr check.
-	jsr render_x.queue_attributes
-;; --- queue the addr to render.
 	ldx <.window_left
 	bit render_x.q.init_flags
 	bmi .skip_borders
 		dex
+	txa
+	pha
+	ldx render_x.q.stride+0	;;1st bg
+	jsr .push_addrs
+	pla
+	;; A <-- windowleft
+	clc
+	adc render_x.q.stride+0	;;1st bg
+	and #$3f
+	ldx render_x.q.stride+2	;;2nd bg
+.push_addrs:
+	pha
+	txa
+	jsr render_x.ensure_buffer_available
+;; --- attr check.
+	jsr render_x.queue_attributes
+;; --- queue the addr to render.
+	pla
+	tax
 .skip_borders:
 	FALL_THROUGH_TO render_x.queue_vram_addr
 
@@ -430,17 +465,13 @@ render_x.init_as_no_borders:
 ;; in X: init flags
 render_x.setup_deferred_rendering:
 	DECLARE_WINDOW_VARIABLES
-.p_jump = $80
 ;; init deferred drawing.
 	pha
-	;bit render_x.q.init_flags
+
 	lda render_x.q.init_flags
 	asl A
 	bmi	.done	;; already requested init
-	;bpl .first_init
-		;; HACK: a quick dirty fix for border.
-		;; if we received second init request, don't overwrite flags but do recalc metrics.
-		;ldx render_x.q.init_flags
+
 .first_init:
 	asl A
 	bpl .store_init_flags
@@ -451,34 +482,66 @@ render_x.setup_deferred_rendering:
 	;	ora #(render_x.NEED_SPRITE_DMA)
 .store_init_flags:
 	stx render_x.q.init_flags
+	
+	jsr render_x.reset_states
 
-	lda <.window_left
-	pha
-	tay
-
+	ldy <.window_left
 	lda <.window_width
 	pha
+
 	tax
 	bit render_x.q.init_flags
 	bmi .no_borders
 		inx
 		inx
 		dey
-		sty <.window_left
 .no_borders:
 	stx <.window_width
-	stx render_x.q.stride
-	jsr field_x.calc_window_width_in_bg
-	sta render_x.q.1st.nt.stride
-;;
-	lda <.window_width
+	tya
+	jsr field_x.calc_available_width_in_bg
+	;; A = width 1st
+	ldy #0
+	pha
+	jsr render_x.precalc_params
+	pla	;width 1st
+	eor #$ff
+	sec
+	adc <.window_width
+	;; A = width 2nd
+	jsr render_x.precalc_params
+	
+	pla
+	sta <.window_width
+.done:
+	pla	;;initial A
+	rts
+
+;; in A = bytes needed
+;; in,out Y = sequence index
+render_x.precalc_params:
+	DECLARE_WINDOW_VARIABLES
+.p_jump = $80
+
+	pha
+	;; calc params for nametable.
+	;; even-numberd index (here stored in Y) represents nametable.
+	jsr .calc_and_store
+	pla
+	;; calc params for attributes.
+	;; odd-numberd index (here stored in Y) represents attrtable.
+	clc
+	adc #1
+	lsr A
+	;; fall through.
+.calc_and_store:
+	sta render_x.q.stride,y
 	pha
 	clc
 	and #$f
 	bne .align
 		ora #$10
 .align:
-	sta render_x.q.1st.nt.buffer_bias
+	sta render_x.q.buffer_bias,y
 
 	pla
 	eor #$0f
@@ -489,49 +552,18 @@ render_x.setup_deferred_rendering:
 	sta <.p_jump	;;x2
 	asl A
 	adc <.p_jump	;;x2+x4
-	adc #LOW(render_x.upload_loop)
-	sta render_x.q.1st.nt.uploader_addr
-
-	;lda #0
-	;sta render_x.q.available_bytes
-	;sta render_x.q.addr_index
-	jsr render_x.reset_states
-	adc #HIGH(render_x.upload_loop)
-	sta render_x.q.1st.nt.uploader_addr+1
-
-
-	pla
-	sta <.window_width
-	pla
-	sta <.window_left
-.done:
-	pla	;;initial A
+	adc #LOW(render_x.upload_loop-1)
+	sta render_x.q.start_addr.low,y
+	lda #0
+	;;here A == 0
+	adc #HIGH(render_x.upload_loop-1)
+	sta render_x.q.start_addr.high,y
+	iny
 	rts
+
+
 
 ;==================================================================================================
-;in: A = offset Y, X = offset X
-;out: A = vram high, X = vram low
-field_x.map_coords_to_vram:
-;@see $3f:f40a setVramAddrForWindow
-.y_to_addr_low = $f4a1
-.y_to_addr_high = $f4c1
-	cmp #30
-	bcc .no_wrap_y
-		sbc #30	;here carry is always set	
-	.no_wrap_y:
-	tay
-	txa
-	and #$3f	;wrap around
-	cmp #$20	;check which BG X falls in
-	and #$1f	;turn into offset within that BG
-	ora .y_to_addr_low,y
-	tax
-	lda .y_to_addr_high,y
-	bcc .bg_1st
-.bg_2nd:
-		ora #4
-.bg_1st:
-	rts
 
 field_x.fill_to_bottom.loop:
 .lines_drawn = $1f
