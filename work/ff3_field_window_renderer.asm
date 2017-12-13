@@ -388,6 +388,44 @@ field_x.shrink_window_metrics:
 	dec <.window_height
 	dec <.window_height
 	rts
+
+;--------------------------------------------------------------------------------------------------
+;render_x.init:
+;	lda #0
+;	sta render_x.q.init_flags
+;	rts
+;;make sure the init flag have 'clean' value before use
+;;1F:E1DC:A9 00     LDA #$00
+;;1F:E1DE:20 EC E7  JSR floor.load_data
+;;1F:E1E1:A9 3A     LDA #$3A
+render_x.on_floor_enter:
+	FIX_ADDR_ON_CALLER $3f,$e1de+1
+    ;a = #0;
+    ;dungeon::loadFloor();   //$e7ec();
+	;;assume A == 0
+	sta render_x.q.init_flags
+	jmp floor.load_data	;;$e7ec
+
+;;1E:A534:A9 00     LDA #$00
+;;1E:A536:85 25     STA $0025 = #$00
+;;1E:A538:8D 01 20  STA PPU_MASK = #$00
+;;1E:A53B:8D F0 79  STA $79F0 = #$00
+;;1E:A53E:8D F0 7A  STA $7AF0 = #$00
+;;1E:A541:20 06 DD  JSR $DD06
+render_x.on_menu_enter:
+	FIX_ADDR_ON_CALLER $3d,$a541+1
+	;;assume A == 0
+	sta render_x.q.init_flags
+	jmp $dd06	;;? $dfd6() + call sounddriver + $dff8()
+
+;;1F:C08E:A9 00     LDA #$00
+;;1F:C090:20 9E C4  JSR $C49E
+render_x.on_opening_enter:
+	FIX_ADDR_ON_CALLER $3e,$c090+1
+	;;assume A == 0
+	sta render_x.q.init_flags
+	jmp $C49E	;;some ppu initialiation
+	
 	.endif ;_FEATURE_DEFERRED_RENDERING
 ;--------------------------------------------------------------------------------------------------
 	;VERIFY_PC $f6aa

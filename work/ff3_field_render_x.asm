@@ -129,16 +129,16 @@ render_x.upload_loop:
 	bne render_x.upload_loop
 	;beq render_x.upload_next
 
-;; overhead = 32 cpu cycles.
+;; overhead = 16-17 cpu cycles.
 ;; A = scratch.
 ;; X = buffer offset.
 ;; Y = render target index.
 render_x.upload_next:
 	DECLARE_WINDOW_VARIABLES
-	pla	;;bytes have been uploaded.
-	clc
-	adc render_x.q.stride,y
-	cmp render_x.q.available_bytes
+	pla	;;bytes have been uploaded.		;;	4
+	clc									;;	6
+	adc render_x.q.stride,y				;;	10
+	cmp render_x.q.available_bytes		;;	14
 	bcc render_x.render_deferred_contents
 
 ;; out:
@@ -155,7 +155,7 @@ render_x.reset_states:
 		bne .reset
 	rts
 
-;; overhead = 46 cpu cycles.
+;; overhead = 89 cpu cycles.
 ;; in:
 ;;	A = bytes uploaded, as loop counter
 render_x.render_deferred_contents:
@@ -169,13 +169,6 @@ render_x.render_deferred_contents:
 	sta $2006						;;	22
 	inc <render_x.nmi.sequence		;;	27
 	;; determine the target.
-	;lsr render_x.q.is_2nd+1			;;	33
-	;ror render_x.q.is_2nd			;;	39
-	;rol A							;;	41
-	;lsr render_x.q.is_attr+1		;;	47
-	;ror render_x.q.is_attr			;;	53
-	;rol A							;;	55
-	;and #3							;;	57
 	lda render_x.q.target_index,y	;;	31
 	tay								;;	33
 	pla								;;	37
@@ -192,11 +185,11 @@ render_x.render_deferred_contents:
 	adc render_x.q.buffer_bias,y	;;	29
 	tax								;;	31
 	;; do indirect jump.
-	lda render_x.q.start_addr.high,y
-	pha
-	lda render_x.q.start_addr.low,y
-	pha
-	rts	;;indirect jump
+	lda render_x.q.start_addr.high,y	;;	4
+	pha									;;	7
+	lda render_x.q.start_addr.low,y		;;	11
+	pha									;;	15
+	rts	;;indirect jump					;;	21
 	;jmp [render_x.q.1st.nt.uploader_addr]
 ;--------------------------------------------------------------------------------------------------
 render_x.remove_nmi_handler:
@@ -254,71 +247,44 @@ render_x.await_complete_rendering:
 	bne .wait_nmi
 	;; FIXME: this is a temporary measure to workaround PRG bank mismatch on nmi
 	jmp field_x.advance_frame_no_wait	;;inc <.frame_counter + call sound driver
-
 ;--------------------------------------------------------------------------------------------------
-render_x.begin_queueing:
+render_x.queue_content:
 	DECLARE_WINDOW_VARIABLES
-;; --- check if there enough space remaining in the buffer.
-	ldx <.window_left
-	bit render_x.q.init_flags
-	bmi .skip_borders
-		dex
-.skip_borders:
-	txa
-
-	pha
-	ldy #0
-	ldx render_x.q.stride+0	;;1st bg
-	jsr .push_addrs
-	pla
-	
-	;; A <-- windowleft
+.p_source = $80
 	clc
-	adc render_x.q.stride+0	;;1st bg
-	and #$3f
-	ldy #2
-	ldx render_x.q.stride+2	;;2nd bg
+	adc #$80
+	sta <.p_source
+	lda #$07
+	sta <.p_source+1
 
-;; in:
-;;	A: left
-;;	X: width
-;;	Y: target index
-;;	P: result of bit test against the width
-.push_addrs:
-;.temp_target = $83
-	beq render_x.rts_2
-	pha
-	
-	tya
-	ldy render_x.q.addr_index
-	sta render_x.q.target_index,y
+;; --- build final contents onto temporary buffer.
+	ldy #0
+	ldx #0
+	bit render_x.q.init_flags
+	php
+	bmi .put_middles
+		lda #$fa
+		jsr render_x.build_temp_buffer
 
-	txa
-	jsr render_x.ensure_buffer_available
-;; --- attr check.
-	jsr render_x.queue_attributes
-;; --- queue the addr to render.
-	pla
-	tax
+.put_middles:
+		lda [.p_source],y
+		jsr render_x.build_temp_buffer
+		iny
+		cpy <.window_width
+		bne .put_middles
 
-	FALL_THROUGH_TO render_x.queue_vram_addr
-
-;; X = window left
-;; $80 = target index
-render_x.queue_vram_addr:
-.temp_target = $83
-	DECLARE_WINDOW_VARIABLES
-	lda <.offset_y
-	jsr field_x.map_coords_to_vram
-	ldy render_x.q.addr_index
-	sta render_x.q.vram.high,y
-	txa
-	sta render_x.q.vram.low,y
-	;sta $2006
-	;stx $2006
-	inc render_x.q.addr_index
+	plp
+	bmi .do_queue
+		lda #$fb
+		jsr render_x.build_temp_buffer
+	;FALL_THROUGH_TO render_x.queue_bytes_from_buffer
+.do_queue:
+	jsr render_x.queue_bytes_from_buffer
+	;; --- 
+	inc <.offset_y	;;originally 'field.upload_window_content's role
+	inc <.lines_drawn	;;originally caller's responsibility, it remains true but for bottom border we need prospective value
 	rts
-
+;--------------------------------------------------------------------------------------------------
 render_x.queue_top_border:
 	DECLARE_WINDOW_VARIABLES
 	ldy <.window_top
@@ -329,7 +295,7 @@ render_x.queue_top_border:
 	ldy <.window_top
 	sty <.offset_y
 	rts
-
+;--------------------------------------------------------------------------------------------------
 render_x.queue_bottom_border:
 	DECLARE_WINDOW_VARIABLES
 	lda <.window_top
@@ -337,7 +303,7 @@ render_x.queue_bottom_border:
 	adc <.window_height
 	ldx #8
 	FALL_THROUGH_TO render_x.queue_border
-
+;--------------------------------------------------------------------------------------------------
 render_x.queue_border:
 	DECLARE_WINDOW_VARIABLES
 	sta <.offset_y
@@ -350,70 +316,118 @@ render_x.queue_border:
 		dey
 		bne .get_parts
 
-	jsr render_x.begin_queueing
+	;jsr render_x.begin_queueing
 ;; --- queue tiles.
 	
-	ldx render_x.q.available_bytes
+	;ldx render_x.q.available_bytes
+	ldx #0
 	pla
-	jsr render_x.queue_byte
+	jsr render_x.build_temp_buffer
 
 	pla
 	ldy <.window_width
 .put_middles:
-		jsr render_x.queue_byte
+		jsr render_x.build_temp_buffer
 		dey
 		bne .put_middles
 	pla
 	;jmp render_x.queue_byte
-	FALL_THROUGH_TO render_x.queue_byte
-
-render_x.queue_byte:
-	sta render_x.q.vram.buffer,x
-	inx
-	stx render_x.q.available_bytes
+	jsr render_x.build_temp_buffer
+	;jmp render_x.queue_bytes_from_buffer
+;--------------------------------------------------------------------------------------------------
+render_x.queue_bytes_from_buffer:
+	DECLARE_WINDOW_VARIABLES
+.source_index = $85
+	ldx <.window_left
+	bit render_x.q.init_flags
+	bmi .queue_bytes
+		dex
+.queue_bytes:
+	txa
+	pha
+	tax
+	ldy #0
+	;sty render_x.q.source_index
+	sty <.source_index
+	;;	Y: target index
+	;;	X: left
+	jsr render_x.begin_queueing
+	pla
 	
+	;; A <-- windowleft
+	clc
+	adc render_x.q.stride+0	;;1st bg
+	and #$3f
+	tax
+	ldy #2
+	;jmp render_x.begin_queueing
+
+;--------------------------------------------------------------------------------------------------
+render_x.begin_queueing:
+	DECLARE_WINDOW_VARIABLES
+.source_index = $85
+;; in:
+;;	Y: target index
+;;	X: left
+	lda render_x.q.stride,y
+	beq render_x.rts_2
+	
+	pha	;;width
+	tya
+	pha	;; target index.
+	txa
+	pha ;;left
+;; --- check if there enough space remaining in the buffer.
+	lda render_x.q.stride,y
+	jsr render_x.ensure_buffer_available	;;X & Y are preserved.
+;; --- queue the addr to render.
+	pla	;;left
+	tax
+
+	lda <.offset_y
+	;; X = window left
+	jsr field_x.map_coords_to_vram
+	ldy render_x.q.addr_index
+	sta render_x.q.vram.high,y
+	txa
+	sta render_x.q.vram.low,y
+	;sta $2006
+	;stx $2006
+	pla ;; target index
+;render_x.queue_target_index:
+	sta render_x.q.target_index,y
+	inc render_x.q.addr_index
+
+	pla	;;width
+	clc
+	;adc render_x.q.source_index
+	adc <.source_index
+	ldy <.source_index
+	sta <.source_index
+	;ldy render_x.q.source_index
+render_x.queue_bytes:
+.source_index = $85
+.temp_buffer = $7d0
+	ldx render_x.q.available_bytes
+.loop:
+		lda .temp_buffer,y
+		sta render_x.q.vram.buffer,x
+		inx
+		iny
+		cpy <.source_index
+		bne .loop
+	stx render_x.q.available_bytes
+	;sty render_x.q.source_index
 render_x.rts_2:
 	rts
 
-render_x.queue_content:
-	DECLARE_WINDOW_VARIABLES
-.p_source = $80
-	pha
-	jsr render_x.begin_queueing
+render_x.build_temp_buffer:
+.temp_buffer = $7d0
+	sta .temp_buffer,x
+	inx
+	rts
 
-	pla
-	clc
-	adc #$80
-	sta <.p_source
-	lda #$07
-	sta <.p_source+1
-;; --- 
-	inc <.offset_y	;;originally 'field.upload_window_content's role
-	inc <.lines_drawn	;;originally caller's responsibility, it remains true but for bottom border we need prospective value
-;; --- queue tiles.
-	ldx render_x.q.available_bytes
-
-
-	ldy #0
-	bit render_x.q.init_flags
-	php
-	bmi .put_middles
-		lda #$fa
-		jsr render_x.queue_byte
-
-.put_middles:
-		lda [.p_source],y
-		jsr render_x.queue_byte
-		iny
-		cpy <.window_width
-		bne .put_middles
-
-
-	plp
-	bmi render_x.rts_2
-		lda #$fb
-		jmp render_x.queue_byte
-
+;--------------------------------------------------------------------------------------------------
 ;; on entry, offset_y will have valid value.
 render_x.queue_attributes:
 	DECLARE_WINDOW_VARIABLES
@@ -429,43 +443,6 @@ render_x.queue_attributes:
 			;field.bg_attr_table_cache
 .done:
 	rts
-
-;--------------------------------------------------------------------------------------------------
-;render_x.init:
-;	lda #0
-;	sta render_x.q.init_flags
-;	rts
-;;make sure the init flag have 'clean' value before use
-;;1F:E1DC:A9 00     LDA #$00
-;;1F:E1DE:20 EC E7  JSR floor.load_data
-;;1F:E1E1:A9 3A     LDA #$3A
-render_x.on_floor_enter:
-	FIX_ADDR_ON_CALLER $3f,$e1de+1
-    ;a = #0;
-    ;dungeon::loadFloor();   //$e7ec();
-	;;assume A == 0
-	sta render_x.q.init_flags
-	jmp floor.load_data	;;$e7ec
-
-;;1E:A534:A9 00     LDA #$00
-;;1E:A536:85 25     STA $0025 = #$00
-;;1E:A538:8D 01 20  STA PPU_MASK = #$00
-;;1E:A53B:8D F0 79  STA $79F0 = #$00
-;;1E:A53E:8D F0 7A  STA $7AF0 = #$00
-;;1E:A541:20 06 DD  JSR $DD06
-render_x.on_menu_enter:
-	FIX_ADDR_ON_CALLER $3d,$a541+1
-	;;assume A == 0
-	sta render_x.q.init_flags
-	jmp $dd06	;;? $dfd6() + call sounddriver + $dff8()
-
-;;1F:C08E:A9 00     LDA #$00
-;;1F:C090:20 9E C4  JSR $C49E
-render_x.on_opening_enter:
-	FIX_ADDR_ON_CALLER $3e,$c090+1
-	;;assume A == 0
-	sta render_x.q.init_flags
-	jmp $C49E	;;some ppu initialiation
 
 ;--------------------------------------------------------------------------------------------------
 render_x.finalize:
