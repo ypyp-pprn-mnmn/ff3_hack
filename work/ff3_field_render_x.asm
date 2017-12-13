@@ -142,6 +142,9 @@ render_x.upload_next:
 	cmp render_x.q.available_bytes
 	bcc render_x.render_deferred_contents
 
+render_x.reset_states:
+	lda #render_x.FULL_OF_FUEL
+	sta render_x.q.fuel
 	lda #0
 	sta render_x.q.addr_index
 	sta render_x.q.available_bytes	;;this frees up a waiting thread
@@ -173,27 +176,83 @@ render_x.render_deferred_contents:
 	adc render_x.q.1st.nt.buffer_bias
 	tax
 	jmp [render_x.q.1st.nt.uploader_addr]
-	
 ;--------------------------------------------------------------------------------------------------
+render_x.remove_nmi_handler:
+	pha
+	lda #$40	;RTI
+	sta nmi_handler_entry
+	pla
+	rts
+
+render_x.set_deferred_renderer:
+	jsr render_x.remove_nmi_handler
+	lda #HIGH(render_x.deferred_renderer)
+	sta nmi_handler_entry+2
+	lda #LOW(render_x.deferred_renderer)
+	sta nmi_handler_entry+1
+	lda #$4c	;JMP
+	sta nmi_handler_entry
+	rts
+;--------------------------------------------------------------------------------------------------
+;; in A: bytes to ensure
+render_x.ensure_buffer_available:
+	DECLARE_WINDOW_VARIABLES
+	jsr render_x.remove_nmi_handler	;; preserves A.
+
+	;lda render_x.q.available_bytes
+	;clc
+	;adc render_x.q.stride
+	;cmp #render_x.BUFFER_CAPACITY
+	;bcs render_x.await_complete_rendering
+
+	;lda render_x.q.addr_index
+	;cmp #render_x.ADDR_CAPACITY	;;rendering up to X lines at once (or exceed the nmi duration)
+	;bcc render_x.rts_1
+	clc
+	adc #render_x.FUEL_FOR_OVERHEAD
+	eor #$ff
+	tax
+	adc render_x.q.fuel
+	bcs .available	;;ok. carry set = adding negative value resulted in overflow.
+		txa
+		pha
+		jsr render_x.await_complete_rendering
+		pla
+		clc
+		adc render_x.q.fuel
+.available:
+	sta render_x.q.fuel
+render_x.rts_1:	
+	rts
+
+render_x.await_complete_rendering:
+	jsr render_x.set_deferred_renderer
+.wait_nmi:
+	lda render_x.q.available_bytes
+	bne .wait_nmi
+	;; FIXME: this is a temporary measure to workaround PRG bank mismatch on nmi
+	jmp field_x.advance_frame_no_wait	;;inc <.frame_counter + call sound driver
 
 ;--------------------------------------------------------------------------------------------------
 render_x.begin_queueing:
+	DECLARE_WINDOW_VARIABLES
 ;; --- check if there enough space remaining in the buffer.
+	lda render_x.q.stride
 	jsr render_x.ensure_buffer_available
 ;; --- attr check.
 	jsr render_x.queue_attributes
 ;; --- queue the addr to render.
-	;jmp render_x.queue_vram_addr	
-	FALL_THROUGH_TO render_x.queue_vram_addr
-
-render_x.queue_vram_addr:
-	DECLARE_WINDOW_VARIABLES
-	lda <.offset_y
 	ldx <.window_left
 	bit render_x.q.init_flags
 	bmi .skip_borders
 		dex
-.skip_borders
+.skip_borders:
+	FALL_THROUGH_TO render_x.queue_vram_addr
+
+;; X = window left
+render_x.queue_vram_addr:
+	DECLARE_WINDOW_VARIABLES
+	lda <.offset_y
 	jsr field_x.map_coords_to_vram
 	ldy render_x.q.addr_index
 	sta render_x.q.vram.high,y
@@ -314,6 +373,7 @@ render_x.queue_attributes:
 			;field.bg_attr_table_cache
 .done:
 	rts
+
 ;--------------------------------------------------------------------------------------------------
 ;render_x.init:
 ;	lda #0
@@ -432,11 +492,13 @@ render_x.setup_deferred_rendering:
 	adc #LOW(render_x.upload_loop)
 	sta render_x.q.1st.nt.uploader_addr
 
-	lda #0
-	sta render_x.q.available_bytes
-	sta render_x.q.addr_index
+	;lda #0
+	;sta render_x.q.available_bytes
+	;sta render_x.q.addr_index
+	jsr render_x.reset_states
 	adc #HIGH(render_x.upload_loop)
 	sta render_x.q.1st.nt.uploader_addr+1
+
 
 	pla
 	sta <.window_width
@@ -444,45 +506,6 @@ render_x.setup_deferred_rendering:
 	sta <.window_left
 .done:
 	pla	;;initial A
-	rts
-;--------------------------------------------------------------------------------------------------
-render_x.remove_nmi_handler:
-	lda #$40	;RTI
-	sta nmi_handler_entry
-	rts
-
-render_x.set_deferred_renderer:
-	jsr render_x.remove_nmi_handler
-	lda #HIGH(render_x.deferred_renderer)
-	sta nmi_handler_entry+2
-	lda #LOW(render_x.deferred_renderer)
-	sta nmi_handler_entry+1
-	lda #$4c	;JMP
-	sta nmi_handler_entry
-	rts
-
-;--------------------------------------------------------------------------------------------------
-render_x.ensure_buffer_available:
-	DECLARE_WINDOW_VARIABLES
-	jsr render_x.remove_nmi_handler
-	lda render_x.q.available_bytes
-	clc
-	adc render_x.q.stride
-	cmp #render_x.BUFFER_CAPACITY
-	bcs render_x.await_complete_rendering
-
-	lda render_x.q.addr_index
-	cmp #render_x.ADDR_CAPACITY	;;rendering up to X lines at once (or exceed the nmi duration)
-	bcc render_x.rts_1
-
-render_x.await_complete_rendering:
-		jsr render_x.set_deferred_renderer
-.wait_nmi:
-		lda render_x.q.available_bytes
-		bne .wait_nmi
-		;; FIXME: this is a temporary measure to workaround PRG bank mismatch on nmi
-		jsr field_x.advance_frame_no_wait	;;inc <.frame_counter + call sound driver
-render_x.rts_1:
 	rts
 
 ;==================================================================================================
