@@ -13,9 +13,9 @@
 
     
     .ifndef _FEATURE_STOMACH_AMOUNT_1BYTE
-		;;	it is needed to move and free up the buffer at $7300
-		;;	in order for the logics implemente in this file to work correctly.
-		;;	these logics rely on that buffer is stable across rendering.
+		;;	it is needed to move and free up the buffer at $7300-$73ff,
+		;;	in order for the logics implemented in this file to work correctly.
+		;;	these logics rely on that buffer being stable across rendering.
     	.fail
     .endif
     
@@ -80,53 +80,6 @@ render_x.deferred_renderer:
 	pla
 	rti
 
-render_x.render_deferred_contents:
-	DECLARE_WINDOW_VARIABLES
-.eol_offset = $82
-.p_jump = $84
-.addr_index = $83
-	pha
-	ldy <.addr_index
-	lda render_x.q.vram.high,y
-	sta $2006
-	lda render_x.q.vram.low,y
-	sta $2006
-	inc <.addr_index
-	pla
-	pha
-	clc
-;	adc <.window_width
-	adc render_x.q.stride
-	clc
-	adc #($10)
-	sta <.eol_offset
-	pla
-	pha
-	clc
-	adc render_x.q.1st.nt.buffer_bias
-	tax
-	jmp [render_x.q.1st.nt.uploader_addr]
-
-render_x.upload_next:
-	DECLARE_WINDOW_VARIABLES
-	pla
-;	bit render_x.q.init_flags
-;	bmi .skip_borders
-;	clc
-;	adc #$2
-;.skip_borders:
-	clc
-;	adc <.window_width
-	adc render_x.q.stride
-	;cpx render_x.q.available_bytes
-	cmp render_x.q.available_bytes
-	bcc render_x.render_deferred_contents
-
-	lda #0
-	sta render_x.q.addr_index
-	sta render_x.q.available_bytes	;;this frees up a waiting thread
-	rts
-
 render_x.upload_loop:
 .eol_offset = $82
 .p_jump = $84
@@ -163,13 +116,64 @@ render_x.upload_loop:
 	lda render_x.q.vram.buffer-$01,x
 	sta $2007
 
+;; overhead = 13-14 cpu cycles
+.next:
 	txa
 	clc
 	adc #$10
 	tax
 	cpx <.eol_offset
 	bne render_x.upload_loop
-	beq render_x.upload_next
+	;beq render_x.upload_next
+
+;; overhead = 32 cpu cycles.
+render_x.upload_next:
+	DECLARE_WINDOW_VARIABLES
+	pla
+;	bit render_x.q.init_flags
+;	bmi .skip_borders
+;	clc
+;	adc #$2
+;.skip_borders:
+	clc
+;	adc <.window_width
+	adc render_x.q.stride
+	;cpx render_x.q.available_bytes
+	cmp render_x.q.available_bytes
+	bcc render_x.render_deferred_contents
+
+	lda #0
+	sta render_x.q.addr_index
+	sta render_x.q.available_bytes	;;this frees up a waiting thread
+	rts
+
+;; overhead = 46 cpu cycles.
+render_x.render_deferred_contents:
+	DECLARE_WINDOW_VARIABLES
+.eol_offset = $82
+.p_jump = $84
+.addr_index = $83
+	pha								;;	3
+	ldy <.addr_index				;;	6
+	lda render_x.q.vram.high,y		;;	10
+	sta $2006						;;	14
+	lda render_x.q.vram.low,y		;;	18
+	sta $2006						;;	22
+	inc <.addr_index				;;	27
+	pla								;;	31
+	pha								;;	34
+	clc								;;	36
+	adc render_x.q.stride			;;
+	clc
+	adc #($10)
+	sta <.eol_offset
+	pla
+	pha
+	clc
+	adc render_x.q.1st.nt.buffer_bias
+	tax
+	jmp [render_x.q.1st.nt.uploader_addr]
+	
 ;--------------------------------------------------------------------------------------------------
 
 ;--------------------------------------------------------------------------------------------------
