@@ -52,6 +52,14 @@ render_x.NEED_BOTTOM_BORDER = $01
 ;render_x.BUFFER_CAPACITY = $c0
 render_x.BUFFER_CAPACITY = $80
 render_x.ADDR_CAPACITY = $0c
+;; the fuel denotes available cpu cycles for rendering in
+;; units of which need to put 1 byte onto vram (= 8 cpu cycle in current impl.)
+;; as rendering occurred in NMI, there also need bookkeeping ops so that
+;; approximately the cycles below will be available for the rendering,
+;; at the begininng of each NMI.
+;;	18 scanlines x 113.6 cpu cycles (= 341 ppu cycles)
+render_x.FULL_OF_FUEL = (2044 >> 3)	;;2044 = 18 * 113.6, 2158 = 19 * 113.6.
+render_x.FUEL_FOR_OVERHEAD = ((92 >> 3) + 1)
 
 ;; buffer and addresses are shared among for name table and attributes.
 render_x.q.vram.buffer = $7320	;max 0xc0 bytes = 192 titles.
@@ -62,7 +70,7 @@ render_x.q.vram.low = $73f0
 render_x.q.init_flags = $7300	;;this address isn't touched by floor's logic
 render_x.q.available_bytes = $7301
 render_x.q.addr_index = $7302
-render_x.q.gas = $7303	;;if exhausted, then flush queue (await completion of pending rendering)
+render_x.q.fuel = $7303	;;if exhausted, then flush queue (await completion of pending rendering)
 render_x.q.stride = $7307
 
 ;; pre-calculated internal parameters.
