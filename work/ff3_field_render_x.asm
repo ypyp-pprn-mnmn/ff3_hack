@@ -1,5 +1,5 @@
 ; encoding: utf-8
-;   ff3_field_x_window_renderer.asm
+;   ff3_field_render_x.asm
 ;
 ; description:
 ;   implementation of optimzied renderer code
@@ -13,9 +13,9 @@
     ;RESTORE_PC textd.BULK_PATCH_FREE_BEGIN
 	RESTORE_PC field.window.renderer.FREE_BEGIN
 
-field_x.render.NMI_LOCALS = $8
+render_x.NMI_LOCALS_COUNT = $8
 
-field_x.RENDERER_BEGIN:
+render_x.RENDERER_BEGIN:
 ;--------------------------------------------------------------------------------------------------
 ;;
 ;; 	the nmi handler for deferred rendering.
@@ -25,7 +25,7 @@ field_x.RENDERER_BEGIN:
 ;;	if not, those functions not specially designed to variable volatility,
 ;;	will see undefined value and will eventually crash.
 ;;
-field_x.deferred_renderer:
+render_x.deferred_renderer:
 .addr_index = $83
 ;; preserve general-purpose registers.
 	pha
@@ -36,7 +36,7 @@ field_x.deferred_renderer:
 ;; dummy read to ensure unset nmi flag.
 	lda $2002	
 ;; preserve local variables.
-	ldx #(field_x.render.NMI_LOCALS-1)
+	ldx #(render_x.NMI_LOCALS_COUNT-1)
 .push_variables:
 		lda <$80,x
 		pha
@@ -45,7 +45,7 @@ field_x.deferred_renderer:
 ;; do rendering.
 	lda #0
 	sta <.addr_index
-	jsr field_x.render_deferred_contents
+	jsr render_x.render_deferred_contents
 	;; as calling sound driver need change of program bank,
 	;; we can't safely call the driver from within nmi handler,
 	;; unless under the situation which is known
@@ -53,17 +53,17 @@ field_x.deferred_renderer:
 	;inc <field.frame_counter
 	;jsr field_x.end_ppu_update	;sync_ppu_scroll+call_sound_driver
 	jsr field.sync_ppu_scroll
-	jsr field_x.remove_nmi_handler
+	jsr render_x.remove_nmi_handler
 
 	;; there is no reliable way (found so far) to preserve program bank.
 	;; so here can't safely restore banks.
 	;jsr field.restore_banks
 
 ;; restore local variables.
-	ldx #~(field_x.render.NMI_LOCALS-1)
+	ldx #~(render_x.NMI_LOCALS_COUNT-1)
 .pop_variables:
 		pla
-		sta <$80+(field_x.render.NMI_LOCALS),x
+		sta <$80+(render_x.NMI_LOCALS_COUNT),x
 		inx
 		bne .pop_variables
 	pla
@@ -73,92 +73,87 @@ field_x.deferred_renderer:
 	pla
 	rti
 
-field_x.render_deferred_contents:
+render_x.render_deferred_contents:
 	DECLARE_WINDOW_VARIABLES
 .eol_offset = $82
 .p_jump = $84
 .addr_index = $83
 	pha
 	ldy <.addr_index
-	lda field_x.render.vram.high,y
+	lda render_x.q.vram.high,y
 	sta $2006
-	lda field_x.render.vram.low,y
+	lda render_x.q.vram.low,y
 	sta $2006
 	inc <.addr_index
 	pla
 	pha
 	clc
 ;	adc <.window_width
-	adc field_x.render.stride
-;	bit field_x.render.init_flags
-;	bmi .skip_borders
-;		clc
-;		adc #($2)
-;.skip_borders:
+	adc render_x.q.stride
 	clc
 	adc #($10)
 	sta <.eol_offset
 	pla
 	pha
 	clc
-	adc field_x.render.1st.buffer_bias
+	adc render_x.q.1st.nt.buffer_bias
 	tax
-	jmp [field_x.render.1st.uploader_addr]
+	jmp [render_x.q.1st.nt.uploader_addr]
 
-field_x.render.upload_next:
+render_x.upload_next:
 	DECLARE_WINDOW_VARIABLES
 	pla
-;	bit field_x.render.init_flags
+;	bit render_x.q.init_flags
 ;	bmi .skip_borders
 ;	clc
 ;	adc #$2
 ;.skip_borders:
 	clc
 ;	adc <.window_width
-	adc field_x.render.stride
-	;cpx field_x.render.available_bytes
-	cmp field_x.render.available_bytes
-	bcc field_x.render_deferred_contents
+	adc render_x.q.stride
+	;cpx render_x.q.available_bytes
+	cmp render_x.q.available_bytes
+	bcc render_x.render_deferred_contents
 
 	lda #0
-	sta field_x.render.addr_index
-	sta field_x.render.available_bytes	;;this frees up a waiting thread
+	sta render_x.q.addr_index
+	sta render_x.q.available_bytes	;;this frees up a waiting thread
 	rts
 
-field_x.render.upload_loop:
+render_x.upload_loop:
 .eol_offset = $82
 .p_jump = $84
-	lda field_x.render.tile_buffer-$10,x
+	lda render_x.q.vram.buffer-$10,x
 	sta $2007
-	lda field_x.render.tile_buffer-$0f,x
+	lda render_x.q.vram.buffer-$0f,x
 	sta $2007
-	lda field_x.render.tile_buffer-$0e,x
+	lda render_x.q.vram.buffer-$0e,x
 	sta $2007
-	lda field_x.render.tile_buffer-$0d,x
+	lda render_x.q.vram.buffer-$0d,x
 	sta $2007
-	lda field_x.render.tile_buffer-$0c,x
+	lda render_x.q.vram.buffer-$0c,x
 	sta $2007
-	lda field_x.render.tile_buffer-$0b,x
+	lda render_x.q.vram.buffer-$0b,x
 	sta $2007
-	lda field_x.render.tile_buffer-$0a,x
+	lda render_x.q.vram.buffer-$0a,x
 	sta $2007
-	lda field_x.render.tile_buffer-$09,x
+	lda render_x.q.vram.buffer-$09,x
 	sta $2007
-	lda field_x.render.tile_buffer-$08,x
+	lda render_x.q.vram.buffer-$08,x
 	sta $2007
-	lda field_x.render.tile_buffer-$07,x
+	lda render_x.q.vram.buffer-$07,x
 	sta $2007
-	lda field_x.render.tile_buffer-$06,x
+	lda render_x.q.vram.buffer-$06,x
 	sta $2007
-	lda field_x.render.tile_buffer-$05,x
+	lda render_x.q.vram.buffer-$05,x
 	sta $2007
-	lda field_x.render.tile_buffer-$04,x
+	lda render_x.q.vram.buffer-$04,x
 	sta $2007
-	lda field_x.render.tile_buffer-$03,x
+	lda render_x.q.vram.buffer-$03,x
 	sta $2007
-	lda field_x.render.tile_buffer-$02,x
+	lda render_x.q.vram.buffer-$02,x
 	sta $2007
-	lda field_x.render.tile_buffer-$01,x
+	lda render_x.q.vram.buffer-$01,x
 	sta $2007
 
 	txa
@@ -166,59 +161,58 @@ field_x.render.upload_loop:
 	adc #$10
 	tax
 	cpx <.eol_offset
-	bne field_x.render.upload_loop
-	beq field_x.render.upload_next
+	bne render_x.upload_loop
+	beq render_x.upload_next
 ;--------------------------------------------------------------------------------------------------
 
 ;--------------------------------------------------------------------------------------------------
-field_x.begin_queueing:
+render_x.begin_queueing:
 ;; --- check if there enough space remaining in the buffer.
-	jsr field_x.ensure_buffer_available
+	jsr render_x.ensure_buffer_available
 ;; --- attr check.
-	jsr field_x.queue_attributes
+	jsr render_x.queue_attributes
 ;; --- queue the addr to render.
-	jmp field_x.queue_vram_addr	
+	;jmp render_x.queue_vram_addr	
+	FALL_THROUGH_TO render_x.queue_vram_addr
 
-field_x.queue_vram_addr:
+render_x.queue_vram_addr:
 	DECLARE_WINDOW_VARIABLES
-	;lda field_x.render.next_line
 	lda <.offset_y
 	ldx <.window_left
-	bit field_x.render.init_flags
+	bit render_x.q.init_flags
 	bmi .skip_borders
 		dex
 .skip_borders
 	jsr field_x.map_coords_to_vram
-	ldy field_x.render.addr_index
-	sta field_x.render.vram.high,y
+	ldy render_x.q.addr_index
+	sta render_x.q.vram.high,y
 	txa
-	sta field_x.render.vram.low,y
+	sta render_x.q.vram.low,y
 	;sta $2006
 	;stx $2006
-	;inc field_x.render.next_line
-	inc field_x.render.addr_index
+	inc render_x.q.addr_index
 	rts
 
-field_x.queue_top_border:
+render_x.queue_top_border:
 	DECLARE_WINDOW_VARIABLES
 	ldy <.window_top
 	dey
 	tya
 	ldx #2
-	jsr field_x.queue_border
+	jsr render_x.queue_border
 	ldy <.window_top
 	sty <.offset_y
 	rts
 
-field_x.queue_bottom_border:
+render_x.queue_bottom_border:
 	DECLARE_WINDOW_VARIABLES
 	lda <.window_top
 	clc
 	adc <.window_height
 	ldx #8
-	FALL_THROUGH_TO field_x.queue_border
+	FALL_THROUGH_TO render_x.queue_border
 
-field_x.queue_border:
+render_x.queue_border:
 	DECLARE_WINDOW_VARIABLES
 	sta <.offset_y
 .put_borders:
@@ -230,36 +224,36 @@ field_x.queue_border:
 		dey
 		bne .get_parts
 
-	jsr field_x.begin_queueing
+	jsr render_x.begin_queueing
 ;; --- queue tiles.
 	
-	ldx field_x.render.available_bytes
+	ldx render_x.q.available_bytes
 	pla
-	jsr field_x.queue_byte
+	jsr render_x.queue_byte
 
 	pla
 	ldy <.window_width
 .put_middles:
-		jsr field_x.queue_byte
+		jsr render_x.queue_byte
 		dey
 		bne .put_middles
 	pla
-	;jmp field_x.queue_byte
-	FALL_THROUGH_TO field_x.queue_byte
+	;jmp render_x.queue_byte
+	FALL_THROUGH_TO render_x.queue_byte
 
-field_x.queue_byte:
-	sta field_x.render.tile_buffer,x
+render_x.queue_byte:
+	sta render_x.q.vram.buffer,x
 	inx
-	stx field_x.render.available_bytes
-	;inc field_x.render.available_bytes
-field_x.render.rts_2:
+	stx render_x.q.available_bytes
+	
+render_x.rts_2:
 	rts
 
-field_x.queue_content:
+render_x.queue_content:
 	DECLARE_WINDOW_VARIABLES
 .p_source = $80
 	pha
-	jsr field_x.begin_queueing
+	jsr render_x.begin_queueing
 
 	pla
 	clc
@@ -271,31 +265,31 @@ field_x.queue_content:
 	inc <.offset_y	;;originally 'field.upload_window_content's role
 	inc <.lines_drawn	;;originally caller's responsibility, it remains true but for bottom border we need prospective value
 ;; --- queue tiles.
-	ldx field_x.render.available_bytes
+	ldx render_x.q.available_bytes
 
 
 	ldy #0
-	bit field_x.render.init_flags
+	bit render_x.q.init_flags
 	php
 	bmi .put_middles
 		lda #$fa
-		jsr field_x.queue_byte
+		jsr render_x.queue_byte
 
 .put_middles:
 		lda [.p_source],y
-		jsr field_x.queue_byte
+		jsr render_x.queue_byte
 		iny
 		cpy <.window_width
 		bne .put_middles
 
 
 	plp
-	bmi field_x.render.rts_2
+	bmi render_x.rts_2
 		lda #$fb
-		jmp field_x.queue_byte
+		jmp render_x.queue_byte
 
 ;; on entry, offset_y will have valid value.
-field_x.queue_attributes:
+render_x.queue_attributes:
 	DECLARE_WINDOW_VARIABLES
 	lda <.in_menu_mode
 	bne .done
@@ -310,20 +304,20 @@ field_x.queue_attributes:
 .done:
 	rts
 ;--------------------------------------------------------------------------------------------------
-;field_x.render.init:
+;render_x.init:
 ;	lda #0
-;	sta field_x.render.init_flags
+;	sta render_x.q.init_flags
 ;	rts
 ;;make sure the init flag have 'clean' value before use
 ;;1F:E1DC:A9 00     LDA #$00
 ;;1F:E1DE:20 EC E7  JSR floor.load_data
 ;;1F:E1E1:A9 3A     LDA #$3A
-field_x.render.on_floor_enter:
+render_x.on_floor_enter:
 	FIX_ADDR_ON_CALLER $3f,$e1de+1
     ;a = #0;
     ;dungeon::loadFloor();   //$e7ec();
 	;;assume A == 0
-	sta field_x.render.init_flags
+	sta render_x.q.init_flags
 	jmp floor.load_data	;;$e7ec
 
 ;;1E:A534:A9 00     LDA #$00
@@ -332,60 +326,60 @@ field_x.render.on_floor_enter:
 ;;1E:A53B:8D F0 79  STA $79F0 = #$00
 ;;1E:A53E:8D F0 7A  STA $7AF0 = #$00
 ;;1E:A541:20 06 DD  JSR $DD06
-field_x.render.on_menu_enter:
+render_x.on_menu_enter:
 	FIX_ADDR_ON_CALLER $3d,$a541+1
 	;;assume A == 0
-	sta field_x.render.init_flags
+	sta render_x.q.init_flags
 	jmp $dd06	;;? $dfd6() + call sounddriver + $dff8()
 
 ;;1F:C08E:A9 00     LDA #$00
 ;;1F:C090:20 9E C4  JSR $C49E
-field_x.render.on_opening_enter:
+render_x.on_opening_enter:
 	FIX_ADDR_ON_CALLER $3e,$c090+1
 	;;assume A == 0
-	sta field_x.render.init_flags
+	sta render_x.q.init_flags
 	jmp $C49E	;;some ppu initialiation
 
 ;--------------------------------------------------------------------------------------------------
-field_x.render.finalize:
-	lda field_x.render.available_bytes
+render_x.finalize:
+	lda render_x.q.available_bytes
 	beq .completed
-		jsr field_x.await_complete_rendering
+		jsr render_x.await_complete_rendering
 .completed:
 	;; XXX:
 	;;  in cases of paging in window,
 	;;	the rendering continues even if it reached the bottom of window.
 	;lda #0
-	;sta field_x.render.init_flags
+	;sta render_x.q.init_flags
 	rts
 ;--------------------------------------------------------------------------------------------------
-field_x.render.init_as_no_borders:
-	ldx #(field_x.NO_BORDERS|field_x.PENDING_INIT|field_x.RENDER_RUNNING)
-	FALL_THROUGH_TO field_x.setup_deferred_rendering
+render_x.init_as_no_borders:
+	ldx #(render_x.NO_BORDERS|render_x.PENDING_INIT|render_x.RENDER_RUNNING)
+	FALL_THROUGH_TO render_x.setup_deferred_rendering
 ;; in X: init flags
-field_x.setup_deferred_rendering:
+render_x.setup_deferred_rendering:
 	DECLARE_WINDOW_VARIABLES
 .p_jump = $80
 ;; init deferred drawing.
 	pha
-	;bit field_x.render.init_flags
-	lda field_x.render.init_flags
+	;bit render_x.q.init_flags
+	lda render_x.q.init_flags
 	asl A
 	bmi	.done	;; already requested init
 	;bpl .first_init
 		;; HACK: a quick dirty fix for border.
 		;; if we received second init request, don't overwrite flags but do recalc metrics.
-		;ldx field_x.render.init_flags
+		;ldx render_x.q.init_flags
 .first_init:
 	asl A
 	bpl .store_init_flags
-		;jsr field_x.render.finalize
+		;jsr render_x.q.finalize
 	;txa
 	;ldx <.in_menu_mode
 	;bne .store_init_flags
-	;	ora #(field_x.NEED_SPRITE_DMA)
+	;	ora #(render_x.NEED_SPRITE_DMA)
 .store_init_flags:
-	stx field_x.render.init_flags
+	stx render_x.q.init_flags
 
 	lda <.window_left
 	pha
@@ -394,7 +388,7 @@ field_x.setup_deferred_rendering:
 	lda <.window_width
 	pha
 	tax
-	bit field_x.render.init_flags
+	bit render_x.q.init_flags
 	bmi .no_borders
 		inx
 		inx
@@ -402,9 +396,9 @@ field_x.setup_deferred_rendering:
 		sty <.window_left
 .no_borders:
 	stx <.window_width
-	stx field_x.render.stride
+	stx render_x.q.stride
 	jsr field_x.calc_window_width_in_bg
-	sta field_x.render.1st.stride
+	sta render_x.q.1st.nt.stride
 ;;
 	lda <.window_width
 	pha
@@ -413,7 +407,7 @@ field_x.setup_deferred_rendering:
 	bne .align
 		ora #$10
 .align:
-	sta field_x.render.1st.buffer_bias
+	sta render_x.q.1st.nt.buffer_bias
 
 	pla
 	eor #$0f
@@ -424,14 +418,14 @@ field_x.setup_deferred_rendering:
 	sta <.p_jump	;;x2
 	asl A
 	adc <.p_jump	;;x2+x4
-	adc #LOW(field_x.render.upload_loop)
-	sta field_x.render.1st.uploader_addr
+	adc #LOW(render_x.upload_loop)
+	sta render_x.q.1st.nt.uploader_addr
 
 	lda #0
-	sta field_x.render.available_bytes
-	sta field_x.render.addr_index
-	adc #HIGH(field_x.render.upload_loop)
-	sta field_x.render.1st.uploader_addr+1
+	sta render_x.q.available_bytes
+	sta render_x.q.addr_index
+	adc #HIGH(render_x.upload_loop)
+	sta render_x.q.1st.nt.uploader_addr+1
 
 	pla
 	sta <.window_width
@@ -441,43 +435,43 @@ field_x.setup_deferred_rendering:
 	pla	;;initial A
 	rts
 ;--------------------------------------------------------------------------------------------------
-field_x.remove_nmi_handler:
+render_x.remove_nmi_handler:
 	lda #$40	;RTI
 	sta nmi_handler_entry
 	rts
 
-field_x.set_deferred_renderer:
-	jsr field_x.remove_nmi_handler
-	lda #HIGH(field_x.deferred_renderer)
+render_x.set_deferred_renderer:
+	jsr render_x.remove_nmi_handler
+	lda #HIGH(render_x.deferred_renderer)
 	sta nmi_handler_entry+2
-	lda #LOW(field_x.deferred_renderer)
+	lda #LOW(render_x.deferred_renderer)
 	sta nmi_handler_entry+1
 	lda #$4c	;JMP
 	sta nmi_handler_entry
 	rts
 
 ;--------------------------------------------------------------------------------------------------
-field_x.ensure_buffer_available:
+render_x.ensure_buffer_available:
 	DECLARE_WINDOW_VARIABLES
-	jsr field_x.remove_nmi_handler
-	lda field_x.render.available_bytes
+	jsr render_x.remove_nmi_handler
+	lda render_x.q.available_bytes
 	clc
-	adc field_x.render.stride
-	cmp #field_x.BUFFER_CAPACITY
-	bcs field_x.await_complete_rendering
+	adc render_x.q.stride
+	cmp #render_x.BUFFER_CAPACITY
+	bcs render_x.await_complete_rendering
 
-	lda field_x.render.addr_index
-	cmp #field_x.ADDR_CAPACITY	;;rendering up to X lines at once (or exceed the nmi duration)
-	bcc field_x.render.rts_1
+	lda render_x.q.addr_index
+	cmp #render_x.ADDR_CAPACITY	;;rendering up to X lines at once (or exceed the nmi duration)
+	bcc render_x.rts_1
 
-field_x.await_complete_rendering:
-		jsr field_x.set_deferred_renderer
+render_x.await_complete_rendering:
+		jsr render_x.set_deferred_renderer
 .wait_nmi:
-		lda field_x.render.available_bytes
+		lda render_x.q.available_bytes
 		bne .wait_nmi
 		;; FIXME: this is a temporary measure to workaround PRG bank mismatch on nmi
 		jsr field_x.advance_frame_no_wait	;;inc <.frame_counter + call sound driver
-field_x.render.rts_1:
+render_x.rts_1:
 	rts
 
 ;==================================================================================================
@@ -644,5 +638,5 @@ field_x.switch_vram_addr_mode:
 ;==================================================================================================
     ;VERIFY_PC_TO_PATCH_END textd
 	VERIFY_PC_TO_PATCH_END field.window.renderer
-field_x.RENDERER_END:
+render_x.RENDERER_END:
     .endif  ;FAST_FIELD_WINDOW
