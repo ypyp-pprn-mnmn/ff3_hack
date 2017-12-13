@@ -58,7 +58,7 @@ render_x.ADDR_CAPACITY = $0c
 ;; at the begininng of each NMI.
 ;;	18 scanlines x 113.6 cpu cycles (= 341 ppu cycles)
 render_x.FULL_OF_FUEL = (2044 >> 3)	;;2044 = 18 * 113.6, 2158 = 19 * 113.6.
-render_x.FUEL_FOR_OVERHEAD = ((152 >> 3) + 1)
+render_x.FUEL_FOR_OVERHEAD = ((120 >> 3) + 1)
 
 ;; ------------------------------------------------------------------------------------------------
 render_x.nmi.LOCALS_COUNT = $8
@@ -77,6 +77,7 @@ render_x.q.fuel = $7301	;;if exhausted, then flush queue (await completion of pe
 render_x.q.available_bytes = $7302
 render_x.q.addr_index = $7303
 render_x.q.target_index = $7304	;;12bytes.
+render_x.q.source_index = $732c
 ;render_x.q.is_attr = $7304	;;2bytes. 1bit per addr index. lower first.
 ;render_x.q.is_2nd = $7306	;;2bytes. 1bit per addr index. lower first.
 ;render_x.q.attr_pending = $7308	;;2bytes. 1bit per vertical line. lower first.
