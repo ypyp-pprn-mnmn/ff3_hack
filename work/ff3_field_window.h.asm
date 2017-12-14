@@ -57,8 +57,10 @@ render_x.ADDR_CAPACITY = $0c
 ;; approximately the cycles below will be available for the rendering,
 ;; at the begininng of each NMI.
 ;;	18 scanlines x 113.6 cpu cycles (= 341 ppu cycles)
-render_x.FULL_OF_FUEL = (2044 >> 3)	;;2044 = 18 * 113.6, 2158 = 19 * 113.6.
-render_x.FUEL_FOR_OVERHEAD = ((65 >> 3) + 1)
+;render_x.FULL_OF_FUEL = (2044 >> 3)	;;2044 = 18 * 113.6, 2158 = 19 * 113.6.
+render_x.FULL_OF_FUEL = ((2158 * 8 / 9) >> 3)	;;2044 = 18 * 113.6, 2158 = 19 * 113.6.
+;render_x.FUEL_FOR_OVERHEAD = ((65 >> 3) + 1)
+render_x.FUEL_FOR_OVERHEAD = (((65 * 8 / 9) >> 3) + 1)
 render_x.FUEL_LOOP_OVERHEAD = ((11 >> 3) + 1)
 
 ;; ------------------------------------------------------------------------------------------------
