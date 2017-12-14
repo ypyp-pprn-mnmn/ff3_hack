@@ -269,16 +269,21 @@ render_x.set_deferred_renderer:
 	sta nmi_handler_entry
 render_x.rts_1:
 	rts
+
 ;--------------------------------------------------------------------------------------------------
 ;; in A: bytes to ensure
 render_x.ensure_buffer_available:
 	DECLARE_WINDOW_VARIABLES
 	jsr render_x.remove_nmi_handler	;; preserves A.
 
-	;lda <render_x.q.available_bytes
+	;pha
 	;clc
+	;adc #14
+	;clc
+	;adc <render_x.q.available_bytes
 	;adc <render_x.q.stride
 	;cmp #render_x.BUFFER_CAPACITY
+	;pla
 	;bcs render_x.await_complete_rendering
 
 	clc
@@ -296,16 +301,31 @@ render_x.ensure_buffer_available:
 .available:
 	sta <render_x.q.fuel
 	bit $2002
+	;bmi render_x.on_nmi_completed
 	bpl render_x.rts_1
 		jmp field_x.advance_frame_no_wait
 
 	;rts
-
+;--------------------------------------------------------------------------------------------------
+render_x.finalize:
+	lda <render_x.q.available_bytes
+	;beq .completed
+	beq render_x.rts_1
+		;;jsr render_x.await_complete_rendering
+.completed:
+	;; XXX:
+	;;  in cases of paging in window,
+	;;	the rendering continues even if it reached the bottom of window.
+	;lda #0
+	;sta <render_x.q.init_flags
+	;rts
+;--------------------------------------------------------------------------------------------------
 render_x.await_complete_rendering:
 	jsr render_x.set_deferred_renderer
 .wait_nmi:
 	lda <render_x.q.available_bytes
 	bne .wait_nmi
+render_x.on_nmi_completed:
 	;; FIXME: this is a temporary measure to workaround PRG bank mismatch on nmi
 	jmp field_x.advance_frame_no_wait	;;inc <.frame_counter + call sound driver
 ;--------------------------------------------------------------------------------------------------
@@ -345,6 +365,7 @@ render_x.queue_content:
 	;FALL_THROUGH_TO render_x.queue_bytes_from_buffer
 .do_queue:
 	jsr render_x.queue_bytes_from_buffer
+	jsr render_x.queue_attributes
 	;; --- 
 	inc <.offset_y	;;originally 'field.upload_window_content's role
 	inc <.lines_drawn	;;originally caller's responsibility, it remains true but for bottom border we need prospective value
@@ -354,7 +375,7 @@ render_x.queue_top_border:
 	DECLARE_WINDOW_VARIABLES
 	ldy <.window_top
 	dey
-	tya
+	;tya
 	ldx #2
 	jsr render_x.queue_border
 	ldy <.window_top
@@ -366,13 +387,14 @@ render_x.queue_bottom_border:
 	lda <.window_top
 	clc
 	adc <.window_height
+	tay
 	ldx #5
-	FALL_THROUGH_TO render_x.queue_border
+	;;FALL_THROUGH_TO render_x.queue_border
 ;--------------------------------------------------------------------------------------------------
 render_x.queue_border:
 	DECLARE_WINDOW_VARIABLES
 .p_source = $80
-	sta <.offset_y
+	sty <.offset_y
 .put_borders:
 	ldy #3
 .get_parts:
@@ -381,6 +403,12 @@ render_x.queue_border:
 		dex
 		dey
 		bne .get_parts
+;; ---
+	;; this will update buffer at $7c0-7ff.
+	;; as the temp buffer this logic using is at $7d0-7ef
+	;; it is needed to use the buffer before/after
+	;; attr update completed.
+	jsr render_x.queue_attributes
 
 ;; --- queue tiles.
 	ldx #0
@@ -395,6 +423,7 @@ render_x.queue_border:
 		bne .put_middles
 	pla
 	jsr render_x.build_temp_buffer
+
 	lda #LOW(render_x.temp_buffer)
 	sta <.p_source
 	lda #HIGH(render_x.temp_buffer)
@@ -498,12 +527,6 @@ render_x.queue_bytes:
 	stx <render_x.q.available_bytes
 render_x.rts_2:
 	rts
-
-render_x.build_temp_buffer:
-	sta render_x.temp_buffer,x
-	inx
-	rts
-
 ;--------------------------------------------------------------------------------------------------
 ;; on entry, offset_y will have a valid value.
 render_x.queue_attributes
@@ -517,41 +540,61 @@ render_x.queue_attributes
 		lda <.offset_y
 		lsr A
 		bcs .done
+			;; only update attr if the line on even boundary
+			lsr A
 			asl A
 			asl A
 			asl A
 			;sta <.addr_offset
 			pha
-			;; only update attr if the line on even boundary
+			;; --- get attr cache updated.
+			jsr field_x.inflate_window_metrics
+			lda <.offset_y
+			cmp #30
+			bcc .no_wrap
+				sbc #30
+				sta <.offset_y
+		.no_wrap:
 			jsr field.init_window_attr_buffer	;ed56
 			jsr field.update_window_attr_buff	;$c98f
+
+			jsr field_x.shrink_window_metrics
+
 			;; here field.bg_attr_table_cache ($0300) will have merged attributes
-.queue_attr:
 			lda #HIGH(field.bg_attr_table_cache)
 			sta <.p_source+1
 			lda #LOW(field.bg_attr_table_cache)
 			sta <.p_source
-			sta <.source_index
+
 			pla
+			sta <.source_index
+			pha
+			lda #$23
+			jsr .queue_attr
+			pla
+			ora #$40
+			sta <.source_index
+			lda #$27
+.queue_attr:
+			pha	;;vram high
+			lda #8
+			jsr render_x.ensure_buffer_available
+
+			lda <.source_index			
 			ora #$c0
 			tax	;;vram low
+			pla	;;vram high
+			tay
 			lda #8
 			pha	;;width
-			lda #$23
-			bne render_x.queue_head_and_body
+			tya
+			jmp render_x.queue_head_and_body
 .done:
 	rts
 ;--------------------------------------------------------------------------------------------------
-render_x.finalize:
-	lda <render_x.q.available_bytes
-	beq .completed
-		jsr render_x.await_complete_rendering
-.completed:
-	;; XXX:
-	;;  in cases of paging in window,
-	;;	the rendering continues even if it reached the bottom of window.
-	;lda #0
-	;sta <render_x.q.init_flags
+render_x.build_temp_buffer:
+	sta render_x.temp_buffer,x
+	inx
 	rts
 ;--------------------------------------------------------------------------------------------------
 render_x.init_as_no_borders:
@@ -613,32 +656,9 @@ render_x.setup_deferred_rendering:
 	pla	;;initial A
 	rts
 
-	.if 0
-;; in A = bytes needed
-;; in,out Y = sequence index
-render_x.precalc_params:
-	DECLARE_WINDOW_VARIABLES
-
-	pha
-	;; calc params for nametable.
-	;; even-numberd index (here stored in Y) represents nametable.
-	jsr .calc_and_store
-	pla
-	;; calc params for attributes.
-	;; odd-numberd index (here stored in Y) represents attrtable.
-	clc
-	adc #1
-	lsr A
-	;; fall through.
-.calc_and_store:
-	sta render_x.q.strides,y
-
-	iny
-	rts
-	.endif
-
-
+	VERIFY_PC_TO_PATCH_END field.window.renderer
 ;==================================================================================================
+	RESTORE_PC floor.treasure.FREE_BEGIN
 
 field_x.fill_to_bottom.loop:
 .lines_drawn = $1f
@@ -677,6 +697,26 @@ field_x.fill_to_bottom:
 .done:
 	rts
 
+;--------------------------------------------------------------------------------------------------
+field_x.shrink_window_metrics:
+	DECLARE_WINDOW_VARIABLES
+	inc <.window_left
+	inc <.window_top
+	dec <.window_width
+	dec <.window_width
+	dec <.window_height
+	dec <.window_height
+	rts
+
+field_x.inflate_window_metrics:
+	DECLARE_WINDOW_VARIABLES
+	dec <.window_left
+	dec <.window_top
+	inc <.window_width
+	inc <.window_width
+	inc <.window_height
+	inc <.window_height
+	rts
 ;==================================================================================================
 	.if 0
 field_x.update_ppu_attr_table:
@@ -777,7 +817,7 @@ field_x.switch_vram_addr_mode:
 		jsr field_x.end_ppu_update	;sync_ppu_scroll+call_sound_driver
 	.endif ;0
 ;==================================================================================================
-    ;VERIFY_PC_TO_PATCH_END textd
-	VERIFY_PC_TO_PATCH_END field.window.renderer
+
+	VERIFY_PC_TO_PATCH_END floor.treasure
 render_x.RENDERER_END:
     .endif  ;FAST_FIELD_WINDOW

@@ -378,16 +378,6 @@ field_x.map_coords_to_vram:
 		ora #4
 .bg_1st:
 	rts
-;--------------------------------------------------------------------------------------------------
-field_x.shrink_window_metrics:
-	DECLARE_WINDOW_VARIABLES
-	inc <.window_left
-	inc <.window_top
-	dec <.window_width
-	dec <.window_width
-	dec <.window_height
-	dec <.window_height
-	rts
 
 ;--------------------------------------------------------------------------------------------------
 ;render_x.init:

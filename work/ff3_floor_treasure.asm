@@ -156,7 +156,8 @@ floor_setBitMask:
 ;-----------------------------------------------------------------------------------------------------
 ; treasure functions
 ;
-	INIT_PATCH $3f,$f549,$f670
+	;INIT_PATCH $3f,$f549,$f670
+	INIT_PATCH_EX floor.treasure, $3f, $f549, $f670, $f549
 ;$3f:f549 getTreasure
 ;//	[in] u8 $0710[0x10] : treasureIds
 ;//	[in] u8 $45 : eventParam
@@ -362,10 +363,10 @@ floor_incrementPartyGil:
 .maxGil:
 	.db $7f,$96,$98	;9999999
 
-	VERIFY_PC $f670
-	;VERIFY_PC_TO_PATCH_END treasure
-floor_treasure_free_begin:
-floor_treasure_free_end = $f670
+	;VERIFY_PC $f670
+	VERIFY_PC_TO_PATCH_END floor.treasure
+floor.treasure.FREE_BEGIN:
+
 
 ;=====================================================================================================
 	RESTORE_PC ff3_floor_treasure_begin
