@@ -42,15 +42,15 @@ render_x.deferred_renderer:
 ;; dummy read to ensure unset nmi flag.
 	lda $2002	
 ;; preserve local variables.
-	ldx #(render_x.nmi.LOCALS_COUNT-1)
-.push_variables:
-		lda <$80,x
-		pha
-		dex
-		bpl .push_variables
+;	ldx #(render_x.nmi.LOCALS_COUNT-1)
+;.push_variables:
+;		lda <$80,x
+;		pha
+;		dex
+;		bpl .push_variables
 ;; do rendering.
-	lda #0
-	sta <render_x.nmi.sequence
+	ldx #0
+;	sta <render_x.nmi.sequence
 	jsr render_x.render_deferred_contents
 	;; as calling sound driver need change of program bank,
 	;; we can't safely call the driver from within nmi handler,
@@ -66,12 +66,12 @@ render_x.deferred_renderer:
 	;jsr field.restore_banks
 
 ;; restore local variables.
-	ldx #~(render_x.nmi.LOCALS_COUNT-1)
-.pop_variables:
-		pla
-		sta <$80+(render_x.nmi.LOCALS_COUNT),x
-		inx
-		bne .pop_variables
+;	ldx #~(render_x.nmi.LOCALS_COUNT-1)
+;.pop_variables:
+;		pla
+;		sta <$80+(render_x.nmi.LOCALS_COUNT),x
+;		inx
+;		bne .pop_variables
 	pla
 	tay
 	pla
@@ -79,67 +79,163 @@ render_x.deferred_renderer:
 	pla
 	rti
 ;--------------------------------------------------------------------------------------------------
+;; in:
+;;	X = source buffer offset.
+;; notes:
+;;	the buffer contains variable-length structure the below:
+;;	+00 vram high
+;;	+01	vram low
+;;	+02 buffer length
+;;	+03 buffer offset, adjusted to loop boundary
+render_x.render_deferred_contents:
+	DECLARE_WINDOW_VARIABLES
+	;; setup vram address.
+	lda render_x.q.buffer,x		;;	4
+	sta $2006					;;	8
+	lda render_x.q.buffer+1,x	;;	12
+	sta $2006					;;	16
+	ldy render_x.q.buffer+2,x	;;	20
+	lda render_x.q.buffer+3,x	;;	24
+	tax							;;	26
+	tya							;;	28
+;; branch out.
+;; X = offset
+;; A = length
+	lsr A				;;	2
+	bcc .length_0		;;	4+(1)
+.length_1:
+		lsr A				;;	6
+		bcc .length_01		;;	8+(1)
+.length_11:
+			lsr A				;;	10
+			bcc .length_011	;;	12+(1)
+.length_111:
+				lsr A				;;	14
+				tay					;;	16
+				bcs .length_1111	;;	19
+				bcc .length_0111	;;	22
+.length_011:
+				lsr A				;;	15
+				tay					;;	17
+				bcs .length_1011	;;	20
+				bcc .length_0011	;;	23
+.length_01:
+			lsr A				;;	11
+			bcc .length_001	;;	13+(1)
+.length_101:
+				lsr A				;;	15
+				tay					;;	17
+				bcs .length_1101	;;	20
+				bcc .length_0101	;;	23
+.length_001:
+				lsr A				;;	16
+				tay					;;	18
+				bcs .length_1001	;;	21
+				bcc .length_0001	;;	24
+.length_0:
+		lsr A				;;	7
+		bcc .length_00		;;	9+(1)
+.length_10:
+			lsr A				;;	11
+			bcc .length_010	;;	13+(1)
+.length_110:
+				lsr A				;;	15
+				tay					;;	17
+				bcs .length_1110	;;	20
+				bcc .length_0110	;;	23
+.length_010:
+				lsr A				;;	16
+				tay					;;	18
+				bcs .length_1010	;;	21
+				bcc .length_0010	;;	24
+.length_00:
+			lsr A				;;	12
+			bcc .length_000	;;	14+(1)
+.length_100:
+				lsr A				;;	16
+				tay					;;	18
+				bcs .length_1100	;;	21
+				bcc .length_0100	;;	24
+.length_000:
+				lsr A				;;	17
+				tay					;;	19
+				bcs .length_1000	;;	22
+				bcc .length_0000
 ;; A = scratch.
 ;; X = buffer offset.
-;; Y = sequence index.
-render_x.upload_loop:
-	lda render_x.q.vram.buffer-$10,x
+;; Y = loop counter.
+.render_x.upload_loop:
+	lda render_x.q.buffer-$10,x
 	sta $2007
-	lda render_x.q.vram.buffer-$0f,x
+.length_1111:
+	lda render_x.q.buffer-$0f,x
 	sta $2007
-	lda render_x.q.vram.buffer-$0e,x
+.length_1110:
+	lda render_x.q.buffer-$0e,x
 	sta $2007
-	lda render_x.q.vram.buffer-$0d,x
+.length_1101:
+	lda render_x.q.buffer-$0d,x
 	sta $2007
-	lda render_x.q.vram.buffer-$0c,x
+.length_1100:
+	lda render_x.q.buffer-$0c,x
 	sta $2007
-	lda render_x.q.vram.buffer-$0b,x
+.length_1011:
+	lda render_x.q.buffer-$0b,x
 	sta $2007
-	lda render_x.q.vram.buffer-$0a,x
+.length_1010:
+	lda render_x.q.buffer-$0a,x
 	sta $2007
-	lda render_x.q.vram.buffer-$09,x
+.length_1001:
+	lda render_x.q.buffer-$09,x
 	sta $2007
-	lda render_x.q.vram.buffer-$08,x
+.length_1000:
+	lda render_x.q.buffer-$08,x
 	sta $2007
-	lda render_x.q.vram.buffer-$07,x
+.length_0111:
+	lda render_x.q.buffer-$07,x
 	sta $2007
-	lda render_x.q.vram.buffer-$06,x
+.length_0110:
+	lda render_x.q.buffer-$06,x
 	sta $2007
-	lda render_x.q.vram.buffer-$05,x
+.length_0101:
+	lda render_x.q.buffer-$05,x
 	sta $2007
-	lda render_x.q.vram.buffer-$04,x
+.length_0100:
+	lda render_x.q.buffer-$04,x
 	sta $2007
-	lda render_x.q.vram.buffer-$03,x
+.length_0011:
+	lda render_x.q.buffer-$03,x
 	sta $2007
-	lda render_x.q.vram.buffer-$02,x
+.length_0010:
+	lda render_x.q.buffer-$02,x
 	sta $2007
-	lda render_x.q.vram.buffer-$01,x
+.length_0001:
+	lda render_x.q.buffer-$01,x
 	sta $2007
-
-;; overhead = 13-14 cpu cycles
+.length_0000:
+;; overhead = 15 if loop continues, 5 if loop reached the end.
 ;; A = scratch.
 ;; X = buffer offset.
 ;; Y = render target index.
 .next:
-	txa
-	clc
-	adc #$10
-	tax
-	cpx <render_x.nmi.eol_offset
-	bne render_x.upload_loop
-	;beq render_x.upload_next
+	dey							;;	2
+	bmi render_x.upload_next	;;	4(+1)
+	txa							;;	6
+	clc							;;	8
+	adc #$10					;;	10
+	tax							;;	12
+	bne .render_x.upload_loop	;;	15
 
-;; overhead = 16-17 cpu cycles.
+;; overhead = 5-6 cpu cycles.
 ;; A = scratch.
 ;; X = buffer offset.
 ;; Y = render target index.
 render_x.upload_next:
 	DECLARE_WINDOW_VARIABLES
-	pla	;;bytes have been uploaded.		;;	4
-	clc									;;	6
-	adc render_x.q.stride,y				;;	10
-	cmp <render_x.q.available_bytes		;;	14
-	bcc render_x.render_deferred_contents
+	cpx <render_x.q.available_bytes			;;	3
+	;bcc render_x.render_deferred_contents	;;	5(+1)
+	bcs render_x.reset_states
+		jmp render_x.render_deferred_contents
 
 ;; out:
 ;;	A: #0
@@ -147,50 +243,15 @@ render_x.reset_states:
 	lda #render_x.FULL_OF_FUEL
 	sta <render_x.q.fuel
 	lda #0
-	ldy #(render_x.nmi.STATE_VARIABLES_END - render_x.nmi.STATE_VARIABLES_BASE)
-.reset:
-		sta render_x.nmi.STATE_VARIABLES_BASE-1,y
-		;sta <render_x.q.available_bytes	;;this frees up a waiting thread
-		dey
-		bne .reset
+	sta <render_x.q.available_bytes
+;	ldy #(render_x.nmi.STATE_VARIABLES_END - render_x.nmi.STATE_VARIABLES_BASE)
+;.reset:
+;		sta render_x.nmi.STATE_VARIABLES_BASE-1,y
+;		;sta <render_x.q.available_bytes	;;this frees up a waiting thread
+;		dey
+;		bne .reset
 	rts
 
-;; overhead = 89 cpu cycles.
-;; in:
-;;	A = bytes uploaded, as loop counter
-render_x.render_deferred_contents:
-	DECLARE_WINDOW_VARIABLES
-	pha								;;	3
-	;; setup vram address.
-	ldy <render_x.nmi.sequence		;;	6
-	lda render_x.q.vram.high,y		;;	10
-	sta $2006						;;	14
-	lda render_x.q.vram.low,y		;;	18
-	sta $2006						;;	22
-	inc <render_x.nmi.sequence		;;	27
-	;; determine the target.
-	lda render_x.q.target_index,y	;;	31
-	tay								;;	33
-	pla								;;	37
-	
-	pha								;;	3
-	clc								;;	5
-	adc render_x.q.stride,y			;;	9
-	clc								;;	11
-	adc #($10)						;;	13
-	sta <render_x.nmi.eol_offset	;;	16
-	pla								;;	20
-	pha								;;	23
-	clc								;;	25
-	adc render_x.q.buffer_bias,y	;;	29
-	tax								;;	31
-	;; do indirect jump.
-	lda render_x.q.start_addr.high,y	;;	4
-	pha									;;	7
-	lda render_x.q.start_addr.low,y		;;	11
-	pha									;;	15
-	rts	;;indirect jump					;;	21
-	;jmp [render_x.q.1st.nt.uploader_addr]
 ;--------------------------------------------------------------------------------------------------
 render_x.remove_nmi_handler:
 	pha
@@ -349,79 +410,86 @@ render_x.queue_bytes_from_buffer:
 .queue_bytes:
 	txa
 	pha
-	tax
-	ldy #0
-	;sty render_x.q.source_index
-	sty <.source_index
-	;;	Y: target index
+	;tax
+	;;	A: left
 	;;	X: left
+	;;	Y: index into precalculated metrics
+	ldy #0
+	sty <.source_index
 	jsr render_x.begin_queueing
 	pla
 	
 	;; A <-- windowleft
 	clc
-	adc render_x.q.stride+0	;;1st bg
+	adc render_x.q.strides+0	;;1st bg
 	and #$3f
-	tax
 	ldy #2
+	;tax
 	;jmp render_x.begin_queueing
 
 ;--------------------------------------------------------------------------------------------------
 render_x.begin_queueing:
 	DECLARE_WINDOW_VARIABLES
 .source_index = $85
+.bias = $84
+.temp_left = .offset_x
 ;; in:
 ;;	Y: target index
-;;	X: left
-	lda render_x.q.stride,y
+;;	A: left
+	ldx render_x.q.strides,y
 	beq render_x.rts_2
-	
-	pha	;;width
-	tya
-	pha	;; target index.
+
+	sta <.temp_left
 	txa
-	pha ;;left
+	pha	;;width
 ;; --- check if there enough space remaining in the buffer.
-	lda render_x.q.stride,y
 	jsr render_x.ensure_buffer_available
 ;; --- queue the addr to render.
-	pla	;;left
-	tax
-
+	ldx <.temp_left
 	lda <.offset_y
 	;; X = window left
 	jsr field_x.map_coords_to_vram
-	ldy <render_x.q.addr_index
-	sta render_x.q.vram.high,y
-	txa
-	sta render_x.q.vram.low,y
 	;sta $2006
 	;stx $2006
-	pla ;; target index
-;render_x.queue_target_index:
-	sta render_x.q.target_index,y
-	inc <render_x.q.addr_index
-
+	ldy <render_x.q.available_bytes
+	sta render_x.q.buffer,y
+	iny
+	txa
+	sta render_x.q.buffer,y
+	iny
 	pla	;;width
+	sta render_x.q.buffer,y
+	iny
+	pha	;;width
+	;; calc ajusted offset
+	and #$f
+	;bne .align
+		;ora #$10
+;.align:
+	sta <.bias
+	iny	;;offset should point the byte immediately after the tag bytes
+	tya
 	clc
-	;adc render_x.q.source_index
+	adc <.bias
+	sta render_x.q.buffer-1,y
+
+	pla	;; width
+	clc
 	adc <.source_index
-	ldy <.source_index
+	ldx <.source_index
 	sta <.source_index
-	;ldy render_x.q.source_index
 render_x.queue_bytes:
 .source_index = $85
 .temp_buffer = $7d0
-	ldx <render_x.q.available_bytes
+	;ldx <render_x.q.available_bytes
 .loop:
-		lda .temp_buffer,y
-		sta render_x.q.vram.buffer,x
+		lda .temp_buffer,x
+		sta render_x.q.buffer,y
 		inx
 		iny
-		cpy <.source_index
+		cpx <.source_index
 		bne .loop
-	stx <render_x.q.available_bytes
-	;sty render_x.q.source_index
+	sty <render_x.q.available_bytes
 render_x.rts_2:
 	rts
 
@@ -431,6 +499,11 @@ render_x.build_temp_buffer:
 	inx
 	rts
 
+;render_x.queue_byte:
+;	ldy <render_x.q.available_bytes
+;	sta render_x.q.buffer,y
+;	inc <render_x.q.available_bytes
+;	rts
 ;--------------------------------------------------------------------------------------------------
 ;; on entry, offset_y will have valid value.
 render_x.queue_attributes:
@@ -538,30 +611,8 @@ render_x.precalc_params:
 	lsr A
 	;; fall through.
 .calc_and_store:
-	sta render_x.q.stride,y
-	pha
-	clc
-	and #$f
-	bne .align
-		ora #$10
-.align:
-	sta render_x.q.buffer_bias,y
+	sta render_x.q.strides,y
 
-	pla
-	eor #$0f
-	clc
-	adc #1
-	and #$0f
-	asl A
-	sta <.p_jump	;;x2
-	asl A
-	adc <.p_jump	;;x2+x4
-	adc #LOW(render_x.upload_loop-1)
-	sta render_x.q.start_addr.low,y
-	lda #0
-	;;here A == 0
-	adc #HIGH(render_x.upload_loop-1)
-	sta render_x.q.start_addr.high,y
 	iny
 	rts
 
