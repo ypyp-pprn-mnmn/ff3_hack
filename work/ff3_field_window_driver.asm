@@ -95,6 +95,8 @@ field_x.draw_window_box_with_region:
 	;;		2. erase a box (possibly not the same as #1)
 	;;		3. render contents in a box (possibly not the same as #1)
 	;;	thus, it is deliberately chosen not to make the init here.
+		jsr field_x.begin_ppu_update
+		jsr field_x.end_ppu_update
 	.endif	;_FEATURE_DEFERRED_RENDERING
 
 	jmp field.restore_banks	;$ecf5

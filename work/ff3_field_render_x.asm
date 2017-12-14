@@ -538,6 +538,11 @@ render_x.queue_attributes
 	bne .done
 		;; in-place window. need attr updates
 		lda <.offset_y
+		cmp #30
+		bcc .no_wrap
+			sbc #30
+			sta <.offset_y
+	.no_wrap:
 		lsr A
 		bcs .done
 			;; only update attr if the line on even boundary
@@ -549,12 +554,6 @@ render_x.queue_attributes
 			pha
 			;; --- get attr cache updated.
 			jsr field_x.inflate_window_metrics
-			lda <.offset_y
-			cmp #30
-			bcc .no_wrap
-				sbc #30
-				sta <.offset_y
-		.no_wrap:
 			jsr field.init_window_attr_buffer	;ed56
 			jsr field.update_window_attr_buff	;$c98f
 
@@ -611,8 +610,8 @@ render_x.setup_deferred_rendering:
 	bmi	.done	;; already requested init
 
 .first_init:
-	asl A
-	bpl .store_init_flags
+	;asl A
+	;bpl .store_init_flags
 		;jsr render_x.q.finalize
 	;txa
 	;ldx <.in_menu_mode
