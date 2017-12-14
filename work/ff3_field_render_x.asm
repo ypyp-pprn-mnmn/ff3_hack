@@ -318,12 +318,13 @@ render_x.queue_content:
 	lda #$07
 	sta <.p_source+1
 
-;; --- build final contents onto temporary buffer.
-	ldy #0
-	ldx #0
 	bit <render_x.q.init_flags
-	php
-	bmi .put_middles
+	;php
+	;bmi .put_middles
+	bmi .do_queue
+		;; --- build final contents onto temporary buffer.
+		ldy #0
+		ldx #0
 		lda #$fa
 		jsr render_x.build_temp_buffer
 
@@ -334,10 +335,13 @@ render_x.queue_content:
 		cpy <.window_width
 		bne .put_middles
 
-	plp
-	bmi .do_queue
+	;plp
+	;bmi .do_queue
 		lda #$fb
 		jsr render_x.build_temp_buffer
+
+		lda #LOW(render_x.temp_buffer)
+		sta <.p_source
 	;FALL_THROUGH_TO render_x.queue_bytes_from_buffer
 .do_queue:
 	jsr render_x.queue_bytes_from_buffer
@@ -367,6 +371,7 @@ render_x.queue_bottom_border:
 ;--------------------------------------------------------------------------------------------------
 render_x.queue_border:
 	DECLARE_WINDOW_VARIABLES
+.p_source = $80
 	sta <.offset_y
 .put_borders:
 	ldy #3
@@ -390,7 +395,11 @@ render_x.queue_border:
 		bne .put_middles
 	pla
 	jsr render_x.build_temp_buffer
-	FALL_THROUGH_TO render_x.queue_bytes_from_buffer
+	lda #LOW(render_x.temp_buffer)
+	sta <.p_source
+	lda #HIGH(render_x.temp_buffer)
+	sta <.p_source+1
+	;FALL_THROUGH_TO render_x.queue_bytes_from_buffer
 ;--------------------------------------------------------------------------------------------------
 render_x.queue_bytes_from_buffer:
 	DECLARE_WINDOW_VARIABLES
@@ -401,7 +410,7 @@ render_x.queue_bytes_from_buffer:
 		dex
 .queue_bytes:
 	txa
-	pha
+	pha	;; left
 	;tax
 	;;	A: left
 	;;	X: left
@@ -422,8 +431,6 @@ render_x.queue_bytes_from_buffer:
 ;--------------------------------------------------------------------------------------------------
 render_x.begin_queueing:
 	DECLARE_WINDOW_VARIABLES
-.source_index = $85
-.bias = $84
 .temp_left = .offset_x
 ;; in:
 ;;	Y: target index
@@ -441,6 +448,13 @@ render_x.begin_queueing:
 	lda <.offset_y
 	;; X = window left
 	jsr field_x.map_coords_to_vram
+
+;;	A = vram high
+;;	X = vram low
+;;	S[0] = body length
+render_x.queue_head_and_body:
+.source_index = $85
+.bias = $84
 	;sta $2006
 	;stx $2006
 	ldy <render_x.q.available_bytes
@@ -458,60 +472,75 @@ render_x.begin_queueing:
 	sta <.bias
 	iny	;;offset should point the byte immediately after the tag bytes
 	tya
+	tax
 	clc
 	adc <.bias
 	sta render_x.q.buffer-1,y
-
+	;; ----
 	pla	;; width
 	clc
 	adc <.source_index
-	ldx <.source_index
+	ldy <.source_index
 	sta <.source_index
 render_x.queue_bytes:
 .source_index = $85
+.p_buffer = $80
 .temp_buffer = $7d0
 	;ldx <render_x.q.available_bytes
 .loop:
-		lda .temp_buffer,x
-		sta render_x.q.buffer,y
+		;lda .temp_buffer,x
+		lda [.p_buffer],y
+		sta render_x.q.buffer,x
 		inx
 		iny
-		cpx <.source_index
+		cpy <.source_index
 		bne .loop
-	sty <render_x.q.available_bytes
+	stx <render_x.q.available_bytes
 render_x.rts_2:
 	rts
 
 render_x.build_temp_buffer:
-.temp_buffer = $7d0
-	sta .temp_buffer,x
+	sta render_x.temp_buffer,x
 	inx
 	rts
 
-;render_x.queue_byte:
-;	ldy <render_x.q.available_bytes
-;	sta render_x.q.buffer,y
-;	inc <render_x.q.available_bytes
-;	rts
 ;--------------------------------------------------------------------------------------------------
-;; on entry, offset_y will have valid value.
-render_x.queue_attributes:
+;; on entry, offset_y will have a valid value.
+render_x.queue_attributes
 	DECLARE_WINDOW_VARIABLES
-	.if 0
+.addr_offset = $84
+.p_source = $80
+.source_index = $85
 	lda <.in_menu_mode
 	bne .done
 		;; in-place window. need attr updates
 		lda <.offset_y
 		lsr A
 		bcs .done
+			asl A
+			asl A
+			asl A
+			;sta <.addr_offset
+			pha
 			;; only update attr if the line on even boundary
 			jsr field.init_window_attr_buffer	;ed56
 			jsr field.update_window_attr_buff	;$c98f
-			;field.bg_attr_table_cache
-	.endif
+			;; here field.bg_attr_table_cache ($0300) will have merged attributes
+.queue_attr:
+			lda #HIGH(field.bg_attr_table_cache)
+			sta <.p_source+1
+			lda #LOW(field.bg_attr_table_cache)
+			sta <.p_source
+			sta <.source_index
+			pla
+			ora #$c0
+			tax	;;vram low
+			lda #8
+			pha	;;width
+			lda #$23
+			bne render_x.queue_head_and_body
 .done:
 	rts
-
 ;--------------------------------------------------------------------------------------------------
 render_x.finalize:
 	lda <render_x.q.available_bytes
@@ -567,14 +596,16 @@ render_x.setup_deferred_rendering:
 	jsr field_x.calc_available_width_in_bg
 	;; A = width 1st
 	ldy #0
-	pha	;;width_1st
-	jsr render_x.precalc_params
-	pla	;width_1st
+	;pha	;;width_1st
+	;jsr render_x.precalc_params
+	sta <render_x.q.strides+0
+	;pla	;width_1st
 	eor #$ff
 	sec
 	adc <.window_width
 	;; A = width 2nd
-	jsr render_x.precalc_params
+	;jsr render_x.precalc_params
+	sta <render_x.q.strides+2
 	
 	pla
 	sta <.window_width
@@ -582,11 +613,11 @@ render_x.setup_deferred_rendering:
 	pla	;;initial A
 	rts
 
+	.if 0
 ;; in A = bytes needed
 ;; in,out Y = sequence index
 render_x.precalc_params:
 	DECLARE_WINDOW_VARIABLES
-.p_jump = $80
 
 	pha
 	;; calc params for nametable.
@@ -604,7 +635,7 @@ render_x.precalc_params:
 
 	iny
 	rts
-
+	.endif
 
 
 ;==================================================================================================

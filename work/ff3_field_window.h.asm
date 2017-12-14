@@ -82,4 +82,5 @@ render_x.q.strides = $c4
 
 ;; buffer and addresses are shared among for name table and attributes.
 render_x.q.buffer = $7310	;max 0xf0 bytes = 240 titles.
+render_x.temp_buffer = $07d0
     .endif  ;;_FEATURE_DEFERRED_RENDERING
