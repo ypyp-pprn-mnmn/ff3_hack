@@ -233,9 +233,8 @@ render_x.render_deferred_contents:
 render_x.upload_next:
 	DECLARE_WINDOW_VARIABLES
 	cpx <render_x.q.available_bytes			;;	3
-	;bcc render_x.render_deferred_contents	;;	5(+1)
-	bcs render_x.reset_states
-		jmp render_x.render_deferred_contents
+	bcs render_x.reset_states				;;	5(+1)
+		jmp render_x.render_deferred_contents	;;	8
 
 ;; out:
 ;;	A: #0
@@ -243,11 +242,11 @@ render_x.reset_states:
 	lda #render_x.FULL_OF_FUEL
 	sta <render_x.q.fuel
 	lda #0
-	sta <render_x.q.available_bytes
+	sta <render_x.q.available_bytes	;;this will free up a waiting thread
 ;	ldy #(render_x.nmi.STATE_VARIABLES_END - render_x.nmi.STATE_VARIABLES_BASE)
 ;.reset:
 ;		sta render_x.nmi.STATE_VARIABLES_BASE-1,y
-;		;sta <render_x.q.available_bytes	;;this frees up a waiting thread
+;		;sta <render_x.q.available_bytes
 ;		dey
 ;		bne .reset
 	rts
@@ -282,9 +281,6 @@ render_x.ensure_buffer_available:
 	;cmp #render_x.BUFFER_CAPACITY
 	;bcs render_x.await_complete_rendering
 
-	;lda <render_x.q.addr_index
-	;cmp #render_x.ADDR_CAPACITY	;;rendering up to X lines at once (or exceed the nmi duration)
-	;bcc render_x.rts_1
 	clc
 	adc #render_x.FUEL_FOR_OVERHEAD
 	eor #$ff
@@ -381,10 +377,7 @@ render_x.queue_border:
 		dey
 		bne .get_parts
 
-	;jsr render_x.begin_queueing
 ;; --- queue tiles.
-	
-	;ldx <render_x.q.available_bytes
 	ldx #0
 	pla
 	jsr render_x.build_temp_buffer
@@ -396,9 +389,8 @@ render_x.queue_border:
 		dey
 		bne .put_middles
 	pla
-	;jmp render_x.queue_byte
 	jsr render_x.build_temp_buffer
-	;jmp render_x.queue_bytes_from_buffer
+	FALL_THROUGH_TO render_x.queue_bytes_from_buffer
 ;--------------------------------------------------------------------------------------------------
 render_x.queue_bytes_from_buffer:
 	DECLARE_WINDOW_VARIABLES
@@ -463,9 +455,6 @@ render_x.begin_queueing:
 	pha	;;width
 	;; calc ajusted offset
 	and #$f
-	;bne .align
-		;ora #$10
-;.align:
 	sta <.bias
 	iny	;;offset should point the byte immediately after the tag bytes
 	tya

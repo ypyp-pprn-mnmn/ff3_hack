@@ -58,7 +58,8 @@ render_x.ADDR_CAPACITY = $0c
 ;; at the begininng of each NMI.
 ;;	18 scanlines x 113.6 cpu cycles (= 341 ppu cycles)
 render_x.FULL_OF_FUEL = (2044 >> 3)	;;2044 = 18 * 113.6, 2158 = 19 * 113.6.
-render_x.FUEL_FOR_OVERHEAD = ((68 >> 3) + 1)
+render_x.FUEL_FOR_OVERHEAD = ((65 >> 3) + 1)
+render_x.FUEL_LOOP_OVERHEAD = ((11 >> 3) + 1)
 
 ;; ------------------------------------------------------------------------------------------------
 render_x.nmi.LOCALS_COUNT = $1
@@ -75,22 +76,10 @@ render_x.nmi.LOCALS_COUNT = $1
 render_x.q.init_flags = $c0	;;this address isn't touched by floor's logic
 render_x.q.fuel = $c1	;;if exhausted, then flush queue (await completion of pending rendering)
 render_x.q.available_bytes = $c2
-;render_x.q.addr_index = $c3
-;render_x.q.target_index = $c4	;;12bytes.
-;render_x.q.attr_pending = $7308	;;2bytes. 1bit per vertical line. lower first.
 
 ;; pre-calculated internal parameters.
-;; index order:
-;; nambtable on 1st bg, attr on 1st bg, 
-;; nambtable on 2nd bg, attr on 2nd bg, 
-;render_x.q.available_bytes = $7308
 render_x.q.strides = $c4
-;render_x.q.buffer_biases = $c8
-;render_x.q.start_addr.low = $7318
-;render_x.q.start_addr.high = $731c
-;; max 16 addresses.
-;render_x.q.vram.low = $7320
-;render_x.q.vram.high = $7330
+
 ;; buffer and addresses are shared among for name table and attributes.
-render_x.q.buffer = $7310	;max 0xc0 bytes = 192 titles.
+render_x.q.buffer = $7310	;max 0xf0 bytes = 240 titles.
     .endif  ;;_FEATURE_DEFERRED_RENDERING
