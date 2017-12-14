@@ -44,7 +44,7 @@ render_x.NO_BORDERS = $80
 render_x.PENDING_INIT = $40
 render_x.RENDER_RUNNING = $20	;;or 'completed'
 render_x.SKIP_CONTENTS = $08
-render_x.NEED_SPRITE_DMA = $04
+;render_x.NEED_SPRITE_DMA = $04
 render_x.NEED_TOP_BORDER = $02
 render_x.NEED_BOTTOM_BORDER = $01
 ;; capacity limits.
@@ -64,7 +64,7 @@ render_x.FUEL_FOR_OVERHEAD = (((65 * 8 / 9) >> 3) + 1)
 render_x.FUEL_LOOP_OVERHEAD = ((11 >> 3) + 1)
 
 ;; ------------------------------------------------------------------------------------------------
-render_x.nmi.LOCALS_COUNT = $1
+;render_x.nmi.LOCALS_COUNT = $1
 ;render_x.nmi.STATE_VARIABLES_BASE = $c2
 ;render_x.nmi.STATE_VARIABLES_END = $d0
 
@@ -79,8 +79,9 @@ render_x.q.init_flags = $c0	;;this address isn't touched by floor's logic
 render_x.q.fuel = $c1	;;if exhausted, then flush queue (await completion of pending rendering)
 render_x.q.available_bytes = $c2
 
+render_x.q.done_attrs = $c4	;;2byte. 1bit per 16x16 row. lower first.
 ;; pre-calculated internal parameters.
-render_x.q.strides = $c4
+render_x.q.strides = $c6
 
 ;; buffer and addresses are shared among for name table and attributes.
 render_x.q.buffer = $7310	;max 0xf0 bytes = 240 titles.
