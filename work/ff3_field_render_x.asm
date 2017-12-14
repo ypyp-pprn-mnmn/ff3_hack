@@ -546,6 +546,10 @@ render_x.queue_attributes
 		lsr A
 		bcs .done
 			;; only update attr if the line on even boundary
+			;pha
+			;jsr render_x.is_attr_have_updated
+			;pla
+			;bcs .done
 			lsr A
 			asl A
 			asl A
@@ -588,8 +592,30 @@ render_x.queue_attributes
 			pha	;;width
 			tya
 			jmp render_x.queue_head_and_body
+.skip_update:
 .done:
 	rts
+;--------------------------------------------------------------------------------------------------
+;; A = row in 16x16 unit
+	;;TODO
+	.if 0
+render_x.is_attr_have_updated:
+	pha
+	and #1
+	tax
+	pla
+	lsr A
+	tay
+	lda <render_x.q.done_attrs,x
+	and floor_setBitMask,y
+	eor floor_setBitMask,y
+	sec
+	beq .skip_update
+		clc
+		sta <render_x.q.done_attrs,x
+.skip_update:
+	rts
+	.endif ;;TODO
 ;--------------------------------------------------------------------------------------------------
 render_x.build_temp_buffer:
 	sta render_x.temp_buffer,x
@@ -638,6 +664,7 @@ render_x.setup_deferred_rendering:
 	jsr field_x.calc_available_width_in_bg
 	;; A = width 1st
 	ldy #0
+	sty <render_x.q.done_attrs
 	;pha	;;width_1st
 	;jsr render_x.precalc_params
 	sta <render_x.q.strides+0
@@ -654,11 +681,10 @@ render_x.setup_deferred_rendering:
 .done:
 	pla	;;initial A
 	rts
-
 	VERIFY_PC_TO_PATCH_END field.window.renderer
 ;==================================================================================================
 	RESTORE_PC floor.treasure.FREE_BEGIN
-
+;--------------------------------------------------------------------------------------------------
 field_x.fill_to_bottom.loop:
 .lines_drawn = $1f
 .window_height = $3d

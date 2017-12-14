@@ -378,7 +378,6 @@ field_x.map_coords_to_vram:
 		ora #4
 .bg_1st:
 	rts
-
 ;--------------------------------------------------------------------------------------------------
 ;render_x.init:
 ;	lda #0
@@ -415,7 +414,7 @@ render_x.on_opening_enter:
 	;;assume A == 0
 	sta render_x.q.init_flags
 	jmp $C49E	;;some ppu initialiation
-	
+
 	.endif ;_FEATURE_DEFERRED_RENDERING
 ;--------------------------------------------------------------------------------------------------
 	;VERIFY_PC $f6aa
