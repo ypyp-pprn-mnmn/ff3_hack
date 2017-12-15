@@ -354,74 +354,50 @@ field.draw_window_content:
 	.oops:
 		brk
 	.endif	;;_FEATURE_DEFERRED_RENDERING
-;--------------------------------------------------------------------------------------------------
 
+;--------------------------------------------------------------------------------------------------
 	.ifdef _FEATURE_DEFERRED_RENDERING
-;in: A = offset Y, X = offset X
-;out: A = vram high, X = vram low
-render_x.map_coords_to_vram:
-;@see $3f:f40a setVramAddrForWindow
-.y_to_addr_low = $f4a1
-.y_to_addr_high = $f4c1
-	cmp #30
-	bcc .no_wrap_y
-		sbc #30	;here carry is always set	
-	.no_wrap_y:
-	tay
+render_x.fill_to_bottom.loop:
+.lines_drawn = $1f
+.window_height = $3d
+	ldx #TEXTD_WANT_ONLY_LOWER
+	lsr A
+	beq .do_half
+		ldx #0
+.do_half:
 	txa
-	and #$3f	;wrap around
-	cmp #$20	;check which BG X falls in
-	and #$1f	;turn into offset within that BG
-	ora .y_to_addr_low,y
+	FALL_THROUGH_TO render_x.fill_to_bottom
+
+render_x.fill_to_bottom:
+.lines_drawn = $1f
+.window_height = $3d
+.p_text = $3e
+	pha
+	jsr field.draw_window_content
+	pla
 	tax
-	lda .y_to_addr_high,y
-	bcc .bg_1st
-.bg_2nd:
-		ora #4
-.bg_1st:
+	;; checks if this call is made on the text end
+	ldy #0
+	lda [.p_text],y
+	bne .done
+
+	inc <.lines_drawn
+	cpx #TEXTD_WANT_ONLY_LOWER
+	;cmp #TEXTD_WANT_ONLY_LOWER
+	beq .test_end
+		inc <.lines_drawn
+.test_end:
+	lda <.window_height
+	sec
+	sbc <.lines_drawn
+	bne render_x.fill_to_bottom.loop
+.done:
 	rts
-;--------------------------------------------------------------------------------------------------
-;render_x.init:
-;	lda #0
-;	sta render_x.q.init_flags
-;	rts
-;;make sure the init flag have 'clean' value before use
-;;1F:E1DC:A9 00     LDA #$00
-;;1F:E1DE:20 EC E7  JSR floor.load_data
-;;1F:E1E1:A9 3A     LDA #$3A
-render_x.on_floor_enter:
-	FIX_ADDR_ON_CALLER $3f,$e1de+1
-    ;a = #0;
-    ;dungeon::loadFloor();   //$e7ec();
-	;;assume A == 0
-	sta render_x.q.init_flags
-	jmp floor.load_data	;;$e7ec
-
-;;1E:A534:A9 00     LDA #$00
-;;1E:A536:85 25     STA $0025 = #$00
-;;1E:A538:8D 01 20  STA PPU_MASK = #$00
-;;1E:A53B:8D F0 79  STA $79F0 = #$00
-;;1E:A53E:8D F0 7A  STA $7AF0 = #$00
-;;1E:A541:20 06 DD  JSR $DD06
-render_x.on_menu_enter:
-	FIX_ADDR_ON_CALLER $3d,$a541+1
-	;;assume A == 0
-	sta render_x.q.init_flags
-	jmp $dd06	;;? $dfd6() + call sounddriver + $dff8()
-
-;;1F:C08E:A9 00     LDA #$00
-;;1F:C090:20 9E C4  JSR $C49E
-render_x.on_opening_enter:
-	FIX_ADDR_ON_CALLER $3e,$c090+1
-	;;assume A == 0
-	sta render_x.q.init_flags
-	jmp $C49E	;;some ppu initialiation
-
-	.endif ;_FEATURE_DEFERRED_RENDERING
+	.endif	;;_FEATURE_DEFERRED_RENDERING
 ;--------------------------------------------------------------------------------------------------
 	;VERIFY_PC $f6aa
 ;--------------------------------------------------------------------------------------------------
-
+	.ifndef _FEATURE_DEFERRED_RENDERING
 ;$3f:f6aa field::upload_window_content
 ;//	[in] u8 $38 : offset x
 ;//	[in] u8 $39 : offset per 2 line
@@ -437,23 +413,8 @@ render_x.on_opening_enter:
 ;;callers:
 ;;	$3f:edc6 field.draw_window_row
 ;;	$3f:f692 field.draw_window_content
-	
-	.ifndef _FEATURE_DEFERRED_RENDERING
 field.upload_window_content:
 	DECLARE_WINDOW_VARIABLES
-;;[in]
-;.left = $38
-;.width = $3c
-;.offsetX = $3a
-;.offsetString = $3a
-;.offsetY = $3b
-;.iChar = $90
-;.widthIn1stBg = $91
-;.tileArray = $0780
-;.upperLineString = $0780
-;.lowerLineString = $07a0
-
-;-----------------------------------------
 	cmp #TEXTD_WANT_ONLY_LOWER 
 	beq .draw_lower_line
 		lda #0
@@ -541,6 +502,7 @@ field_x.upload_tiles:
 
 	;VERIFY_PC $f727
 	VERIFY_PC_TO_PATCH_END field.window.renderer
+;--------------------------------------------------------------------------------------------------
 	.endif	;;_OPTIMIZE_FIELD_WINDOW
 ;======================================================================================================
 	RESTORE_PC ff3_field_window_driver_begin
