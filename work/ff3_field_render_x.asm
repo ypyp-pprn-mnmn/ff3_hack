@@ -101,6 +101,7 @@ render_x.render_deferred_contents:
 ;; branch out.
 ;; X = offset
 ;; A = length
+	.if render_x.UNROLL_DEPTH = 4
 	lsr A				;;	2
 	bcc .length_0		;;	4+(1)
 .length_1:
@@ -112,26 +113,26 @@ render_x.render_deferred_contents:
 .length_111:
 				lsr A				;;	14
 				tay					;;	16
-				bcs .length_1111	;;	19
-				bcc .length_0111	;;	22
+				bcs .length_1111	;;	18+1
+				bcc .length_0111	;;	21
 .length_011:
 				lsr A				;;	15
 				tay					;;	17
-				bcs .length_1011	;;	20
-				bcc .length_0011	;;	23
+				bcs .length_1011	;;	19+1
+				bcc .length_0011	;;	22
 .length_01:
 			lsr A				;;	11
 			bcc .length_001	;;	13+(1)
 .length_101:
 				lsr A				;;	15
 				tay					;;	17
-				bcs .length_1101	;;	20
-				bcc .length_0101	;;	23
+				bcs .length_1101	;;	19+1
+				bcc .length_0101	;;	22
 .length_001:
 				lsr A				;;	16
 				tay					;;	18
-				bcs .length_1001	;;	21
-				bcc .length_0001	;;	24
+				bcs .length_1001	;;	20+1
+				bcc .length_0001	;;	23
 .length_0:
 		lsr A				;;	7
 		bcc .length_00		;;	9+(1)
@@ -161,10 +162,41 @@ render_x.render_deferred_contents:
 				tay					;;	19
 				bcs .length_1000	;;	22
 				bcc .length_0000
+	.else ;;UNROLL_DEPTH == 4
+	lsr A				;;	6
+	bcc .length_01		;;	8+(1)
+.length_11:
+		lsr A				;;	10
+		bcc .length_011	;;	12+(1)
+.length_111:
+			lsr A				;;	14
+			tay					;;	16
+			bcs .length_0111	;;	18+1
+			bcc .length_0011	;;	21
+.length_011:
+			lsr A				;;	15
+			tay					;;	17
+			bcs .length_0101	;;	19+1
+			bcc .length_0001	;;	22
+.length_01:
+		lsr A				;;	11
+		bcc .length_001	;;	13+(1)
+.length_101:
+			lsr A				;;	15
+			tay					;;	17
+			bcs .length_0110	;;	19+1
+			bcc .length_0010	;;	22
+.length_001:
+			lsr A				;;	16
+			tay					;;	18
+			bcs .length_0100	;;	20+1
+			bcc .length_0000	;;	23
+	.endif	;;UNROLL_DEPTH
 ;; A = scratch.
 ;; X = buffer offset.
 ;; Y = loop counter.
 .render_x.upload_loop:
+	.if render_x.UNROLL_DEPTH = 4
 	lda render_x.q.buffer-$10,x
 	sta $2007
 .length_1111:
@@ -189,6 +221,7 @@ render_x.render_deferred_contents:
 	lda render_x.q.buffer-$09,x
 	sta $2007
 .length_1000:
+	.endif	;;UNROLL_DEPTH == 4
 	lda render_x.q.buffer-$08,x
 	sta $2007
 .length_0111:
@@ -222,7 +255,8 @@ render_x.render_deferred_contents:
 	bmi render_x.upload_next	;;	4(+1)
 	txa							;;	6
 	clc							;;	8
-	adc #$10					;;	10
+	;adc #$10					;;	10
+	adc #(1 << render_x.UNROLL_DEPTH)	;;10
 	tax							;;	12
 	bne .render_x.upload_loop	;;	15
 
@@ -497,7 +531,8 @@ render_x.queue_head_and_body:
 	iny
 	pha	;;width
 	;; calc ajusted offset
-	and #$f
+	;and #$f
+	and #((1 << render_x.UNROLL_DEPTH) - 1)
 	sta <.bias
 	iny	;;offset should point the byte immediately after the tag bytes
 	tya

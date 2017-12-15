@@ -63,6 +63,8 @@ render_x.FULL_OF_FUEL = ((2158 * 8 / 9) >> 3)	;;2044 = 18 * 113.6, 2158 = 19 * 1
 render_x.FUEL_FOR_OVERHEAD = (((65 * 8 / 9) >> 3) + 1)
 render_x.FUEL_LOOP_OVERHEAD = ((11 >> 3) + 1)
 
+render_x.UNROLL_DEPTH = 3
+
 ;; ------------------------------------------------------------------------------------------------
 ;render_x.nmi.LOCALS_COUNT = $1
 ;render_x.nmi.STATE_VARIABLES_BASE = $c2
