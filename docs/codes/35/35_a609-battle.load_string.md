@@ -1,7 +1,7 @@
 ﻿
-# $35:a609 loadString
 
-
+# $35:a609 battle.load_string
+>戦闘モードの文字列ロード
 
 ### args:
 + [in] u16 $18 : tableBase
@@ -16,13 +16,14 @@
 ```js
 {
 	$1a = a;
-	a = x; push a;
+	a = x; push(a);
 	get2byteAtBank18($1a);	// $3f:fd60();
-$a610:	push (a = $18);
-	push (a = $19);
+$a610:
+	push(a = $18);
+	push(a = $19);
 	$1a,1b = #4000;
 	div16();	//$3f:fc92();
-	y = $1c + #0c;
+	y = $1c + 0x0c;
 	$19 = pop a;
 	$18 = pop a;
 	switch (y) {	//possible y : c,d,e,f (per16k bank index)
@@ -42,6 +43,5 @@ $a666:
 $a66c:
 }
 ```
-
 
 

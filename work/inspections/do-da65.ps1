@@ -7,7 +7,7 @@ Param(
     #[ValidatePattern("[\.\:\`$_]?[0-9a-fA-f]{2}[\.\:\`$_]?[0-9a-fA-f]{4}")]
         [string] $work_dir,
     [Parameter()]
-		[string] $nes_file = "../base-binary/ff3_hack_base.nes.noheader"
+		[string] $nes_file = "../base-binary/ff3_plain.nes.noheader"
 )
 if (-not (Test-Path $work_dir)) {
     throw;

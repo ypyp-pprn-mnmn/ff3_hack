@@ -25,5 +25,7 @@ $build_files | % {
 	write-host -foreground gray "making patch as .ips..."
 	$ips = ./flips --create --ips $original $release_dir/$out;
 	$ips;
+
+	## format-hex "$release_dir/$out.hex";
 }
 write-host -foreground green "done."
