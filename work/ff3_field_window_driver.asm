@@ -12,9 +12,8 @@
 ;==================================================================================================
 ff3_field_window_driver_begin:
 ;--------------------------------------------------------------------------------------------------
-	.ifdef FAST_FIELD_WINDOW
+	.ifdef _OPTIMIZE_FIELD_WINDOW
 	INIT_PATCH_EX field.window.driver, $3f, $eb2d, $eefa, $eb2d
-;field_x.BULK_PATCH_BEGIN:
 
 ;------------------------------------------------------------------------------------------------------
 ;;$3f:ecfa field::draw_in_place_window
@@ -81,9 +80,8 @@ field.draw_window_box:	;;$ed02
 field_x.draw_window_box_with_region:
 	DECLARE_WINDOW_VARIABLES
 ;; ---
-	jsr field_x.shrink_window_metrics
-
 	.ifdef _FEATURE_DEFERRED_RENDERING
+		jsr field_x.shrink_window_metrics
 	;; notes:
 	;;	initializing renderer here will interfere with `menu.erase_box_from_bottom`
 	;;	and may result in glitches on screen or even worse, crashing the game.
@@ -97,15 +95,13 @@ field_x.draw_window_box_with_region:
 	;;	thus, it is deliberately chosen not to make the init here.
 		jsr field_x.begin_ppu_update
 		jsr field_x.end_ppu_update
+		jmp field.restore_banks	;$ecf5
 	.endif	;_FEATURE_DEFERRED_RENDERING
 
-	jmp field.restore_banks	;$ecf5
-
 	;VERIFY_PC $ed56
-
-;------------------------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------
 	;INIT_PATCH $3f,$edc6,$ede1
-	.ifndef FAST_FIELD_WINDOW
+	.ifndef _FEATURE_DEFERRED_RENDERING
 field.draw_window_row:	;;$3f:edc6 field::draw_window_row
 ;;callers:
 ;;	$3f:ece5 field::draw_window_top
@@ -119,8 +115,8 @@ field.draw_window_row:	;;$3f:edc6 field::draw_window_row
 	jsr field.upload_window_content	;$f6aa
 	;jsr field.setTileAttrForWindow	;$c9a9
 	;;fall through.
-	.endif	;;FAST_FIELD_WINDOW
-
+	.endif	;;_FEATURE_DEFERRED_RENDERING
+;--------------------------------------------------------------------------------------------------
 field_x.end_ppu_update:
 	jsr field.sync_ppu_scroll	;$ede1
 	jmp field.call_sound_driver	;$c750
@@ -770,20 +766,22 @@ field.draw_window_top:
 ;;}
 .window_top = $39
 .window_row_in_drawing = $3b
-	jsr field_x.shrink_window_metrics
-	ldx #(render_x.NEED_TOP_BORDER|render_x.PENDING_INIT|render_x.RENDER_RUNNING|render_x.SKIP_CONTENTS)
-	jsr render_x.setup_deferred_rendering
-	;; contents of the item window will be redrawn after the border rendered.
-	;; so it is ok to fill content area with empty background, though not looking good.
-	jsr field.draw_window_content
-	jsr render_x.finalize
-	
-;	lda <.window_top
-;	sta <.window_row_in_drawing
-;	jsr field.calc_draw_width_and_init_window_tile_buffer
-;	;jsr field.init_window_attr_buffer	;;unnecessary
-;	jsr field.get_window_top_tiles
-;	jsr field.draw_window_row
+	.ifdef _FEATURE_DEFERRED_RENDERING
+		jsr field_x.shrink_window_metrics
+		ldx #(render_x.NEED_TOP_BORDER|render_x.PENDING_INIT|render_x.RENDER_RUNNING|render_x.SKIP_CONTENTS)
+		jsr render_x.setup_deferred_rendering
+		;; contents of the item window will be redrawn after the border rendered.
+		;; so it is ok to fill content area with empty background, though not looking good.
+		jsr field.draw_window_content
+		jsr render_x.finalize
+	.else	;;ifdef _FEATURE_DEFERRED_RENDERING
+		lda <.window_top
+		sta <.window_row_in_drawing
+		jsr field.calc_draw_width_and_init_window_tile_buffer
+		jsr field.init_window_attr_buffer
+		jsr field.get_window_top_tiles
+		jsr field.draw_window_row
+	.endif	;;ifdef _FEATURE_DEFERRED_RENDERING
 	;; fall through (into $ecf5: field.restore_banks)
 	;jmp field.restore_banks	;$ecf5
 	FALL_THROUGH_TO field.restore_banks
@@ -907,7 +905,6 @@ field_x.get_window_tiles:
 	adc #$06
 	rts
 
-	.ifdef _FEATURE_BORDER_LOADER
 ;;$3f:ee3e field::getWindowTilesForBottom
 ;;callers:
 ;;	$3f:ed02 field::draw_window_box
@@ -923,7 +920,6 @@ field.get_window_middle_tiles:	;ee1d
 	jsr field_x.get_window_tiles
 	lda #$03<<1|1
 	bne field_x.get_window_tiles
-	.endif	;.ifdef _FEATURE_BORDER_LOADER
 
 field_x.window_parts:
 	db $f7, $f8, $f9
@@ -936,7 +932,6 @@ field_x.window_parts:
 	db $fc, $fd, $fe
 
 	.endif	;.ifndef _FEATURE_DEFERRED_RENDERING
-
 
 	;VERIFY_PC $ee65
 ;------------------------------------------------------------------------------------------------------
@@ -1101,7 +1096,6 @@ field.draw_string_in_window:	;;$eec0
 	sta <.lines_drawn	;$1F
 	sta <.menu_item_continue_building	;$1e
 	jsr textd.draw_in_box	;$eefa
-	;bcs .more_to_draw	;$EEF3
 	bcc .completed
 ;$eef3
 .more_to_draw:
@@ -1111,8 +1105,8 @@ field.draw_string_in_window:	;;$eec0
 	;sec
 	;rts
 .completed:
-	.ifdef FAST_FIELD_WINDOW
-		jsr field_x.fill_to_bottom
+	.ifdef _FEATURE_DEFERRED_RENDERING
+		jsr render_x.fill_to_bottom
 	.else
 		jsr field.draw_window_content	;$f692
 	.endif
@@ -1129,7 +1123,7 @@ field.draw_string_in_window:	;;$eec0
 	VERIFY_PC_TO_PATCH_END field.window.driver
 field.window.driver.BULK_PATCH_FREE_BEGIN:
 
-	.endif	;FAST_FIELD_WINDOW
+	.endif	;_OPTIMIZE_FIELD_WINDOW
 
 ;======================================================================================================
 	;RESTORE_PC ff3_field_window_driver_begin

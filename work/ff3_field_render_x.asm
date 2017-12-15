@@ -5,12 +5,7 @@
 ;   implementation of optimzied renderer code
 ;
 ;==================================================================================================
-    .ifdef FAST_FIELD_WINDOW
-
-    .ifndef textd.BULK_PATCH_FREE_BEGIN
-        .fail
-    .endif
-
+    .ifdef _FEATURE_DEFERRED_RENDERING
     
     .ifndef _FEATURE_STOMACH_AMOUNT_1BYTE
 		;;	it is needed to move and free up the buffer at $7300-$73ff,
@@ -18,9 +13,11 @@
 		;;	these logics rely on that buffer being stable across rendering.
     	.fail
     .endif
-    
-    ;RESTORE_PC textd.BULK_PATCH_FREE_BEGIN
-	RESTORE_PC field.window.renderer.FREE_BEGIN
+
+    .ifndef field.window.ppu.FREE_BEGIN
+        .fail
+    .endif    
+	RESTORE_PC field.window.ppu.FREE_BEGIN
 
 render_x.RENDERER_BEGIN:
 ;--------------------------------------------------------------------------------------------------
@@ -510,7 +507,7 @@ render_x.begin_queueing:
 	ldx <.temp_left
 	lda <.offset_y
 	;; X = window left
-	jsr field_x.map_coords_to_vram
+	jsr render_x.map_coords_to_vram
 
 ;;	A = vram high
 ;;	X = vram low
@@ -597,7 +594,7 @@ render_x.queue_attributes
 			;sta <.addr_offset
 			pha
 			;; --- get attr cache updated.
-			jsr field_x.inflate_window_metrics
+			jsr render_x.inflate_window_metrics
 			jsr field.init_window_attr_buffer	;ed56
 			jsr field.update_window_attr_buff	;$c98f
 
@@ -702,7 +699,7 @@ render_x.setup_deferred_rendering:
 .no_borders:
 	stx <.window_width
 	tya
-	jsr field_x.calc_available_width_in_bg
+	jsr render_x.calc_available_width_in_bg
 	;; A = width 1st
 	;ldy #0
 	;sty <render_x.q.done_attrs
@@ -723,11 +720,11 @@ render_x.setup_deferred_rendering:
 .done:
 	pla	;;initial A
 	rts
-	VERIFY_PC_TO_PATCH_END field.window.renderer
+	VERIFY_PC_TO_PATCH_END field.window.ppu
 ;==================================================================================================
 	RESTORE_PC floor.treasure.FREE_BEGIN
 ;--------------------------------------------------------------------------------------------------
-field_x.fill_to_bottom.loop:
+render_x.fill_to_bottom.loop:
 .lines_drawn = $1f
 .window_height = $3d
 	ldx #TEXTD_WANT_ONLY_LOWER
@@ -736,9 +733,9 @@ field_x.fill_to_bottom.loop:
 		ldx #0
 .do_half:
 	txa
-	FALL_THROUGH_TO field_x.fill_to_bottom
+	FALL_THROUGH_TO render_x.fill_to_bottom
 
-field_x.fill_to_bottom:
+render_x.fill_to_bottom:
 .lines_drawn = $1f
 .window_height = $3d
 .p_text = $3e
@@ -760,7 +757,7 @@ field_x.fill_to_bottom:
 	lda <.window_height
 	sec
 	sbc <.lines_drawn
-	bne field_x.fill_to_bottom.loop
+	bne render_x.fill_to_bottom.loop
 .done:
 	rts
 
@@ -775,7 +772,7 @@ field_x.shrink_window_metrics:
 	dec <.window_height
 	rts
 
-field_x.inflate_window_metrics:
+render_x.inflate_window_metrics:
 	DECLARE_WINDOW_VARIABLES
 	dec <.window_left
 	dec <.window_top
@@ -785,106 +782,7 @@ field_x.inflate_window_metrics:
 	inc <.window_height
 	rts
 ;==================================================================================================
-	.if 0
-field_x.update_ppu_attr_table:
-.left = $38
-.top = $39	;in 8x8
-.offset_x = $3a
-.offset_y = $3b
-.width = $3c
-.height = $3d
-.attr_cache = $0300
-	lda <.top
-	and #$1c	;capping valid height (0x1e) and mask off lower bits to align 32x32 boundary
-	asl A	; (top >> 2) << 3 : 8 bytes per row
-	sta <.offset_x
-
-	lda <.height
-	adc <.top
-	cmp #30
-	bcc .no_wrap
-		adc #1	;effectively +2. to fill gap between screen boundary and attr boundary
-.no_wrap:
-	adc #3	;round up to next attr boundary (4n)
-	and #$1c
-	asl A
-	sta <.offset_y
-
-	ldy #$23
-	jsr .field_x.upload_attributes
-	ldy #$27
-.field_x.upload_attributes:
-	lda <.offset_x
-.loop:
-	;A = offset into attr table
-	;X = index of attr table (taken target bg in account)
-		cpy #$23
-		beq .on_1st_bg
-		ora #$40	;on 2nd bg, offset into cache started at .attr_cache + $40
-.on_1st_bg:
-		tax
-		sty $2006
-		ora #$c0
-		sta $2006
-	.upload_loop:
-			lda .attr_cache,x
-			sta $2007
-			inx
-			txa
-			and #$07
-			bne .upload_loop
-		txa
-		and #$38	;wraps if crosses bg boundary ($40)
-		cmp <.offset_y
-		bne .loop
-	rts
-
-field_x.switch_vram_addr_mode:
-	pha
-	lda <field.ppu_ctrl_cache
-	and #%11111011
-	sta <field.ppu_ctrl_cache
-	pla
-	and #%00000100
-	ora <field.ppu_ctrl_cache
-	sta <field.ppu_ctrl_cache
-	sta $2000
-	rts
-	.endif
-;==================================================================================================
-	.if 0
-	lda <.in_menu_mode
-	bne .post_attr_update
-		jsr field.init_window_attr_buffer	;ed56
-		lda <.height
-		pha
-		ldy <.beginY
-.setupAttributes:
-		sty <.currentY
-		jsr field.update_window_attr_buff	;$c98f
-		ldy <.currentY
-		iny
-		;; field.updateTileAttrCache() isn't prepared for cases that window crosses vertical boundary (which is at 0x1e)
-		;; that is, if currentY > 0x1e, updated attributes are placed 1 row above where it should be in.
-		;; so here handles as a wrokaround wrapping vertical coordinates.
-		cpy #30	;; wrap around
-		bne .no_wrap
-			ldy #0
-	.no_wrap:
-		pla
-		sec
-		sbc #1
-		pha
-		bne .setupAttributes
-
-	.update_ppu:
-		pla	;dispose
-		jsr field_x.begin_ppu_update	;wait_nmi+do_dma. if omitted dma, sprites are shown on top of window
-		jsr field_x.update_ppu_attr_table
-		jsr field_x.end_ppu_update	;sync_ppu_scroll+call_sound_driver
-	.endif ;0
-;==================================================================================================
 
 	VERIFY_PC_TO_PATCH_END floor.treasure
 render_x.RENDERER_END:
-    .endif  ;FAST_FIELD_WINDOW
+    .endif  ;;_FEATURE_DEFERRED_RENDERING

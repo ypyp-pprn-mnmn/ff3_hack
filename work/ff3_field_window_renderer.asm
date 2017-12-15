@@ -12,12 +12,9 @@
 ;==================================================================================================
 ff3_field_window_renderer_begin:
 
-;==================================================================================================
-;; implementations for codes originally placed on $eefa - $f40a 'textd' will be found at "ff3_textd.asm"
-;==================================================================================================
+	.ifdef _OPTIMIZE_FIELD_WINDOW
+	INIT_PATCH_EX field.window.ppu, $3f, $f40a, $f44b, textd.BULK_PATCH_FREE_BEGIN
 
-	.ifdef FAST_FIELD_WINDOW
-	INIT_PATCH_EX field.window.renderer, $3f, $f40a, $f44b, textd.BULK_PATCH_FREE_BEGIN
 	.ifndef _FEATURE_DEFERRED_RENDERING
 ;;# $3f:f40a field.set_vram_addr_for_window
 ;;### args:
@@ -84,11 +81,11 @@ field.set_vram_addr_for_window	;;$f40a
 ;;	rts             ; F44A 60
 
 	
-field.window.renderer.FREE_BEGIN:
-	VERIFY_PC_TO_PATCH_END field.window.renderer
+field.window.ppu.FREE_BEGIN:
+	VERIFY_PC_TO_PATCH_END field.window.ppu
 	.endif	;;FAST_FIELD_WINDOW
 ;==================================================================================================
-	.ifdef FAST_FIELD_WINDOW
+	.ifdef _OPTIMIZE_FIELD_WINDOW
 
 	INIT_PATCH_EX menu.erase, $3f, $f44b, $f4a1, $f44b
 menu.savefile.erase_window:
@@ -131,52 +128,52 @@ menu.erase_box_of_width_1e:
 ;;	A: width
 menu.erase_box_from_bottom:
 	DECLARE_WINDOW_VARIABLES
-	;pha
-	ldx #(render_x.NO_BORDERS|render_x.PENDING_INIT|render_x.RENDER_RUNNING)
-	jsr render_x.setup_deferred_rendering	;;preserves A.
-	;jsr render_x.stack_and_setup
-	;pla
+	.ifdef _FEATURE_DEFERRED_RENDERING
+		ldx #(render_x.NO_BORDERS|render_x.PENDING_INIT|render_x.RENDER_RUNNING)
+		jsr render_x.setup_deferred_rendering	;;this function preserves A.
+	.endif
+	
 .erase_loop:
-	pha				; F47A 48
-	lda <.window_width         ; F47B A5 3C
-	sta <.output_index         ; F47D 85 90
-	sta <.width_in_1st         ; F47F 85 91
+	pha							; F47A 48
+	lda <.window_width      	; F47B A5 3C
+	sta <.output_index      	; F47D 85 90
+	sta <.width_in_1st      	; F47F 85 91
 
-;	ldy #$1D        ; F481 A0 1D
-;	lda #$00        ; F483 A9 00
+;	ldy #$1D        			; F481 A0 1D
+;	lda #$00        			; F483 A9 00
 ;.l_F485:
-;		sta $0780,y     ; F485 99 80 07
-;		sta $07A0,y     ; F488 99 A0 07
-;		dey 			; F48B 88
-;		bpl .l_F485     ; F48C 10 F7
+;		sta $0780,y     		; F485 99 80 07
+;		sta $07A0,y     		; F488 99 A0 07
+;		dey 					; F48B 88
+;		bpl .l_F485     		; F48C 10 F7
 	;;as `field.draw_window_content` fill up the buffer with default background,
 	;;it is needed to fill up with '0' for each time.
 	lda #0
 	jsr field_x.fill_tile_buffer_with
-	;; XXX:
-	;;	with combined auto-rundown mechanics ('RENDER_RUNNING'), this:
-	;;	1) causes crash on item window when swap or use performed
-	jsr field.draw_window_content       ; F48E 20 92 F6
+
+	jsr field.draw_window_content	; F48E 20 92 F6
 	
-	lda <.offset_y         ; F491 A5 3B
-	sec 			; F493 38
-	sbc #$04        ; F494 E9 04
-	sta <.offset_y         ; F496 85 3B
-	pla 			; F498 68
-	sec 			; F499 38
-	sbc #$01        ; F49A E9 01
+	lda <.offset_y				; F491 A5 3B
+	sec 						; F493 38
+	sbc #$04        			; F494 E9 04
+	sta <.offset_y         		; F496 85 3B
+	pla 						; F498 68
+	sec 						; F499 38
+	sbc #$01        			; F49A E9 01
 	;bne menu.erase_box_from_bottom     ; F49C D0 DC
 	bne .erase_loop
-	jsr render_x.finalize
-	;jsr render_x.finalize_and_unstack
+	.ifdef _FEATURE_DEFERRED_RENDERING
+		jsr render_x.finalize
+	.endif
 	jmp field.restore_banks  ; F49E 4C F5 EC
 
 	VERIFY_PC_TO_PATCH_END menu.erase
-	.endif	;;FAST_FIELD_WINDOW
-;------------------------------------------------------------------------------------------------------
-	.ifdef FAST_FIELD_WINDOW
+	.endif	;;_OPTIMIZE_FIELD_WINDOW
+;==================================================================================================
+	.ifdef _OPTIMIZE_FIELD_WINDOW
 	
-	INIT_PATCH $3f,$f670,$f727
+	;INIT_PATCH $3f,$f670,$f727
+	INIT_PATCH_EX field.window.renderer,$3f,$f670,$f727,$f670
 
 field_x.get_available_width_in_bg:
 	DECLARE_WINDOW_VARIABLES
@@ -188,7 +185,7 @@ field_x.get_available_width_in_bg:
 	FALL_THROUGH_TO field_x.calc_available_width_in_bg
 ;; in
 ;;	A : box left
-field_x.calc_available_width_in_bg
+render_x.calc_available_width_in_bg
 	DECLARE_WINDOW_VARIABLES
 	and #$1f	;take mod of 0x20 to wrap around
 	eor #$1f	;negate...
@@ -270,7 +267,6 @@ field.draw_window_content:
 .output_index = $90
 ;; ---
 	.ifndef _FEATURE_DEFERRED_RENDERING
-	;.if 1
 
 		pha
 		jsr waitNmiBySetHandler	;ff00
@@ -321,12 +317,15 @@ field.draw_window_content:
 		lda #$20
 		jsr render_x.queue_content
 	.composite_bottom:
-		;; further optimizations could be achieved
-		;; thru enabling the below line.
-		;; however, the more asynchronous, the more timing issues.
-		;; there indeed is a timing depedent glitches
-		;; and some of callers which do scrolling are
-		;; not ready for such a asynchronousity.
+		;; note:
+		;;	on next nmi the handler will be executed in somewhere
+		;;	in another function sit on top of this function,
+		;;	at arbitrary context. 
+		;;	therefore the handler never could safely destory
+		;;	any values neither in regsiters nor memory.
+		;;	this also implies the following restrictions apply to all of the callers:
+		;;	1) if a caller removes the handler,
+		;;	then rest of contents pending rendering will be discarded.
 		jsr render_x.set_deferred_renderer
 		;;
 		ldy <.lines_drawn
@@ -353,11 +352,13 @@ field.draw_window_content:
 		jmp field.init_window_tile_buffer
 	.oops:
 		brk
-
+	.endif	;;_FEATURE_DEFERRED_RENDERING
 ;--------------------------------------------------------------------------------------------------
+
+	.ifdef _FEATURE_DEFERRED_RENDERING
 ;in: A = offset Y, X = offset X
 ;out: A = vram high, X = vram low
-field_x.map_coords_to_vram:
+render_x.map_coords_to_vram:
 ;@see $3f:f40a setVramAddrForWindow
 .y_to_addr_low = $f4a1
 .y_to_addr_high = $f4c1
@@ -418,11 +419,8 @@ render_x.on_opening_enter:
 	.endif ;_FEATURE_DEFERRED_RENDERING
 ;--------------------------------------------------------------------------------------------------
 	;VERIFY_PC $f6aa
-	.endif	;FAST_FIELD_WINDOW
 ;--------------------------------------------------------------------------------------------------
-	.ifndef _FEATURE_DEFERRED_RENDERING
-	INIT_PATCH	$3f,$f6aa,$f727
-	.endif	;ifndef FAST_FIELD_WINDOW
+
 ;$3f:f6aa field::upload_window_content
 ;//	[in] u8 $38 : offset x
 ;//	[in] u8 $39 : offset per 2 line
@@ -438,8 +436,8 @@ render_x.on_opening_enter:
 ;;callers:
 ;;	$3f:edc6 field.draw_window_row
 ;;	$3f:f692 field.draw_window_content
-	;.ifndef OMIT_COMPATIBLE_FIELD_WINDOW
-	.if 0
+	
+	.ifndef _FEATURE_DEFERRED_RENDERING
 field.upload_window_content:
 ;[in]
 .left = $38
@@ -537,6 +535,8 @@ field.upload_window_content:
 	rts
 	.endif	;ifndef _FEATURE_DEFERRED_RENDERING
 
-	VERIFY_PC $f727
+	;VERIFY_PC $f727
+	VERIFY_PC_TO_PATCH_END field.window.renderer
+	.endif	;_OPTIMIZE_FIELD_WINDOW
 ;======================================================================================================
 	RESTORE_PC ff3_field_window_driver_begin

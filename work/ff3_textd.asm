@@ -12,7 +12,7 @@ STOMACH_RIGHT_COLUMN_AMOUNT = $19 ;;original = $18
 TEXT_BANK_BASE = $18    ;;$18:8000 => $30000
 TEXTD_WANT_ONLY_LOWER = $09
 
-    .ifdef FAST_FIELD_WINDOW
+    .ifdef _OPTIMIZE_FIELD_WINDOW
     .ifndef field.window.driver.BULK_PATCH_FREE_BEGIN
         .fail
     .endif
@@ -1615,5 +1615,5 @@ textd.restore_text_ptr:
 
 ; ================================================================================================= 
     VERIFY_PC_TO_PATCH_END textd
-	.endif	;FAST_FIELD_WINDOW
+	.endif	;_OPTIMIZE_FIELD_WINDOW
 textd.BULK_PATCH_FREE_BEGIN:
