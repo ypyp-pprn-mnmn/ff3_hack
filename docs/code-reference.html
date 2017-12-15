@@ -8,7 +8,7 @@
     <meta name="generator" content="pandoc">
     <meta name="description" content>
     <meta name="author" content="ypyp-pprn-mnmn (aka “301”)">
-    <!-- generated-at 2017-12-13 07:20:12+0900 -->
+    <!-- generated-at 2017-12-16 02:10:35+0900 -->
     <title>FF3@FC Original Code Documentation</title>
 
     <!-- Bootstrap core CSS -->
@@ -17489,44 +17489,89 @@ $b874:
 </ul>
 <h3 id="code-239">code:</h3>
 <pre class="sourceCode js" id="cb590"><code class="sourceCode javascript"><div class="sourceLine" id="cb590-1" data-line-number="1"><span class="op">{</span></div>
-<div class="sourceLine" id="cb590-2" data-line-number="2">    x <span class="op">=</span> $96<span class="op">;</span></div>
-<div class="sourceLine" id="cb590-3" data-line-number="3">    <span class="va">field</span>.<span class="at">get_window_region</span>()<span class="op">;</span>  <span class="co">//$ed61</span></div>
-<div class="sourceLine" id="cb590-4" data-line-number="4">    $3b <span class="op">=</span> $39<span class="op">;</span></div>
-<div class="sourceLine" id="cb590-5" data-line-number="5">    <span class="at">$f670</span>()<span class="op">;</span>    <span class="co">//field_calc_draw_width_and_init_window_tile_buffer</span></div>
-<div class="sourceLine" id="cb590-6" data-line-number="6">    <span class="va">field</span>.<span class="at">init_window_attr_buffer</span>()<span class="op">;</span>    <span class="co">//$ed56</span></div>
-<div class="sourceLine" id="cb590-7" data-line-number="7">    <span class="at">push</span>( $3d <span class="op">-</span> <span class="dv">2</span> )<span class="op">;</span></div>
-<div class="sourceLine" id="cb590-8" data-line-number="8">    <span class="dt">field</span><span class="op">::</span><span class="at">getWindowTilesForTop</span>()<span class="op">;</span>  <span class="co">//$edf6();</span></div>
-<div class="sourceLine" id="cb590-9" data-line-number="9">    <span class="va">field</span>.<span class="at">draw_window_row</span>()<span class="op">;</span>    <span class="co">//$edc6();</span></div>
-<div class="sourceLine" id="cb590-10" data-line-number="10">    a <span class="op">=</span> pop <span class="op">-</span> <span class="dv">2</span><span class="op">;</span></div>
-<div class="sourceLine" id="cb590-11" data-line-number="11">    <span class="cf">if</span> (a <span class="op">!=</span> <span class="dv">0</span>) <span class="op">{</span> <span class="co">//beq ed3b</span></div>
-<div class="sourceLine" id="cb590-12" data-line-number="12"><span class="dt">$ed23</span><span class="op">:</span></div>
-<div class="sourceLine" id="cb590-13" data-line-number="13">        <span class="cf">if</span> (a <span class="op">&lt;</span> <span class="dv">0</span>) <span class="op">{</span> <span class="co">//bcs ed2a</span></div>
-<div class="sourceLine" id="cb590-14" data-line-number="14"><span class="dt">$ed25</span><span class="op">:</span></div>
-<div class="sourceLine" id="cb590-15" data-line-number="15">            $3b<span class="op">--;</span></div>
-<div class="sourceLine" id="cb590-16" data-line-number="16">            <span class="co">//jmp $ed3b</span></div>
-<div class="sourceLine" id="cb590-17" data-line-number="17">        <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></div>
-<div class="sourceLine" id="cb590-18" data-line-number="18"><span class="dt">$ed2a</span><span class="op">:</span></div>
-<div class="sourceLine" id="cb590-19" data-line-number="19">            <span class="cf">do</span> <span class="op">{</span></div>
-<div class="sourceLine" id="cb590-20" data-line-number="20">                push a<span class="op">;</span></div>
-<div class="sourceLine" id="cb590-21" data-line-number="21">                <span class="dt">field</span><span class="op">::</span><span class="at">getWindowTilesForMiddle</span>()<span class="op">;</span>   <span class="co">//$ee1d();</span></div>
-<div class="sourceLine" id="cb590-22" data-line-number="22">                <span class="va">field</span>.<span class="at">draw_window_row</span>()<span class="op">;</span>    <span class="co">//$edc6();</span></div>
-<div class="sourceLine" id="cb590-23" data-line-number="23">                a <span class="op">=</span> pop a <span class="op">-</span> <span class="dv">2</span><span class="op">;</span></div>
-<div class="sourceLine" id="cb590-24" data-line-number="24">                <span class="cf">if</span> (a <span class="op">==</span> <span class="dv">0</span>) goto $ed3b</div>
-<div class="sourceLine" id="cb590-25" data-line-number="25">            <span class="op">}</span> <span class="cf">while</span> (a <span class="op">&gt;=</span> <span class="dv">0</span>)<span class="op">;</span> <span class="co">//bcs ed2a</span></div>
-<div class="sourceLine" id="cb590-26" data-line-number="26"><span class="dt">$ed39</span><span class="op">:</span></div>
-<div class="sourceLine" id="cb590-27" data-line-number="27">            $3b<span class="op">--;</span></div>
-<div class="sourceLine" id="cb590-28" data-line-number="28">        <span class="op">}</span></div>
-<div class="sourceLine" id="cb590-29" data-line-number="29">    <span class="op">}</span></div>
-<div class="sourceLine" id="cb590-30" data-line-number="30"><span class="dt">$ed3b</span><span class="op">:</span></div>
-<div class="sourceLine" id="cb590-31" data-line-number="31">    <span class="dt">field</span><span class="op">::</span><span class="at">getWindowTilesForBottom</span>()<span class="co">//$ee3e();</span></div>
-<div class="sourceLine" id="cb590-32" data-line-number="32">    <span class="va">field</span>.<span class="at">draw_window_row</span>()<span class="op">;</span>    <span class="co">//$edc6();</span></div>
-<div class="sourceLine" id="cb590-33" data-line-number="33"><span class="dt">$ed41</span><span class="op">:</span></div>
-<div class="sourceLine" id="cb590-34" data-line-number="34">    $38<span class="op">++;</span> $39<span class="op">++;</span></div>
-<div class="sourceLine" id="cb590-35" data-line-number="35">    $3c <span class="op">-=</span> <span class="dv">2</span><span class="op">;</span></div>
-<div class="sourceLine" id="cb590-36" data-line-number="36">    $3d <span class="op">-=</span> <span class="dv">2</span><span class="op">;</span></div>
-<div class="sourceLine" id="cb590-37" data-line-number="37">    <span class="cf">return</span> <span class="va">field</span>.<span class="at">restore_banks</span>()<span class="op">;</span>   <span class="co">//jmp $ecf5();</span></div>
-<div class="sourceLine" id="cb590-38" data-line-number="38"><span class="dt">$ed56</span><span class="op">:</span></div>
-<div class="sourceLine" id="cb590-39" data-line-number="39"><span class="op">}</span></div></code></pre>
+<div class="sourceLine" id="cb590-2" data-line-number="2"><span class="co">/*</span></div>
+<div class="sourceLine" id="cb590-3" data-line-number="3"><span class="co">    ldx &lt;.window_type                   ; ED02 A6 96</span></div>
+<div class="sourceLine" id="cb590-4" data-line-number="4"><span class="co">    jsr field.get_window_region         ; ED04 20 61 ED</span></div>
+<div class="sourceLine" id="cb590-5" data-line-number="5"><span class="co">    lda &lt;.window_top                    ; ED07 A5 39</span></div>
+<div class="sourceLine" id="cb590-6" data-line-number="6"><span class="co">    sta &lt;.offset_y                      ; ED09 85 3B</span></div>
+<div class="sourceLine" id="cb590-7" data-line-number="7"><span class="co">    jsr field.calc_draw_width_and_init_window_tile_buffer; ED0B 20 70 F6</span></div>
+<div class="sourceLine" id="cb590-8" data-line-number="8"><span class="co">    jsr field.init_window_attr_buffer   ; ED0E 20 56 ED</span></div>
+<div class="sourceLine" id="cb590-9" data-line-number="9"><span class="co">    lda &lt;.window_height                 ; ED11 A5 3D</span></div>
+<div class="sourceLine" id="cb590-10" data-line-number="10"><span class="co">    sec                                 ; ED13 38</span></div>
+<div class="sourceLine" id="cb590-11" data-line-number="11"><span class="co">    sbc #$02                            ; ED14 E9 02</span></div>
+<div class="sourceLine" id="cb590-12" data-line-number="12"><span class="co">    pha                                 ; ED16 48</span></div>
+<div class="sourceLine" id="cb590-13" data-line-number="13"><span class="co">    jsr field.get_window_top_tiles      ; ED17 20 F6 ED</span></div>
+<div class="sourceLine" id="cb590-14" data-line-number="14"><span class="co">    jsr field.draw_window_row           ; ED1A 20 C6 ED</span></div>
+<div class="sourceLine" id="cb590-15" data-line-number="15"><span class="co">    pla                                 ; ED1D 68</span></div>
+<div class="sourceLine" id="cb590-16" data-line-number="16"><span class="co">    sec                                 ; ED1E 38</span></div>
+<div class="sourceLine" id="cb590-17" data-line-number="17"><span class="co">    sbc #$02                            ; ED1F E9 02</span></div>
+<div class="sourceLine" id="cb590-18" data-line-number="18"><span class="co">    beq .render_bottom                  ; ED21 F0 18</span></div>
+<div class="sourceLine" id="cb590-19" data-line-number="19"><span class="co">    bcs .render_body                    ; ED23 B0 05</span></div>
+<div class="sourceLine" id="cb590-20" data-line-number="20"><span class="co">    dec &lt;.offset_y                      ; ED25 C6 3B</span></div>
+<div class="sourceLine" id="cb590-21" data-line-number="21"><span class="co">    jmp .render_bottom                  ; ED27 4C 3B ED</span></div>
+<div class="sourceLine" id="cb590-22" data-line-number="22"><span class="co">.render_body:</span></div>
+<div class="sourceLine" id="cb590-23" data-line-number="23"><span class="co">    pha                                 ; ED2A 48</span></div>
+<div class="sourceLine" id="cb590-24" data-line-number="24"><span class="co">    jsr field.get_window_middle_tiles   ; ED2B 20 1D EE</span></div>
+<div class="sourceLine" id="cb590-25" data-line-number="25"><span class="co">    jsr field.draw_window_row           ; ED2E 20 C6 ED</span></div>
+<div class="sourceLine" id="cb590-26" data-line-number="26"><span class="co">    pla                                 ; ED31 68</span></div>
+<div class="sourceLine" id="cb590-27" data-line-number="27"><span class="co">    sec                                 ; ED32 38</span></div>
+<div class="sourceLine" id="cb590-28" data-line-number="28"><span class="co">    sbc #$02                            ; ED33 E9 02</span></div>
+<div class="sourceLine" id="cb590-29" data-line-number="29"><span class="co">    beq .render_bottom                  ; ED35 F0 04</span></div>
+<div class="sourceLine" id="cb590-30" data-line-number="30"><span class="co">    bcs .render_body                    ; ED37 B0 F1</span></div>
+<div class="sourceLine" id="cb590-31" data-line-number="31"><span class="co">    dec &lt;.offset_y                      ; ED39 C6 3B</span></div>
+<div class="sourceLine" id="cb590-32" data-line-number="32"><span class="co">.render_bottom:</span></div>
+<div class="sourceLine" id="cb590-33" data-line-number="33"><span class="co">    jsr field.get_window_bottom_tiles   ; ED3B 20 3E EE</span></div>
+<div class="sourceLine" id="cb590-34" data-line-number="34"><span class="co">    jsr field.draw_window_row           ; ED3E 20 C6 ED</span></div>
+<div class="sourceLine" id="cb590-35" data-line-number="35"><span class="co">    inc &lt;.window_left                   ; ED41 E6 38</span></div>
+<div class="sourceLine" id="cb590-36" data-line-number="36"><span class="co">    inc &lt;.window_top                    ; ED43 E6 39</span></div>
+<div class="sourceLine" id="cb590-37" data-line-number="37"><span class="co">    lda &lt;.window_width                  ; ED45 A5 3C</span></div>
+<div class="sourceLine" id="cb590-38" data-line-number="38"><span class="co">    sec                                 ; ED47 38</span></div>
+<div class="sourceLine" id="cb590-39" data-line-number="39"><span class="co">    sbc #$02                            ; ED48 E9 02</span></div>
+<div class="sourceLine" id="cb590-40" data-line-number="40"><span class="co">    sta &lt;.window_width                  ; ED4A 85 3C</span></div>
+<div class="sourceLine" id="cb590-41" data-line-number="41"><span class="co">    lda &lt;.window_height                 ; ED4C A5 3D</span></div>
+<div class="sourceLine" id="cb590-42" data-line-number="42"><span class="co">    sec                                 ; ED4E 38</span></div>
+<div class="sourceLine" id="cb590-43" data-line-number="43"><span class="co">    sbc #$02                            ; ED4F E9 02</span></div>
+<div class="sourceLine" id="cb590-44" data-line-number="44"><span class="co">    sta &lt;.window_height                 ; ED51 85 3D</span></div>
+<div class="sourceLine" id="cb590-45" data-line-number="45"><span class="co">    jmp field.restore_banks             ; ED53 4C F5 EC</span></div>
+<div class="sourceLine" id="cb590-46" data-line-number="46"><span class="co">*/</span></div>
+<div class="sourceLine" id="cb590-47" data-line-number="47">    x <span class="op">=</span> $96<span class="op">;</span></div>
+<div class="sourceLine" id="cb590-48" data-line-number="48">    <span class="va">field</span>.<span class="at">get_window_region</span>()<span class="op">;</span>  <span class="co">//$ed61</span></div>
+<div class="sourceLine" id="cb590-49" data-line-number="49">    $3b <span class="op">=</span> $39<span class="op">;</span></div>
+<div class="sourceLine" id="cb590-50" data-line-number="50">    <span class="at">$f670</span>()<span class="op">;</span>    <span class="co">//field_calc_draw_width_and_init_window_tile_buffer</span></div>
+<div class="sourceLine" id="cb590-51" data-line-number="51">    <span class="va">field</span>.<span class="at">init_window_attr_buffer</span>()<span class="op">;</span>    <span class="co">//$ed56</span></div>
+<div class="sourceLine" id="cb590-52" data-line-number="52">    <span class="at">push</span>( $3d <span class="op">-</span> <span class="dv">2</span> )<span class="op">;</span></div>
+<div class="sourceLine" id="cb590-53" data-line-number="53">    <span class="dt">field</span><span class="op">::</span><span class="at">getWindowTilesForTop</span>()<span class="op">;</span>  <span class="co">//$edf6();</span></div>
+<div class="sourceLine" id="cb590-54" data-line-number="54">    <span class="va">field</span>.<span class="at">draw_window_row</span>()<span class="op">;</span>    <span class="co">//$edc6();</span></div>
+<div class="sourceLine" id="cb590-55" data-line-number="55">    a <span class="op">=</span> pop <span class="op">-</span> <span class="dv">2</span><span class="op">;</span></div>
+<div class="sourceLine" id="cb590-56" data-line-number="56">    <span class="cf">if</span> (a <span class="op">!=</span> <span class="dv">0</span>) <span class="op">{</span> <span class="co">//beq ed3b</span></div>
+<div class="sourceLine" id="cb590-57" data-line-number="57"><span class="dt">$ed23</span><span class="op">:</span></div>
+<div class="sourceLine" id="cb590-58" data-line-number="58">        <span class="cf">if</span> (a <span class="op">&lt;</span> <span class="dv">0</span>) <span class="op">{</span> <span class="co">//bcs ed2a</span></div>
+<div class="sourceLine" id="cb590-59" data-line-number="59"><span class="dt">$ed25</span><span class="op">:</span></div>
+<div class="sourceLine" id="cb590-60" data-line-number="60">            $3b<span class="op">--;</span></div>
+<div class="sourceLine" id="cb590-61" data-line-number="61">            <span class="co">//jmp $ed3b</span></div>
+<div class="sourceLine" id="cb590-62" data-line-number="62">        <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></div>
+<div class="sourceLine" id="cb590-63" data-line-number="63"><span class="dt">$ed2a</span><span class="op">:</span></div>
+<div class="sourceLine" id="cb590-64" data-line-number="64">            <span class="cf">do</span> <span class="op">{</span></div>
+<div class="sourceLine" id="cb590-65" data-line-number="65">                push a<span class="op">;</span></div>
+<div class="sourceLine" id="cb590-66" data-line-number="66">                <span class="dt">field</span><span class="op">::</span><span class="at">getWindowTilesForMiddle</span>()<span class="op">;</span>   <span class="co">//$ee1d();</span></div>
+<div class="sourceLine" id="cb590-67" data-line-number="67">                <span class="va">field</span>.<span class="at">draw_window_row</span>()<span class="op">;</span>    <span class="co">//$edc6();</span></div>
+<div class="sourceLine" id="cb590-68" data-line-number="68">                a <span class="op">=</span> pop a <span class="op">-</span> <span class="dv">2</span><span class="op">;</span></div>
+<div class="sourceLine" id="cb590-69" data-line-number="69">                <span class="cf">if</span> (a <span class="op">==</span> <span class="dv">0</span>) goto $ed3b</div>
+<div class="sourceLine" id="cb590-70" data-line-number="70">            <span class="op">}</span> <span class="cf">while</span> (a <span class="op">&gt;=</span> <span class="dv">0</span>)<span class="op">;</span> <span class="co">//bcs ed2a</span></div>
+<div class="sourceLine" id="cb590-71" data-line-number="71"><span class="dt">$ed39</span><span class="op">:</span></div>
+<div class="sourceLine" id="cb590-72" data-line-number="72">            $3b<span class="op">--;</span></div>
+<div class="sourceLine" id="cb590-73" data-line-number="73">        <span class="op">}</span></div>
+<div class="sourceLine" id="cb590-74" data-line-number="74">    <span class="op">}</span></div>
+<div class="sourceLine" id="cb590-75" data-line-number="75"><span class="dt">$ed3b</span><span class="op">:</span></div>
+<div class="sourceLine" id="cb590-76" data-line-number="76">    <span class="dt">field</span><span class="op">::</span><span class="at">getWindowTilesForBottom</span>()<span class="co">//$ee3e();</span></div>
+<div class="sourceLine" id="cb590-77" data-line-number="77">    <span class="va">field</span>.<span class="at">draw_window_row</span>()<span class="op">;</span>    <span class="co">//$edc6();</span></div>
+<div class="sourceLine" id="cb590-78" data-line-number="78"><span class="dt">$ed41</span><span class="op">:</span></div>
+<div class="sourceLine" id="cb590-79" data-line-number="79">    $38<span class="op">++;</span> $39<span class="op">++;</span></div>
+<div class="sourceLine" id="cb590-80" data-line-number="80">    $3c <span class="op">-=</span> <span class="dv">2</span><span class="op">;</span></div>
+<div class="sourceLine" id="cb590-81" data-line-number="81">    $3d <span class="op">-=</span> <span class="dv">2</span><span class="op">;</span></div>
+<div class="sourceLine" id="cb590-82" data-line-number="82">    <span class="cf">return</span> <span class="va">field</span>.<span class="at">restore_banks</span>()<span class="op">;</span>   <span class="co">//jmp $ecf5();</span></div>
+<div class="sourceLine" id="cb590-83" data-line-number="83"><span class="dt">$ed56</span><span class="op">:</span></div>
+<div class="sourceLine" id="cb590-84" data-line-number="84"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fed56-fieldinit_window_attr_buffer">$3f:ed56 field::init_window_attr_buffer</h1>
 <h3 id="code-240">code:</h3>

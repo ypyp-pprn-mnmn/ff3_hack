@@ -1,5 +1,6 @@
 ﻿
 
+
 # $3f:ed02 field.draw_window_box
 > IDで指定されたウインドウの枠を描画し、その背景を空白で埋める。
 
@@ -58,6 +59,51 @@ More specifically, addresses are utilized as follows:
 ### code:
 ```js
 {
+/*
+    ldx <.window_type                   ; ED02 A6 96
+    jsr field.get_window_region         ; ED04 20 61 ED
+	lda <.window_top                    ; ED07 A5 39
+	sta <.offset_y                      ; ED09 85 3B
+	jsr field.calc_draw_width_and_init_window_tile_buffer; ED0B 20 70 F6
+	jsr field.init_window_attr_buffer   ; ED0E 20 56 ED
+	lda <.window_height                 ; ED11 A5 3D
+	sec                                 ; ED13 38
+	sbc #$02                            ; ED14 E9 02
+	pha                                 ; ED16 48
+	jsr field.get_window_top_tiles      ; ED17 20 F6 ED
+	jsr field.draw_window_row           ; ED1A 20 C6 ED
+	pla                                 ; ED1D 68
+	sec                                 ; ED1E 38
+	sbc #$02                            ; ED1F E9 02
+	beq .render_bottom                  ; ED21 F0 18
+	bcs .render_body                    ; ED23 B0 05
+	dec <.offset_y                      ; ED25 C6 3B
+	jmp .render_bottom                  ; ED27 4C 3B ED
+.render_body:
+	pha                                 ; ED2A 48
+	jsr field.get_window_middle_tiles   ; ED2B 20 1D EE
+	jsr field.draw_window_row           ; ED2E 20 C6 ED
+	pla                                 ; ED31 68
+	sec                                 ; ED32 38
+	sbc #$02                            ; ED33 E9 02
+	beq .render_bottom                  ; ED35 F0 04
+	bcs .render_body                    ; ED37 B0 F1
+	dec <.offset_y                      ; ED39 C6 3B
+.render_bottom:
+	jsr field.get_window_bottom_tiles   ; ED3B 20 3E EE
+	jsr field.draw_window_row           ; ED3E 20 C6 ED
+	inc <.window_left                   ; ED41 E6 38
+	inc <.window_top                    ; ED43 E6 39
+	lda <.window_width                  ; ED45 A5 3C
+	sec                                 ; ED47 38
+	sbc #$02                            ; ED48 E9 02
+	sta <.window_width                  ; ED4A 85 3C
+	lda <.window_height                 ; ED4C A5 3D
+	sec                                 ; ED4E 38
+	sbc #$02                            ; ED4F E9 02
+	sta <.window_height                 ; ED51 85 3D
+	jmp field.restore_banks             ; ED53 4C F5 EC
+*/
 	x = $96;
 	field.get_window_region();	//$ed61
 	$3b = $39;
@@ -97,6 +143,7 @@ $ed41:
 $ed56:
 }
 ```
+
 
 
 
