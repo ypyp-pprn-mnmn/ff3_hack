@@ -26,11 +26,10 @@ ff3_field_window_renderer_begin:
 ;;`1F:F6CE:20 0A F4  JSR $F40A` @ $3f:f6aa field.upload_window_content
 ;;`1F:F6E9:20 0A F4  JSR $F40A` @ $3f:f6aa field.upload_window_content
 ;;`1F:F705:20 0A F4  JSR $F40A` @ $3f:f6aa field.upload_window_content
-;field.setVramAddrForWindow:	
-field.set_vram_addr_for_window	;;$f40a
+field.set_vram_addr_current_xy	;;$f40a
 .offsetX = $3a
 	ldy <.offsetX
-;field.setVramAddrForWindowEx:
+field_x.set_vram_addr_current_y_with_specified_x
 ;[in] y : x offset
 ;[in] $3b : y offset
 ;[out] y : (offsetX & #$20) ^ #$20
@@ -172,7 +171,6 @@ menu.erase_box_from_bottom:
 ;==================================================================================================
 	.ifdef _OPTIMIZE_FIELD_WINDOW
 	
-	;INIT_PATCH $3f,$f670,$f727
 	INIT_PATCH_EX field.window.renderer,$3f,$f670,$f727,$f670
 
 field_x.get_available_width_in_bg:
@@ -326,6 +324,9 @@ field.draw_window_content:
 		;;	this also implies the following restrictions apply to all of the callers:
 		;;	1) if a caller removes the handler,
 		;;	then rest of contents pending rendering will be discarded.
+		;;	2) if a caller re-initilizes the queue this function utilizes,
+		;;	before the handler executed, then the handler will see
+		;;	unintentional re-init'd values and probably result in system crash.
 		jsr render_x.set_deferred_renderer
 		;;
 		ldy <.lines_drawn
@@ -439,17 +440,18 @@ render_x.on_opening_enter:
 	
 	.ifndef _FEATURE_DEFERRED_RENDERING
 field.upload_window_content:
-;[in]
-.left = $38
-.width = $3c
-.offsetX = $3a
-.offsetString = $3a
-.offsetY = $3b
-.iChar = $90
-.widthIn1stBg = $91
-.tileArray = $0780
-.upperLineString = $0780
-.lowerLineString = $07a0
+	DECLARE_WINDOW_VARIABLES
+;;[in]
+;.left = $38
+;.width = $3c
+;.offsetX = $3a
+;.offsetString = $3a
+;.offsetY = $3b
+;.iChar = $90
+;.widthIn1stBg = $91
+;.tileArray = $0780
+;.upperLineString = $0780
+;.lowerLineString = $07a0
 
 ;-----------------------------------------
 	cmp #TEXTD_WANT_ONLY_LOWER 
@@ -461,46 +463,48 @@ field.upload_window_content:
 .draw_line:
 ;[in] a  = index offset
 	pha
-	sta <.offsetString
+	sta <.offset_x
 
 	bit $2002
-	lda <.widthIn1stBg
-	ldy <.left
-	jsr .putTiles	;[out] y = offsetX & #20 ^ #20, $3a = offsetString
+	lda <.width_in_1st
+	ldy <.window_left
+	jsr field_x.upload_tiles	;[out] y = offsetX & #20 ^ #20, $3a = offsetString
 
 	clc
 	pla
-	adc <.width
+	adc <.window_width
 	sec
-	sbc <.offsetString
+	sbc <.offset_x
 	bcc .next_line
 	beq .next_line
-		jsr .putTiles
+		jsr field_x.upload_tiles
 
 .next_line:
-	ldy <.offsetY
+	ldy <.offset_y
 	iny
 	cpy #30
 	bne .no_wrap
 		ldy #0
 .no_wrap:
-	sty <.offsetY
+	sty <.offset_y
 	lda #0
-	sta <.iChar	;$90
+	sta <.output_index
 	rts
 
-.putTiles:
+;; in:
+;;	Y : vram high
+field_x.upload_tiles:
+	DECLARE_WINDOW_VARIABLES
 	pha
-
-	jsr field.setVramAddrForWindowEx
-.beginOffset = .offsetString
-.endOffset = .beginOffset
+	jsr field_x.set_vram_addr_current_y_with_specified_x
+;.beginOffset = .offsetString
+;.endOffset = .beginOffset
 	pla	;widthInCurrentBg
-	ldx <.offsetString
+	ldx <.offset_x
 	pha
 	clc
-	adc <.offsetString
-	sta <.endOffset
+	adc <.offset_x
+	sta <.offset_x
 	pla
 	lsr a
 	ror a
@@ -513,30 +517,30 @@ field.upload_window_content:
 .length_even:
 	bcs .copy_loop_2
 .copy_loop_0:
-	lda .tileArray,x
+	lda .tile_buffer_upper,x
 	sta $2007
 	inx
 .copy_loop_3:
-	lda .tileArray,x
+	lda .tile_buffer_upper,x
 	sta $2007
 	inx
 .copy_loop_2:
-	lda .tileArray,x
+	lda .tile_buffer_upper,x
 	sta $2007
 	inx
 .copy_loop_1:
-	lda .tileArray,x
+	lda .tile_buffer_upper,x
 	sta $2007
 	inx
 	
-	cpx <.offsetString
+	cpx <.offset_x
 	bne .copy_loop_0
 
 	rts
-	.endif	;ifndef _FEATURE_DEFERRED_RENDERING
+	.endif	;;ifndef _FEATURE_DEFERRED_RENDERING
 
 	;VERIFY_PC $f727
 	VERIFY_PC_TO_PATCH_END field.window.renderer
-	.endif	;_OPTIMIZE_FIELD_WINDOW
+	.endif	;;_OPTIMIZE_FIELD_WINDOW
 ;======================================================================================================
 	RESTORE_PC ff3_field_window_driver_begin

@@ -34,8 +34,6 @@ field.draw_inplace_window:
 
 	;VERIFY_PC $ed02
 ;------------------------------------------------------------------------------------------------------
-	;INIT_PATCH $3f,$ed02,$ed56
-	;INIT_PATCH $3f,$ed02,$ee9a
 ;;$3f:ed02 field::draw_window_box
 ;;	This logic plays key role in drawing window, both for menu windows and in-place windows.
 ;;	Usually window drawing is performed as follows:
@@ -96,7 +94,49 @@ field_x.draw_window_box_with_region:
 		jsr field_x.begin_ppu_update
 		jsr field_x.end_ppu_update
 		jmp field.restore_banks	;$ecf5
-	.endif	;_FEATURE_DEFERRED_RENDERING
+	.else	;;_FEATURE_DEFERRED_RENDERING
+		lda <.window_top                    ; ED07 A5 39
+		sta <.offset_y                      ; ED09 85 3B
+		jsr field.calc_draw_width_and_init_window_tile_buffer; ED0B 20 70 F6
+		jsr field.init_window_attr_buffer   ; ED0E 20 56 ED
+		lda <.window_height                 ; ED11 A5 3D
+		sec                                 ; ED13 38
+		sbc #$02                            ; ED14 E9 02
+		pha                                 ; ED16 48
+		jsr field.get_window_top_tiles      ; ED17 20 F6 ED
+		jsr field.draw_window_row           ; ED1A 20 C6 ED
+		pla                                 ; ED1D 68
+		sec                                 ; ED1E 38
+		sbc #$02                            ; ED1F E9 02
+		beq .render_bottom                  ; ED21 F0 18
+		bcs .render_body                    ; ED23 B0 05
+		dec <.offset_y                      ; ED25 C6 3B
+		jmp .render_bottom                  ; ED27 4C 3B ED
+	.render_body:
+		pha                                 ; ED2A 48
+		jsr field.get_window_middle_tiles   ; ED2B 20 1D EE
+		jsr field.draw_window_row           ; ED2E 20 C6 ED
+		pla                                 ; ED31 68
+		sec                                 ; ED32 38
+		sbc #$02                            ; ED33 E9 02
+		beq .render_bottom                  ; ED35 F0 04
+		bcs .render_body                    ; ED37 B0 F1
+		dec <.offset_y                      ; ED39 C6 3B
+	.render_bottom:
+		jsr field.get_window_bottom_tiles   ; ED3B 20 3E EE
+		jsr field.draw_window_row           ; ED3E 20 C6 ED
+		inc <.window_left                   ; ED41 E6 38
+		inc <.window_top                    ; ED43 E6 39
+		lda <.window_width                  ; ED45 A5 3C
+		sec                                 ; ED47 38
+		sbc #$02                            ; ED48 E9 02
+		sta <.window_width                  ; ED4A 85 3C
+		lda <.window_height                 ; ED4C A5 3D
+		sec                                 ; ED4E 38
+		sbc #$02                            ; ED4F E9 02
+		sta <.window_height                 ; ED51 85 3D
+		jmp field.restore_banks             ; ED53 4C F5 EC
+	.endif	;;_FEATURE_DEFERRED_RENDERING
 
 	;VERIFY_PC $ed56
 ;--------------------------------------------------------------------------------------------------
@@ -106,14 +146,13 @@ field.draw_window_row:	;;$3f:edc6 field::draw_window_row
 ;;callers:
 ;;	$3f:ece5 field::draw_window_top
 ;;	$3f:ed02 field::draw_window_box (only the original implementation)
-.width = $3c
-.iChar = $90
-	lda <.width
-	sta <.iChar
-	;jsr field.updateTileAttrCache	;$c98f
+	DECLARE_WINDOW_VARIABLES
+	lda <.window_width
+	sta <.output_index
+	jsr field.update_window_attr_buff	;$c98f
 	jsr field_x.begin_ppu_update
-	jsr field.upload_window_content	;$f6aa
-	;jsr field.setTileAttrForWindow	;$c9a9
+	jsr field.upload_window_content		;$f6aa
+	jsr field.set_bg_attr_for_window	;$c9a9
 	;;fall through.
 	.endif	;;_FEATURE_DEFERRED_RENDERING
 ;--------------------------------------------------------------------------------------------------
@@ -872,6 +911,7 @@ field_x.get_window_tiles:
 ;.window_tiles_buffer_lower_row = $07a0
 ;;in: A := lower 1bits:  0: fill in upper row; 1: fill in lower row
 ;;	higher 7bits: offset into tile table
+	pha
 	lsr A
 	tay
 	ldx #0
@@ -899,7 +939,7 @@ field_x.get_window_tiles:
 	sta .window_tiles_buffer_upper_row-1,x
 	pla	;original width
 	sta <.width
-	tya
+	pla
 	;here always carry is set
 	;adc #$22	;effectively +23
 	adc #$06
@@ -1011,9 +1051,10 @@ field.stream_string_in_window:
 ;;+	`3d:a682  jmp $EE9A `	@ some menu content (nearby but not $3d:a66b field.draw_menu_window_content)
 field_x.load_and_draw_string_without_border:
 	FIX_ADDR_ON_CALLER $3e, $c036+1
-	;; opening title roll should be rendered without border.
-	jsr render_x.init_as_no_borders
-
+	.ifdef _FEATURE_DEFERRED_RENDERING
+		;; opening title roll should be rendered without border.
+		jsr render_x.init_as_no_borders
+	.endif	;;_FEATURE_DEFERRED_RENDERING
 field.load_and_draw_string:	;;$ee9a
 ;; fixups.
 	FIX_ADDR_ON_CALLER $3c, $9116+1		;;menu content

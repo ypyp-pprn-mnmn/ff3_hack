@@ -3,13 +3,9 @@
 ; description:
 ;	creates hacked file with newly implemented features
 ;
-; version:
-;	0.08(2017-11-04)
-;
 ;======================================================================================================
 ;assemble flags
 BETA
-;FAST_FIELD_WINDOW
 ;BALANCED_VERSION
 ;TEST_MAP
 
@@ -18,6 +14,10 @@ BETA
 ;EXPERIMENT_IMPL = 5
 
 ;;here after, listed feature flags are considered more 'stable' than those listed above
+_OPTIMIZE_FIELD_WINDOW
+;_FEATURE_STOMACH_AMOUNT_1BYTE
+;_FEATURE_DEFERRED_RENDERING
+;; fixes for unintentional behavior found in the original version
 
 FIX_COMMAND_COUNT_UPDATE	;0.8.0	@see http://966-yyff.cocolog-nifty.com/blog/2013/06/ff3-d544.html
 FIX_DUNGEON_FLOOR_SAVE
