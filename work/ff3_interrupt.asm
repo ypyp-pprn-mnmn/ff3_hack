@@ -32,10 +32,10 @@ await_nmi_by_set_handler:
 .copy_thunk:
 	;;to prevent handler from jump in invalid address
 	;;the code byte should be written after address has completely updated
-	lda #HIGH(disable_handler_and_return_from_nmi)
-	sta pNmiHandler+1
 	lda #LOW(disable_handler_and_return_from_nmi)
 	sta pNmiHandler
+	lda #HIGH(disable_handler_and_return_from_nmi)
+	sta pNmiHandler+1
 	lda #$4c	;JMP
 	sta pNmiHandler-1
 .await_nmi:
