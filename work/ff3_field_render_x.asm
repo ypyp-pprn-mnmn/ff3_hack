@@ -571,7 +571,11 @@ render_x.queue_attributes
 .source_index = $85
 	lda <.in_menu_mode
 	bne .done
-		;; in-place window. need attr updates
+		;; in-place window. may need attr updates
+		lda <render_x.q.init_flags
+		and #render_x.NEED_ATTRIBUTES
+		beq .done
+
 		lda <.offset_y
 		cmp #30
 		bcc .no_wrap
@@ -585,6 +589,7 @@ render_x.queue_attributes
 			;jsr render_x.is_attr_have_updated
 			;pla
 			;bcs .done
+
 			lsr A
 			asl A
 			asl A
@@ -643,10 +648,11 @@ render_x.is_attr_have_updated:
 	tay
 	lda <render_x.q.done_attrs,x
 	and floor_setBitMask,y
-	eor floor_setBitMask,y
 	sec
-	beq .skip_update
+	bne .skip_update
 		clc
+		lda <render_x.q.done_attrs,x
+		ora floor_setBitMask,y
 		sta <render_x.q.done_attrs,x
 .skip_update:
 	rts
@@ -698,8 +704,9 @@ render_x.setup_deferred_rendering:
 	tya
 	jsr field_x.calc_available_width_in_bg
 	;; A = width 1st
-	ldy #0
-	sty <render_x.q.done_attrs
+	;ldy #0
+	;sty <render_x.q.done_attrs
+	;sty <render_x.q.done_attrs+1
 	;pha	;;width_1st
 	;jsr render_x.precalc_params
 	sta <render_x.q.strides+0

@@ -44,7 +44,7 @@ render_x.NO_BORDERS = $80
 render_x.PENDING_INIT = $40
 render_x.RENDER_RUNNING = $20	;;or 'completed'
 render_x.SKIP_CONTENTS = $08
-;render_x.NEED_SPRITE_DMA = $04
+render_x.NEED_ATTRIBUTES = $04
 render_x.NEED_TOP_BORDER = $02
 render_x.NEED_BOTTOM_BORDER = $01
 ;; capacity limits.

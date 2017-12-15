@@ -1044,8 +1044,10 @@ field.load_and_draw_string:	;;$ee9a
 render_x.defer_window_text_with_border:
 	.ifdef _FEATURE_DEFERRED_RENDERING
 	;; request deferred rendering with borders.
-	;ldx #(render_x.NO_BORDERS|render_x.PENDING_INIT|render_x.RENDER_RUNNING)
-	ldx #(render_x.PENDING_INIT|render_x.RENDER_RUNNING|render_x.NEED_TOP_BORDER|render_x.NEED_BOTTOM_BORDER)
+	;ldx #(render_x.PENDING_INIT|render_x.RENDER_RUNNING|render_x.NEED_TOP_BORDER|render_x.NEED_BOTTOM_BORDER)
+.flags1 = render_x.PENDING_INIT|render_x.RENDER_RUNNING
+.init_flags = .flags1 | render_x.NEED_TOP_BORDER|render_x.NEED_BOTTOM_BORDER|render_x.NEED_ATTRIBUTES
+	ldx #(.init_flags)
 	jsr render_x.setup_deferred_rendering
 	.endif	;_FEATURE_DEFERRED_RENDERING
 ;------------------------------------------------------------------------------------------------------
