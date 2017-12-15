@@ -20,7 +20,8 @@
 			.incbin "base-binary/ff3_hack_base_ex.nes.noheader"
 		.endif
 	.else
-		.incbin	"base-binary/ff3_hack_base.nes.noheader"	;header must be stripped
+		;.incbin	"base-binary/ff3_hack_base.nes.noheader"	;header must be stripped
+		.incbin	"base-binary/ff3_plain.nes.noheader"	;header must be stripped
 	.endif	;BALANCED_VERSION
 	.include "ff3.h.asm"
 	.bank	$00
@@ -29,6 +30,7 @@
 	.include "ff3_command_string.asm"
 	.include "ff3_rand.asm"
 	.include "ff3_fix.asm"
+	.include "ff3_jobx_redmage.asm"
 
 	.ifdef BETA
 		.include "ff3_enemy_target.asm"	;save
