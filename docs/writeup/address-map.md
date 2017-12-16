@@ -71,7 +71,7 @@
 058000-058200|data  | pointers of object placement lists (`u16 [256]`) index : object_list_id (warpparam.+04)
 058200-058600|data  | pointers of event scripts (`u16 [2][256]`)
 058600-058a00|data  | `$2c:8600 ObjectEvent event_definitions[256]` : 2-byte structure.
-058a00-060000|?     | seems like data, event scripts (variable length, up to 0x40 bytes)
+058a00-05c000|?     | seems like data, event scripts (variable length, up to 0x40 bytes)
 05c000-05c400|data  | `$2e:8000 EncounterParam encounter_definitions[2][256]` : 2-byte struct.
 05c400-05ca00|data  | `$2e:8400 EnemyParty party_definitions[256]` : 6-byte struct.
 05ca00-05ca40|data  | `$2e:8a00 SpawnPattern spawn_patterns[64]` : 1-byte strucut.
