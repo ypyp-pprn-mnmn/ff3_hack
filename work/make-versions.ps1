@@ -8,9 +8,10 @@ $build_files = @(
 	#"ff3_hack_noitem99.asm",
 	"ff3_hack_soundtest.asm",
 	"ff3_hack_extra_map.asm",
-	"ff3_hack_DEV.asm"
+	"ff3_hack_DEV.asm",
+	"ff3_hack_only_fast_window.asm"
 );
-$build_files | % {
+$build_files | ForEach-Object {
 	$infile = $_
 	$out = $infile -replace '.asm', '.nes';
 	write-host -foreground yellow "building $out...";

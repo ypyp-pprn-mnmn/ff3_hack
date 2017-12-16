@@ -804,10 +804,10 @@ render_x.inflate_window_metrics:
 
 	VERIFY_PC_TO_PATCH_END field.window.ppu
 ;==================================================================================================
-	RESTORE_PC floor.treasure.FREE_BEGIN
+	;RESTORE_PC floor.treasure.FREE_BEGIN
 ;--------------------------------------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------
-	VERIFY_PC_TO_PATCH_END floor.treasure
+	;VERIFY_PC_TO_PATCH_END floor.treasure
 ;==================================================================================================
 render_x.RENDERER_END:
     .endif  ;;_FEATURE_DEFERRED_RENDERING

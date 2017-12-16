@@ -65,10 +65,6 @@ RESTORE_PC	.macro
 	.bank	BANK(\1)
 	.org	\1
 		.endm
-		
-RESTORE_PC_TO_PATCH_END	.macro
-		RESTORE_PC __patch_end_\1
-	.endm
 
 INIT_PATCH	.macro
 	.bank	\1
@@ -78,7 +74,7 @@ INIT_PATCH	.macro
 	__patch_end_\@:
 	.org	\2
 		.endm
-
+;; ------------------------------------------------------------------------------------------------
 ;tag, bank, start, end, org
 INIT_PATCH_EX	.macro
 		.bank	\2
@@ -100,6 +96,11 @@ VERIFY_PC_TO_PATCH_END	.macro
 		VERIFY_PC __patch_end_\1
 	.endm
 
+RESTORE_PC_TO_PATCH_END	.macro
+		RESTORE_PC __patch_end_\1
+	.endm
+
+;; ------------------------------------------------------------------------------------------------
 	.ifdef RESPECT_ORIGINAL_ADDR
 ORIGINAL_ADDR	.macro
 	.org	\1

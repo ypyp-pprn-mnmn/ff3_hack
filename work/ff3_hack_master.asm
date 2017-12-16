@@ -20,19 +20,21 @@
 			.incbin "base-binary/ff3_hack_base_ex.nes.noheader"
 		.endif
 	.else
-		;.incbin	"base-binary/ff3_hack_base.nes.noheader"	;header must be stripped
 		.incbin	"base-binary/ff3_plain.nes.noheader"	;header must be stripped
 	.endif	;BALANCED_VERSION
 	.include "ff3.h.asm"
 	.bank	$00
 	.org	$8000
-	.include "ff3_string.asm"
-	.include "ff3_command_string.asm"
-	.include "ff3_rand.asm"
 	.include "ff3_fix.asm"
 	.include "ff3_jobx_redmage.asm"		;; 0.8.0
 
 	.ifdef BETA
+		;;TODO: guard the below 3 with another feature flag(s)
+		;;	string, commnad_string are actually dependecy of another files.
+		.include "ff3_string.asm"
+		.include "ff3_command_string.asm"
+		.include "ff3_rand.asm"
+
 		.include "ff3_enemy_target.asm"	;save
 		.include "ff3_calc_player_param.asm"	;save
 		.include "ff3_blow_effect.asm"	;save
@@ -66,22 +68,26 @@
 		.include "ff3_doFight.asm"
 		;v0.7.8:
 		.include "ff3_calcDamage.asm"
-		;v0.7.9:
-		.include "ff3_floor_treasure.asm"	;save
-		;v0.7.3:
+		;;v0.8.0:
+		.include "ff3_interrupt.asm"
+	.endif	;;BETA
+	.ifdef _OPTIMIZE_FIELD_WINDOW
+		;; TODO: the below is here only as the dependency of other files.
+		;; it is better to pull up this as an individual feature
+		;; as long as it can be.
+		.include "ff3_floor_treasure.asm"
+		;;v0.8.0:
 		.include "ff3_field_window_driver.asm"
-		;v0.8.0:
 		.include "ff3_textd.asm"	;save
 		.include "ff3_field_window_renderer.asm"
 		.include "ff3_field_render_x.asm"	;consume
 		
 		.include "ff3_menu_of_stomach.asm"
-		;;
-		.include "ff3_interrupt.asm"
-		.ifdef EXPERIMENTAL
-			.include "ff3_experimental.asm"
-		.endif	;EXPERIMENTAL
-	.endif	;BETA
-
+	.endif	;;_OPTIMIZE_FIELD_WINDOW
+	
+	.ifdef EXPERIMENTAL
+		.include "ff3_experimental.asm"
+	.endif	;;EXPERIMENTAL
+	
 	;.include "ff3_battle_calc.asm"
 ;==========================================================================================================

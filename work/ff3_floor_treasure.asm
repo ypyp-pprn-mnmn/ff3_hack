@@ -7,6 +7,7 @@
 ;version:
 ;	0.03
 ;======================================================================================================
+	;.ifndef ff3_floor_treasure_begin
 	.include "ff3_floor.h"
 ff3_floor_treasure_begin:
 
@@ -285,7 +286,7 @@ floor.get_item_price:
 ;; fixups.
 	FIX_ADDR_ON_CALLER $3d,$b230+1
 	FIX_ADDR_ON_CALLER $3d,$b271+1
-	.ifndef FAST_FIELD_WINDOW
+	.ifndef _OPTIMIZE_FIELD_WINDOW
 	FIX_ADDR_ON_CALLER $3f,$ef73+1
 	.endif
 ;; ----
@@ -366,7 +367,7 @@ floor_incrementPartyGil:
 	;VERIFY_PC $f670
 	VERIFY_PC_TO_PATCH_END floor.treasure
 floor.treasure.FREE_BEGIN:
-
-
 ;=====================================================================================================
 	RESTORE_PC ff3_floor_treasure_begin
+	
+	;.endif	;;ff3_floor_treasure_begin
