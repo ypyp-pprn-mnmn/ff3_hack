@@ -469,10 +469,10 @@ struct FF3_Palette { //00:b100 (01100)
 };
 
 struct FF3_ObjectIdToPatternIndex { //00:9400 (1400)
-	//index: pattern addr
-	//00-3F: $0e:8000 + index * 100h
-	//40-57: $0a:8000 + (index-40) * 80h
-	//58-FF: $0d:8000 + (index-58) * 40h
+	//index => pattern addr
+	//00-3F => $0e:8000 + index * 100h
+	//40-57 => $0a:8000 + (index-40) * 80h
+	//58-FF => $0d:8000 + (index-58) * 40h
 	BYTE indices[256];
 };
 

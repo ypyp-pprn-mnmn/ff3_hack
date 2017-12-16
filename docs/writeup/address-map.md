@@ -36,21 +36,20 @@
 0009c0-000a00|?     |
 000a00-000c00|data  | warp_id => floor_id mappings `u8 [2][256]`
 000c00-000e00|data  | warp_id => tile_set_id mappings. `u8 [2][256]`
-000e00-001100|data  | tile sets `ptr $00:8e00[0x30][0x8] : pTilePattern (index = tileSetId)`
+000e00-001100|data  | pointers (offset from 006000) of tile sets `u16 [0x30][0x8]` index: tile_set_id,  
 001100-001400|data  | palette definition. `u8 colors[3][256]`
 001400-001500|data  | object_id => sprite_pattern_id mappings `u8 [256]`
 001500-002380|?     |
 002380-00xxxx|data  | size TBC `ChipDef $01:a380[?][4][128]`
 003100-003500|data  | `ChipToPalette $01:b100 [8][128]` @see $3a:9267 floor::init
-003500-003900|data  | `ChipAttributes $01:b500 [8][128] : chipAttributeTable { attributes, event }`
-003900-003c00|?     |
+003500-003c00|data  | size TBC `ChipAttributes $01:b500 [8][128] : chipAttributeTable { attributes, event }` index: higher 3bits of warpParam.initX
 003c00-003e00|data  | treasure_id => item_id mappings. `u8 item_id[2][256]`
 003e00-004000|?     |
 004000-006000|data  | `WarpParam [2][256]` aka "floor_def", 16 byte/entry, index: warp_id
 006000-00CC00|bitmap| map chips
-00cc00-00d000|?     |seems like data, 8-byte structure
-00d000-00d400|data  | pointers of world-map data row
-00d400-014000|data  | world map  ? seems like data, 8-byte structure
+00cc00-00d000|?     | seems like data, 8-byte structure
+00d000-00d800|data  | pointers (offset from 0d000) of world-map data row `u16 [4][256]`
+00d800-014000|data  | world map data @see `$3e:ccbb field::getMapDataPointers`
 014000-020000|bitmap| sprites
 020000-020200|data  | pointers of treasure lists. `u16 [256]`, index: treasure_list_id (warpparam+0e).
 020200-020400|data  | pointers of event lists. `u16 [256]`, index: event_list_id (warpparam+0f).

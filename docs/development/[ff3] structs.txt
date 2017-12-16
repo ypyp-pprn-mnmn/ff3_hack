@@ -1,3 +1,5 @@
+this text will no longer be updated. see 'struct.def' instead. it has most accurate/latest info.
+
 nesheader = 10hbytes
 sram mapped to $6000
 
