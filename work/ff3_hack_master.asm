@@ -30,7 +30,7 @@
 	.include "ff3_command_string.asm"
 	.include "ff3_rand.asm"
 	.include "ff3_fix.asm"
-	.include "ff3_jobx_redmage.asm"
+	.include "ff3_jobx_redmage.asm"		;; 0.8.0
 
 	.ifdef BETA
 		.include "ff3_enemy_target.asm"	;save
