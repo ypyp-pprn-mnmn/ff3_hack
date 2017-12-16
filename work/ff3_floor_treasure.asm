@@ -1,11 +1,11 @@
-;; encoding: **shift-jis**
+;; encoding: utf-8
 ; ff3_floor_treasure.asm
 ;
 ;description:
 ;	implements treasure related functions
 ;
 ;version:
-;	0.03
+;	0.3
 ;======================================================================================================
 	;.ifndef ff3_floor_treasure_begin
 	.include "ff3_floor.h"
@@ -95,7 +95,7 @@ floor_processChipEvent:
 	sta <$80
 
 	ldy #0
-	cpx #$50	;message ("‚à‚¿‚à‚Ì‚ª‚¢‚Á‚Ï‚¢‚Å‚·")
+	cpx #$50	;message ("ã‚‚ã¡ã‚‚ã®ãŒã„ã£ã±ã„ã§ã™")
 	bne .got_treasure
 		sty <.chipAttributes
 		sty <$0d
@@ -164,7 +164,7 @@ floor_setBitMask:
 ;//	[in] u8 $45 : eventParam
 ;//	[in] u8 $49 : warpparam.+01 & 0x20
 ;//	[in] u8 $ba : 00: chipId=d0-df, FF: chipId=e0-ef
-;//		chipId:D0-DF = staticChipId:7C(•ó” )
+;//		chipId:D0-DF = staticChipId:7C(å®ç®±)
 ;//	[out] a : messageId
 floor_getTreasure:
 ;[in]
@@ -219,7 +219,7 @@ floor_getTreasure:
 		jsr floor_searchSpaceForItem	;3c:937e [out] x = index to put
 		bcc .put_item
 			;item_full
-			lda #$50	;"‚à‚¿‚à‚Ì‚ª‚¢‚Á‚Ï‚¢‚Å‚·"
+			lda #$50	;"ã‚‚ã¡ã‚‚ã®ãŒã„ã£ã±ã„ã§ã™"
 			rts
 	.put_item:
 		lda <.treasureItem
@@ -237,26 +237,26 @@ floor_getTreasure:
 
 		lda <.isTreasureNaked
 		beq .treasure_in_box
-			lda #$76	;"‚±‚ñ‚È‚Æ‚±‚ë‚Éxx‚ªI"
+			lda #$76	;"ã“ã‚“ãªã¨ã“ã‚ã«xxãŒï¼"
 			rts
 	.treasure_in_box:
 		lda <.treasureId
 		cmp #TREASURE_WITH_ENCOUNTER_BASE	;$e0
 		bcs .encounter
-			lda #$59	;"‚½‚©‚ç‚Î‚±‚Ì‚È‚©‚©‚ç..."
+			lda #$59	;"ãŸã‹ã‚‰ã°ã“ã®ãªã‹ã‹ã‚‰..."
 			rts
 	.encounter:
 		sta <.encounterId
 		lda #EVENT_FLAG_ENCOUNTER	;$20
 		sta <.eventFlag
-		lda #$02	;"‚½‚©‚ç‚Î‚±‚Ì...‚Æ‚Â‚º‚ñƒ‚ƒ“ƒXƒ^[‚ª..."
+		lda #$02	;"ãŸã‹ã‚‰ã°ã“ã®...ã¨ã¤ãœã‚“ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ãŒ..."
 		rts
 .treasure_is_gil:
 	;here x ==  (itemid)
 	jsr floor.get_item_price	;f5d4
 	jsr floor_incrementPartyGil
 	jsr floor_invertTreasureFlag
-	lda #$01	;"‚½‚©‚ç‚Î‚±‚Ì...‚¬‚é‚Ä‚É‚¢‚ê‚½"
+	lda #$01	;"ãŸã‹ã‚‰ã°ã“ã®...ãŽã‚‹ã¦ã«ã„ã‚ŒãŸ"
 	rts
 
 ;$3f:f640 invertTreasureFlag
