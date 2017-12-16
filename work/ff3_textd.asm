@@ -6,7 +6,8 @@
 ;
 ;==================================================================================================
 TEXT_BANK_BASE = $18    ;;$18:8000 => $30000
-TEXTD_WANT_ONLY_LOWER = $09
+textd.WANT_ONLY_LOWER = $09
+textd.PARSE_ABORTED = $ff
 
     .ifdef _OPTIMIZE_FIELD_WINDOW
     .ifndef field.window.driver.BULK_PATCH_FREE_BEGIN
@@ -266,7 +267,7 @@ textd_x.on_code_0a:	;;HANDLE_EXIT_IN_OWN
 .case_0a:	;;draw_half
     ;cmp #$0A                            ; EFE4 C9 0A
     ;bne .case_0b                        ; EFE6 D0 04
-    lda #TEXTD_WANT_ONLY_LOWER           ; EFE8 A9 09
+    lda #textd.WANT_ONLY_LOWER           ; EFE8 A9 09
 textd_x.clc_return:
     clc ; EFEA 18
     rts ; EFEB 60
@@ -864,7 +865,7 @@ textd_x.on_code_19:	;;HANDLE_EXIT_IN_OWN
     sec ; F100 38
     sbc #$04                            ; F101 E9 04
     sta $79F1                           ; F103 8D F1 79
-    lda #$FF                            ; F106 A9 FF
+    lda #textd.PARSE_ABORTED            ; F106 A9 FF
     clc ; F108 18
     rts ; F109 60
 ; ----------------------------------------------------------------------------
@@ -908,7 +909,7 @@ textd_x.on_code_1e:	;;HANDLE_EXIT_IN_OWN
     sec ; F188 38
     sbc #$04                            ; F189 E9 04
     sta $78F1                           ; F18B 8D F1 78
-    lda #$FF                            ; F18E A9 FF
+    lda #textd.PARSE_ABORTED            ; F18E A9 FF
     clc ; F190 18
     rts ; F191 60
 ; ----------------------------------------------------------------------------

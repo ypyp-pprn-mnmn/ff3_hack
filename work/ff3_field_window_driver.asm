@@ -272,7 +272,7 @@ field.reflect_window_scroll:	;;$3f$eb61
 	FIX_ADDR_ON_CALLER $3d,$a889+1
 	FIX_ADDR_ON_CALLER $3d,$b436+1
 	FIX_ADDR_ON_CALLER $3d,$b616+1
-	FIX_ADDR_ON_CALLER $3d,$b624+1
+	FIX_ADDR_ON_CALLER $3d,$b624+1	;;shop, right after selected to sell item
 	FIX_ADDR_ON_CALLER $3d,$bc0f+1
 ;; ---
 	.ifdef _FEATURE_DEFERRED_RENDERING
@@ -1058,7 +1058,7 @@ field_x.load_and_draw_string_without_border:
 field.load_and_draw_string:	;;$ee9a
 ;; fixups.
 	FIX_ADDR_ON_CALLER $3c, $9116+1		;;menu content
-	FIX_ADDR_ON_CALLER $3d, $a682+1		;;menu content
+	FIX_ADDR_ON_CALLER $3d, $a682+1		;;menu content. called when shop offerings is about to open.
 	;FIX_ADDR_ON_CALLER $3e, $c036+1
 ;; ---
 .p_text = $3e

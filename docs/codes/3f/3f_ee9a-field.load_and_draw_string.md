@@ -1,6 +1,7 @@
 ﻿
 
 
+
 # $3f:ee9a field::load_and_draw_string
 
 
@@ -16,10 +17,11 @@
 +	u8 $93: bank number which the string would be loaded from
 
 ### callers:
-+	`1F:C036:20 9A EE  JSR field::load_and_draw_string`
++	`1F:C036:20 9A EE  JSR field::load_and_draw_string` @ opening title
 +	`1F:EE65:20 9A EE  JSR field::load_and_draw_string` @ $3f:ee65 field::stream_string_in_window
-+	`3c:9116  jmp $EE9A `   
-+	`3d:a682  jmp $EE9A `
++	`3c:9116  jmp $EE9A ` @ some menu content
++	`3d:a682  jmp $EE9A ` @ some menu content (nearby but not $3d:a66b field.draw_menu_window_content)
+	called when shop offerings is about to open.
 
 ### code:
 ```js
@@ -39,6 +41,7 @@ $eec0:
 
 
 **fall through**
+
 
 
 

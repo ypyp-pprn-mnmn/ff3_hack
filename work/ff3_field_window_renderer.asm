@@ -307,7 +307,7 @@ field.draw_window_content:
 				jsr render_x.queue_top_border
 	.composite_middle:
 		pla	;; A <-- rendering disposition.
-		cmp #TEXTD_WANT_ONLY_LOWER
+		cmp #textd.WANT_ONLY_LOWER
 		beq .lower_half
 			lda #0
 			jsr render_x.queue_content
@@ -360,7 +360,7 @@ field.draw_window_content:
 render_x.fill_to_bottom.loop:
 .lines_drawn = $1f
 .window_height = $3d
-	ldx #TEXTD_WANT_ONLY_LOWER
+	ldx #textd.WANT_ONLY_LOWER
 	lsr A
 	beq .do_half
 		ldx #0
@@ -376,14 +376,23 @@ render_x.fill_to_bottom:
 	jsr field.draw_window_content
 	pla
 	tax
+	;; XXX:
+	;;	there no need to check the text end since
+	;;	this call is made only under situations that is
+	;;	safe and right to fill up to the bottom of window.
+	;;	there are cases even if the text hasn't been read thru the end
+	;;	but still need to fill, namely cases that
+	;;	the following charcodes aborts processing due to empty item:
+	;;		CHARCODE.ITEM_NAME_IN_SHOP (0x19)
+	;;		CHARCODE.JOB_NAME (0x1e)
+	;; ---------
 	;; checks if this call is made on the text end
-	ldy #0
-	lda [.p_text],y
-	bne .done
+	;ldy #0
+	;lda [.p_text],y
+	;bne .done
 
 	inc <.lines_drawn
-	cpx #TEXTD_WANT_ONLY_LOWER
-	;cmp #TEXTD_WANT_ONLY_LOWER
+	cpx #textd.WANT_ONLY_LOWER
 	beq .test_end
 		inc <.lines_drawn
 .test_end:
@@ -415,7 +424,7 @@ render_x.fill_to_bottom:
 ;;	$3f:f692 field.draw_window_content
 field.upload_window_content:
 	DECLARE_WINDOW_VARIABLES
-	cmp #TEXTD_WANT_ONLY_LOWER 
+	cmp #textd.WANT_ONLY_LOWER 
 	beq .draw_lower_line
 		lda #0
 		jsr .draw_line
