@@ -1,10 +1,9 @@
-; ff3_hack_beta.asm
-;
-; description:
-;	creates hacked file with newly implemented features
-;
-;======================================================================================================
-;assemble flags
+;; _ff3-DSfy.asm
+;;
+;;	creates a patch with newly implemented features.
+;;
+;;=================================================================================================
+;; feature flags.
 BETA
 ;BALANCED_VERSION
 ;TEST_MAP
@@ -75,6 +74,6 @@ TAG_PROVOKE_EFFECT
 PROVOKE_EFFECT_REMAIN = 1
 	.endif	;PROVOKE_EFFECT_REMAIN
 
-UPDATE_FLAGS				= 0		;0:noupdate
-;======================================================================================================
-	.include "ff3_hack_master.asm"
+UPDATE_FLAGS = 0		;0:noupdate
+;==================================================================================================
+	.include "_build-master.asm"

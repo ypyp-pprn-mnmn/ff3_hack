@@ -1,10 +1,10 @@
-; ff3_hack_master.asm
+; _build-master.asm
 ;
 ; description:
 ;	master file to assmeble
 ;
 ; version:
-;	0.23
+;	0.24
 ;
 ;----------------------------------------------------------------------------------------------------------
 	.inesprg	$20		;total 512k
