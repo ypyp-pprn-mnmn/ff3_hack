@@ -147,7 +147,7 @@ struct ObjectEventParams { //which $72 points to (variable length)
 	u8 eventId;	//fixed part
 };
 
-stringBase $94 = #8400/#8600
+stringBase $94 = #8400/#8600 (at bank $18?)
 stringId $76 = $0740[$71]
 	where $71 = $72[1]
 		where $72 = $2c:8600[index = $6c]

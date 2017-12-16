@@ -72,7 +72,7 @@ struct JobBaseInfo {
 
 $39:8000(file:72010) JobBaseInfo jobParams[22] = {};
 
-$39:1b88(file:73b98) u8 initialMp[8][9] = {};
+$39:bb88(file:73b98) u8 initialMp[8][9] = {};
 
 rom73b98			[00/00/00/00/00/00/00/00]
 rom73ba0 priest/mage mp(lv1)	[08/00/00/00/00/00/00/00]
@@ -566,7 +566,7 @@ $30:9200(file:61210) AttackPatterns[8][?] = {
 //index := enemy_id
 $30:9c58(61c58) u16 DropGils[256] = {};
 //index := enemy_id
-$39:b2ae(7d2ae) u8 DropCapacity[256] = {};
+$39:b2ae(732ae) u8 DropCapacity[256] = {};
 
 struct JobParam
 {
