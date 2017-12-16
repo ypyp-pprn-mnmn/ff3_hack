@@ -86,7 +86,12 @@
 0618c0-061a80|data  | `$30:98c0 MagicParam magicData[0x38]`: 8 bytes/entry.
 061a80-061b80|data  | `$30:9a80 MagicParams specialAttack[0x20] `: 8 bytes/entry.
 061b80-062000|data  | details TBC
-062000-06c000|code  | battle-mode logics
+061e58-062000|code  | battle-mode logics: calculations
+062000-064000|code  | battle-mode logics: calculations
+064000-066000|code  | battle-mode logics: presentation
+066000-068000|code  | battle-mode logics: presentation
+068000-06a000|code  | battle-mode logics: flow controllers
+06a000-06c000|code  | battle-mode logics: flow controllers
 06c000-070000|code  | sound driver
 070000-072000|?     | seems like code
 072000-0720b0|data  | `$39:8000 JobBaseInfo jobParams[22]`: 8bytes/entry
@@ -98,4 +103,9 @@
 073c00-073e00|data  | warp_id => terrain_id mappings. `u8 [2][256]`.
 073e00-074000|data  | `u8 encounter_bounds[2][256]` index: warp_id.
 074180-074500|bitmap| "final fantasy iii"
-074500-07ffff|code  | world-mode logics, floor-mode logics, menu-mode logics, text driver, common logics
+074500-076000|code  | world-mode logics, floor-mode logics, menu-mode logics
+076000-078000|code  | world-mode logics, floor-mode logics, menu-mode logics
+078000-07a000|code  | world-mode logics, floor-mode logics, menu-mode logics
+07a000-07c000|code  | world-mode logics, floor-mode logics, menu-mode logics
+07c000-07e000|code  | world-mode logics, floor-mode logics, menu-mode logics
+07e000-080000|code  | common logics, text driver, ppu driver, interrupt handlers, world-mode logics, floor-mode logics, menu-mode logics
