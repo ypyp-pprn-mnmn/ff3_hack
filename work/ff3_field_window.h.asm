@@ -7,13 +7,35 @@
 ;; version:
 ;;	0.1.0
 ;==================================================================================================
-;;# of frames waited before text lines scolled up
-	DEFINE_DEFAULT FIELD_WINDOW_SCROLL_FRAMES, $01
+;; # of frames waited before text lines scolled up.
+;; referred by `field.stream_string_in_window`.
+	DEFINE_DEFAULT FIELD_WINDOW_SCROLL_FRAMES, $01	;;originally 1
+;; job availability flags.
+;; referred by `field.get_max_available_job_id`.
+    ;;all the value below are the same as the ogirinal.
+    DEFINE_DEFAULT JOB_AVAILABILITY.NO_CRYSTAL, $00
+    DEFINE_DEFAULT JOB_AVAILABILITY.WIND, $05
+    DEFINE_DEFAULT JOB_AVAILABILITY.FIRE, $09
+    DEFINE_DEFAULT JOB_AVAILABILITY.WATER, $10
+    DEFINE_DEFAULT JOB_AVAILABILITY.EARTH, $13
+    DEFINE_DEFAULT JOB_AVAILABILITY.EUREKA, $30
 
-;_FEATURE_BORDER_LOADER
-;OMIT_COMPATIBLE_FIELD_WINDOW
+;; maximum level of player characters.
+;; referred by:
+;; 'textd_x.on_code_10','textd_x.on_code_11','textd_x.on_code_12','textd_x.on_code_13'
+	DEFINE_DEFAULT MAX_PLAYER_LV, 99
+
+;; stomach window sizing.
+	DEFINE_DEFAULT STOMACH_LEFT_COLUMN_NAME, $01  ;;original = $01
+	DEFINE_DEFAULT STOMACH_RIGHT_COLUMN_NAME, $0f  ;;original = $0f
+	DEFINE_DEFAULT STOMACH_LEFT_COLUMN_AMOUNT, $0b ;;original = $0a
+	DEFINE_DEFAULT STOMACH_RIGHT_COLUMN_AMOUNT, $19 ;;original = $18
+;; ------------------------------------------------------------------------------------------------
+;; offerred feature flags.
 ;_FEATURE_DEFERRED_RENDERING
 
+;; ------------------------------------------------------------------------------------------------
+;; shared variables.
 DECLARE_WINDOW_VARIABLES	.macro
 .menu_item_continue_building = $1e
 .lines_drawn = $1f

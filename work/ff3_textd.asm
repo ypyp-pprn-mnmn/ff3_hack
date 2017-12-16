@@ -5,10 +5,6 @@
 ;   re-implementation of the text-driver 'textd' functions
 ;
 ;==================================================================================================
-STOMACH_LEFT_COLUMN_NAME = $01  ;;original = $01
-STOMACH_RIGHT_COLUMN_NAME = $0f  ;;original = $0f
-STOMACH_LEFT_COLUMN_AMOUNT = $0b ;;original = $0a
-STOMACH_RIGHT_COLUMN_AMOUNT = $19 ;;original = $18
 TEXT_BANK_BASE = $18    ;;$18:8000 => $30000
 TEXTD_WANT_ONLY_LOWER = $09
 
@@ -987,7 +983,7 @@ textd_x.on_code_13:	;;HANDLE_EXIT_IN_OWN
 ;;case 0xff:
     ldx <.cached_param                            ; F24A A6 67
     lda player.level,x                  ; F24C BD 01 61
-    cmp #$62                            ; F24F C9 62
+    cmp #(MAX_PLAYER_LV-1)              ; F24F C9 62
     ;bcs textd.continue_with_text       ; F251 B0 3E
 	bcs .continue_with_text
     sta <$80                            ; F253 85 80
@@ -1467,7 +1463,13 @@ field.get_max_available_job_id:
 ;    txa                                 ; F3AA 8A
 ;    rts                                 ; F3AB 60
 .available_jobs:
-    .db $00,$05,$09,$10,$13,$30
+    ;.db $00,$05,$09,$10,$13,$30
+    .db JOB_AVAILABILITY.NO_CRYSTAL
+    .db JOB_AVAILABILITY.WIND
+    .db JOB_AVAILABILITY.FIRE
+    .db JOB_AVAILABILITY.WATER
+    .db JOB_AVAILABILITY.EARTH
+    .db JOB_AVAILABILITY.EUREKA
 
 
     ;VERIFY_PC $f3ac
