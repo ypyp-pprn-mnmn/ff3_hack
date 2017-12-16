@@ -1,10 +1,10 @@
 ﻿
-# $3a:915e
 
+# $3a:915e floor.load
 
 ### args:
 +	[in] u8 $48 : warpId
-+	u8 $02:a000[0x10][0x100]
++	WarpParams $02:a000[0x10][0x100]:
 
 ### (pseudo)code:
 ```js
@@ -47,6 +47,7 @@ $91bb:
 $91c8:
 }
 ```
+
 
 
 

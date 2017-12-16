@@ -30,7 +30,7 @@
 -------------|------|----------------------------------------------------------
 000000-000400|data  | `ChipComposition [4]`, `ChipComopistion { u8 左上のタイル、右上、左下、右下 }`
 000400-000500|data  | `ChipToPalette [4][64]`
-000500-000800|data  | `ChipEvents [3]` index = world_id, `ChipEvents { u8 unknown, u8 event_param }`
+000500-000800|data  | `ChipEvents [3][256]` index = world_id, `ChipEvents { u8 unknown, u8 event_param }`
 000800-000900|data  | chip_id => warp_id mappings `u8 [2][64]`
 000900-0009c0|data  | 装備フラグ 3x64
 0009c0-000a00|?     |
