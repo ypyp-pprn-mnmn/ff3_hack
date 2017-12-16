@@ -1,3 +1,5 @@
+# FF3 (FC原版)のROM領域の用途
+
 ## 各バンクのおおまかな用途
 
 -   コード
@@ -50,13 +52,13 @@
 050000-054000|bitmap| player character sprites in battle
 054000-058000|bitmap| effect animation sprites
 058000-058200|?     | seems like data
-058200-058600|data  | pointers to event script
+058200-058600|data  | pointers to event script (`u16 [2][256]`)
 058600-058a00|data  | `$2c:8600 ObjectEvent event_definitions[256]` : 2-byte structure.
 058a00-060000|?     | seems like data, event scripts (variable length, up to 0x40 bytes)
-05c000-05c400|data  | `$2e:8000 EncounterParam encounter_definitions[2][256] = {};` : 2-byte struct.
-05c400-05ca00|data  | `$2e:8400 EnemyParty party_definitions[256] = {};` : 6-byte struct.
-05ca00-05ca40|data  | `$2e:8a00 SpawnPattern spawn_patterns[64] = {};` : 1-byte strucut.
-05cb00-05cc00|data  | `$2e:8b00 u8 enemy_graphics_indices[256] = {}`
+05c000-05c400|data  | `$2e:8000 EncounterParam encounter_definitions[2][256]` : 2-byte struct.
+05c400-05ca00|data  | `$2e:8400 EnemyParty party_definitions[256]` : 6-byte struct.
+05ca00-05ca40|data  | `$2e:8a00 SpawnPattern spawn_patterns[64]` : 1-byte strucut.
+05cb00-05cc00|data  | `$2e:8b00 u8 enemy_graphics_indices[256]`
 05cc00-060000|?     | known structure(s): `$2e:91a0 actionId cosumeableItemParam[0x30?]`
 060000-061000|data  | `$30:8000 MonsterBaseParam[256]`: 16-byte struct.
 061000-061200|data  | `$30:9000 MonsterBattleParam[170]`: 3-byte struct. the last 2 bytes is padding.
