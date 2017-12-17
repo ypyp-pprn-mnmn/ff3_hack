@@ -4,7 +4,7 @@
 ;	label definition for bank $34-35
 ;
 ;version:
-;	0.03 (2006-10-19)
+;	0.4 (2017-12-17)
 ;
 ;======================================================================================================
 ;$34-35
@@ -13,6 +13,7 @@ dispatchBattleFunction_05	= $8026
 dispatchBattleFunction_06	= $802a
 dispatchBattleFunction_07	= $802e
 presentCharacter			= $8185
+;battle.play_effect         = $8411
 ;playEffect					= $8411 ;hacked
 ;set52toIndexFromActorBit	= $8532	;[in] $7e98 : target indicator bits?,
 dispatchPresentScene_1f		= $8545
@@ -27,6 +28,7 @@ setBackgroundProperty		= $8d03	;
 draw1LineWindow				= $8d1b	;[in] $18:windowkind
 eraseWindow					= $8eb0
 eraseFromLeftBottom0Bx0A	= $8f0b
+;battle.present              = $8ff7 ;re-impl.
 setNoTargetMessage			= $91ce
 setBaseAddrTo_8a40			= $95bd
 setBaseAddrTo_8c40			= $95c6
@@ -45,6 +47,7 @@ setYtoOffset03				= $9b8d
 setYtoOffset2F				= $9b94	;target indicator
 setYtoOffset2E				= $9b9b	;action id
 drawInfoWindow				= $9ba2
+battle.cache_players_status = $9d06
 cachePlayerStatus			= $9d1d
 drawEnemyNamesWindow		= $9d9e
 setActorActionAndClearMode	= $9f7b
@@ -52,6 +55,7 @@ setActionTargetToSelf		= $9f87
 ;getIndexOfGreatest			= $a30f	;hacked [in] u16 $1a[4] : values ,$24[4] : indices [out] x : index
 consumeEquippedItem			= $a353	;x unchanges
 getActor2C					= $a42e
+canPlayerPartyContinueFighting = $a458
 getPlayerOffset				= $a541
 initString					= $a549	;fill x bytes at $7ad7 #$00ff (null terminated)
 offsetTilePtr				= $a558
@@ -68,3 +72,5 @@ loadString					= $a609
 ;isPlayerAllowedToUseItem	= $b8fd	;hacked
 setActionTargetByParam		= $b979
 loadTo7400FromBank30		= $ba3a
+battle.apply_poison_damage  = $badc
+

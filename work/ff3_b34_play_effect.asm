@@ -1,15 +1,15 @@
-; ff3_b34_play_effect.asm
-;
-; description:
-;	replaces code for controling various effects
-;
-; version:
-;	0.05 (2006-11-30)
+;; encoding: utf-8
+;; ff3_b34_play_effect.asm
+;;
+;;	replaces code for controling various effects
+;;
+;; version:
+;;	0.6 (2017-12-17)
 ;======================================================================================================
 ff3_b34_play_effect_begin:
-	;INIT_PATCH $34,$8411,$843e
-	;INIT_PATCH $34,$83f8,$8460
 	INIT_PATCH $34,$8411,$8460
+
+battle.play_effect:
 playEffect:
 ;[in]
 ; u8 $7e9a :	action side flag (80:actor enemy 40:target enemy)
@@ -83,6 +83,12 @@ playEffect_damage	;effect 0f
 .pActor = $6e
 	jsr $868a	;showDamage
 .do_usually:
+	;; note:
+	;;	'battle.process_poison' the poison damage handler,
+	;;	one of callers of this function,
+	;;	executed right before each turn end,
+	;;	doesn't clear the 'segmentated enemy group' value so that
+	;;	it may cause this function adversely playing the effect.
 	lda .segmentatedEnemyGroup
 	;cmp #$ff
 	bmi playEffect_doReturn_00

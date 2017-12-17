@@ -12,5 +12,6 @@ EXPERIMENT_IMPL = 5	; encount test
 ;_OPTIMIZE_FIELD_WINDOW
 _FEATURE_STOMACH_AMOUNT_1BYTE
 _FEATURE_DEFERRED_RENDERING
+_FIX_POISON
 ;; the below should be final line of this file
 	.include "_ff3-DSfy.asm"

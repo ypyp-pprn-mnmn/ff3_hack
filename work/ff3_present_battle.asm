@@ -4,13 +4,14 @@
 ;	replaces presentBattle ($34:8ff7) related codes
 ;
 ; version:
-;	0.05 (2006-10-27)
+;	0.6 (2017-12-17)
 ;======================================================================================================
 ff3_present_battle_begin:
 
 	INIT_PATCH $34,$8ff7,$9474
 	;$93cd
 	
+battle.present:
 presentBattle:
 ;[in]
 .situation = $7ec2	; usually commandId (set by commandHandler); toadsAction=18,prizeMessage=2
