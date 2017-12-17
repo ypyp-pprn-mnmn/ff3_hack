@@ -173,6 +173,7 @@ effect.side_flags = $7e9a
 play_effectTargetBits	= $7e9b	;param of presentActionEffect($33:b68d)
 play_magicType			= $7e9d
 play_reflectedTargetBits= $7eb8 ;param of presentEffectAtTarget($33:b64f)
+effect.reflect_target_flags = $7eb8
 
 effectHandlerIndex	= $7ec2	;
 effect.scene_id = $7ec2

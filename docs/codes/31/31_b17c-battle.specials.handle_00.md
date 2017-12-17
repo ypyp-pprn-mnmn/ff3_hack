@@ -1,12 +1,19 @@
 ﻿
-# $31:b17c handleDamageMagic
+# $31:b17c battle.specials.handle_00
+> specialHandler00: HPダメージ魔法
 
+### args:
++	u8 $30: hit count
++	u8 $38: attack count
++	BattleCharacter* $6e: ptr to actor
++	BattleCharacter* $70: ptr to target
++	u8 $7c: hit count (with attr boost bonus)
 
-
->specialHandler00: ダメージ魔法
-
+### callers:
++	$31:b15f battle.specials.invoke_handler
 
 ### notes:
+former name : "handleDamageMagic"
 
 ### (pseudo-)code:
 ```js
@@ -72,6 +79,7 @@ $b232:
 	return;
 }
 ```
+
 
 
 

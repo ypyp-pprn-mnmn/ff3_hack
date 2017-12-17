@@ -1,46 +1,46 @@
+;; encoding: utf-8
 ; ff3_present_scene.asm
 ;
-;description:
 ;	replaces presentScene()
 ;
 ;version:
-;	0.01 (2006-10-28)
+;	0.2 (2017-12-17)
 ;
 ;======================================================================================================
 ff3_present_scene_begin:
 
 ;	[in] u8 A : commandId (00-25h)
-;		01 : ‚³‚ª‚é(char:$52)
-;		02 : w¦‚·‚éƒLƒƒƒ‰‚ª‘O‚Éo‚é(char:$52)
+;		01 : ã•ãŒã‚‹(char:$52)
+;		02 : æŒ‡ç¤ºã™ã‚‹ã‚­ãƒ£ãƒ©ãŒå‰ã«å‡ºã‚‹(char:$52)
 ;		03 : playEffect_05 (back(03) )
 ;		04 : playEffect_04 (forward(02) )
-;		07 : playEffect_0e(€–SE–¡•û)
-;		08 : $b38e s“®’†‚ÌƒLƒƒƒ‰‚ğ¦‚·(ˆê’è‚Ìƒ‰ƒCƒ“‚Ü‚Å‘O‚Éo‚é)
-;		09 : $b38b s“®I—¹‚µ‚½ƒLƒƒƒ‰‚ğŒ³‚ÌˆÊ’u‚Ü‚Å–ß‚·
-;		0a : playEffect_0e(€–SE“G $7e=€–Sbit(Šebit‚ª“G1‘Ì‚É‘Š“–) )
+;		07 : playEffect_0e(æ­»äº¡ãƒ»å‘³æ–¹)
+;		08 : $b38e è¡Œå‹•ä¸­ã®ã‚­ãƒ£ãƒ©ã‚’ç¤ºã™(ä¸€å®šã®ãƒ©ã‚¤ãƒ³ã¾ã§å‰ã«å‡ºã‚‹)
+;		09 : $b38b è¡Œå‹•çµ‚äº†ã—ãŸã‚­ãƒ£ãƒ©ã‚’å…ƒã®ä½ç½®ã¾ã§æˆ»ã™
+;		0a : playEffect_0e(æ­»äº¡ãƒ»æ•µ $7e=æ­»äº¡bit(å„bitãŒæ•µ1ä½“ã«ç›¸å½“) )
 ;		0b : playEffect_0e
-;			(‘h¶? bit‚ª—§‚Á‚Ä‚¢‚é“G‚Ì˜g‚É“G‚ª‚¢‚½‚È‚çƒOƒ‰•œŠˆ
-;			 ¶‘¶‚©‚Â”ñ•\¦‚Ì“G‚ª‚¢‚½‚Æ‚« $7e=¶‘¶bit ‚ÅŒÄ‚Î‚ê‚é)
-;		0C : “G¶¬(¢ŠÒE•ª—ôE‘B) playEffect_0F (disp_0C)
+;			(è˜‡ç”Ÿ? bitãŒç«‹ã£ã¦ã„ã‚‹æ•µã®æ ã«æ•µãŒã„ãŸãªã‚‰ã‚°ãƒ©å¾©æ´»
+;			 ç”Ÿå­˜ã‹ã¤éè¡¨ç¤ºã®æ•µãŒã„ãŸã¨ã $7e=ç”Ÿå­˜bit ã§å‘¼ã°ã‚Œã‚‹)
+;		0C : æ•µç”Ÿæˆ(å¬é‚„ãƒ»åˆ†è£‚ãƒ»å¢—æ®–) playEffect_0F (disp_0C)
 ;		0d : playEffect_0c (escape(06/07) : $7e9a(sideflag) < 0)
 ;		0e :
 ;		
 ;		0F : prize($35:bb49)
-;		10 : ‘ÎÛ‘I‘ğ
-;		12 : ‘ÅŒ‚ƒ‚[ƒVƒ‡ƒ“&ƒGƒtƒFƒNƒg(char:$52)
+;		10 : å¯¾è±¡é¸æŠ
+;		12 : æ‰“æ’ƒãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³&ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ(char:$52)
 ;		13 : presentCharacter($34:8185)
-;		14 : playEffect_00 (fight/sing ”í’eƒ‚[ƒVƒ‡ƒ“?)
+;		14 : playEffect_00 (fight/sing è¢«å¼¾ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³?)
 ;		15 : playEffect_06 (defend(05) )
-;		16 : playEffect_09 (charge(0f) ’Êí)
-;		17 : playEffect_09 (charge(0f) ‚½‚ß‚·‚¬)
+;		16 : playEffect_09 (charge(0f) é€šå¸¸)
+;		17 : playEffect_09 (charge(0f) ãŸã‚ã™ã)
 ;		18 : playEffect_07 (jump(08) )
 ;		19 : playEffect_08 (landing(09) )
 ;		1a : playEffect_0a (intimidate(11) )
 ;		1b : playEffect_0b (cheer(12) )
-;		1c : playEffect_0F (disp_0C) ƒ_ƒ[ƒW•\¦?
+;		1c : playEffect_0F (disp_0C) ãƒ€ãƒ¡ãƒ¼ã‚¸è¡¨ç¤º?
 ;		1d : playEffect_01 (command13/ cast/item)
-;		1f : playEffect_00 s“®‚·‚é“G‚ª“_–Å
-;		20 : playEffect_00 (fight/sing “G‚Ì‘ÅŒ‚ƒGƒtƒFƒNƒg?)
+;		1f : playEffect_00 è¡Œå‹•ã™ã‚‹æ•µãŒç‚¹æ»…
+;		20 : playEffect_00 (fight/sing æ•µã®æ‰“æ’ƒã‚¨ãƒ•ã‚§ã‚¯ãƒˆ?)
 ;		21 : playEffect_0d (escape(06/07) : $7e9a(effectside) >= 0)
 ;		22 : playEffect_01 (magicparam+06 == #07)
 ;		23 : playEffect_01 (magicparam+06 == #0d)
@@ -146,7 +146,7 @@ moveCharacterForward:
 psx_blowOnly:
 	jsr $a9cf	;$a9cf();	
 	jsr $a8ea	;loadBlowEffectParams();	// $a8ea();
-	jmp $aef0	;dispatchEffectFunction_04();	//$aef0();	//‘ÅŒ‚ƒ‚[ƒVƒ‡ƒ“
+	jmp $aef0	;dispatchEffectFunction_04();	//$aef0();	//æ‰“æ’ƒãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³
 	
 psx_abyss:
 	jsr moveCharacterForward

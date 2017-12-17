@@ -223,7 +223,8 @@ rev84
 			u8 power;	//23
 			u8 resist;	//24
 		} def;
-		u8 unk0[2];
+		u8 unk0[1];
+		u8 reflect?;	//26 ƒŠƒtƒŒƒN‚Ìhandler(31:b48c)‚ª1‚Éİ’è
 		u8 damageMultiplier;	//27 (1:x2, 2:x3) (jump:2)
 		u8 criticalRate;	//28 (enemy: 5, player: jobParam[0] )
 		u8 criticalBonus;	//29 (enemy: atk/2, player: jobParam[1] )

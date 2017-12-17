@@ -1,10 +1,16 @@
 ﻿
-# $31:b233 handleHealingMagic	
+# $31:b233 battle.specials.handle_01
+> HP回復魔法 (specialHandler01: "handleHealingMagic")
 
+### args:
++	u8 $30: hit count
++	u8 $38: attack count
++	BattleCharacter* $6e: ptr to actor
++	BattleCharacter* $70: ptr to target
++	u8 $7c: hit count (with attr boost bonus)
 
-
->specialHandler01: 回復魔法
-
+### callers:
++	$31:b15f battle.specials.invoke_handler
 
 ### notes:
 
@@ -38,6 +44,7 @@ $b275:
 $b276:
 }
 ```
+
 
 
 

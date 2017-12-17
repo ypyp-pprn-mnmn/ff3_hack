@@ -1,12 +1,9 @@
 ﻿
-# $31:af77 doSpecialAction
-
-
-
->battleFunction00 (dispId : 0)
-
+# $31:af77 battle.specials.execute
+> 特殊攻撃を実行し、その結果を実行者と対象者に反映する。
 
 ### notes:
+battleFunction00 (dispId : 0) (former name: "doSpecialAction")
 
 ### args:
 + [in] u16 $6e : actorPtr
@@ -188,6 +185,5 @@ $b15e:
 	return;
 }
 ```
-
 
 
