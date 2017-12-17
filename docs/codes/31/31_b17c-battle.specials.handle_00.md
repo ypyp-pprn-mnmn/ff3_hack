@@ -42,7 +42,9 @@ $b1b1:
 $b1b4:
 	$26 = $70[y = 0x15];
 	y = 0x10;
-	if (($7405 & 0x10) != 0) y++; //beq b1c4
+	if (($7405 & 0x10) != 0) { //beq b1c4
+		y++; 
+	}
 $b1c4:
 	//(int or men)/2 + param[2]
 	$25,2b = ($6e[y] >> 1) + $7402
@@ -70,19 +72,23 @@ $b1f4:
 		divide: $2a
 	}); // $bb44();
 $b201:
-	if ( ($1c | $1d) == 0) {
+	if (($1c | $1d) == 0) {
 		$1c++; //bne b209
 	}
 $b209:
 	$78,79 = $1c,1d
 	battle.get_target_ptr(); //$bdbc(); effectively [$24,$25] = [$70,$71]
 	damageHp();	//$bcd2()
+	//Note:
+	// damagehp()はダメージによって対象者のHPが0以下になった場合、
+	// 対象者のステータスはすべて0クリアする。
+	// carry: 1 = target is live (able to continue fight)
 	if (carry) { //bcc b21c
 		battle.specials.try_to_apply_enchanted_status();	//$be43
 	}
 $b21c:
-	if ( ($7574 != 0)  //beq b232
-		&& ( ($70[y = 3] | $70[++y]) == 0) ) //bne b232
+	if (($7574 != 0)  //beq b232
+		&& (($70[y = 3] | $70[++y]) == 0) ) //bne b232
 	{ 
 $b22a:
 		$70[y = 1] |= 0x80;	//dead
@@ -91,6 +97,7 @@ $b232:
 	return;
 }
 ```
+
 
 
 

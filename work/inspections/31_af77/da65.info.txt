@@ -3,7 +3,7 @@ GLOBAL {
 	INPUTOFFS	$62F77;
 	STARTADDR	$af77;
 	INPUTSIZE	$001E8;
-	OUTPUTNAME	"31_af77-doSpecialAction.da65out.txt";
+	OUTPUTNAME	"31_af77-battle.specials.execute.da65out.txt";
 };
 LABEL {
 	NAME "commandWindow_OnBack";
@@ -126,9 +126,9 @@ LABEL {
 	SIZE	1;
 };
 LABEL {
-	NAME "setMagicTarget";
-	ADDR $b953;
-	COMMENT "bank $35";
+	NAME "battle.specials.try_to_apply_enchanted_status";
+	ADDR $be43;
+	COMMENT "bank $31";
 	SIZE	1;
 };
 LABEL {
@@ -219,6 +219,12 @@ LABEL {
 	NAME "endBattle";
 	ADDR $8160;
 	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.loadTileParams";
+	ADDR $8f43;
+	COMMENT "bank $3a";
 	SIZE	1;
 };
 LABEL {
@@ -390,7 +396,7 @@ LABEL {
 	SIZE	1;
 };
 LABEL {
-	NAME "handleHealingMagic";
+	NAME "battle.specials.handle_01";
 	ADDR $b233;
 	COMMENT "bank $31";
 	SIZE	1;
@@ -480,12 +486,6 @@ LABEL {
 	SIZE	1;
 };
 LABEL {
-	NAME "ppud.update_palette_after_nmi";
-	ADDR $f8bc;
-	COMMENT "bank $3f";
-	SIZE	1;
-};
-LABEL {
 	NAME "call_switch1stBank";
 	ADDR $ff06;
 	COMMENT "bank $3f";
@@ -525,6 +525,12 @@ LABEL {
 	NAME "clearEffectTargetIfMiss";
 	ADDR $b921;
 	COMMENT "bank $31";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.seek_text_to_next_line";
+	ADDR $eba9;
+	COMMENT "bank $3f";
 	SIZE	1;
 };
 LABEL {
@@ -570,9 +576,9 @@ LABEL {
 	SIZE	1;
 };
 LABEL {
-	NAME "ppud.sync_registers_with_cache";
-	ADDR $f8cb;
-	COMMENT "bank $3f";
+	NAME "battle.specials.pickup_victim_of_reflection";
+	ADDR $b9fa;
+	COMMENT "bank $31";
 	SIZE	1;
 };
 LABEL {
@@ -1104,9 +1110,15 @@ LABEL {
 	SIZE	1;
 };
 LABEL {
-	NAME "putDakuten";
-	ADDR $96f9;
-	COMMENT "bank $34";
+	NAME "command_09_landing";
+	ADDR $aa11;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "battle.grow_player";
+	ADDR $bf7c;
+	COMMENT "bank $35";
 	SIZE	1;
 };
 LABEL {
@@ -1254,7 +1266,7 @@ LABEL {
 	SIZE	1;
 };
 LABEL {
-	NAME "doSpecialAction";
+	NAME "battle.specials.execute";
 	ADDR $af77;
 	COMMENT "bank $31";
 	SIZE	1;
@@ -1620,12 +1632,6 @@ LABEL {
 	SIZE	1;
 };
 LABEL {
-	NAME "magic_protect";
-	ADDR $b704;
-	COMMENT "bank $31";
-	SIZE	1;
-};
-LABEL {
 	NAME "clearTargetBit";
 	ADDR $fd2c;
 	COMMENT "bank $3f";
@@ -1956,9 +1962,9 @@ LABEL {
 	SIZE	1;
 };
 LABEL {
-	NAME "command_09_landing";
-	ADDR $aa11;
-	COMMENT "bank $35";
+	NAME "magic_protect";
+	ADDR $b704;
+	COMMENT "bank $31";
 	SIZE	1;
 };
 LABEL {
@@ -1983,6 +1989,12 @@ LABEL {
 	NAME "actionHandlers0x15";
 	ADDR $9fac;
 	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "setMagicTarget";
+	ADDR $b953;
+	COMMENT "bank $35";
 	SIZE	1;
 };
 LABEL {
@@ -2100,15 +2112,15 @@ LABEL {
 	SIZE	1;
 };
 LABEL {
-	NAME "field.loadTileParams";
-	ADDR $8f43;
-	COMMENT "bank $3a";
+	NAME "battle.push_damage_value_for_enemy_side";
+	ADDR $bb1c;
+	COMMENT "bank $31";
 	SIZE	1;
 };
 LABEL {
-	NAME "battle.grow_player";
-	ADDR $bf7c;
-	COMMENT "bank $35";
+	NAME "ppud.update_palette_after_nmi";
+	ADDR $f8bc;
+	COMMENT "bank $3f";
 	SIZE	1;
 };
 LABEL {
@@ -2283,6 +2295,12 @@ LABEL {
 	NAME "loadTo7400FromBank30";
 	ADDR $ba3a;
 	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "ppud.sync_registers_with_cache";
+	ADDR $f8cb;
+	COMMENT "bank $3f";
 	SIZE	1;
 };
 LABEL {
@@ -2994,9 +3012,9 @@ LABEL {
 	SIZE	1;
 };
 LABEL {
-	NAME "countAndDecrementUntil0";
-	ADDR $9648;
-	COMMENT "bank $34";
+	NAME "battle.specials.handle_0a";
+	ADDR $b48c;
+	COMMENT "bank $31";
 	SIZE	1;
 };
 LABEL {
@@ -3138,8 +3156,8 @@ LABEL {
 	SIZE	1;
 };
 LABEL {
-	NAME "buildEnemyDeadBits";
-	ADDR $8496;
+	NAME "putDakuten";
+	ADDR $96f9;
 	COMMENT "bank $34";
 	SIZE	1;
 };
@@ -3324,6 +3342,12 @@ LABEL {
 	SIZE	1;
 };
 LABEL {
+	NAME "buildEnemyDeadBits";
+	ADDR $8496;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
 	NAME "commandWindow_OnAttackSelected";
 	ADDR $a843;
 	COMMENT "bank $35";
@@ -3348,9 +3372,9 @@ LABEL {
 	SIZE	1;
 };
 LABEL {
-	NAME "field.seek_text_to_next_line";
-	ADDR $eba9;
-	COMMENT "bank $3f";
+	NAME "countAndDecrementUntil0";
+	ADDR $9648;
+	COMMENT "bank $34";
 	SIZE	1;
 };
 LABEL {
@@ -3480,7 +3504,7 @@ LABEL {
 	SIZE	1;
 };
 LABEL {
-	NAME "invokeActionHandler";
+	NAME "battle.specials.invoke_handler";
 	ADDR $b15f;
 	COMMENT "bank $31";
 	SIZE	1;

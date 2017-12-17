@@ -1,6 +1,7 @@
 ﻿
-# $31:bb1c battle.push_damage_value_for_enemy_side
-> 直前のダメージ計算結果を敵側の表示用として追加する
+
+# $31:bb1c battle.push_damage_value_for_2nd_phase
+> 直前のダメージ計算結果を2回目の表示用として追加する
 
 ### args:
 
@@ -30,4 +31,5 @@ none.
 */
 }
 ```
+
 

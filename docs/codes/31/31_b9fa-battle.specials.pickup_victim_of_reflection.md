@@ -1,4 +1,5 @@
 ﻿
+
 # $31:b9fa battle.specials.pickup_victim_of_reflection
 > リフレクの(適切な)反射対象をランダムに選択し、対象者として設定する
 
@@ -6,6 +7,7 @@
 
 #### in:
 +	u8 $7E88: action id (if magic, then it is item_id of which - 0xC8)
++	u8 $7EC1: target index
 
 #### in,out:
 +	BattleCharacter* $70: ptr to target.
@@ -13,11 +15,10 @@
 	- on exit, this points to the victim of reflection.
 
 +	u8 $7EB8: reflected_target_flags
-+	u8 $7EC1: number of reflections?
 
 #### out:
 +	BattleCharacter* $78B5: the original target of the action executed (= $70 given to the call)
-+	u8 $7574: =1, details TBC (right before the character data (for all parties) begins)
++	u8 $7574: reflection happen? on exit, set to 1 if so.
 
 ### callers:
 +	$31:b17c battle.specials.handle_00
@@ -36,6 +37,7 @@
 
 ### notes:
 this function does nothing if both actor and target is from the same side.
+
 |actor/target | player | enemy
 |-------------|--------|----------
 |player       | skip   | ok
@@ -141,4 +143,7 @@ LBA9B:
 */
 }
 ```
+
+
+
 

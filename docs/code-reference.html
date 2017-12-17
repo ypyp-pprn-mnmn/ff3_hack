@@ -8,7 +8,7 @@
     <meta name="generator" content="pandoc">
     <meta name="description" content>
     <meta name="author" content="ypyp-pprn-mnmn (aka “301”)">
-    <!-- generated-at 2017-12-18 02:30:14+0900 -->
+    <!-- generated-at 2017-12-18 03:37:49+0900 -->
     <title>FF3@FC Original Code Documentation</title>
 
     <!-- Bootstrap core CSS -->
@@ -314,7 +314,7 @@ code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Infor
           <li><a href="#b926-cleareffecttarget">$31:b926 clearEffectTarget</a></li>
           <li><a href="#b9ab-proliferate">$31:b9ab proliferate</a></li>
           <li><a href="#b9fa-battle.specials.pickup_victim_of_reflection">$31:b9fa battle.specials.pickup_victim_of_reflection</a></li>
-          <li><a href="#bb1c-battle.push_damage_value_for_enemy_side">$31:bb1c battle.push_damage_value_for_enemy_side</a></li>
+          <li><a href="#bb1c-battle.push_damage_value_for_2nd_phase">$31:bb1c battle.push_damage_value_for_2nd_phase</a></li>
           <li><a href="#bb28-getnumberofrandomsuccess">$31:bb28 getNumberOfRandomSuccess</a></li>
           <li><a href="#bb44-calcdamage">$31:bb44 calcDamage</a></li>
           <li><a href="#bbe2-istargetweaktoholy">$31:bbe2 isTargetWeakToHoly</a></li>
@@ -3629,7 +3629,7 @@ code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Infor
 <p>特殊攻撃を実行し、その結果を実行者と対象者に反映する。</p>
 </blockquote>
 <h3 id="notes-7">notes:</h3>
-<p>battleFunction00 (dispId : 0) (former name: “doSpecialAction”)</p>
+<p>battleFunction00 (dispId : 0) (former name: “doSpecialAction”) this function has a bug that happens if and only if ‘reflection’ of some kind of magics. more specifically, when a reflected magic resulted in 0 damage, this function incorrectly skips logics restoring target pointer. see around $b11c for details.</p>
 <h3 id="args-39">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u16 $6e : actorPtr</li>
@@ -3644,7 +3644,7 @@ code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Infor
 </ul>
 <h3 id="callers">callers:</h3>
 <ul>
-<li>dispatchBattleCommand(0)</li>
+<li>$30:9e58 invokeBattleFunction: dispatchBattleCommand(0)</li>
 </ul>
 <h3 id="pseudo-code-22">(pseudo-)code:</h3>
 <pre class="sourceCode js" id="cb81"><code class="sourceCode javascript"><div class="sourceLine" id="cb81-1" data-line-number="1"><span class="op">{</span></div>
@@ -3771,46 +3771,317 @@ code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Infor
 <div class="sourceLine" id="cb81-122" data-line-number="122">    <span class="at">invokeActionHandler</span>()<span class="op">;</span>  <span class="co">//$31:b15f();</span></div>
 <div class="sourceLine" id="cb81-123" data-line-number="123"><span class="dt">$b0d6</span><span class="op">:</span></div>
 <div class="sourceLine" id="cb81-124" data-line-number="124">    x <span class="op">=</span> $64<span class="op">;</span> a <span class="op">=</span> $79<span class="op">;</span></div>
-<div class="sourceLine" id="cb81-125" data-line-number="125">    <span class="cf">if</span> (#ff <span class="op">!=</span> a) <span class="op">{</span></div>
+<div class="sourceLine" id="cb81-125" data-line-number="125">    <span class="cf">if</span> (<span class="bn">0xff</span> <span class="op">!=</span> a) <span class="op">{</span></div>
 <div class="sourceLine" id="cb81-126" data-line-number="126">        x <span class="op">=</span> $64<span class="op">;</span></div>
 <div class="sourceLine" id="cb81-127" data-line-number="127">        <span class="cf">if</span> (<span class="dv">0</span> <span class="op">==</span> (a <span class="op">=</span> $7574)) <span class="op">{</span></div>
-<div class="sourceLine" id="cb81-128" data-line-number="128">            <span class="va">$7e4f</span>.<span class="at">x</span> <span class="op">=</span> $78<span class="op">,</span><span class="dv">79</span><span class="op">;</span>   <span class="co">//damage</span></div>
-<div class="sourceLine" id="cb81-129" data-line-number="129">        <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></div>
-<div class="sourceLine" id="cb81-130" data-line-number="130"><span class="dt">$b0f3</span><span class="op">:</span></div>
-<div class="sourceLine" id="cb81-131" data-line-number="131">            <span class="at">getTarget2c</span>()<span class="op">;</span>  <span class="co">//$31:bc25()</span></div>
-<div class="sourceLine" id="cb81-132" data-line-number="132">            x <span class="op">=</span> a <span class="op">=</span> (a <span class="op">&amp;</span> <span class="dv">7</span>) <span class="op">&lt;&lt;</span> <span class="dv">1</span><span class="op">;</span></div>
-<div class="sourceLine" id="cb81-133" data-line-number="133">            x<span class="op">++;</span></div>
-<div class="sourceLine" id="cb81-134" data-line-number="134">            <span class="cf">if</span> (#ff <span class="op">!=</span> (a <span class="op">=</span> <span class="va">$7e5f</span>.<span class="at">x</span>)) <span class="op">{</span></div>
-<div class="sourceLine" id="cb81-135" data-line-number="135">                x<span class="op">--;</span></div>
-<div class="sourceLine" id="cb81-136" data-line-number="136">                <span class="va">$7e5f</span>.<span class="at">x</span> <span class="op">+=</span> $78<span class="op">,</span><span class="dv">79</span></div>
-<div class="sourceLine" id="cb81-137" data-line-number="137">            <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></div>
-<div class="sourceLine" id="cb81-138" data-line-number="138"><span class="dt">$b118</span><span class="op">:</span>          x<span class="op">--;</span></div>
-<div class="sourceLine" id="cb81-139" data-line-number="139">                <span class="va">battle</span>.<span class="at">push_damage_value_for_enemy_side</span>()<span class="op">;</span>  <span class="co">//$31:bb1c();</span></div>
-<div class="sourceLine" id="cb81-140" data-line-number="140">            <span class="op">}</span></div>
-<div class="sourceLine" id="cb81-141" data-line-number="141"><span class="dt">$b11c</span><span class="op">:</span>          $70<span class="op">,</span><span class="dv">71</span> <span class="op">=</span> $78b5<span class="op">,</span>78b6</div>
-<div class="sourceLine" id="cb81-142" data-line-number="142">        <span class="op">}</span></div>
-<div class="sourceLine" id="cb81-143" data-line-number="143">    <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></div>
-<div class="sourceLine" id="cb81-144" data-line-number="144"><span class="dt">$b129</span><span class="op">:</span></div>
-<div class="sourceLine" id="cb81-145" data-line-number="145">        <span class="at">setEffectTargetToOpponent</span>()<span class="op">;</span><span class="co">//$31:bdbc();</span></div>
-<div class="sourceLine" id="cb81-146" data-line-number="146">        a <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></div>
-<div class="sourceLine" id="cb81-147" data-line-number="147">        <span class="at">checkForEffectTargetDeath</span>()<span class="op">;</span>    <span class="co">//$31:bdc5();</span></div>
-<div class="sourceLine" id="cb81-148" data-line-number="148">    <span class="op">}</span></div>
-<div class="sourceLine" id="cb81-149" data-line-number="149"><span class="dt">$b131</span><span class="op">:</span></div>
-<div class="sourceLine" id="cb81-150" data-line-number="150">    <span class="at">setEffectTargetToActor</span>()<span class="op">;</span>   <span class="co">//$31:bdb3();</span></div>
-<div class="sourceLine" id="cb81-151" data-line-number="151">    a <span class="op">=</span> <span class="dv">1</span><span class="op">;</span></div>
-<div class="sourceLine" id="cb81-152" data-line-number="152">    <span class="at">checkForEffectTargetDeath</span>()<span class="op">;</span>    <span class="co">//$31:bdc5();</span></div>
-<div class="sourceLine" id="cb81-153" data-line-number="153">    </div>
-<div class="sourceLine" id="cb81-154" data-line-number="154"><span class="dt">$b139</span><span class="op">:</span>  $7ec1<span class="op">++;</span></div>
-<div class="sourceLine" id="cb81-155" data-line-number="155">    <span class="cf">if</span> (<span class="dv">8</span> <span class="op">!=</span> $7ec1) <span class="op">{</span></div>
-<div class="sourceLine" id="cb81-156" data-line-number="156">        <span class="cf">if</span> (<span class="dv">4</span> <span class="op">!=</span> $7ec1 <span class="op">||</span> (<span class="dv">0</span> <span class="op">!=</span> $7e9a <span class="op">&amp;</span> #<span class="dv">40</span>) )<span class="op">{</span></div>
-<div class="sourceLine" id="cb81-157" data-line-number="157"><span class="dt">$b147</span><span class="op">:</span> <span class="dt">$b14e</span><span class="op">:</span></div>
-<div class="sourceLine" id="cb81-158" data-line-number="158">            $70<span class="op">,</span><span class="dv">71</span> <span class="op">+=</span> #<span class="dv">0040</span><span class="op">;</span></div>
-<div class="sourceLine" id="cb81-159" data-line-number="159">            goto $b031<span class="op">;</span></div>
-<div class="sourceLine" id="cb81-160" data-line-number="160">        <span class="op">}</span></div>
-<div class="sourceLine" id="cb81-161" data-line-number="161">    <span class="op">}</span></div>
-<div class="sourceLine" id="cb81-162" data-line-number="162"><span class="dt">$b15e</span><span class="op">:</span></div>
-<div class="sourceLine" id="cb81-163" data-line-number="163">    <span class="cf">return</span><span class="op">;</span></div>
-<div class="sourceLine" id="cb81-164" data-line-number="164"><span class="op">}</span></div></code></pre>
+<div class="sourceLine" id="cb81-128" data-line-number="128">            <span class="co">//リフレク適用なし</span></div>
+<div class="sourceLine" id="cb81-129" data-line-number="129">            <span class="va">$7e4f</span>.<span class="at">x</span> <span class="op">=</span> $78<span class="op">,</span>$79<span class="op">;</span>  <span class="co">//damage</span></div>
+<div class="sourceLine" id="cb81-130" data-line-number="130">        <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></div>
+<div class="sourceLine" id="cb81-131" data-line-number="131">            <span class="co">//リフレク適用あり</span></div>
+<div class="sourceLine" id="cb81-132" data-line-number="132"><span class="dt">$b0f3</span><span class="op">:</span></div>
+<div class="sourceLine" id="cb81-133" data-line-number="133">            <span class="at">getTarget2c</span>()<span class="op">;</span>  <span class="co">//$31:bc25()</span></div>
+<div class="sourceLine" id="cb81-134" data-line-number="134">            x <span class="op">=</span> a <span class="op">=</span> (a <span class="op">&amp;</span> <span class="dv">7</span>) <span class="op">&lt;&lt;</span> <span class="dv">1</span><span class="op">;</span></div>
+<div class="sourceLine" id="cb81-135" data-line-number="135">            x<span class="op">++;</span></div>
+<div class="sourceLine" id="cb81-136" data-line-number="136">            <span class="cf">if</span> (<span class="bn">0xff</span> <span class="op">!=</span> (a <span class="op">=</span> <span class="va">$7e5f</span>.<span class="at">x</span>)) <span class="op">{</span></div>
+<div class="sourceLine" id="cb81-137" data-line-number="137">                <span class="co">//ダメージを加算</span></div>
+<div class="sourceLine" id="cb81-138" data-line-number="138">                x<span class="op">--;</span></div>
+<div class="sourceLine" id="cb81-139" data-line-number="139">                <span class="va">$7e5f</span>.<span class="at">x</span> <span class="op">+=</span> $78<span class="op">,</span>$79</div>
+<div class="sourceLine" id="cb81-140" data-line-number="140">            <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></div>
+<div class="sourceLine" id="cb81-141" data-line-number="141">                <span class="co">//ダメージを設定</span></div>
+<div class="sourceLine" id="cb81-142" data-line-number="142"><span class="dt">$b118</span><span class="op">:</span>          </div>
+<div class="sourceLine" id="cb81-143" data-line-number="143">                x<span class="op">--;</span></div>
+<div class="sourceLine" id="cb81-144" data-line-number="144">                <span class="va">battle</span>.<span class="at">push_damage_value_for_2nd_phase</span>()<span class="op">;</span>   <span class="co">//$31:bb1c();</span></div>
+<div class="sourceLine" id="cb81-145" data-line-number="145">            <span class="op">}</span></div>
+<div class="sourceLine" id="cb81-146" data-line-number="146"><span class="dt">$b11c</span><span class="op">:</span>      </div>
+<div class="sourceLine" id="cb81-147" data-line-number="147">            <span class="co">//@see $31:b9fa battle.specials.pickup_victim_of_reflection</span></div>
+<div class="sourceLine" id="cb81-148" data-line-number="148">            $70<span class="op">,</span>$71 <span class="op">=</span> $78b5<span class="op">,</span>$78b6</div>
+<div class="sourceLine" id="cb81-149" data-line-number="149">        <span class="op">}</span></div>
+<div class="sourceLine" id="cb81-150" data-line-number="150">    <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></div>
+<div class="sourceLine" id="cb81-151" data-line-number="151"><span class="dt">$b129</span><span class="op">:</span></div>
+<div class="sourceLine" id="cb81-152" data-line-number="152">        <span class="at">setEffectTargetToOpponent</span>()<span class="op">;</span><span class="co">//$31:bdbc();</span></div>
+<div class="sourceLine" id="cb81-153" data-line-number="153">        a <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></div>
+<div class="sourceLine" id="cb81-154" data-line-number="154">        <span class="at">checkForEffectTargetDeath</span>()<span class="op">;</span>    <span class="co">//$31:bdc5();</span></div>
+<div class="sourceLine" id="cb81-155" data-line-number="155">    <span class="op">}</span></div>
+<div class="sourceLine" id="cb81-156" data-line-number="156"><span class="dt">$b131</span><span class="op">:</span></div>
+<div class="sourceLine" id="cb81-157" data-line-number="157">    <span class="at">setEffectTargetToActor</span>()<span class="op">;</span>   <span class="co">//$31:bdb3();</span></div>
+<div class="sourceLine" id="cb81-158" data-line-number="158">    a <span class="op">=</span> <span class="dv">1</span><span class="op">;</span></div>
+<div class="sourceLine" id="cb81-159" data-line-number="159">    <span class="at">checkForEffectTargetDeath</span>()<span class="op">;</span>    <span class="co">//$31:bdc5();</span></div>
+<div class="sourceLine" id="cb81-160" data-line-number="160">    </div>
+<div class="sourceLine" id="cb81-161" data-line-number="161"><span class="dt">$b139</span><span class="op">:</span></div>
+<div class="sourceLine" id="cb81-162" data-line-number="162">    $7ec1<span class="op">++;</span></div>
+<div class="sourceLine" id="cb81-163" data-line-number="163">    <span class="cf">if</span> (<span class="dv">8</span> <span class="op">!=</span> $7ec1) <span class="op">{</span></div>
+<div class="sourceLine" id="cb81-164" data-line-number="164">        <span class="cf">if</span> (<span class="dv">4</span> <span class="op">!=</span> $7ec1 <span class="op">||</span> (<span class="dv">0</span> <span class="op">!=</span> $7e9a <span class="op">&amp;</span> #<span class="dv">40</span>) )<span class="op">{</span></div>
+<div class="sourceLine" id="cb81-165" data-line-number="165"><span class="dt">$b147</span><span class="op">:</span> <span class="dt">$b14e</span><span class="op">:</span></div>
+<div class="sourceLine" id="cb81-166" data-line-number="166">            $70<span class="op">,</span><span class="dv">71</span> <span class="op">+=</span> #<span class="dv">0040</span><span class="op">;</span></div>
+<div class="sourceLine" id="cb81-167" data-line-number="167">            goto $b031<span class="op">;</span></div>
+<div class="sourceLine" id="cb81-168" data-line-number="168">        <span class="op">}</span></div>
+<div class="sourceLine" id="cb81-169" data-line-number="169">    <span class="op">}</span></div>
+<div class="sourceLine" id="cb81-170" data-line-number="170"><span class="dt">$b15e</span><span class="op">:</span></div>
+<div class="sourceLine" id="cb81-171" data-line-number="171">    <span class="cf">return</span><span class="op">;</span></div>
+<div class="sourceLine" id="cb81-172" data-line-number="172"><span class="co">/*</span></div>
+<div class="sourceLine" id="cb81-173" data-line-number="173"><span class="co">battle.specials.execute:</span></div>
+<div class="sourceLine" id="cb81-174" data-line-number="174"><span class="co">    lda #$00        ; AF77 A9 00</span></div>
+<div class="sourceLine" id="cb81-175" data-line-number="175"><span class="co">    sta $54         ; AF79 85 54</span></div>
+<div class="sourceLine" id="cb81-176" data-line-number="176"><span class="co">    ldx #$09        ; AF7B A2 09</span></div>
+<div class="sourceLine" id="cb81-177" data-line-number="177"><span class="co">LAF7D:  </span></div>
+<div class="sourceLine" id="cb81-178" data-line-number="178"><span class="co">    sta $7EB8,x     ; AF7D 9D B8 7E</span></div>
+<div class="sourceLine" id="cb81-179" data-line-number="179"><span class="co">    dex             ; AF80 CA</span></div>
+<div class="sourceLine" id="cb81-180" data-line-number="180"><span class="co">    bpl LAF7D       ; AF81 10 FA</span></div>
+<div class="sourceLine" id="cb81-181" data-line-number="181"><span class="co">    lda $CC         ; AF83 A5 CC</span></div>
+<div class="sourceLine" id="cb81-182" data-line-number="182"><span class="co">    beq LAF8B       ; AF85 F0 04</span></div>
+<div class="sourceLine" id="cb81-183" data-line-number="183"><span class="co">LAF87:  </span></div>
+<div class="sourceLine" id="cb81-184" data-line-number="184"><span class="co">    ldy #$2C        ; AF87 A0 2C</span></div>
+<div class="sourceLine" id="cb81-185" data-line-number="185"><span class="co">    bne LAFD6       ; AF89 D0 4B</span></div>
+<div class="sourceLine" id="cb81-186" data-line-number="186"><span class="co">LAF8B:  </span></div>
+<div class="sourceLine" id="cb81-187" data-line-number="187"><span class="co">    jsr getActor2C  ; AF8B 20 B5 A2</span></div>
+<div class="sourceLine" id="cb81-188" data-line-number="188"><span class="co">    bmi LAF9A       ; AF8E 30 0A</span></div>
+<div class="sourceLine" id="cb81-189" data-line-number="189"><span class="co">    and #$10        ; AF90 29 10</span></div>
+<div class="sourceLine" id="cb81-190" data-line-number="190"><span class="co">    beq LAF9A       ; AF92 F0 06</span></div>
+<div class="sourceLine" id="cb81-191" data-line-number="191"><span class="co">    lda $1A         ; AF94 A5 1A</span></div>
+<div class="sourceLine" id="cb81-192" data-line-number="192"><span class="co">    cmp #$50        ; AF96 C9 50</span></div>
+<div class="sourceLine" id="cb81-193" data-line-number="193"><span class="co">    bcs LAF87       ; AF98 B0 ED</span></div>
+<div class="sourceLine" id="cb81-194" data-line-number="194"><span class="co">LAF9A:</span></div>
+<div class="sourceLine" id="cb81-195" data-line-number="195"><span class="co">    ldy #$01        ; AF9A A0 01</span></div>
+<div class="sourceLine" id="cb81-196" data-line-number="196"><span class="co">    lda ($6E),y     ; AF9C B1 6E</span></div>
+<div class="sourceLine" id="cb81-197" data-line-number="197"><span class="co">    and #$30        ; AF9E 29 30</span></div>
+<div class="sourceLine" id="cb81-198" data-line-number="198"><span class="co">    beq LAFC8       ; AFA0 F0 26</span></div>
+<div class="sourceLine" id="cb81-199" data-line-number="199"><span class="co">    and #$20        ; AFA2 29 20</span></div>
+<div class="sourceLine" id="cb81-200" data-line-number="200"><span class="co">    beq LAFBB       ; AFA4 F0 15</span></div>
+<div class="sourceLine" id="cb81-201" data-line-number="201"><span class="co">    lda $1A         ; AFA6 A5 1A</span></div>
+<div class="sourceLine" id="cb81-202" data-line-number="202"><span class="co">    cmp #$F6        ; AFA8 C9 F6</span></div>
+<div class="sourceLine" id="cb81-203" data-line-number="203"><span class="co">    beq LAFC8       ; AFAA F0 1C</span></div>
+<div class="sourceLine" id="cb81-204" data-line-number="204"><span class="co">    lda #$53        ; AFAC A9 53</span></div>
+<div class="sourceLine" id="cb81-205" data-line-number="205"><span class="co">    bne LAFBD       ; AFAE D0 0D</span></div>
+<div class="sourceLine" id="cb81-206" data-line-number="206"><span class="co">    jsr getActor2C  ; AFB0 20 B5 A2</span></div>
+<div class="sourceLine" id="cb81-207" data-line-number="207"><span class="co">    bpl LAFBB       ; AFB3 10 06</span></div>
+<div class="sourceLine" id="cb81-208" data-line-number="208"><span class="co">    lda $1A         ; AFB5 A5 1A</span></div>
+<div class="sourceLine" id="cb81-209" data-line-number="209"><span class="co">    cmp #$38        ; AFB7 C9 38</span></div>
+<div class="sourceLine" id="cb81-210" data-line-number="210"><span class="co">    bcs LAFC8       ; AFB9 B0 0D</span></div>
+<div class="sourceLine" id="cb81-211" data-line-number="211"><span class="co">LAFBB:</span></div>
+<div class="sourceLine" id="cb81-212" data-line-number="212"><span class="co">    lda #$50        ; AFBB A9 50</span></div>
+<div class="sourceLine" id="cb81-213" data-line-number="213"><span class="co">LAFBD:</span></div>
+<div class="sourceLine" id="cb81-214" data-line-number="214"><span class="co">    sta $78DA       ; AFBD 8D DA 78</span></div>
+<div class="sourceLine" id="cb81-215" data-line-number="215"><span class="co">    lda #$18        ; AFC0 A9 18</span></div>
+<div class="sourceLine" id="cb81-216" data-line-number="216"><span class="co">    sta $7EC2       ; AFC2 8D C2 7E</span></div>
+<div class="sourceLine" id="cb81-217" data-line-number="217"><span class="co">    jmp .L_B15E     ; AFC5 4C 5E B1</span></div>
+<div class="sourceLine" id="cb81-218" data-line-number="218"><span class="co">; ----------------------------------------------------------------------------</span></div>
+<div class="sourceLine" id="cb81-219" data-line-number="219"><span class="co">LAFC8:</span></div>
+<div class="sourceLine" id="cb81-220" data-line-number="220"><span class="co">    jsr getActor2C  ; AFC8 20 B5 A2</span></div>
+<div class="sourceLine" id="cb81-221" data-line-number="221"><span class="co">    and #$18        ; AFCB 29 18</span></div>
+<div class="sourceLine" id="cb81-222" data-line-number="222"><span class="co">    bne LAFD6       ; AFCD D0 07</span></div>
+<div class="sourceLine" id="cb81-223" data-line-number="223"><span class="co">    sec             ; AFCF 38</span></div>
+<div class="sourceLine" id="cb81-224" data-line-number="224"><span class="co">    lda $1A         ; AFD0 A5 1A</span></div>
+<div class="sourceLine" id="cb81-225" data-line-number="225"><span class="co">    sbc #$C8        ; AFD2 E9 C8</span></div>
+<div class="sourceLine" id="cb81-226" data-line-number="226"><span class="co">    sta $1A         ; AFD4 85 1A</span></div>
+<div class="sourceLine" id="cb81-227" data-line-number="227"><span class="co">LAFD6:</span></div>
+<div class="sourceLine" id="cb81-228" data-line-number="228"><span class="co">    lda ($6E),y     ; AFD6 B1 6E</span></div>
+<div class="sourceLine" id="cb81-229" data-line-number="229"><span class="co">    and #$E7        ; AFD8 29 E7</span></div>
+<div class="sourceLine" id="cb81-230" data-line-number="230"><span class="co">    sta ($6E),y     ; AFDA 91 6E</span></div>
+<div class="sourceLine" id="cb81-231" data-line-number="231"><span class="co">    ldx #$00        ; AFDC A2 00</span></div>
+<div class="sourceLine" id="cb81-232" data-line-number="232"><span class="co">    lda $1A         ; AFDE A5 1A</span></div>
+<div class="sourceLine" id="cb81-233" data-line-number="233"><span class="co">    sta $7E88       ; AFE0 8D 88 7E</span></div>
+<div class="sourceLine" id="cb81-234" data-line-number="234"><span class="co">    cmp #$5B        ; AFE3 C9 5B</span></div>
+<div class="sourceLine" id="cb81-235" data-line-number="235"><span class="co">    bcc LAFE8       ; AFE5 90 01</span></div>
+<div class="sourceLine" id="cb81-236" data-line-number="236"><span class="co">    inx             ; AFE7 E8</span></div>
+<div class="sourceLine" id="cb81-237" data-line-number="237"><span class="co">LAFE8:</span></div>
+<div class="sourceLine" id="cb81-238" data-line-number="238"><span class="co">    stx $7EC3       ; AFE8 8E C3 7E</span></div>
+<div class="sourceLine" id="cb81-239" data-line-number="239"><span class="co">    lda $1A         ; AFEB A5 1A</span></div>
+<div class="sourceLine" id="cb81-240" data-line-number="240"><span class="co">    sta $18         ; AFED 85 18</span></div>
+<div class="sourceLine" id="cb81-241" data-line-number="241"><span class="co">    lda #$08        ; AFEF A9 08</span></div>
+<div class="sourceLine" id="cb81-242" data-line-number="242"><span class="co">    sta $1A         ; AFF1 85 1A</span></div>
+<div class="sourceLine" id="cb81-243" data-line-number="243"><span class="co">    lda #$C0        ; AFF3 A9 C0</span></div>
+<div class="sourceLine" id="cb81-244" data-line-number="244"><span class="co">    sta $20         ; AFF5 85 20</span></div>
+<div class="sourceLine" id="cb81-245" data-line-number="245"><span class="co">    lda #$98        ; AFF7 A9 98</span></div>
+<div class="sourceLine" id="cb81-246" data-line-number="246"><span class="co">    sta $21         ; AFF9 85 21</span></div>
+<div class="sourceLine" id="cb81-247" data-line-number="247"><span class="co">    ldx #$00        ; AFFB A2 00</span></div>
+<div class="sourceLine" id="cb81-248" data-line-number="248"><span class="co">    ldy #$18        ; AFFD A0 18</span></div>
+<div class="sourceLine" id="cb81-249" data-line-number="249"><span class="co">    tya             ; AFFF 98</span></div>
+<div class="sourceLine" id="cb81-250" data-line-number="250"><span class="co">    jsr loadTo7400Ex; B000 20 A6 FD</span></div>
+<div class="sourceLine" id="cb81-251" data-line-number="251"><span class="co">    lda $7406       ; B003 AD 06 74</span></div>
+<div class="sourceLine" id="cb81-252" data-line-number="252"><span class="co">    sta $7E9D       ; B006 8D 9D 7E</span></div>
+<div class="sourceLine" id="cb81-253" data-line-number="253"><span class="co">    ldx #$08        ; B009 A2 08</span></div>
+<div class="sourceLine" id="cb81-254" data-line-number="254"><span class="co">    ldy #$00        ; B00B A0 00</span></div>
+<div class="sourceLine" id="cb81-255" data-line-number="255"><span class="co">    lda $7E99       ; B00D AD 99 7E</span></div>
+<div class="sourceLine" id="cb81-256" data-line-number="256"><span class="co">LB010:</span></div>
+<div class="sourceLine" id="cb81-257" data-line-number="257"><span class="co">    asl a           ; B010 0A</span></div>
+<div class="sourceLine" id="cb81-258" data-line-number="258"><span class="co">    bcc LB014       ; B011 90 01</span></div>
+<div class="sourceLine" id="cb81-259" data-line-number="259"><span class="co">    iny             ; B013 C8</span></div>
+<div class="sourceLine" id="cb81-260" data-line-number="260"><span class="co">LB014:</span></div>
+<div class="sourceLine" id="cb81-261" data-line-number="261"><span class="co">    dex             ; B014 CA</span></div>
+<div class="sourceLine" id="cb81-262" data-line-number="262"><span class="co">    bne LB010       ; B015 D0 F9</span></div>
+<div class="sourceLine" id="cb81-263" data-line-number="263"><span class="co">    sty $2A         ; B017 84 2A</span></div>
+<div class="sourceLine" id="cb81-264" data-line-number="264"><span class="co">    ldy #$30        ; B019 A0 30</span></div>
+<div class="sourceLine" id="cb81-265" data-line-number="265"><span class="co">    lda ($6E),y     ; B01B B1 6E</span></div>
+<div class="sourceLine" id="cb81-266" data-line-number="266"><span class="co">    bmi LB029       ; B01D 30 0A</span></div>
+<div class="sourceLine" id="cb81-267" data-line-number="267"><span class="co">    lda #$75        ; B01F A9 75</span></div>
+<div class="sourceLine" id="cb81-268" data-line-number="268"><span class="co">    sta $70         ; B021 85 70</span></div>
+<div class="sourceLine" id="cb81-269" data-line-number="269"><span class="co">    lda #$75        ; B023 A9 75</span></div>
+<div class="sourceLine" id="cb81-270" data-line-number="270"><span class="co">    sta $71         ; B025 85 71</span></div>
+<div class="sourceLine" id="cb81-271" data-line-number="271"><span class="co">    bne LB031       ; B027 D0 08</span></div>
+<div class="sourceLine" id="cb81-272" data-line-number="272"><span class="co">LB029:</span></div>
+<div class="sourceLine" id="cb81-273" data-line-number="273"><span class="co">        lda #$75        ; B029 A9 75</span></div>
+<div class="sourceLine" id="cb81-274" data-line-number="274"><span class="co">        sta $70         ; B02B 85 70</span></div>
+<div class="sourceLine" id="cb81-275" data-line-number="275"><span class="co">        lda #$76        ; B02D A9 76</span></div>
+<div class="sourceLine" id="cb81-276" data-line-number="276"><span class="co">        sta $71         ; B02F 85 71</span></div>
+<div class="sourceLine" id="cb81-277" data-line-number="277"><span class="co">LB031:</span></div>
+<div class="sourceLine" id="cb81-278" data-line-number="278"><span class="co">    jsr cacheStatus ; B031 20 BA A2</span></div>
+<div class="sourceLine" id="cb81-279" data-line-number="279"><span class="co">    ldx #$FF        ; B034 A2 FF</span></div>
+<div class="sourceLine" id="cb81-280" data-line-number="280"><span class="co">    stx $78         ; B036 86 78</span></div>
+<div class="sourceLine" id="cb81-281" data-line-number="281"><span class="co">    stx $79         ; B038 86 79</span></div>
+<div class="sourceLine" id="cb81-282" data-line-number="282"><span class="co">    stx $7A         ; B03A 86 7A</span></div>
+<div class="sourceLine" id="cb81-283" data-line-number="283"><span class="co">    stx $7B         ; B03C 86 7B</span></div>
+<div class="sourceLine" id="cb81-284" data-line-number="284"><span class="co">    inx             ; B03E E8</span></div>
+<div class="sourceLine" id="cb81-285" data-line-number="285"><span class="co">    stx $7574       ; B03F 8E 74 75</span></div>
+<div class="sourceLine" id="cb81-286" data-line-number="286"><span class="co">    stx $7573       ; B042 8E 73 75</span></div>
+<div class="sourceLine" id="cb81-287" data-line-number="287"><span class="co">    lda $7E9D       ; B045 AD 9D 7E</span></div>
+<div class="sourceLine" id="cb81-288" data-line-number="288"><span class="co">    cmp #$06        ; B048 C9 06</span></div>
+<div class="sourceLine" id="cb81-289" data-line-number="289"><span class="co">    beq LB065       ; B04A F0 19</span></div>
+<div class="sourceLine" id="cb81-290" data-line-number="290"><span class="co">    ldx $62         ; B04C A6 62</span></div>
+<div class="sourceLine" id="cb81-291" data-line-number="291"><span class="co">    lda $F0,x       ; B04E B5 F0</span></div>
+<div class="sourceLine" id="cb81-292" data-line-number="292"><span class="co">    and #$C0        ; B050 29 C0</span></div>
+<div class="sourceLine" id="cb81-293" data-line-number="293"><span class="co">    beq LB057       ; B052 F0 03</span></div>
+<div class="sourceLine" id="cb81-294" data-line-number="294"><span class="co">    jmp .L_B15E     ; B054 4C 5E B1</span></div>
+<div class="sourceLine" id="cb81-295" data-line-number="295"><span class="co">; ----------------------------------------------------------------------------</span></div>
+<div class="sourceLine" id="cb81-296" data-line-number="296"><span class="co">LB057:</span></div>
+<div class="sourceLine" id="cb81-297" data-line-number="297"><span class="co">    ldx $7EC1       ; B057 AE C1 7E</span></div>
+<div class="sourceLine" id="cb81-298" data-line-number="298"><span class="co">    lda $7E99       ; B05A AD 99 7E</span></div>
+<div class="sourceLine" id="cb81-299" data-line-number="299"><span class="co">    jsr maskTargetBit                   ; B05D 20 38 FD</span></div>
+<div class="sourceLine" id="cb81-300" data-line-number="300"><span class="co">    bne LB065       ; B060 D0 03</span></div>
+<div class="sourceLine" id="cb81-301" data-line-number="301"><span class="co">    jmp LB139       ; B062 4C 39 B1</span></div>
+<div class="sourceLine" id="cb81-302" data-line-number="302"><span class="co">; ----------------------------------------------------------------------------</span></div>
+<div class="sourceLine" id="cb81-303" data-line-number="303"><span class="co">LB065:</span></div>
+<div class="sourceLine" id="cb81-304" data-line-number="304"><span class="co">    lda $CC         ; B065 A5 CC</span></div>
+<div class="sourceLine" id="cb81-305" data-line-number="305"><span class="co">    bne LB0D3       ; B067 D0 6A</span></div>
+<div class="sourceLine" id="cb81-306" data-line-number="306"><span class="co">    lda $7405       ; B069 AD 05 74</span></div>
+<div class="sourceLine" id="cb81-307" data-line-number="307"><span class="co">    ldy #$10        ; B06C A0 10</span></div>
+<div class="sourceLine" id="cb81-308" data-line-number="308"><span class="co">    and #$10        ; B06E 29 10</span></div>
+<div class="sourceLine" id="cb81-309" data-line-number="309"><span class="co">    beq LB073       ; B070 F0 01</span></div>
+<div class="sourceLine" id="cb81-310" data-line-number="310"><span class="co">    iny             ; B072 C8</span></div>
+<div class="sourceLine" id="cb81-311" data-line-number="311"><span class="co">LB073:</span></div>
+<div class="sourceLine" id="cb81-312" data-line-number="312"><span class="co">    lda ($6E),y     ; B073 B1 6E</span></div>
+<div class="sourceLine" id="cb81-313" data-line-number="313"><span class="co">    sta $18         ; B075 85 18</span></div>
+<div class="sourceLine" id="cb81-314" data-line-number="314"><span class="co">    lsr a           ; B077 4A</span></div>
+<div class="sourceLine" id="cb81-315" data-line-number="315"><span class="co">    clc             ; B078 18</span></div>
+<div class="sourceLine" id="cb81-316" data-line-number="316"><span class="co">    adc $7401       ; B079 6D 01 74</span></div>
+<div class="sourceLine" id="cb81-317" data-line-number="317"><span class="co">    sta $25         ; B07C 85 25</span></div>
+<div class="sourceLine" id="cb81-318" data-line-number="318"><span class="co">    ldx $62         ; B07E A6 62</span></div>
+<div class="sourceLine" id="cb81-319" data-line-number="319"><span class="co">    lda $F0,x       ; B080 B5 F0</span></div>
+<div class="sourceLine" id="cb81-320" data-line-number="320"><span class="co">    and #$04        ; B082 29 04</span></div>
+<div class="sourceLine" id="cb81-321" data-line-number="321"><span class="co">    beq LB088       ; B084 F0 02</span></div>
+<div class="sourceLine" id="cb81-322" data-line-number="322"><span class="co">    lsr $25         ; B086 46 25</span></div>
+<div class="sourceLine" id="cb81-323" data-line-number="323"><span class="co">LB088:</span></div>
+<div class="sourceLine" id="cb81-324" data-line-number="324"><span class="co">    ldy #$0F        ; B088 A0 0F</span></div>
+<div class="sourceLine" id="cb81-325" data-line-number="325"><span class="co">    lda ($6E),y     ; B08A B1 6E</span></div>
+<div class="sourceLine" id="cb81-326" data-line-number="326"><span class="co">    jsr LFD44       ; B08C 20 44 FD</span></div>
+<div class="sourceLine" id="cb81-327" data-line-number="327"><span class="co">    sta $19         ; B08F 85 19</span></div>
+<div class="sourceLine" id="cb81-328" data-line-number="328"><span class="co">    ldy #$00        ; B091 A0 00</span></div>
+<div class="sourceLine" id="cb81-329" data-line-number="329"><span class="co">    lda ($6E),y     ; B093 B1 6E</span></div>
+<div class="sourceLine" id="cb81-330" data-line-number="330"><span class="co">    jsr LFD45       ; B095 20 45 FD</span></div>
+<div class="sourceLine" id="cb81-331" data-line-number="331"><span class="co">    sta $1A         ; B098 85 1A</span></div>
+<div class="sourceLine" id="cb81-332" data-line-number="332"><span class="co">    lda $18         ; B09A A5 18</span></div>
+<div class="sourceLine" id="cb81-333" data-line-number="333"><span class="co">    jsr LFD45       ; B09C 20 45 FD</span></div>
+<div class="sourceLine" id="cb81-334" data-line-number="334"><span class="co">    sec             ; B09F 38</span></div>
+<div class="sourceLine" id="cb81-335" data-line-number="335"><span class="co">    adc $19         ; B0A0 65 19</span></div>
+<div class="sourceLine" id="cb81-336" data-line-number="336"><span class="co">    adc $1A         ; B0A2 65 1A</span></div>
+<div class="sourceLine" id="cb81-337" data-line-number="337"><span class="co">    sta $24         ; B0A4 85 24</span></div>
+<div class="sourceLine" id="cb81-338" data-line-number="338"><span class="co">    sta $38         ; B0A6 85 38</span></div>
+<div class="sourceLine" id="cb81-339" data-line-number="339"><span class="co">    jsr getNumberOfRandomSuccess        ; B0A8 20 28 BB</span></div>
+<div class="sourceLine" id="cb81-340" data-line-number="340"><span class="co">    sta $7C         ; B0AB 85 7C</span></div>
+<div class="sourceLine" id="cb81-341" data-line-number="341"><span class="co">    ldy #$33        ; B0AD A0 33</span></div>
+<div class="sourceLine" id="cb81-342" data-line-number="342"><span class="co">    lda ($6E),y     ; B0AF B1 6E</span></div>
+<div class="sourceLine" id="cb81-343" data-line-number="343"><span class="co">    and #$E0        ; B0B1 29 E0</span></div>
+<div class="sourceLine" id="cb81-344" data-line-number="344"><span class="co">    jsr LFD46       ; B0B3 20 46 FD</span></div>
+<div class="sourceLine" id="cb81-345" data-line-number="345"><span class="co">    and $7400       ; B0B6 2D 00 74</span></div>
+<div class="sourceLine" id="cb81-346" data-line-number="346"><span class="co">    beq LB0D3       ; B0B9 F0 18</span></div>
+<div class="sourceLine" id="cb81-347" data-line-number="347"><span class="co">    lda $30         ; B0BB A5 30</span></div>
+<div class="sourceLine" id="cb81-348" data-line-number="348"><span class="co">    sta $18         ; B0BD 85 18</span></div>
+<div class="sourceLine" id="cb81-349" data-line-number="349"><span class="co">    lda #$05        ; B0BF A9 05</span></div>
+<div class="sourceLine" id="cb81-350" data-line-number="350"><span class="co">    sta $1A         ; B0C1 85 1A</span></div>
+<div class="sourceLine" id="cb81-351" data-line-number="351"><span class="co">    lda #$00        ; B0C3 A9 00</span></div>
+<div class="sourceLine" id="cb81-352" data-line-number="352"><span class="co">    sta $19         ; B0C5 85 19</span></div>
+<div class="sourceLine" id="cb81-353" data-line-number="353"><span class="co">    sta $1B         ; B0C7 85 1B</span></div>
+<div class="sourceLine" id="cb81-354" data-line-number="354"><span class="co">    jsr div         ; B0C9 20 92 FC</span></div>
+<div class="sourceLine" id="cb81-355" data-line-number="355"><span class="co">    lda $1C         ; B0CC A5 1C</span></div>
+<div class="sourceLine" id="cb81-356" data-line-number="356"><span class="co">    clc             ; B0CE 18</span></div>
+<div class="sourceLine" id="cb81-357" data-line-number="357"><span class="co">    adc $30         ; B0CF 65 30</span></div>
+<div class="sourceLine" id="cb81-358" data-line-number="358"><span class="co">    sta $7C         ; B0D1 85 7C</span></div>
+<div class="sourceLine" id="cb81-359" data-line-number="359"><span class="co">LB0D3:</span></div>
+<div class="sourceLine" id="cb81-360" data-line-number="360"><span class="co">    jsr battle.specials.invoke_handler  ; B0D3 20 5F B1</span></div>
+<div class="sourceLine" id="cb81-361" data-line-number="361"><span class="co">    ldx $64         ; B0D6 A6 64</span></div>
+<div class="sourceLine" id="cb81-362" data-line-number="362"><span class="co">    lda $79         ; B0D8 A5 79</span></div>
+<div class="sourceLine" id="cb81-363" data-line-number="363"><span class="co">    cmp #$FF        ; B0DA C9 FF</span></div>
+<div class="sourceLine" id="cb81-364" data-line-number="364"><span class="co">    beq LB129       ; B0DC F0 4B</span></div>
+<div class="sourceLine" id="cb81-365" data-line-number="365"><span class="co">        ldx $64         ; B0DE A6 64</span></div>
+<div class="sourceLine" id="cb81-366" data-line-number="366"><span class="co">        lda $7574       ; B0E0 AD 74 75</span></div>
+<div class="sourceLine" id="cb81-367" data-line-number="367"><span class="co">        bne LB0F3       ; B0E3 D0 0E</span></div>
+<div class="sourceLine" id="cb81-368" data-line-number="368"><span class="co">            lda $78         ; B0E5 A5 78</span></div>
+<div class="sourceLine" id="cb81-369" data-line-number="369"><span class="co">            sta $7E4F,x     ; B0E7 9D 4F 7E</span></div>
+<div class="sourceLine" id="cb81-370" data-line-number="370"><span class="co">            inx             ; B0EA E8</span></div>
+<div class="sourceLine" id="cb81-371" data-line-number="371"><span class="co">            lda $79         ; B0EB A5 79</span></div>
+<div class="sourceLine" id="cb81-372" data-line-number="372"><span class="co">            sta $7E4F,x     ; B0ED 9D 4F 7E</span></div>
+<div class="sourceLine" id="cb81-373" data-line-number="373"><span class="co">            jmp LB129       ; B0F0 4C 29 B1</span></div>
+<div class="sourceLine" id="cb81-374" data-line-number="374"><span class="co">; ----------------------------------------------------------------------------</span></div>
+<div class="sourceLine" id="cb81-375" data-line-number="375"><span class="co">LB0F3:</span></div>
+<div class="sourceLine" id="cb81-376" data-line-number="376"><span class="co">            jsr getTarget2C ; B0F3 20 25 BC</span></div>
+<div class="sourceLine" id="cb81-377" data-line-number="377"><span class="co">            and #$07        ; B0F6 29 07</span></div>
+<div class="sourceLine" id="cb81-378" data-line-number="378"><span class="co">            asl a           ; B0F8 0A</span></div>
+<div class="sourceLine" id="cb81-379" data-line-number="379"><span class="co">            tax             ; B0F9 AA</span></div>
+<div class="sourceLine" id="cb81-380" data-line-number="380"><span class="co">            inx             ; B0FA E8</span></div>
+<div class="sourceLine" id="cb81-381" data-line-number="381"><span class="co">            lda $7E5F,x     ; B0FB BD 5F 7E</span></div>
+<div class="sourceLine" id="cb81-382" data-line-number="382"><span class="co">            cmp #$FF        ; B0FE C9 FF</span></div>
+<div class="sourceLine" id="cb81-383" data-line-number="383"><span class="co">            beq LB118       ; B100 F0 16</span></div>
+<div class="sourceLine" id="cb81-384" data-line-number="384"><span class="co">                dex             ; B102 CA</span></div>
+<div class="sourceLine" id="cb81-385" data-line-number="385"><span class="co">                clc             ; B103 18</span></div>
+<div class="sourceLine" id="cb81-386" data-line-number="386"><span class="co">                lda $7E5F,x     ; B104 BD 5F 7E</span></div>
+<div class="sourceLine" id="cb81-387" data-line-number="387"><span class="co">                adc $78         ; B107 65 78</span></div>
+<div class="sourceLine" id="cb81-388" data-line-number="388"><span class="co">                sta $7E5F,x     ; B109 9D 5F 7E</span></div>
+<div class="sourceLine" id="cb81-389" data-line-number="389"><span class="co">                inx             ; B10C E8</span></div>
+<div class="sourceLine" id="cb81-390" data-line-number="390"><span class="co">                lda $7E5F,x     ; B10D BD 5F 7E</span></div>
+<div class="sourceLine" id="cb81-391" data-line-number="391"><span class="co">                adc $79         ; B110 65 79</span></div>
+<div class="sourceLine" id="cb81-392" data-line-number="392"><span class="co">                sta $7E5F,x     ; B112 9D 5F 7E</span></div>
+<div class="sourceLine" id="cb81-393" data-line-number="393"><span class="co">                jmp LB11C       ; B115 4C 1C B1</span></div>
+<div class="sourceLine" id="cb81-394" data-line-number="394"><span class="co">; ----------------------------------------------------------------------------</span></div>
+<div class="sourceLine" id="cb81-395" data-line-number="395"><span class="co">LB118:</span></div>
+<div class="sourceLine" id="cb81-396" data-line-number="396"><span class="co">                dex             ; B118 CA</span></div>
+<div class="sourceLine" id="cb81-397" data-line-number="397"><span class="co">                jsr battle.push_damage_value_for_2nd_phase; B119 20 1C BB</span></div>
+<div class="sourceLine" id="cb81-398" data-line-number="398"><span class="co">LB11C:</span></div>
+<div class="sourceLine" id="cb81-399" data-line-number="399"><span class="co">            lda $78B5       ; B11C AD B5 78</span></div>
+<div class="sourceLine" id="cb81-400" data-line-number="400"><span class="co">            sta $70         ; B11F 85 70</span></div>
+<div class="sourceLine" id="cb81-401" data-line-number="401"><span class="co">            lda $78B6       ; B121 AD B6 78</span></div>
+<div class="sourceLine" id="cb81-402" data-line-number="402"><span class="co">            sta $71         ; B124 85 71</span></div>
+<div class="sourceLine" id="cb81-403" data-line-number="403"><span class="co">            jmp LB131       ; B126 4C 31 B1</span></div>
+<div class="sourceLine" id="cb81-404" data-line-number="404"><span class="co">; ----------------------------------------------------------------------------</span></div>
+<div class="sourceLine" id="cb81-405" data-line-number="405"><span class="co">LB129:</span></div>
+<div class="sourceLine" id="cb81-406" data-line-number="406"><span class="co">    jsr setCalcTargetPtrToOpponent      ; B129 20 BC BD</span></div>
+<div class="sourceLine" id="cb81-407" data-line-number="407"><span class="co">    lda #$00        ; B12C A9 00</span></div>
+<div class="sourceLine" id="cb81-408" data-line-number="408"><span class="co">    jsr checkForEffectTargetDeath       ; B12E 20 C5 BD</span></div>
+<div class="sourceLine" id="cb81-409" data-line-number="409"><span class="co">LB131:</span></div>
+<div class="sourceLine" id="cb81-410" data-line-number="410"><span class="co">    jsr setCalcTargetToActor            ; B131 20 B3 BD</span></div>
+<div class="sourceLine" id="cb81-411" data-line-number="411"><span class="co">    lda #$01        ; B134 A9 01</span></div>
+<div class="sourceLine" id="cb81-412" data-line-number="412"><span class="co">    jsr checkForEffectTargetDeath       ; B136 20 C5 BD</span></div>
+<div class="sourceLine" id="cb81-413" data-line-number="413"><span class="co">LB139:</span></div>
+<div class="sourceLine" id="cb81-414" data-line-number="414"><span class="co">    inc $7EC1       ; B139 EE C1 7E</span></div>
+<div class="sourceLine" id="cb81-415" data-line-number="415"><span class="co">    lda $7EC1       ; B13C AD C1 7E</span></div>
+<div class="sourceLine" id="cb81-416" data-line-number="416"><span class="co">    cmp #$08        ; B13F C9 08</span></div>
+<div class="sourceLine" id="cb81-417" data-line-number="417"><span class="co">    beq .L_B15E     ; B141 F0 1B</span></div>
+<div class="sourceLine" id="cb81-418" data-line-number="418"><span class="co">    cmp #$04        ; B143 C9 04</span></div>
+<div class="sourceLine" id="cb81-419" data-line-number="419"><span class="co">    bne LB14E       ; B145 D0 07</span></div>
+<div class="sourceLine" id="cb81-420" data-line-number="420"><span class="co">    lda $7E9A       ; B147 AD 9A 7E</span></div>
+<div class="sourceLine" id="cb81-421" data-line-number="421"><span class="co">    and #$40        ; B14A 29 40</span></div>
+<div class="sourceLine" id="cb81-422" data-line-number="422"><span class="co">    beq .L_B15E     ; B14C F0 10</span></div>
+<div class="sourceLine" id="cb81-423" data-line-number="423"><span class="co">LB14E:</span></div>
+<div class="sourceLine" id="cb81-424" data-line-number="424"><span class="co">    clc             ; B14E 18</span></div>
+<div class="sourceLine" id="cb81-425" data-line-number="425"><span class="co">    lda $70         ; B14F A5 70</span></div>
+<div class="sourceLine" id="cb81-426" data-line-number="426"><span class="co">    adc #$40        ; B151 69 40</span></div>
+<div class="sourceLine" id="cb81-427" data-line-number="427"><span class="co">    sta $70         ; B153 85 70</span></div>
+<div class="sourceLine" id="cb81-428" data-line-number="428"><span class="co">    lda $71         ; B155 A5 71</span></div>
+<div class="sourceLine" id="cb81-429" data-line-number="429"><span class="co">    adc #$00        ; B157 69 00</span></div>
+<div class="sourceLine" id="cb81-430" data-line-number="430"><span class="co">    sta $71         ; B159 85 71</span></div>
+<div class="sourceLine" id="cb81-431" data-line-number="431"><span class="co">    jmp LB031       ; B15B 4C 31 B0</span></div>
+<div class="sourceLine" id="cb81-432" data-line-number="432"><span class="co">.L_B15E</span></div>
+<div class="sourceLine" id="cb81-433" data-line-number="433"><span class="co">    rts             ; B15E 60</span></div>
+<div class="sourceLine" id="cb81-434" data-line-number="434"><span class="co">*/</span></div>
+<div class="sourceLine" id="cb81-435" data-line-number="435"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="b15f-battle.specials.invoke_handler">$31:b15f battle.specials.invoke_handler</h1>
 <blockquote>
@@ -4167,54 +4438,60 @@ code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Infor
 <div class="sourceLine" id="cb83-23" data-line-number="23"><span class="dt">$b1b4</span><span class="op">:</span></div>
 <div class="sourceLine" id="cb83-24" data-line-number="24">    $26 <span class="op">=</span> $70[y <span class="op">=</span> <span class="bn">0x15</span>]<span class="op">;</span></div>
 <div class="sourceLine" id="cb83-25" data-line-number="25">    y <span class="op">=</span> <span class="bn">0x10</span><span class="op">;</span></div>
-<div class="sourceLine" id="cb83-26" data-line-number="26">    <span class="cf">if</span> (($7405 <span class="op">&amp;</span> <span class="bn">0x10</span>) <span class="op">!=</span> <span class="dv">0</span>) y<span class="op">++;</span> <span class="co">//beq b1c4</span></div>
-<div class="sourceLine" id="cb83-27" data-line-number="27"><span class="dt">$b1c4</span><span class="op">:</span></div>
-<div class="sourceLine" id="cb83-28" data-line-number="28">    <span class="co">//(int or men)/2 + param[2]</span></div>
-<div class="sourceLine" id="cb83-29" data-line-number="29">    $25<span class="op">,</span>2b <span class="op">=</span> ($6e[y] <span class="op">&gt;&gt;</span> <span class="dv">1</span>) <span class="op">+</span> $7402</div>
-<div class="sourceLine" id="cb83-30" data-line-number="30">    <span class="cf">if</span> ( (( <span class="va">$e0</span>.(x <span class="op">=</span> $64) <span class="op">&amp;</span> <span class="bn">0x28</span>) <span class="op">!=</span> <span class="dv">0</span>)  <span class="co">// bne b1e1 toad|minimum</span></div>
-<div class="sourceLine" id="cb83-31" data-line-number="31">        <span class="op">||</span> ($70[y <span class="op">=</span> <span class="bn">0x27</span>] <span class="op">!=</span> <span class="dv">0</span>) <span class="co">//beq b1e9</span></div>
-<div class="sourceLine" id="cb83-32" data-line-number="32">    <span class="op">}</span></div>
-<div class="sourceLine" id="cb83-33" data-line-number="33">$b1db<span class="op">:</span></div>
-<div class="sourceLine" id="cb83-34" data-line-number="34">        $25<span class="op">,</span>2b <span class="op">&lt;&lt;=</span> <span class="dv">1</span><span class="op">;</span></div>
-<div class="sourceLine" id="cb83-35" data-line-number="35">        $26 <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></div>
-<div class="sourceLine" id="cb83-36" data-line-number="36">    }</div>
-<div class="sourceLine" id="cb83-37" data-line-number="37">$b1e9<span class="op">:</span></div>
-<div class="sourceLine" id="cb83-38" data-line-number="38">    <span class="cf">if</span> (($7405 <span class="op">&amp;</span> <span class="bn">0x40</span>) <span class="op">==</span> <span class="dv">0</span>) <span class="op">{</span> <span class="co">//beq b1f4</span></div>
-<div class="sourceLine" id="cb83-39" data-line-number="39">        $2a <span class="op">=</span> 1；</div>
-<div class="sourceLine" id="cb83-40" data-line-number="40">    <span class="op">}</span></div>
-<div class="sourceLine" id="cb83-41" data-line-number="41">$b1f4<span class="op">:</span></div>
-<div class="sourceLine" id="cb83-42" data-line-number="42">    $28<span class="op">,</span><span class="dv">29</span> <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></div>
-<div class="sourceLine" id="cb83-43" data-line-number="43">    $24 <span class="op">=</span> $7c<span class="op">;</span></div>
-<div class="sourceLine" id="cb83-44" data-line-number="44">    <span class="at">calcDamage</span>(<span class="op">{</span></div>
-<div class="sourceLine" id="cb83-45" data-line-number="45">        <span class="dt">hitcount</span><span class="op">:</span> $7c<span class="op">,</span></div>
-<div class="sourceLine" id="cb83-46" data-line-number="46">        <span class="dt">atk</span><span class="op">:</span> $25<span class="op">,</span>2b<span class="op">,</span></div>
-<div class="sourceLine" id="cb83-47" data-line-number="47">        <span class="dt">def</span><span class="op">:</span> $26<span class="op">,</span></div>
-<div class="sourceLine" id="cb83-48" data-line-number="48">        <span class="dt">attr</span><span class="op">:</span> $27<span class="op">,</span></div>
-<div class="sourceLine" id="cb83-49" data-line-number="49">        <span class="dt">bonus</span><span class="op">:</span> $28<span class="op">,</span></div>
-<div class="sourceLine" id="cb83-50" data-line-number="50">        <span class="dt">bonusMul</span><span class="op">:</span> $29<span class="op">,</span></div>
-<div class="sourceLine" id="cb83-51" data-line-number="51">        <span class="dt">divide</span><span class="op">:</span> $2a</div>
-<div class="sourceLine" id="cb83-52" data-line-number="52">    <span class="op">}</span>)<span class="op">;</span> <span class="co">// $bb44();</span></div>
-<div class="sourceLine" id="cb83-53" data-line-number="53">$b201<span class="op">:</span></div>
-<div class="sourceLine" id="cb83-54" data-line-number="54">    <span class="cf">if</span> ( ($1c <span class="op">|</span> $1d) <span class="op">==</span> <span class="dv">0</span>) <span class="op">{</span></div>
-<div class="sourceLine" id="cb83-55" data-line-number="55">        $1c<span class="op">++;</span> <span class="co">//bne b209</span></div>
-<div class="sourceLine" id="cb83-56" data-line-number="56">    <span class="op">}</span></div>
-<div class="sourceLine" id="cb83-57" data-line-number="57">$b209<span class="op">:</span></div>
-<div class="sourceLine" id="cb83-58" data-line-number="58">    $78<span class="op">,</span><span class="dv">79</span> <span class="op">=</span> $1c<span class="op">,</span>1d</div>
-<div class="sourceLine" id="cb83-59" data-line-number="59">    <span class="va">battle</span>.<span class="at">get_target_ptr</span>()<span class="op">;</span> <span class="co">//$bdbc(); effectively [$24,$25] = [$70,$71]</span></div>
-<div class="sourceLine" id="cb83-60" data-line-number="60">    <span class="at">damageHp</span>()<span class="op">;</span> <span class="co">//$bcd2()</span></div>
-<div class="sourceLine" id="cb83-61" data-line-number="61">    <span class="cf">if</span> (carry) <span class="op">{</span> <span class="co">//bcc b21c</span></div>
-<div class="sourceLine" id="cb83-62" data-line-number="62">        <span class="va">battle</span>.<span class="va">specials</span>.<span class="at">try_to_apply_enchanted_status</span>()<span class="op">;</span>    <span class="co">//$be43</span></div>
-<div class="sourceLine" id="cb83-63" data-line-number="63">    <span class="op">}</span></div>
-<div class="sourceLine" id="cb83-64" data-line-number="64">$b21c<span class="op">:</span></div>
-<div class="sourceLine" id="cb83-65" data-line-number="65">    <span class="cf">if</span> ( ($7574 <span class="op">!=</span> <span class="dv">0</span>)  <span class="co">//beq b232</span></div>
-<div class="sourceLine" id="cb83-66" data-line-number="66">        <span class="op">&amp;&amp;</span> ( ($70[y <span class="op">=</span> <span class="dv">3</span>] <span class="op">|</span> $70[<span class="op">++</span>y]) <span class="op">==</span> <span class="dv">0</span>) ) <span class="co">//bne b232</span></div>
-<div class="sourceLine" id="cb83-67" data-line-number="67">    <span class="op">{</span> </div>
-<div class="sourceLine" id="cb83-68" data-line-number="68"><span class="dt">$b22a</span><span class="op">:</span></div>
-<div class="sourceLine" id="cb83-69" data-line-number="69">        $70[y <span class="op">=</span> <span class="dv">1</span>] <span class="op">|=</span> <span class="bn">0x80</span><span class="op">;</span> <span class="co">//dead</span></div>
-<div class="sourceLine" id="cb83-70" data-line-number="70">    <span class="op">}</span></div>
-<div class="sourceLine" id="cb83-71" data-line-number="71">$b232<span class="op">:</span></div>
-<div class="sourceLine" id="cb83-72" data-line-number="72">    <span class="cf">return</span><span class="op">;</span></div>
-<div class="sourceLine" id="cb83-73" data-line-number="73">}</div></code></pre>
+<div class="sourceLine" id="cb83-26" data-line-number="26">    <span class="cf">if</span> (($7405 <span class="op">&amp;</span> <span class="bn">0x10</span>) <span class="op">!=</span> <span class="dv">0</span>) <span class="op">{</span> <span class="co">//beq b1c4</span></div>
+<div class="sourceLine" id="cb83-27" data-line-number="27">        y<span class="op">++;</span> </div>
+<div class="sourceLine" id="cb83-28" data-line-number="28">    <span class="op">}</span></div>
+<div class="sourceLine" id="cb83-29" data-line-number="29"><span class="dt">$b1c4</span><span class="op">:</span></div>
+<div class="sourceLine" id="cb83-30" data-line-number="30">    <span class="co">//(int or men)/2 + param[2]</span></div>
+<div class="sourceLine" id="cb83-31" data-line-number="31">    $25<span class="op">,</span>2b <span class="op">=</span> ($6e[y] <span class="op">&gt;&gt;</span> <span class="dv">1</span>) <span class="op">+</span> $7402</div>
+<div class="sourceLine" id="cb83-32" data-line-number="32">    <span class="cf">if</span> ( (( <span class="va">$e0</span>.(x <span class="op">=</span> $64) <span class="op">&amp;</span> <span class="bn">0x28</span>) <span class="op">!=</span> <span class="dv">0</span>)  <span class="co">// bne b1e1 toad|minimum</span></div>
+<div class="sourceLine" id="cb83-33" data-line-number="33">        <span class="op">||</span> ($70[y <span class="op">=</span> <span class="bn">0x27</span>] <span class="op">!=</span> <span class="dv">0</span>) <span class="co">//beq b1e9</span></div>
+<div class="sourceLine" id="cb83-34" data-line-number="34">    <span class="op">}</span></div>
+<div class="sourceLine" id="cb83-35" data-line-number="35">$b1db<span class="op">:</span></div>
+<div class="sourceLine" id="cb83-36" data-line-number="36">        $25<span class="op">,</span>2b <span class="op">&lt;&lt;=</span> <span class="dv">1</span><span class="op">;</span></div>
+<div class="sourceLine" id="cb83-37" data-line-number="37">        $26 <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></div>
+<div class="sourceLine" id="cb83-38" data-line-number="38">    }</div>
+<div class="sourceLine" id="cb83-39" data-line-number="39">$b1e9<span class="op">:</span></div>
+<div class="sourceLine" id="cb83-40" data-line-number="40">    <span class="cf">if</span> (($7405 <span class="op">&amp;</span> <span class="bn">0x40</span>) <span class="op">==</span> <span class="dv">0</span>) <span class="op">{</span> <span class="co">//beq b1f4</span></div>
+<div class="sourceLine" id="cb83-41" data-line-number="41">        $2a <span class="op">=</span> 1；</div>
+<div class="sourceLine" id="cb83-42" data-line-number="42">    <span class="op">}</span></div>
+<div class="sourceLine" id="cb83-43" data-line-number="43">$b1f4<span class="op">:</span></div>
+<div class="sourceLine" id="cb83-44" data-line-number="44">    $28<span class="op">,</span><span class="dv">29</span> <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></div>
+<div class="sourceLine" id="cb83-45" data-line-number="45">    $24 <span class="op">=</span> $7c<span class="op">;</span></div>
+<div class="sourceLine" id="cb83-46" data-line-number="46">    <span class="at">calcDamage</span>(<span class="op">{</span></div>
+<div class="sourceLine" id="cb83-47" data-line-number="47">        <span class="dt">hitcount</span><span class="op">:</span> $7c<span class="op">,</span></div>
+<div class="sourceLine" id="cb83-48" data-line-number="48">        <span class="dt">atk</span><span class="op">:</span> $25<span class="op">,</span>2b<span class="op">,</span></div>
+<div class="sourceLine" id="cb83-49" data-line-number="49">        <span class="dt">def</span><span class="op">:</span> $26<span class="op">,</span></div>
+<div class="sourceLine" id="cb83-50" data-line-number="50">        <span class="dt">attr</span><span class="op">:</span> $27<span class="op">,</span></div>
+<div class="sourceLine" id="cb83-51" data-line-number="51">        <span class="dt">bonus</span><span class="op">:</span> $28<span class="op">,</span></div>
+<div class="sourceLine" id="cb83-52" data-line-number="52">        <span class="dt">bonusMul</span><span class="op">:</span> $29<span class="op">,</span></div>
+<div class="sourceLine" id="cb83-53" data-line-number="53">        <span class="dt">divide</span><span class="op">:</span> $2a</div>
+<div class="sourceLine" id="cb83-54" data-line-number="54">    <span class="op">}</span>)<span class="op">;</span> <span class="co">// $bb44();</span></div>
+<div class="sourceLine" id="cb83-55" data-line-number="55">$b201<span class="op">:</span></div>
+<div class="sourceLine" id="cb83-56" data-line-number="56">    <span class="cf">if</span> (($1c <span class="op">|</span> $1d) <span class="op">==</span> <span class="dv">0</span>) <span class="op">{</span></div>
+<div class="sourceLine" id="cb83-57" data-line-number="57">        $1c<span class="op">++;</span> <span class="co">//bne b209</span></div>
+<div class="sourceLine" id="cb83-58" data-line-number="58">    <span class="op">}</span></div>
+<div class="sourceLine" id="cb83-59" data-line-number="59">$b209<span class="op">:</span></div>
+<div class="sourceLine" id="cb83-60" data-line-number="60">    $78<span class="op">,</span><span class="dv">79</span> <span class="op">=</span> $1c<span class="op">,</span>1d</div>
+<div class="sourceLine" id="cb83-61" data-line-number="61">    <span class="va">battle</span>.<span class="at">get_target_ptr</span>()<span class="op">;</span> <span class="co">//$bdbc(); effectively [$24,$25] = [$70,$71]</span></div>
+<div class="sourceLine" id="cb83-62" data-line-number="62">    <span class="at">damageHp</span>()<span class="op">;</span> <span class="co">//$bcd2()</span></div>
+<div class="sourceLine" id="cb83-63" data-line-number="63">    <span class="co">//Note:</span></div>
+<div class="sourceLine" id="cb83-64" data-line-number="64">    <span class="co">// damagehp()はダメージによって対象者のHPが0以下になった場合、</span></div>
+<div class="sourceLine" id="cb83-65" data-line-number="65">    <span class="co">// 対象者のステータスはすべて0クリアする。</span></div>
+<div class="sourceLine" id="cb83-66" data-line-number="66">    <span class="co">// carry: 1 = target is live (able to continue fight)</span></div>
+<div class="sourceLine" id="cb83-67" data-line-number="67">    <span class="cf">if</span> (carry) <span class="op">{</span> <span class="co">//bcc b21c</span></div>
+<div class="sourceLine" id="cb83-68" data-line-number="68">        <span class="va">battle</span>.<span class="va">specials</span>.<span class="at">try_to_apply_enchanted_status</span>()<span class="op">;</span>    <span class="co">//$be43</span></div>
+<div class="sourceLine" id="cb83-69" data-line-number="69">    <span class="op">}</span></div>
+<div class="sourceLine" id="cb83-70" data-line-number="70">$b21c<span class="op">:</span></div>
+<div class="sourceLine" id="cb83-71" data-line-number="71">    <span class="cf">if</span> (($7574 <span class="op">!=</span> <span class="dv">0</span>)  <span class="co">//beq b232</span></div>
+<div class="sourceLine" id="cb83-72" data-line-number="72">        <span class="op">&amp;&amp;</span> (($70[y <span class="op">=</span> <span class="dv">3</span>] <span class="op">|</span> $70[<span class="op">++</span>y]) <span class="op">==</span> <span class="dv">0</span>) ) <span class="co">//bne b232</span></div>
+<div class="sourceLine" id="cb83-73" data-line-number="73">    <span class="op">{</span> </div>
+<div class="sourceLine" id="cb83-74" data-line-number="74"><span class="dt">$b22a</span><span class="op">:</span></div>
+<div class="sourceLine" id="cb83-75" data-line-number="75">        $70[y <span class="op">=</span> <span class="dv">1</span>] <span class="op">|=</span> <span class="bn">0x80</span><span class="op">;</span> <span class="co">//dead</span></div>
+<div class="sourceLine" id="cb83-76" data-line-number="76">    <span class="op">}</span></div>
+<div class="sourceLine" id="cb83-77" data-line-number="77">$b232<span class="op">:</span></div>
+<div class="sourceLine" id="cb83-78" data-line-number="78">    <span class="cf">return</span><span class="op">;</span></div>
+<div class="sourceLine" id="cb83-79" data-line-number="79">}</div></code></pre>
 <hr />
 <h1 id="b233-battle.specials.handle_01">$31:b233 battle.specials.handle_01</h1>
 <blockquote>
@@ -4669,6 +4946,7 @@ code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Infor
 <h4 id="in-4">in:</h4>
 <ul>
 <li>u8 $7E88: action id (if magic, then it is item_id of which - 0xC8)</li>
+<li>u8 $7EC1: target index</li>
 </ul>
 <h4 id="inout">in,out:</h4>
 <ul>
@@ -4678,12 +4956,11 @@ code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Infor
 <li>on exit, this points to the victim of reflection.</li>
 </ul></li>
 <li>u8 $7EB8: reflected_target_flags</li>
-<li>u8 $7EC1: number of reflections?</li>
 </ul>
 <h4 id="out-3">out:</h4>
 <ul>
 <li>BattleCharacter* $78B5: the original target of the action executed (= $70 given to the call)</li>
-<li>u8 $7574: =1, details TBC (right before the character data (for all parties) begins)</li>
+<li>u8 $7574: reflection happen? on exit, set to 1 if so.</li>
 </ul>
 <h3 id="callers-5">callers:</h3>
 <ul>
@@ -4704,7 +4981,28 @@ code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Infor
 <li>u8 $BB0E[?]</li>
 </ul>
 <h3 id="notes-13">notes:</h3>
-<p>this function does nothing if both actor and target is from the same side. |actor/target | player | enemy |————-|——–|———- |player | skip | ok |enemy | ok | skip</p>
+<p>this function does nothing if both actor and target is from the same side.</p>
+<table>
+<thead>
+<tr class="header">
+<th>actor/target</th>
+<th>player</th>
+<th>enemy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>player</td>
+<td>skip</td>
+<td>ok</td>
+</tr>
+<tr class="even">
+<td>enemy</td>
+<td>ok</td>
+<td>skip</td>
+</tr>
+</tbody>
+</table>
 <h3 id="pseudocode-1">(pseudo)code:</h3>
 <pre class="sourceCode js" id="cb102"><code class="sourceCode javascript"><div class="sourceLine" id="cb102-1" data-line-number="1"><span class="op">{</span></div>
 <div class="sourceLine" id="cb102-2" data-line-number="2"><span class="co">/*</span></div>
@@ -4804,9 +5102,9 @@ code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Infor
 <div class="sourceLine" id="cb102-96" data-line-number="96"><span class="co">*/</span></div>
 <div class="sourceLine" id="cb102-97" data-line-number="97"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="bb1c-battle.push_damage_value_for_enemy_side">$31:bb1c battle.push_damage_value_for_enemy_side</h1>
+<h1 id="bb1c-battle.push_damage_value_for_2nd_phase">$31:bb1c battle.push_damage_value_for_2nd_phase</h1>
 <blockquote>
-<p>直前のダメージ計算結果を敵側の表示用として追加する</p>
+<p>直前のダメージ計算結果を2回目の表示用として追加する</p>
 </blockquote>
 <h3 id="args-48">args:</h3>
 <h4 id="in-5">in:</h4>

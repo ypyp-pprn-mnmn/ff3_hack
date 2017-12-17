@@ -134,6 +134,10 @@ field.frame_counter	= $f0	;
 field.ppu_ctrl_cache= $ff	;
 field.sprite_attr_cache		= $0200	;first $40bytes contains player and cursor sprites
 field.bg_attr_table_cache	= $0300	;128bytes. exactly the same format as what stored in PPU
+
+;; ------------------------------------------------------------------------------------------------
+;; battle-mode.
+battle.reflection_happen = $7574
 ;presentActionParams	= $78d5	;?,actor,action,targetflag,effectmsg,messages
 battle.reflector = $78b5	;;BattleCharacter*
 battleProcessType	= $78d5	;;deprecated
@@ -176,6 +180,7 @@ play_magicType			= $7e9d
 play_reflectedTargetBits= $7eb8 ;param of presentEffectAtTarget($33:b64f)
 effect.reflected_target_flags = $7eb8
 
+;effect.target_index = $7ec1
 effectHandlerIndex	= $7ec2	;
 effect.scene_id = $7ec2
 effectHandlerFlag	= $7ec3
