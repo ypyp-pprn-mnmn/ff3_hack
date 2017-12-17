@@ -5,14 +5,14 @@
 ;macros
 	.include "macro.h.asm"
 ;consts
-	.include "ff3_const.h"
+	.include "ff3_const.h.asm"
 	.include "ff3_charcode.h.asm"
 	.include "ff3_party_and_player.h.asm"
 	.include "ff3_field_window.h.asm"
 ;proc addrs
-	.include "ff3_30-31.h"
-	.include "ff3_32-33.h"
-	.include "ff3_34-35.h"
+	.include "ff3_30-31.h.asm"
+	.include "ff3_32-33.h.asm"
+	.include "ff3_34-35.h.asm"
 ;--------------------------------------------------------------------------------------------------
 ;$3e-3f
 ;field.callSoundDriver			= $c750
@@ -137,9 +137,9 @@ field.bg_attr_table_cache	= $0300	;128bytes. exactly the same format as what sto
 
 ;; ------------------------------------------------------------------------------------------------
 ;; battle-mode.
-battle.reflection_happen = $7574
+battle.reflected = $7574
 ;presentActionParams	= $78d5	;?,actor,action,targetflag,effectmsg,messages
-battle.reflector = $78b5	;;BattleCharacter*
+battle.p_reflector = $78b5	;;BattleCharacter*
 battleProcessType	= $78d5	;;deprecated
 battle.command_chain_id = $78d5
 actionName			= $78d7	;;deprecated
@@ -166,7 +166,8 @@ enemyPos			= $7dd7	;{x,y}*8
 play_weaponRight		= $7e1f
 play_weaponLeft			= $7e20
 play_damages			= $7e4f
-effect.damages_to_show = $7e4f
+effect.damages_to_show_1st = $7e4f
+effect.damages_to_show_2nd = $7e5f
 play_damageTarget		= $7e6f	;0=player
 play_arrowTarget		= $7e96
 play_actorBits			= $7e98
@@ -180,7 +181,7 @@ play_magicType			= $7e9d
 play_reflectedTargetBits= $7eb8 ;param of presentEffectAtTarget($33:b64f)
 effect.reflected_target_flags = $7eb8
 
-;effect.target_index = $7ec1
+effect.target_index = $7ec1
 effectHandlerIndex	= $7ec2	;
 effect.scene_id = $7ec2
 effectHandlerFlag	= $7ec3

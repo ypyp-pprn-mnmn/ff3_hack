@@ -8,7 +8,7 @@
 ;	0.3
 ;======================================================================================================
 	;.ifndef ff3_floor_treasure_begin
-	.include "ff3_floor.h"
+	.include "ff3_floor.h.asm"
 ff3_floor_treasure_begin:
 
 	;INIT_PATCH_EX treasure,$3f,$e917,$e9bb,$e917

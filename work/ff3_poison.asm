@@ -106,7 +106,7 @@ battle.process_poison:  ;;$35:ba41
     ldx #$1F                ; BAA7 A2 1F
 .setup_damages:
         lda .damages,x      ; BAA9 BD 00 74
-        sta effect.damages_to_show,x     ; BAAC 9D 4F 7E
+        sta effect.damages_to_show_1st,x     ; BAAC 9D 4F 7E
         dex                 ; BAAF CA
         bpl .setup_damages  ; BAB0 10 F7
     lda #$80                ; BAB2 A9 80

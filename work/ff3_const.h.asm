@@ -114,3 +114,10 @@ PRESENT_SCENE_EX_ABYSS = $27
 BF_PICK_RANDOM_TARGET = $0a
 BF_GET_RANDOM_SUCCEEDED_COUNT = $0b
 BF_CALC_DAMAGE = $0c
+
+;; ------------------------------------------------------------------------------------------------
+;; effect system
+effect.DAMAGE_NONE = $ffff
+;effect.DAMAGE_MISS = $3fff
+effect.ACTOR_ENEMY = $80
+effect.TARGET_ENEMY = $40
