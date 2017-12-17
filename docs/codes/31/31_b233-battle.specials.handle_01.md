@@ -1,4 +1,5 @@
 ﻿
+
 # $31:b233 battle.specials.handle_01
 > HP回復魔法 (specialHandler01: "handleHealingMagic")
 
@@ -44,7 +45,4 @@ $b275:
 $b276:
 }
 ```
-
-
-
 

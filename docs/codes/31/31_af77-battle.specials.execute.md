@@ -157,8 +157,8 @@ $b0f3:
 				x--;
 				$7e5f.x += $78,79
 			} else {
-$b118:				x--;
-				$31:bb1c();
+$b118:			x--;
+				battle.push_damage_value_for_enemy_side();	//$31:bb1c();
 			}
 $b11c:			$70,71 = $78b5,78b6
 		}
@@ -185,5 +185,7 @@ $b15e:
 	return;
 }
 ```
+
+
 
 
