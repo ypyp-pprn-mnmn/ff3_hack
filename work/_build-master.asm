@@ -71,6 +71,7 @@
 		;;v0.8.0:
 		.include "ff3_interrupt.asm"
 		.include "ff3_poison.asm"
+		.include "ff3_battle-specials.asm"
 	.endif	;;BETA
 	.ifdef _OPTIMIZE_FIELD_WINDOW
 		;; TODO: the below is here only as the dependency of other files.
