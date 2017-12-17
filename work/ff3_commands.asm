@@ -1,10 +1,11 @@
+;; encoding: utf-8
 ; ff3_commands.asm
 ;
 ; description:
 ;	replaces command handlers
 ;
 ; version:
-;	0.08 (2006-11-12)
+;	0.9 (2018-12-17)
 ;
 ; note:
 ;	'ff3_executeAction.asm' and 'ff3_command_window.asm' must be included before this file
@@ -62,7 +63,7 @@ initMoveArrowSprite:
 	asl a
 	rts
 ;------------------------------------------------------------------------------------------------------
-;Ç∫ÇÒÇµÇÒ(02)
+;„Åú„Çì„Åó„Çì(02)
 ;$35:a71c commandWindow_OnForwardSelected
 commandWindow_OnForward:
 	DECLARE_COMMAND_VARS
@@ -163,7 +164,7 @@ commandWindow_decideToTargetAll:
 	lda #$ff	;target bit
 	bne commandWindow_setTargetAndCommand
 ;------------------------------------------------------------------------------------------------------
-;//04:ÇΩÇΩÇ©Ç§
+;//04:„Åü„Åü„Åã„ÅÜ
 ;$35:a843 commandWindow_OnFight
 ;	.org $a843
 ;commandWindow_OnFight:
@@ -209,14 +210,14 @@ commandWindow_decideReturn:
 	lda #1
 	rts
 ;------------------------------------------------------------------------------------------------------
-;//05:Ç⁄Ç§Ç¨ÇÂ
+;//05:„Åº„ÅÜ„Åé„Çá
 ;$35:a877 commandWindow_OnGuard
 ;commandWindow_OnGuard:
 ;	lda #$05
 ;	bne commandWindow_decideReturn
 commandWindow_OnGuard = commandWindow_decideReturn
 ;------------------------------------------------------------------------------------------------------
-;//06:Ç…Ç∞ÇÈ
+;//06:„Å´„Åí„Çã
 ;$35:a8ab commandWindow_OnEscapeSelected
 ;	.org $a8ab
 ;commandWindow_OnEscape:
@@ -224,7 +225,7 @@ commandWindow_OnGuard = commandWindow_decideReturn
 ;	bne commandWindow_decideReturn
 ;commandWindow_OnEscape = commandWindow_decideReturn
 ;------------------------------------------------------------------------------------------------------
-;//07:Ç∆ÇÒÇ∏ÇÁ
+;//07:„Å®„Çì„Åö„Çâ
 ;$35:a8b5 commandWindow_OnSneakAway
 ;commandWindow_OnSneakAway:
 ;	lda #$07
@@ -237,7 +238,7 @@ commandWindow_OnSneakAway:
 	bcc commandWindow_decideReturn
 	bcs commandWindow_beepAndCancel
 ;------------------------------------------------------------------------------------------------------
-;//08:ÉWÉÉÉìÉv
+;//08:„Ç∏„É£„É≥„Éó
 ;$35:a9ab commandWindow_OnJump
 ;	.org $a9ab
 commandWindow_OnJump:
@@ -252,7 +253,7 @@ commandWindow_OnJump:
 	lda <.selectedTarget
 	bne commandWindow_setTargetAndCommand
 ;------------------------------------------------------------------------------------------------------
-;//0d:Ç›Ç‚Ç‘ÇÈ
+;//0d:„Åø„ÇÑ„Å∂„Çã
 ;$35:ab07 commandWindow_OnDetect
 ;	.org $ab07
 ;commandWindow_OnDetect:
@@ -260,7 +261,7 @@ commandWindow_OnJump:
 ;	bne commandWindow_selectSingleTargetAndNext
 commandWindow_OnDetect = commandWindow_selectSingleTargetAndNext
 ;------------------------------------------------------------------------------------------------------
-;//0c:ÇµÇÁÇ◊ÇÈ
+;//0c:„Åó„Çâ„Åπ„Çã
 ;$35:ab6e commandWindow_OnInspect
 ;	.org $ab6e
 ;commandWindow_OnInspect:
@@ -268,7 +269,7 @@ commandWindow_OnDetect = commandWindow_selectSingleTargetAndNext
 ;	bne commandWindow_selectSingleTargetAndNext
 commandWindow_OnInspect = commandWindow_selectSingleTargetAndNext
 ;------------------------------------------------------------------------------------------------------
-;//0E:Ç Ç∑Çﬁ
+;//0E:„Å¨„Åô„ÇÄ
 ;$35:ab9f commandWindow_OnSteal
 ;	.org $ab9f
 ;commandWindow_OnSteal:
@@ -276,7 +277,7 @@ commandWindow_OnInspect = commandWindow_selectSingleTargetAndNext
 ;	bne commandWindow_selectSingleTargetAndNext
 commandWindow_OnSteal = commandWindow_selectSingleTargetAndNext
 ;------------------------------------------------------------------------------------------------------
-;//0F:ÇΩÇﬂÇÈ
+;//0F:„Åü„ÇÅ„Çã
 ;$35:ac65 commandWindow_OnChargeSelected
 ;	.org $ac65
 ;commandWindow_OnCharge:
@@ -284,7 +285,7 @@ commandWindow_OnSteal = commandWindow_selectSingleTargetAndNext
 ;	bne commandWindow_decideReturn
 commandWindow_OnCharge = commandWindow_decideReturn
 ;------------------------------------------------------------------------------------------------------
-;//10:Ç§ÇΩÇ§
+;//10:„ÅÜ„Åü„ÅÜ
 ;$35:acd0 commandWindow_OnSing	
 ;	.org $acd0
 ;commandWindow_OnSing:
@@ -292,7 +293,7 @@ commandWindow_OnCharge = commandWindow_decideReturn
 ;	bne commandWindow_selectSingleTargetAndNext
 commandWindow_OnSing = commandWindow_selectSingleTargetAndNext
 ;------------------------------------------------------------------------------------------------------
-;//11:Ç®Ç«Ç©Ç∑
+;//11:„Åä„Å©„Åã„Åô
 ;$35:ad0c commandWindow_OnIntimidate	
 ;	.org $ad0c
 ;commandWindow_OnIntimidate:
@@ -300,7 +301,7 @@ commandWindow_OnSing = commandWindow_selectSingleTargetAndNext
 ;	bne commandWindow_decideReturn
 commandWindow_OnIntimidate = commandWindow_decideReturn
 ;------------------------------------------------------------------------------------------------------
-;//12:Ç®Ç§Ç¶ÇÒ
+;//12:„Åä„ÅÜ„Åà„Çì
 ;$35:ad6b commandWindow_OnCheer
 ;	.org $ad6b
 ;commandWindow_OnCheer:
@@ -308,7 +309,7 @@ commandWindow_OnIntimidate = commandWindow_decideReturn
 ;	bne commandWindow_decideReturn
 commandWindow_OnCheer = commandWindow_decideReturn
 ;------------------------------------------------------------------------------------------------------
-;//0b:ÇøÇØÇ¢
+;//0b:„Å°„Åë„ÅÑ
 ;$35:aa22 commandWindow_0b
 ;	.org $aa22
 	.ifdef EXTEND_GEOMANCE
@@ -350,7 +351,7 @@ commandWindow_arrowCoords_backattack:
 	.db $34,$44,$34,$24, $50,$44,$50,$24, $6C,$44,$6C,$24, $88,$44,$88,$24
 ;$a7df:
 ;======================================================================================================
-;//02:Ç∫ÇÒÇµÇÒ
+;//02:„Åú„Çì„Åó„Çì
 ;$35:a7df command_forward
 ;	.org $a7df
 command_forward:
@@ -481,7 +482,7 @@ command_escape:
 	bcs command_escape_possible
 ;.fail:
 command_escape_fail:
-	lda #$1f	;"Ç…Ç∞ÇÁÇÍÇ»Ç¢ÅI"
+	lda #$1f	;"„Å´„Åí„Çâ„Çå„Å™„ÅÑÔºÅ"
 	;sta battleMessages
 	;rts
 	jmp addBattleMessage
@@ -540,7 +541,7 @@ command_escape_possible:
 	lda #$f0
 command_escape_succeeded:
 	sta $78d4
-	lda #$1e	;"Ç…Ç∞ÇæÇµÇΩ••••"
+	lda #$1e	;"„Å´„Åí„Å†„Åó„ÅüÔΩ•ÔΩ•ÔΩ•ÔΩ•"
 	jmp addBattleMessage
 	;sta battleMessages
 	;rts
@@ -577,6 +578,20 @@ command_jump:
 ;$35:aa11 command_09 //landing
 command_land:
 .pActor = $6e
+	;; XXX:
+	;;	battle.process_poison will update
+	;;	battle.command_chain_id ($78c5).
+	;;	if a character is to execute 'landing' right after
+	;;	poison damage processed, it never get 'landed' due to
+	;;	uninitialized value.
+	;;	originally this function assumes that variables
+	;;	further passed down to worker functions have correct value.
+	;;	but as mentioned above this is not the case.
+	;;	see also `$34:8213 initBattleVars`.
+	lda #0
+	;; this variable ($78d5) won't get initialized by `$34:8212 initBattleVars`.
+	;; fortunately, other related variables do get initialized by that function.
+	sta battle.command_chain_id
 	ldy #2
 	lda [.pActor],y
 	and #$fe
@@ -594,7 +609,7 @@ command_land:
 
 	.ifdef EXTEND_GEOMANCE
 geomance_rates:
-	;	Ç∂ÇµÇÒ ÇËÇ„Ç§Ç≥ Ç©Ç‹Ç¢ÇΩÇø ÇªÇ±Ç»ÇµÇ Ç‹ Ç´Ç„Ç§ÇËÇ„Ç§ Ç§Ç∏ÇµÇ® ÇΩÇ¬Ç‹Ç´ Ç»ÇæÇÍ
+	;	„Åò„Åó„Çì „Çä„ÇÖ„ÅÜ„Åï „Åã„Åæ„ÅÑ„Åü„Å° „Åù„Åì„Å™„Åó„Å¨„Åæ „Åç„ÇÖ„ÅÜ„Çä„ÇÖ„ÅÜ „ÅÜ„Åö„Åó„Åä „Åü„Å§„Åæ„Åç „Å™„Å†„Çå
 	.db $f0,$60,$00,$30
 	.db $0f,$50,$00,$00
 	.db $00,$f0,$00,$50
@@ -906,7 +921,7 @@ command_steal:
 	lda [.pTarget],y
 	bmi .target_is_enemy
 .fail:
-		lda #$35 ;"Ç Ç∑Ç›ÇªÇ±Ç»Ç¡ÇΩ"
+		lda #$35 ;"„Å¨„Åô„Åø„Åù„Åì„Å™„Å£„Åü"
 		jmp addBattleMessage
 		;sta battleMessages
 		;rts
@@ -998,7 +1013,7 @@ command_charge:
 	;ldx #$39+$0f
 	jsr setupActionType01
 
-	ldx #$3b ;"Ç±Ç§Ç©Ç™Ç»Ç©Ç¡ÇΩ"
+	ldx #$3b ;"„Åì„ÅÜ„Åã„Åå„Å™„Åã„Å£„Åü"
 	ldy #1
 	lda [.pActor],y
 	and #$28
@@ -1039,7 +1054,7 @@ command_charge:
 	.bomb_alive:
 		lda #1
 		sta $7e93
-		ldx #$2f	;"ÇΩÇﬂÇ∑Ç¨ÇƒÇ∂ÇŒÇ≠ÇµÇΩ!"
+		ldx #$2f	;"„Åü„ÇÅ„Åô„Åé„Å¶„Åò„Å∞„Åè„Åó„Åü!"
 .fail:
 	stx battleMessages
 	rts
@@ -1047,7 +1062,7 @@ command_charge:
 ;$35:acd5 command_sing
 command_sing:
 .pActor = $6e
-;íGã’É`ÉFÉbÉN ÉIÉäÉWÉiÉãÇÕëïîıóìÇÃIDÇ…ÇÊÇÈ
+;Á´™Áê¥„ÉÅ„Çß„ÉÉ„ÇØ „Ç™„É™„Ç∏„Éä„É´„ÅØË£ÖÂÇôÊ¨Ñ„ÅÆID„Å´„Çà„Çã
 	ldy #$31
 	lda [.pActor],y
 	iny
@@ -1058,7 +1073,7 @@ command_sing:
 .fail:
 	lda #1
 	sta battleProcessType
-	lda #$42	;"ÇΩÇƒÇ≤Ç∆Ç™Ç»Ç¢ÇÃÇ≈Ç§ÇΩÇ¶Ç»Ç¢"
+	lda #$42	;"„Åü„Å¶„Åî„Å®„Åå„Å™„ÅÑ„ÅÆ„Åß„ÅÜ„Åü„Åà„Å™„ÅÑ"
 	sta battleMessages
 	lda #$18
 	sta effectHandlerIndex

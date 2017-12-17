@@ -47,7 +47,7 @@ __FF3_POISON_INCLUDED__
 ;;1.	in the situations when right after 'proliferation' has occurred,
 ;;	the screen effect for that is incorrectly played again after damages over poison shown.
 ;;2.	when 'landing' is executed with a poisoned character, it never gets 'landed'.
-battle.process_poison:
+battle.process_poison:  ;;$35:ba41
 .damages = $7400
 .character_index = $24
 .p_character = $28
@@ -57,63 +57,58 @@ battle.process_poison:
 ;; ---
     ldx #$1F                ; BA41 A2 1F
     lda #$FF                ; BA43 A9 FF
+    sta effect.proliferated_group
 .init_damages:
-    sta .damages,x          ; BA45 9D 00 74
-    dex                     ; BA48 CA
-    bpl .init_damages       ; BA49 10 FA
-    lda #$00                ; BA4B A9 00
-    sta <.damage_index      ; BA4D 85 64
+        sta .damages,x          ; BA45 9D 00 74
+        dex                     ; BA48 CA
+        bpl .init_damages       ; BA49 10 FA
+    ;lda #$00                ; BA4B A9 00
+    inx
+    ;sta <.damage_index     ; BA4D 85 64
+    stx <.damage_index
     lda #$08                ; BA4F A9 08
     sta <.character_index   ; BA51 85 24
     lda #$75                ; BA53 A9 75
     sta <.p_character       ; BA55 85 28
-    lda #$75                ; BA57 A9 75
+    ;lda #$75               ; BA57 A9 75
     sta <.p_character+1     ; BA59 85 29
-.LBA5B:
-    jsr battle.apply_poison_damage      ; BA5B 20 DC BA
-    clc                     ; BA5E 18
-    lda <.p_character       ; BA5F A5 28
-    adc #$40                ; BA61 69 40
-    sta <.p_character       ; BA63 85 28
-    lda <.p_character+1     ; BA65 A5 29
-    adc #$00                ; BA67 69 00
-    sta <.p_character+1     ; BA69 85 29
-    inc <.character_index   ; BA6B E6 24
-    lda <.character_index   ; BA6D A5 24
-    cmp #$0C                ; BA6F C9 0C
-    bne .LBA5B              ; BA71 D0 E8
+.apply_poisons_to_players:
+        ;jsr battle.apply_poison_damage      ; BA5B 20 DC BA
+        ;clc                     ; BA5E 18
+        ;lda <.p_character       ; BA5F A5 28
+        ;adc #$40                ; BA61 69 40
+        ;sta <.p_character       ; BA63 85 28
+        ;lda <.p_character+1     ; BA65 A5 29
+        ;adc #$00                ; BA67 69 00
+        ;sta <.p_character+1     ; BA69 85 29
+        ;ADD16by8 <.p_character, #$40
+        ;inc <.character_index   ; BA6B E6 24
+        ;lda <.character_index   ; BA6D A5 24
+        jsr .apply_poison
+        ;; X := current character index
+        ;cmp #$0C                ; BA6F C9 0C
+        cpx #$0b
+        bne .apply_poisons_to_players   ; BA71 D0 E8
     jsr battle.cache_players_status     ; BA73 20 06 9D
     lda #$00                ; BA76 A9 00
     sta <.character_index   ; BA78 85 24
-    lda #$75                ; BA7A A9 75
-    sta <.p_character       ; BA7C 85 28
-    lda #$76                ; BA7E A9 76
-    sta <.p_character+1     ; BA80 85 29
-.LBA82:
-    jsr battle.apply_poison_damage      ; BA82 20 DC BA
-    ldx <.character_index   ; BA85 A6 24
-    ldy #$01                ; BA87 A0 01
-    lda [.p_character],y   ; BA89 B1 28
-    sta effect.enemy_status,x     ; BA8B 9D C4 7E
-    clc                     ; BA8E 18
-    lda <.p_character       ; BA8F A5 28
-    adc #$40                ; BA91 69 40
-    sta <.p_character       ; BA93 85 28
-    lda <.p_character+1     ; BA95 A5 29
-    adc #$00                ; BA97 69 00
-    sta <.p_character+1     ; BA99 85 29
-    inc <.character_index   ; BA9B E6 24
-    lda <.character_index   ; BA9D A5 24
-    cmp #$08                ; BA9F C9 08
-    bne .LBA82              ; BAA1 D0 DF
+    ;lda #$75                ; BA7A A9 75
+    ;sta <.p_character       ; BA7C 85 28
+    ;lda #$76                ; BA7E A9 76
+    ;sta <.p_character+1     ; BA80 85 29
+.apply_poisons_to_enemies:
+        jsr .apply_poison
+        ;cmp #$08            ; BA9F C9 08
+        cpx #$07
+        bne .apply_poisons_to_enemies             ; BAA1 D0 DF
     lda <.damage_index      ; BAA3 A5 64
-    beq .LBADB              ; BAA5 F0 34
+    beq .done               ; BAA5 F0 34
     ldx #$1F                ; BAA7 A2 1F
-.LBAA9:
-    lda .damages,x          ; BAA9 BD 00 74
-    sta effect.damages_to_show,x     ; BAAC 9D 4F 7E
-    dex                     ; BAAF CA
-    bpl .LBAA9              ; BAB0 10 F7
+.setup_damages:
+        lda .damages,x      ; BAA9 BD 00 74
+        sta effect.damages_to_show,x     ; BAAC 9D 4F 7E
+        dex                 ; BAAF CA
+        bpl .setup_damages  ; BAB0 10 F7
     lda #$80                ; BAB2 A9 80
     sta effect.actor_flags  ; BAB4 8D 98 7E
     sta effect.target_flags ; BAB7 8D 99 7E
@@ -130,9 +125,29 @@ battle.process_poison:
     sta effect.scene_id     ; BAD2 8D C2 7E
     jsr battle.play_effect  ; BAD5 20 11 84
     jsr canPlayerPartyContinueFighting  ; BAD8 20 58 A4
-.LBADB:
+.done:
     rts                     ; BADB 60
 
+.apply_poison:
+    jsr battle.apply_poison_damage      ; BA82 20 DC BA
+    ldx <.character_index   ; BA85 A6 24
+    cpx #8
+    bcs .add_offset
+        ldy #$01                ; BA87 A0 01
+        lda [.p_character],y   ; BA89 B1 28
+        sta effect.enemy_status,x     ; BA8B 9D C4 7E
+.add_offset:
+    ;clc                     ; BA8E 18
+    ;lda <.p_character       ; BA8F A5 28
+    ;adc #$40                ; BA91 69 40
+    ;sta <.p_character       ; BA93 85 28
+    ;lda <.p_character+1     ; BA95 A5 29
+    ;adc #$00                ; BA97 69 00
+    ;sta <.p_character+1     ; BA99 85 29
+    ADD16by8 <.p_character, #$40
+    inc <.character_index   ; BA9B E6 24
+    ;lda <.character_index   ; BA9D A5 24
+    rts
 ;--------------------------------------------------------------------------------------------------
     VERIFY_PC_TO_PATCH_END battle.poison
     .endif ;;_FIX_POISON

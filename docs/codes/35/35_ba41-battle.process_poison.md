@@ -1,11 +1,14 @@
 ﻿
-
 # $35:ba41 battle.process_poison
 > 敵味方全員の毒状態を処理し、HP・ステータスの更新と表示を行う
 
 ### args:
 
 +	in,out BattleCharacter $7575[12]: characters
+
+### callers:
+
++	`$34:8074 battle.main_loop`
 
 ### local variables:
 
@@ -80,6 +83,7 @@ $badb:
 	return;
 }
 ```
+
 
 
 
