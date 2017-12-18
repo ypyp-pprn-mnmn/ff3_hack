@@ -1,0 +1,11 @@
+---
+  dataSource: "milestones"
+  prefix: "n"
+  ignoreLabels: 
+    - "devops"
+    - "research"
+  ignoreTagsWith: 
+    - ""
+  groupBy: "label"
+  milestoneMatch: "Release {{tag_name}}"
+  changelogFilename: "CHANGELOG.md"
