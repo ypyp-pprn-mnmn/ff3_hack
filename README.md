@@ -17,9 +17,10 @@ DSがない…せや!ファミコンですればええんや!
 ※画面は開発中のものです。
 
 ## パッチの入手
- 最新のパッチは[published/release](published/release)にips形式/bps形式で置いていますのでダウンロードしてご利用ください。
+ 最新のパッチは[こちら](https://github.com/ypyp-pprn-mnmn/ff3_hack/releases/latest)にリリースノートとともにあります。
+ パッチファイルだけ欲しい方は[published/release](published/release)にips形式/bps形式で置いていますのでダウンロードしてご利用ください。
  各形式のパッチともに、iNESヘッダ(v1. 16bytes)が存在するNESファイルを期待しています。
- リリースノートは[こちら](published/README.md)です。
+ 
 
 ## 大まかな方針
  [UFF3 Type-B](http://www.geocities.jp/uffmain/patchmain_frame.html),
