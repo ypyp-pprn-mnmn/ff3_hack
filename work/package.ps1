@@ -22,6 +22,6 @@ Get-ChildItem $patch_dir | Where-Object { $_ -match "\.ips|\.bps"} | ForEach-Obj
 	Copy-Item $_.FullName $package_dir -Force
 }
 
-$command = "& `"$7z`" a -tzip `"${publish_dir}/ff3-DSfy-${release_tag}.zip`" `"${package_dir}`""
+$command = "& `"$7z`" a -tzip `"${publish_dir}/ff3-DSfy-${release_tag}.zip`" `"${package_dir}/*`""
 Invoke-Expression $command;
 write-host -foreground green "done.";
