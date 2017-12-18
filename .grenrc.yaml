@@ -1,11 +1,16 @@
 ---
-  dataSource: "milestones"
-  prefix: "n"
+  #dataSource: "milestones" #milestones|issues|commits|prs
+  dataSource: "issues"
+  prefix: ""
   ignoreLabels: 
     - "devops"
     - "research"
   ignoreTagsWith: 
-    - ""
+    - "interim"
+    - "alpha"
+    - "beta"
+    #- "pre-release"
   groupBy: "label"
-  milestoneMatch: "Release {{tag_name}}"
-  changelogFilename: "CHANGELOG.md"
+  #milestoneMatch: "Release {{tag_name}}"
+  milestoneMatch: "v"
+  changelogFilename: "published/CHANGELOG.md"
