@@ -171,3 +171,11 @@ DEFINE_DEFAULT	.macro
 \1 = \2
 		.endif
 	.endm
+
+NOP_PAD_TO .macro
+		.__pad_\@:
+		.if .__pad_\@ < \1
+			nop
+			NOP_PAD_TO \1
+		.endif
+	.endm

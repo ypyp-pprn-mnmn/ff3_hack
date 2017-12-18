@@ -232,56 +232,63 @@ battle.specials.post_execution:
 .p_target = $70
 .damage_value = $78
     ldx <.damage_index         ; B0D6 A6 64
-    lda <.damage_value+1         ; B0D8 A5 79
-    cmp #HIGH(effect.DAMAGE_NONE)        ; B0DA C9 FF
-    ;beq LB129       ; B0DC F0 4B
-    beq .finalize_status
-		ldx <.damage_index         ; B0DE A6 64
-		lda battle.reflected      ; B0E0 AD 74 75
-		;bne LB0F3       ; B0E3 D0 0E
-        bne .push_damage_value_as_2nd_phase
-			lda <.damage_value         ; B0E5 A5 78
-			sta effect.damages_to_show_1st,x     ; B0E7 9D 4F 7E
-			inx             ; B0EA E8
-			lda <.damage_value+1         ; B0EB A5 79
-			sta effect.damages_to_show_1st,x     ; B0ED 9D 4F 7E
-			;jmp LB129       ; B0F0 4C 29 B1
-            jmp .finalize_status
+    ;lda <.damage_value+1         ; B0D8 A5 79
+    lda battle.reflected      ; B0E0 AD 74 75
+    beq .not_reflected
+.reflected:
+		;ldx <.damage_index         ; B0DE A6 64
+		;lda battle.reflected      ; B0E0 AD 74 75
+        ;bne .push_damage_value_as_2nd_phase ; B0E3 D0 0E
+        ;;A = HIGH(damage_value)
+        lda <.damage_value+1         ; B0D8 A5 79
+        cmp #HIGH(effect.DAMAGE_NONE)        ; B0DA C9 FF
+        beq .restore_target_ptr
 ; ----------------------------------------------------------------------------
 ;LB0F3:
-        .push_damage_value_as_2nd_phase:
-			jsr battle.action_target.get_2c ; B0F3 20 25 BC
-			and #$07        ; B0F6 29 07
-			asl a           ; B0F8 0A
-			tax             ; B0F9 AA
-			inx             ; B0FA E8
-			lda effect.damages_to_show_2nd,x     ; B0FB BD 5F 7E
-			cmp #HIGH(effect.DAMAGE_NONE)        ; B0FE C9 FF
-			beq .just_put_value       ; B100 F0 16
-				dex             ; B102 CA
-				clc             ; B103 18
-				lda effect.damages_to_show_2nd,x     ; B104 BD 5F 7E
-				adc <.damage_value         ; B107 65 78
-				sta effect.damages_to_show_2nd,x     ; B109 9D 5F 7E
-				inx             ; B10C E8
-				lda effect.damages_to_show_2nd,x     ; B10D BD 5F 7E
-				adc <.damage_value+1         ; B110 65 79
-				sta effect.damages_to_show_2nd,x     ; B112 9D 5F 7E
-				;jmp LB11C       ; B115 4C 1C B1
-                jmp .restore_target_ptr
-; ----------------------------------------------------------------------------
-;LB118:
+        ;.push_damage_value_as_2nd_phase:
+            jsr battle.action_target.get_2c ; B0F3 20 25 BC
+            and #$07        ; B0F6 29 07
+            asl a           ; B0F8 0A
+            tax             ; B0F9 AA
+            inx             ; B0FA E8
+            lda effect.damages_to_show_2nd,x     ; B0FB BD 5F 7E
+            cmp #HIGH(effect.DAMAGE_NONE)        ; B0FE C9 FF
+            beq .just_put_value       ; B100 F0 16
+                dex             ; B102 CA
+                clc             ; B103 18
+                lda effect.damages_to_show_2nd,x     ; B104 BD 5F 7E
+                adc <.damage_value         ; B107 65 78
+                sta effect.damages_to_show_2nd,x     ; B109 9D 5F 7E
+                inx             ; B10C E8
+                lda effect.damages_to_show_2nd,x     ; B10D BD 5F 7E
+                adc <.damage_value+1         ; B110 65 79
+                sta effect.damages_to_show_2nd,x     ; B112 9D 5F 7E
+                jmp .restore_target_ptr ; B115 4C 1C B1
+    ; ----------------------------------------------------------------------------
+    ;LB118:
             .just_put_value:
-				dex             ; B118 CA
-				jsr battle.push_damage_for_2nd_phase; B119 20 1C BB
+                dex             ; B118 CA
+                jsr battle.push_damage_for_2nd_phase; B119 20 1C BB
 ;LB11C:
-        .restore_target_ptr:
-			lda battle.p_reflector       ; B11C AD B5 78
-			sta <.p_target         ; B11F 85 70
-			lda battle.p_reflector+1       ; B121 AD B6 78
-			sta <.p_target+1         ; B124 85 71
-			;jmp LB131       ; B126 4C 31 B1
-            jmp .finalize_actor_status
+    .restore_target_ptr:
+        lda battle.p_reflector       ; B11C AD B5 78
+        sta <.p_target         ; B11F 85 70
+        lda battle.p_reflector+1       ; B121 AD B6 78
+        sta <.p_target+1         ; B124 85 71
+        ;jmp .finalize_actor_status  ; B126 4C 31 B1
+        bne .finalize_actor_status  ;;target pointer always has a non-zero value
+.not_reflected:
+        ;;A = HIGH(damage_value)
+        lda <.damage_value+1         ; B0D8 A5 79
+        cmp #HIGH(effect.DAMAGE_NONE)        ; B0DA C9 FF
+        beq .finalize_status    ; B0DC F0 4B
+            lda <.damage_value         ; B0E5 A5 78
+            sta effect.damages_to_show_1st,x     ; B0E7 9D 4F 7E
+            inx             ; B0EA E8
+            lda <.damage_value+1         ; B0EB A5 79
+            sta effect.damages_to_show_1st,x     ; B0ED 9D 4F 7E
+            ;jmp .finalize_status    ; B0F0 4C 29 B1
+
 ; ----------------------------------------------------------------------------
 ;LB129:
 .finalize_status:
@@ -294,22 +301,22 @@ battle.specials.post_execution:
     lda #$01        ; B134 A9 01
     jsr battle.update_status_cache       ; B136 20 C5 BD
     
+    VERIFY_PC $b139    
+    NOP_PAD_TO $b139
+
 ;;LB139:
     ;FIX_ADDRESS_ON_CALLER $b062+1  ;;B062 4C 39 B1
 ;;
 	inc effect.target_index       ; B139 EE C1 7E
     lda effect.target_index       ; B13C AD C1 7E
     cmp #$08        ; B13F C9 08
-    ;beq .L_B15E     ; B141 F0 1B
-    beq .done
+    beq .done   ; B141 F0 1B
 
     cmp #$04        ; B143 C9 04
-    ;bne LB14E       ; B145 D0 07
-    bne .next_target
+    bne .next_target    ; B145 D0 07
     lda effect.side_flags       ; B147 AD 9A 7E
-    and #effect.TARGET_ENEMY     ; B14A 29 40
-    ;beq .L_B15E     ; B14C F0 10
-    beq .done
+    and #effect.TARGET_ENEMY     ; B14A 29 40    
+    beq .done   ; B14C F0 10
 ;LB14E:
 .next_target:
 	clc             ; B14E 18
