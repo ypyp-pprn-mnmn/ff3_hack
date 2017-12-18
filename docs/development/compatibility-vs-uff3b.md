@@ -363,3 +363,4 @@ $3f:f6aa field.upload_window_content
 	0007F6B0   50 C7 A5 93 20 03 FF 4C 83 F6 C9 09 F0 37 A5 38 
 	...
 	0007F730   90 02 E9 1E 85 3B 60 A9 3C 4C 03 FF AD 0E 60 18 
+
