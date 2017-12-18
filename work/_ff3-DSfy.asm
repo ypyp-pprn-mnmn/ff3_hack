@@ -25,6 +25,7 @@ FIX_HP_GROW
 FIX_ITEM99
 ;FIX_255X_DAMAGE
 _FIX_POISON	;;0.8.0 @see http://966-yyff.cocolog-nifty.com/blog/2011/12/post-23ad.html
+_FIX_REFLECTION
 
 ;EXTEND_GEOMANCE
 BOOST_GEOMANCER
