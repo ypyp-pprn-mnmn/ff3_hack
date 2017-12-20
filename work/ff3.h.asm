@@ -140,6 +140,7 @@ field.bg_attr_table_cache	= $0300	;128bytes. exactly the same format as what sto
 battle.reflected = $7574
 ;presentActionParams	= $78d5	;?,actor,action,targetflag,effectmsg,messages
 battle.p_reflector = $78b5	;;BattleCharacter*
+battle.continuity_flags = $78d3	;;80: no playrs can continue fight, 40: all enemies gone, 02: successfully escaped.
 battleProcessType	= $78d5	;;deprecated
 battle.command_chain_id = $78d5
 actionName			= $78d7	;;deprecated
@@ -156,6 +157,7 @@ battleMessageCount	= $78ee
 selectedMagicLv		= $7ac7	;[4]
 stringCache			= $7ad7
 battleRandoms		= $7be3
+battle.defence_flags = $7ce4	;;[4], 
 encounterId			= $7ced
 isRendering			= $7cf3
 

@@ -14,5 +14,6 @@ EXPERIMENT_IMPL = 5	; encount test
 ;_FEATURE_DEFERRED_RENDERING
 ;_FIX_POISON
 ;_FIX_REFLECTION
+POISON_DAMAGE_SHIFT = 1
 ;; the below should be final line of this file
 	.include "_ff3-DSfy.asm"

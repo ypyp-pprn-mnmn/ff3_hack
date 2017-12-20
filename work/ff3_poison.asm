@@ -9,6 +9,8 @@
     ;.ifndef __FF3_POISON_INCLUDED__
 __FF3_POISON_INCLUDED__
     .ifdef _FIX_POISON
+
+    DEFINE_DEFAULT POISON_DAMAGE_SHIFT,4    ;; 1/16. (idential to the original)
 ;-------------------------------------------------------------------------------------------------- 
 ;; locating...
 	;INIT_PATCH_EX battle.poison,$35,$ba41,$badc,$ba41
@@ -130,11 +132,11 @@ battle.process_poison:  ;;$35:ba41
     rts                     ; BADB 60
 
 .apply_poison:
-    jsr battle.apply_poison_damage      ; BA82 20 DC BA
+    jsr battle.end_turn_of_character      ; BA82 20 DC BA
     ldx <.character_index   ; BA85 A6 24
     cpx #8
     bcs .add_offset
-        ldy #$01                ; BA87 A0 01
+        ldy #BP_OFFSET_STATUS_HEAVY  ; BA87 A0 01
         lda [.p_character],y   ; BA89 B1 28
         sta effect.enemy_status,x     ; BA8B 9D C4 7E
 .add_offset:
@@ -150,8 +152,8 @@ battle.process_poison:  ;;$35:ba41
     ;lda <.character_index   ; BA9D A5 24
     rts
 ;--------------------------------------------------------------------------------------------------
-;;# $35:badc battle.apply_poison_damage
-;;> 毒のダメージを計算し、結果を対象者に適用(ダメージ分をHPから減算し、必要に応じて死亡フラグをセット)する。
+;;# $35:badc battle.end_turn_of_character
+;;> まず毒のダメージを計算し対象のHPから減算する。その後、HPに基づいてステータスを更新(必要に応じて死亡フラグをセット)する。
 ;;
 ;;### args:
 ;;
@@ -169,9 +171,7 @@ battle.process_poison:  ;;$35:ba41
 ;;
 ;;-	u16 $26: damage value
 ;;-	u8 $62: damage index
-    .if 1
-    .org $badc
-battle.apply_poison_damage:
+battle.end_turn_of_character:
 ;; fixup callers
     ;FIX_ADDR_ON_CALLER $35,$ba41+1
     ;FIX_ADDR_ON_CALLER $35,$ba82+1
@@ -184,66 +184,81 @@ battle.apply_poison_damage:
 .damages = $7400
     ldy #BP_OFFSET_STATUS_HEAVY        ; BADC A0 01
     lda [.p_target],y     ; BADE B1 28
-    tax             ; BAE0 AA
-    and #STATUS_POISON        ; BAE1 29 02
-    beq .done       ; BAE3 F0 5A
-    txa             ; BAE5 8A
-    and #(STATUS_DEAD|STATUS_STONE)        ; BAE6 29 C0
-    bne .done       ; BAE8 D0 55
-    inc <.damage_index         ; BAEA E6 64
-    lda <.character_index         ; BAEC A5 24
-    asl a           ; BAEE 0A
-    sta <.damage_offset         ; BAEF 85 62
-    ldy #BP_OFFSET_MAXHP        ; BAF1 A0 05
-    lda [.p_target],y     ; BAF3 B1 28
-    sta <.damage_value         ; BAF5 85 26
-    iny             ; BAF7 C8
-    lda [.p_target],y     ; BAF8 B1 28
-    sta <.damage_value+1         ; BAFA 85 27
-	lsr <.damage_value+1         ; BAFC 46 27
-    ror <.damage_value         ; BAFE 66 26
-    lsr <.damage_value+1         ; BB00 46 27
-    ror <.damage_value         ; BB02 66 26
-    lsr <.damage_value+1         ; BB04 46 27
-    ror <.damage_value         ; BB06 66 26
-    lsr <.damage_value+1         ; BB08 46 27
-    ror <.damage_value         ; BB0A 66 26
-    ldx <.damage_offset         ; BB0C A6 62
-    lda <.damage_value         ; BB0E A5 26
-    sta .damages,x     ; BB10 9D 00 74
-    inx             ; BB13 E8
-	lda <.damage_value+1			; BB14 A5 27
-    sta .damages,x     ; BB16 9D 00 74
-    ldy #BP_OFFSET_HP        ; BB19 A0 03
-    sec             ; BB1B 38
-    lda [.p_target],y     ; BB1C B1 28
-    sbc <.damage_value         ; BB1E E5 26
-    sta [.p_target],y     ; BB20 91 28
-    iny             ; BB22 C8
-    lda [.p_target],y     ; BB23 B1 28
-    sbc <.damage_value+1         ; BB25 E5 27
-	sta [.p_target],y		; BB27 91 28
-    bcs .done       ; BB29 B0 14
-.target_dead:
-	ldy #BP_OFFSET_HP         ; BB2B A0 03
-    lda #$00        ; BB2D A9 00
-    sta [.p_target],y     ; BB2F 91 28
-    iny             ; BB31 C8
-    sta [.p_target],y     ; BB32 91 28
-    ldy #BP_OFFSET_STATUS_HEAVY        ; BB34 A0 01
-    lda [.p_target],y     ; BB36 B1 28
-    ora #STATUS_DEAD        ; BB38 09 80
-    and #(~STATUS_LITE_MASK)        ; BB3A 29 FE
-    sta [.p_target],y     ; BB3C 91 28
-    rts             ; BB3E 60
-.done:  
+    ;tax             ; BAE0 AA
+    ;and #STATUS_POISON        ; BAE1 29 02
+    ;beq .done       ; BAE3 F0 5A
+    ;txa             ; BAE5 8A
+    ;and #(STATUS_DEAD|STATUS_STONE)        ; BAE6 29 C0
+    eor #(STATUS_POISON)
+    and #(STATUS_DEAD|STATUS_STONE|STATUS_POISON)
+    bne .check_death       ; BAE8 D0 55
+    ;bne .done
+        inc <.damage_index         ; BAEA E6 64
+        lda <.character_index         ; BAEC A5 24
+        asl a           ; BAEE 0A
+        tax
+        ;sta <.damage_offset         ; BAEF 85 62
+        ldy #BP_OFFSET_MAXHP+1        ; BAF1 A0 05
+        lda [.p_target],y     ; BAF3 B1 28
+        ;sta <.damage_value         ; BAF5 85 26
+        sta <.damage_value+1
+        dey             ; BAF7 C8
+        lda [.p_target],y     ; BAF8 B1 28
+        ;sta <.damage_value+1         ; BAFA 85 27
+        ldy #POISON_DAMAGE_SHIFT
+    .calc_damage:
+            ;lsr <.damage_value+1         ; BAFC 46 27
+            ;ror <.damage_value         ; BAFE 66 26
+            ;lsr <.damage_value+1         ; BB00 46 27
+            ;ror <.damage_value         ; BB02 66 26
+            ;lsr <.damage_value+1         ; BB04 46 27
+            ;ror <.damage_value         ; BB06 66 26
+            ;lsr <.damage_value+1         ; BB08 46 27
+            ;ror <.damage_value         ; BB0A 66 26
+            ;ldx <.damage_offset         ; BB0C A6 62
+            lsr <.damage_value+1
+            ror A
+            dey
+            bne .calc_damage
+        ;lda <.damage_value         ; BB0E A5 26
+        sta <.damage_value
+        sta .damages,x     ; BB10 9D 00 74
+        inx             ; BB13 E8
+        lda <.damage_value+1			; BB14 A5 27
+        sta .damages,x     ; BB16 9D 00 74
+        ldy #BP_OFFSET_HP        ; BB19 A0 03
+        sec             ; BB1B 38
+        lda [.p_target],y     ; BB1C B1 28
+        sbc <.damage_value         ; BB1E E5 26
+        sta [.p_target],y     ; BB20 91 28
+        iny             ; BB22 C8
+        lda [.p_target],y     ; BB23 B1 28
+        sbc <.damage_value+1         ; BB25 E5 27
+        sta [.p_target],y		; BB27 91 28
+        ;bcs .check_death      ; BB29 B0 14
+        bcc .target_dead
+            ;rts             ; BB3E 60
+.check_death:  
 	ldy #BP_OFFSET_HP         ; BB3F A0 03
     lda [.p_target],y     ; BB41 B1 28
     iny             ; BB43 C8
     ora [.p_target],y     ; BB44 11 28
-    beq .target_dead      ; BB46 F0 E3
+    ;beq .target_dead      ; BB46 F0 E3
+    bne .done
+.target_dead:
+        ldy #BP_OFFSET_HP         ; BB2B A0 03
+        lda #$00        ; BB2D A9 00
+        sta [.p_target],y     ; BB2F 91 28
+        iny             ; BB31 C8
+        sta [.p_target],y     ; BB32 91 28
+
+        ldy #BP_OFFSET_STATUS_HEAVY        ; BB34 A0 01
+        lda [.p_target],y     ; BB36 B1 28
+        ora #STATUS_DEAD        ; BB38 09 80
+        and #(~STATUS_LITE_MASK)        ; BB3A 29 FE
+        sta [.p_target],y     ; BB3C 91 28
+.done:
 	rts				; BB47 60
-    .endif
 ;--------------------------------------------------------------------------------------------------
     VERIFY_PC_TO_PATCH_END battle.poison
     .endif ;;_FIX_POISON

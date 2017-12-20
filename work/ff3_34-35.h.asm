@@ -72,5 +72,5 @@ loadString					= $a609
 ;isPlayerAllowedToUseItem	= $b8fd	;hacked
 setActionTargetByParam		= $b979
 loadTo7400FromBank30		= $ba3a
-battle.apply_poison_damage  = $badc
+;battle.apply_poison_damage  = $badc    ;replaced.
 
