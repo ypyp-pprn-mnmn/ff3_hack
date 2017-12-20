@@ -1,5 +1,4 @@
 ﻿
-
 # $35:badc battle.apply_poison_damage
 > 毒のダメージを計算し、結果を対象者に適用(ダメージ分をHPから減算し、必要に応じて死亡フラグをセット)する。
 
@@ -7,13 +6,18 @@
 
 -	in u8 $24: character index
 -	in BattleCharacter* $28: target
--	in,out u8 $64: ? some index
+-	in,out u8 $64: damage index
 -	out u16 $7400[12]: damage values
+
+### callers:
+
+-   `1A:BA5B:20 DC BA  JSR $BADC` @ $35:ba41 battle.process_poison
+-   `1A:BA82:20 DC BA  JSR $BADC` @ $35:ba41 battle.process_poison
 
 ### local variables:
 
 -	u16 $26: damage value
--	u8 $62: damage index
+-	u8 $62: offset into damage value
 
 ### (pseudo-)code:
 ```js
@@ -115,9 +119,5 @@ $bb47:
 	return;
 }
 ```
-
-
-
-
 
 

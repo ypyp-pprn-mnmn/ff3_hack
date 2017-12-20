@@ -8,7 +8,7 @@
     <meta name="generator" content="pandoc">
     <meta name="description" content>
     <meta name="author" content="ypyp-pprn-mnmn (aka “301”)">
-    <!-- generated-at 2017-12-19 02:53:42+0900 -->
+    <!-- generated-at 2017-12-20 23:56:55+0900 -->
     <title>FF3@FC Original Code Documentation</title>
 
     <!-- Bootstrap core CSS -->
@@ -13245,13 +13245,18 @@ $b874:
 <ul>
 <li>in u8 $24: character index</li>
 <li>in BattleCharacter* $28: target</li>
-<li>in,out u8 $64: ? some index</li>
+<li>in,out u8 $64: damage index</li>
 <li>out u16 $7400[12]: damage values</li>
+</ul>
+<h3 id="callers-11">callers:</h3>
+<ul>
+<li><code>1A:BA5B:20 DC BA  JSR $BADC</code> @ $35:ba41 battle.process_poison</li>
+<li><code>1A:BA82:20 DC BA  JSR $BADC</code> @ $35:ba41 battle.process_poison</li>
 </ul>
 <h3 id="local-variables-25">local variables:</h3>
 <ul>
 <li>u16 $26: damage value</li>
-<li>u8 $62: damage index</li>
+<li>u8 $62: offset into damage value</li>
 </ul>
 <h3 id="pseudo-code-263">(pseudo-)code:</h3>
 <pre class="sourceCode js" id="cb411"><code class="sourceCode javascript"><div class="sourceLine" id="cb411-1" data-line-number="1"><span class="op">{</span></div>
@@ -13730,7 +13735,7 @@ $b874:
 <li><a href="#in-2">in</a> u8 $7f43 : ?</li>
 <li><a href="#in-2">in</a> u8 <span class="math inline">7<em>f</em>49 : <em>s</em><em>o</em><em>u</em><em>n</em><em>d</em><em>I</em><em>d</em>(=</span>ca | #80); #40 = playLast?</li>
 </ul>
-<h3 id="callers-11">callers:</h3>
+<h3 id="callers-12">callers:</h3>
 <ul>
 <li>$3f:faf2(irq worker)</li>
 </ul>
@@ -14822,7 +14827,7 @@ $b874:
 <ul>
 <li>yet to be investigated</li>
 </ul>
-<h3 id="callers-12">callers:</h3>
+<h3 id="callers-13">callers:</h3>
 <ul>
 <li><code>EF8F 20 78 8B</code> @ $3f:eefa textd.draw_in_box</li>
 </ul>
@@ -15022,7 +15027,7 @@ $b874:
 <ul>
 <li>yet to be investigated</li>
 </ul>
-<h3 id="callers-13">callers:</h3>
+<h3 id="callers-14">callers:</h3>
 <ul>
 <li>$3d:a52f menu.main_loop</li>
 </ul>
@@ -15341,7 +15346,7 @@ $b874:
 <ul>
 <li>u8 A: higher byte of addres of the file (0x64, 0x68, 0x6c)</li>
 </ul>
-<h3 id="callers-14">callers:</h3>
+<h3 id="callers-15">callers:</h3>
 <ul>
 <li><code>1E:A9AF:20 E1 A9  JSR menu.savefile.draw_summary</code> file1</li>
 <li><code>1E:A9BB:20 E1 A9  JSR menu.savefile.draw_summary</code> file2</li>
@@ -15380,7 +15385,7 @@ $b874:
 <ul>
 <li>u8 $6000[0x400] : the game state</li>
 </ul>
-<h3 id="callers-15">callers:</h3>
+<h3 id="callers-16">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -15412,7 +15417,7 @@ $b874:
 <ul>
 <li>u8 $6000[0x400] : the game states</li>
 </ul>
-<h3 id="callers-16">callers:</h3>
+<h3 id="callers-17">callers:</h3>
 <ul>
 <li>$3d:aa18 menu.savefile.save_or_load_current_game_with_buffer</li>
 </ul>
@@ -15440,7 +15445,7 @@ $b874:
 <li>u8 $6000[0x400]: current game states (if carry == 1)</li>
 <li>u8 $7400[0x400]: copied states (if carry == 0)</li>
 </ul>
-<h3 id="callers-17">callers:</h3>
+<h3 id="callers-18">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -15732,7 +15737,7 @@ $b874:
 <ul>
 <li>u8 $7300[0x500]: text buffer, ready to be supplied into rendering logics</li>
 </ul>
-<h3 id="callers-18">callers:</h3>
+<h3 id="callers-19">callers:</h3>
 <ul>
 <li><code>jsr menu.stomach.build_content_text    ; B427 20 70 B5</code> @ $3d:b383</li>
 </ul>
@@ -15979,7 +15984,7 @@ $b874:
 <ul>
 <li>yet to be investigated</li>
 </ul>
-<h3 id="callers-19">callers:</h3>
+<h3 id="callers-20">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -18000,7 +18005,7 @@ $b874:
 <li>[in,out] u16 ($79f0,$79f2): ?</li>
 <li><a href="#out-2">out</a> bool carry: 1: scroll aborted, 0: otherwise</li>
 </ul>
-<h3 id="callers-20">callers:</h3>
+<h3 id="callers-21">callers:</h3>
 <ul>
 <li><code>1E:9255:20 2D EB  JSR field.scrolldown_item_window</code> @ ?</li>
 </ul>
@@ -18025,7 +18030,7 @@ $b874:
 <li><a href="#in-2">in</a> u8 $57: bank number to restore</li>
 <li><a href="#out-2">out</a> bool carry: always 1. (scroll aborted)</li>
 </ul>
-<h3 id="callers-21">callers:</h3>
+<h3 id="callers-22">callers:</h3>
 <ul>
 <li><code>1F:EBA6:4C 3C EB  JMP field.abort_item_window_scroll</code> @ <span class="math inline">3<em>f</em></span>eb69 field.scrollup_item_window</li>
 </ul>
@@ -18045,7 +18050,7 @@ $b874:
 <ul>
 <li><a href="#out-2">out</a> bool carry: always 0. (= scroll successful)</li>
 </ul>
-<h3 id="callers-22">callers:</h3>
+<h3 id="callers-23">callers:</h3>
 <ul>
 <li><code>1F:EB36:D0 0B     BNE field.scrolldown_item_window</code> @ <span class="math inline">3<em>f</em></span>eb2d field.scrolldown_item_window</li>
 </ul>
@@ -18075,7 +18080,7 @@ $b874:
 <li><a href="#in-2">in</a> u8 $57: bank number to restore</li>
 <li><a href="#out-2">out</a> bool carry: always 0. (= scroll successful)</li>
 </ul>
-<h3 id="callers-23">callers:</h3>
+<h3 id="callers-24">callers:</h3>
 <ul>
 <li><code>1E:9F92:20 61 EB  JSR field.reflect_item_window_scro</code></li>
 <li><code>1E:A889:4C 61 EB  JMP field.reflect_item_window_scro</code></li>
@@ -18104,7 +18109,7 @@ $b874:
 <li>[in,out] u16 ($79f0,$79f2): ?</li>
 <li><a href="#out-2">out</a> bool carry: 1: scroll aborted, 0: scroll successful</li>
 </ul>
-<h3 id="callers-24">callers:</h3>
+<h3 id="callers-25">callers:</h3>
 <ul>
 <li><code>1E:9233:20 69 EB  JSR field.scrollup_item_window</code> @ ?</li>
 </ul>
@@ -18149,7 +18154,7 @@ $b874:
 <li>[in,out] ptr $1c: pointer to text to seek with</li>
 <li><a href="#out-2">out</a> ptr $3e: pointer to the text, pointing the beginning of next line</li>
 </ul>
-<h3 id="callers-25">callers:</h3>
+<h3 id="callers-26">callers:</h3>
 <ul>
 <li><code>1F:EB5E:20 A9 EB  JSR field::seek_to_next_line</code></li>
 <li>$3f:ee65 field::stream_string_in_window</li>
@@ -18186,7 +18191,7 @@ $b874:
 <li>[in,out] ptr $1c: pointer to text to seek with</li>
 <li><a href="#out-2">out</a> ptr $3e: pointer to the text, pointing the beginning of line</li>
 </ul>
-<h3 id="callers-26">callers:</h3>
+<h3 id="callers-27">callers:</h3>
 <ul>
 <li><code>1F:EB81:20 D1 EB  JSR field.unseek_to_line_beginning</code></li>
 </ul>
@@ -18255,7 +18260,7 @@ $b874:
 <div class="sourceLine" id="cb579-60" data-line-number="60"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fec0c-fieldshow_sprites_on_lower_half_screen">$3f:ec0c field::show_sprites_on_lower_half_screen</h1>
-<h3 id="callers-27">callers:</h3>
+<h3 id="callers-28">callers:</h3>
 <ul>
 <li><code>1F:C9B6:20 0C EC  JSR field.show_sprites_on_region6</code></li>
 </ul>
@@ -18270,7 +18275,7 @@ $b874:
 <div class="sourceLine" id="cb580-8" data-line-number="8"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fec12-fieldshow_sprites_on_region7-bug">$3f:ec12 field::show_sprites_on_region7 (bug?)</h1>
-<h3 id="callers-28">callers:</h3>
+<h3 id="callers-29">callers:</h3>
 <ul>
 <li><code>1F:C9C1:20 12 EC  JSR field.show_sprites_on_region7</code></li>
 </ul>
@@ -18291,7 +18296,7 @@ $b874:
 <ul>
 <li><a href="#in-2">in</a> u8 X: window_type (0…4)</li>
 </ul>
-<h3 id="callers-29">callers:</h3>
+<h3 id="callers-30">callers:</h3>
 <ul>
 <li><span class="math inline">3<em>f</em></span>ed61 field::get_window_region</li>
 </ul>
@@ -18312,7 +18317,7 @@ $b874:
 </ul></li>
 <li><a href="#in-2">in</a> u8 X: region_type (0..6; with 0 to 4 being shared with window_type)</li>
 </ul>
-<h3 id="callers-30">callers:</h3>
+<h3 id="callers-31">callers:</h3>
 <ul>
 <li>$3f:ec0c field::show_sprites_on_lower_half_screen</li>
 <li>$3f:ec12 field::show_sprites_on_region7 (with X set to 7)</li>
@@ -18394,7 +18399,7 @@ $b874:
 <div class="sourceLine" id="cb585-7" data-line-number="7"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fec8b-fieldshow_message_window">$3f:ec8b field::show_message_window</h1>
-<h3 id="callers-31">callers:</h3>
+<h3 id="callers-32">callers:</h3>
 <ul>
 <li><code>1F:E237:20 8B EC  JSR field::show_message_window</code></li>
 </ul>
@@ -18407,7 +18412,7 @@ $b874:
 <p><strong>fall through</strong></p>
 <hr />
 <h1 id="fec8d-fieldshow_window">$3f:ec8d field::show_window:</h1>
-<h3 id="callers-32">callers:</h3>
+<h3 id="callers-33">callers:</h3>
 <ul>
 <li><code>1F:E264:20 8D EC  JSR $EC8D</code></li>
 </ul>
@@ -18435,7 +18440,7 @@ $b874:
 <div class="sourceLine" id="cb587-17" data-line-number="17"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fecab-fieldawait_and_get_new_input">$3f:ECAB field::await_and_get_new_input:</h1>
-<h3 id="callers-33">callers:</h3>
+<h3 id="callers-34">callers:</h3>
 <ul>
 <li><code>1F:EC93:20 AB EC  JSR field::await_and_get_new_input</code> ($3f:ec8b field::show_message_window)</li>
 <li><code>1F:ECBA:4C AB EC  JMP field::await_and_get_new_input</code> (tail recursion)</li>
@@ -18465,7 +18470,7 @@ $b874:
 <div class="sourceLine" id="cb589-7" data-line-number="7"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fecc4-fieldget_next_input">$3f:ECC4 field::get_next_input:</h1>
-<h3 id="callers-34">callers:</h3>
+<h3 id="callers-35">callers:</h3>
 <ul>
 <li><code>1F:EC9E:20 C4 EC  JSR field::get_next_input</code></li>
 </ul>
@@ -18484,7 +18489,7 @@ $b874:
 <div class="sourceLine" id="cb590-12" data-line-number="12"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fecd8-fieldadvance_frame_with_sound">$3f:ecd8 field::advance_frame_with_sound</h1>
-<h3 id="callers-35">callers:</h3>
+<h3 id="callers-36">callers:</h3>
 <ul>
 <li><code>1F:EE74:20 D8 EC  JSR field::advance_frame_w_sound</code> ($3f:ee65 field::stream_string_in_window)</li>
 </ul>
@@ -18500,7 +18505,7 @@ $b874:
 <div class="sourceLine" id="cb591-9" data-line-number="9"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fece5-fielddraw_window_top">$3f:ece5 field::draw_window_top</h1>
-<h3 id="callers-36">callers:</h3>
+<h3 id="callers-37">callers:</h3>
 <ul>
 <li><code>1E:AAA3:4C E5 EC  JMP field::draw_window_top</code> @ ?</li>
 </ul>
@@ -18518,7 +18523,7 @@ $b874:
 <p><strong>fall through</strong></p>
 <hr />
 <h1 id="fecf5-restore_banks_by_57">$3f:ecf5 restore_banks_by_$57</h1>
-<h3 id="callers-37">callers:</h3>
+<h3 id="callers-38">callers:</h3>
 <ul>
 <li><code>1F:EB64:20 F5 EC  JSR field::restore_bank</code> @ <span class="math inline">3<em>f</em></span>eb61 field.update_item_window</li>
 <li>field::draw_window_top (by falling thourgh)</li>
@@ -18567,7 +18572,7 @@ $b874:
 <li>u8 $3a : offset_x (or column in drawing)</li>
 <li>u8 $3b : offset_y (or row in drawing)</li>
 </ul>
-<h3 id="callers-38">callers:</h3>
+<h3 id="callers-39">callers:</h3>
 <ul>
 <li><code>1E:8EFD:20 02 ED  JSR field::draw_window_box</code> @ $3c:8ef5 ?; window_type = 0</li>
 <li><code>1E:8F0E:20 02 ED  JSR field::draw_window_box</code> @ $3c:8f04 ?; window_type = 1</li>
@@ -18716,7 +18721,7 @@ $b874:
 <li>u8 $b7:</li>
 <li>u8 $b8:</li>
 </ul>
-<h3 id="callers-39">callers:</h3>
+<h3 id="callers-40">callers:</h3>
 <ul>
 <li>$3f:ed02 field::draw_window_box</li>
 </ul>
@@ -18785,7 +18790,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li><a href="#in-2">in</a> u8 $3c : width (border incl)</li>
 </ul>
-<h3 id="callers-40">callers:</h3>
+<h3 id="callers-41">callers:</h3>
 <ul>
 <li>$3f:ecef</li>
 <li>$3f:ed17</li>
@@ -18807,7 +18812,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb601-14" data-line-number="14"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fee1d-fieldgetwindowtilesformiddle">$3f:ee1d field::getWindowTilesForMiddle</h1>
-<h3 id="callers-41">callers:</h3>
+<h3 id="callers-42">callers:</h3>
 <ul>
 <li>field::drawWindow</li>
 </ul>
@@ -18826,7 +18831,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb602-12" data-line-number="12"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fee3e-fieldgetwindowtilesforbottom">$3f:ee3e field::getWindowTilesForBottom</h1>
-<h3 id="callers-42">callers:</h3>
+<h3 id="callers-43">callers:</h3>
 <ul>
 <li>$3f:ed3b</li>
 </ul>
@@ -18847,7 +18852,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb603-14" data-line-number="14"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fee65-fieldstream_string_in_window">$3f:ee65 field::stream_string_in_window:</h1>
-<h3 id="callers-43">callers:</h3>
+<h3 id="callers-44">callers:</h3>
 <ul>
 <li>$3c:90ff ? 1E:9109:4C 65 EE JMP $EE65</li>
 <li>$3d:a666 ? 1E:A675:4C 65 EE JMP $EE65</li>
@@ -18906,7 +18911,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>ptr $3e: offset to the string, assuming the bank it to be loaded is at 1st page (starting at $8000)</li>
 <li>u8 $93: bank number which the string would be loaded from</li>
 </ul>
-<h3 id="callers-44">callers:</h3>
+<h3 id="callers-45">callers:</h3>
 <ul>
 <li><code>1F:C036:20 9A EE  JSR field::load_and_draw_string</code> @ opening title</li>
 <li><code>1F:EE65:20 9A EE  JSR field::load_and_draw_string</code> @ $3f:ee65 field::stream_string_in_window</li>
@@ -18935,7 +18940,7 @@ sta $4014   ;DMA</code></pre></li>
 <li><a href="#in-2">in</a> u8 $93 : string bank</li>
 <li><a href="#out-2">out</a> bool carry: more_to_draw</li>
 </ul>
-<h3 id="callers-45">callers:</h3>
+<h3 id="callers-46">callers:</h3>
 <ul>
 <li><code>1F:EB61:20 C0 EE  JSR field::draw_string_in_window</code> @ $3f:eb61 field.reflect_window_scroll</li>
 <li><code>1F:EE80:20 C0 EE  JSR field::draw_string_in_window</code> @ $3f:ee65 field::stream_string_in_window</li>
@@ -18998,7 +19003,7 @@ sta $4014   ;DMA</code></pre></li>
 <li><a href="#in-2">in</a> u8 $98: bot top (in 8x8 unit). used to calculate menu item’s coordinates.</li>
 <li><a href="#in-2">in</a> u8 $bb: treasure item id</li>
 </ul>
-<h3 id="callers-46">callers:</h3>
+<h3 id="callers-47">callers:</h3>
 <ul>
 <li><code>1F:EEE4:20 FA EE  JSR field.eval_and_draw_string</code> @ $3f:eec0 field.draw_string_in_window</li>
 </ul>
@@ -19331,7 +19336,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>in u8 $6021 : event flags, […fffff] where lower 5 bits represents each Crystal event</li>
 <li>out u8 A : maximum available job_id in accordance with game flags</li>
 </ul>
-<h3 id="callers-47">callers:</h3>
+<h3 id="callers-48">callers:</h3>
 <ul>
 <li><code>jsr field.get_max_available_job_id  ; F17E 20 8A F3</code> @ textd.eval_replacement (handler for 0x1e)</li>
 </ul>
@@ -19382,7 +19387,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>+03: 2nd byte of the char code directing a label built with the menu item. in this function, it is item_id, from $84.</li>
 </ul></li>
 </ul>
-<h3 id="callers-48">callers:</h3>
+<h3 id="callers-49">callers:</h3>
 <ul>
 <li><code>jsr $F3AC ; F12C 20 AC F3</code> @ textd.eval_replacement (case 0x1b)</li>
 </ul>
@@ -19437,7 +19442,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>in string* $3e: pointer to save</li>
 <li>out string* $99: saved pointer</li>
 </ul>
-<h3 id="callers-49">callers:</h3>
+<h3 id="callers-50">callers:</h3>
 <ul>
 <li><code>F0A4 20 E4 F3</code></li>
 <li><code>F20D 20 E4 F3</code></li>
@@ -19471,7 +19476,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>in string* $99: saved pointer previously saved with <code>$3f:f3e4 textd.save_text_ptr</code>.</li>
 <li>in u8 $93: bank number which the text pointed to is stored</li>
 </ul>
-<h3 id="callers-50">callers:</h3>
+<h3 id="callers-51">callers:</h3>
 <ul>
 <li><code>F342 20 ED F3</code></li>
 <li><code>F0DB 20 ED F3</code></li>
@@ -19499,7 +19504,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li>in,out u8 $5a[6]: player character name</li>
 </ul>
-<h3 id="callers-51">callers:</h3>
+<h3 id="callers-52">callers:</h3>
 <p>none? there is no byte patterns matched with ‘4c fa f3’ or ‘20 fa f3’ and no branches pointing to the range of code nearby.</p>
 <h3 id="local-variables-43">local variables:</h3>
 <p>none.</p>
@@ -19538,7 +19543,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>u8 $f4a1[32]: vram address low (index := Y coords)</li>
 <li>u8 $f4c1[32]: vram address high (index := Y coords)</li>
 </ul>
-<h3 id="callers-52">callers:</h3>
+<h3 id="callers-53">callers:</h3>
 <ul>
 <li><code>1F:F6B2:20 0A F4  JSR $F40A</code> @ $3f:f6aa field.upload_window_content</li>
 <li><code>1F:F6CE:20 0A F4  JSR $F40A</code> @ $3f:f6aa field.upload_window_content</li>
@@ -19575,7 +19580,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>out u8 $54: vram low</li>
 <li>out u8 $55: vram high</li>
 </ul>
-<h3 id="callers-53">callers:</h3>
+<h3 id="callers-54">callers:</h3>
 <p>none. there is no byte patterns matched with ‘4c 35 f4’ or ‘20 35 f4’ and no branches pointing to the range of code nearby.</p>
 <h3 id="local-variables-44">local variables:</h3>
 <p>none.</p>
@@ -19612,7 +19617,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li>yet to be investigated</li>
 </ul>
-<h3 id="callers-54">callers:</h3>
+<h3 id="callers-55">callers:</h3>
 <ul>
 <li><code>1E:AA8E:20 4B F4  JSR $F44B</code> @ ?</li>
 </ul>
@@ -19648,7 +19653,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li>yet to be investigated</li>
 </ul>
-<h3 id="callers-55">callers:</h3>
+<h3 id="callers-56">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -19672,7 +19677,7 @@ sta $4014   ;DMA</code></pre></li>
 </blockquote>
 <h3 id="args-264">args:</h3>
 <p>none.</p>
-<h3 id="callers-56">callers:</h3>
+<h3 id="callers-57">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -19697,7 +19702,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li>in u8 A: box height.</li>
 </ul>
-<h3 id="callers-57">callers:</h3>
+<h3 id="callers-58">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -19744,7 +19749,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>u8 $3c: box width</li>
 <li>u8 $3d: box height</li>
 </ul>
-<h3 id="callers-58">callers:</h3>
+<h3 id="callers-59">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -19891,7 +19896,7 @@ sta $4014   ;DMA</code></pre></li>
 <li><a href="#in-2">in</a> x : item_id</li>
 <li><a href="#out-2">out</a> u24 $80 : = $10:9e00[x]</li>
 </ul>
-<h3 id="callers-59">callers:</h3>
+<h3 id="callers-60">callers:</h3>
 <ul>
 <li>$3d:b230 @ floor::shop::getItemValues</li>
 <li>$3d:b271 @ floor::shop::getItemValue</li>
@@ -19922,7 +19927,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li><a href="#in-2">in</a> u24 $80 : gil</li>
 </ul>
-<h3 id="callers-60">callers:</h3>
+<h3 id="callers-61">callers:</h3>
 <ul>
 <li>$3d:b1c2 @ floor::shop::</li>
 <li>$3f:f5bb @ floor::getTreasure</li>
@@ -19991,7 +19996,7 @@ sta $4014   ;DMA</code></pre></li>
 </ul></li>
 <li>in,out u8 $f0: window scroll frame counter.</li>
 </ul>
-<h3 id="callers-61">callers:</h3>
+<h3 id="callers-62">callers:</h3>
 <ul>
 <li><code>1F:EEE9:20 92 F6  JSR field::draw_window_content</code> @ $3f:eec0 field.draw_string_in_window</li>
 <li><code>1F:EF49:20 92 F6  JSR field::draw_window_content</code> @ $3f:eefa textd.draw_in_box</li>
@@ -20186,7 +20191,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li>see [$3f:f897 ppud.up<em>load</em>_palette]</li>
 </ul>
-<h3 id="callers-62">callers:</h3>
+<h3 id="callers-63">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
