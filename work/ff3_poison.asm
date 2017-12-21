@@ -50,7 +50,7 @@ __FF3_POISON_INCLUDED__
 ;;1.	in the situations when right after 'proliferation' has occurred,
 ;;	the screen effect for that is incorrectly played again after damages over poison shown.
 ;;2.	when 'landing' is executed with a poisoned character, it never gets 'landed'.
-battle.process_poison:  ;;$35:ba41
+battle.on_turn_end:  ;;$35:ba41
 .damages = $7400
 .character_index = $24
 .p_character = $28
@@ -132,7 +132,7 @@ battle.process_poison:  ;;$35:ba41
     rts                     ; BADB 60
 
 .apply_poison:
-    jsr battle.end_turn_of_character      ; BA82 20 DC BA
+    jsr battle.characters.on_turn_end      ; BA82 20 DC BA
     ldx <.character_index   ; BA85 A6 24
     cpx #8
     bcs .add_offset
@@ -152,7 +152,7 @@ battle.process_poison:  ;;$35:ba41
     ;lda <.character_index   ; BA9D A5 24
     rts
 ;--------------------------------------------------------------------------------------------------
-;;# $35:badc battle.end_turn_of_character
+;;# $35:badc battle.characters.on_turn_end
 ;;> まず毒のダメージを計算し対象のHPから減算する。その後、HPに基づいてステータスを更新(必要に応じて死亡フラグをセット)する。
 ;;
 ;;### args:
@@ -171,7 +171,7 @@ battle.process_poison:  ;;$35:ba41
 ;;
 ;;-	u16 $26: damage value
 ;;-	u8 $62: damage index
-battle.end_turn_of_character:
+battle.characters.on_turn_end:
 ;; fixup callers
     ;FIX_ADDR_ON_CALLER $35,$ba41+1
     ;FIX_ADDR_ON_CALLER $35,$ba82+1
