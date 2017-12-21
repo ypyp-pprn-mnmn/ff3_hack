@@ -1,6 +1,14 @@
 # Changelog
 
-## 0.8.0-pre-release (18/12/2017)
+## v0.8.1 (22/12/2017)
+
+#### devops
+
+-  release note自動生成 [#22](https://github.com/ypyp-pprn-mnmn/ff3_hack/issues/22)
+
+---
+
+## v0.8.0 (19/12/2017)
 
 #### bug
 
@@ -8,6 +16,10 @@
 - [**bug**] 「かばう」が実行されると隊列フラグと地形IDが破損する [#16](https://github.com/ypyp-pprn-mnmn/ff3_hack/issues/16)
 - [**bug**] ターゲット修正処理のコードが破損してる [#11](https://github.com/ypyp-pprn-mnmn/ff3_hack/issues/11)
 - [**bug**] 「ちしき」が稀に効かない [#10](https://github.com/ypyp-pprn-mnmn/ff3_hack/issues/10)
+
+#### closed
+
+- [**closed**] パッチファイルの名前のentropyが低い [#30](https://github.com/ypyp-pprn-mnmn/ff3_hack/issues/30)
 
 #### docs
 
