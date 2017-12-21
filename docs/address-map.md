@@ -21,6 +21,7 @@
     -   20 ... 29: 敵キャラ ビットマップ
     -   2a, 2b: エフェクト ビットマップ・構成データ
     -   2c, 2d: NPC配置データ
+    -   37, 38, 39: サウンド・オーディオ データ
     -   39: 経験値テーブル
 
 ## 領域ごとの詳細
@@ -49,7 +50,8 @@
 006000-00CC00|bitmap| map chips
 00cc00-00d000|?     | seems like data, 8-byte structure
 00d000-00d800|data  | pointers (offset from 0d000) of world-map data row `u16 [4][256]`
-00d800-014000|data  | world map data @see `$3e:ccbb field::getMapDataPointers`
+00d800-012000|data  | world map data @see `$3e:ccbb field::getMapDataPointers`
+012000-014000|data  | audio stream (music id:3b...)
 014000-020000|bitmap| sprites
 020000-020200|data  | pointers of treasure lists. `u16 [256]`, index: treasure_list_id (warpparam+0e).
 020200-020400|data  | pointers of event lists. `u16 [256]`, index: event_list_id (warpparam+0f).
@@ -92,9 +94,9 @@
 066000-068000|code  | battle-mode logics: presentation
 068000-06a000|code  | battle-mode logics: flow controllers
 06a000-06c000|code  | battle-mode logics: flow controllers
-06c000-070000|code  | sound driver
-070000-072000|?     | seems like code
-072000-0720b0|data  | `$39:8000 JobBaseInfo jobParams[22]`: 8bytes/entry
+06c000-070000|mixed | sound driver, audio stream (music id:0x00...0x18)
+070000-072000|data  | audio stream (0x18...2a)
+072000-0720b0|data  | audio stream (2b...3a), `$39:8000 JobBaseInfo jobParams[22]`: 8bytes/entry
 0720b0-0721d6|?     |
 0721d6-0732a2|data  | `$39:a1d6 LvUpParam lvupParams[98][22]`: 2bytes/entry => 0x10d8 bytes
 0732a2-0732ae|?     |
