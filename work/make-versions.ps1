@@ -10,7 +10,9 @@ $build_files = @(
 	#"ff3-DSfy-soundtest.asm", #"ff3_hack_soundtest.asm",
 	#"ff3-DSfy-extra-map.asm", #"ff3_hack_extra_map.asm",
 	"ff3-DSfy-DEV.asm", #"ff3_hack_DEV.asm",
-	"ff3-DSfy-only-fast-window.asm" #"ff3_hack_only_fast_window.asm"
+	"ff3-DSfy-only-fast-window.asm", #"ff3_hack_only_fast_window.asm"
+	"ff3-DSfy-uff3typeb.asm", #
+	"ff3-DSfy-ff3c_v1.asm" #
 );
 $build_files | ForEach-Object {
 	$infile = "$infile_prefix$_"
