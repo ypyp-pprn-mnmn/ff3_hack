@@ -9,6 +9,9 @@
 ;======================================================================================================
 	;.ifndef ff3_floor_treasure_begin
 	.include "ff3_floor.h.asm"
+
+	DEFINE_DEFAULT TREASURE_ARROW_AMOUNT, 20
+
 ff3_floor_treasure_begin:
 
 	;INIT_PATCH_EX treasure,$3f,$e917,$e9bb,$e917
@@ -49,7 +52,11 @@ floor_processChipEvent:
 ;$e968:
 	ldx .leaderOffset	;600e
 	lda playerBaseParams,x	;6100
-	cmp #JOB_THIEF	;08
+	.ifdef _DISABLE_THIEF_LOCKPICKING
+		cmp #$ff
+	.else
+		cmp #JOB_THIEF	;08
+	.endif
 	beq .door_is_unlocked
 		lda #$03
 		sec
@@ -207,7 +214,7 @@ floor_getTreasure:
 		bcs .store_increment
 			cpx #$4f	;wooden arrow
 			bcc .store_increment
-				lda #20
+				lda #TREASURE_ARROW_AMOUNT	;20
 	.store_increment:
 		sta <.treasureItemCount
 

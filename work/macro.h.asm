@@ -66,11 +66,23 @@ RESTORE_PC	.macro
 	.org	\1
 		.endm
 
+	.ifdef _NO_INIT_PATCH_SPACE
+RESERVE_PATCH_SPACE	.macro
+			._reserve_\@:
+			.org ._reserve_\@ + \1
+		.endm
+	.else
+RESERVE_PATCH_SPACE	.macro
+			.ds	\1
+		.endm
+	.endif
+
 INIT_PATCH	.macro
 	.bank	\1
 	.org	\2
 	__patch_begin_\@:
-	.ds		((\3) - (\2))
+	;.ds		((\3) - (\2))
+	RESERVE_PATCH_SPACE ((\3) - (\2))
 	__patch_end_\@:
 	.org	\2
 		.endm
@@ -81,12 +93,14 @@ INIT_PATCH_EX	.macro
 		.if \5 > \3
 			.org	\5
 			__patch_begin_\1:
-			.ds		((\4) - (\5))
+			;.ds		((\4) - (\5))
+			RESERVE_PATCH_SPACE	((\4) - (\5))
 			__patch_end_\1:
 		.else
 			.org	\3
 			__patch_begin_\1:
-			.ds		((\4) - (\3))
+			;.ds		((\4) - (\3))
+			RESERVE_PATCH_SPACE	((\4) - (\3))
 			__patch_end_\1:
 		.endif
 		.org	\5

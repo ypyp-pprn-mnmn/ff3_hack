@@ -1040,7 +1040,11 @@ textd_x.on_code_13:	;;HANDLE_EXIT_IN_OWN
     pha ; F289 48
     jsr switch_to_character_logics_bank ; F28A 20 27 F7
     pla ; F28D 68
-    jsr $8998                           ; F28E 20 98 89
+    .ifdef __HACK_FOR_FF3C
+        jsr $9eb0   ; F28E 20 B0 9E
+    .else   ;;__HACK_FOR_FF3C
+        jsr $8998                           ; F28E 20 98 89
+    .endif ;;__HACK_FOR_FF3C
 	jmp textd_x.continue_with_text
 ;;textd.continue_with_text
 ;.L_F291:
@@ -1059,15 +1063,27 @@ textd_x.on_code_13:	;;HANDLE_EXIT_IN_OWN
     ldx <.output_index                  ; F2A6 A6 90
     inc <.output_index                  ; F2A8 E6 90
     inc <.output_index                  ; F2AA E6 90
-    ;;5e = 'L'
-    lda #$5E                            ; F2AC A9 5E
-    sta .tile_buffer_lower,x            ; F2AE 9D A0 07
-    ;;5f = 'V'
-    lda #$5F                            ; F2B1 A9 5F
-    sta .tile_buffer_lower+1,x          ; F2B3 9D A1 07
-    lda #$3e                            ; F2B6 A9 3E
-    ;jmp .L_F246                        ; F2B8 4C 46 F2
-    bne .textd_x.draw_status_value
+    .ifdef __HACK_FOR_FF3C
+        inc <$90     ; F2AC E6 90
+        ;; 'H'
+        lda #$77    ; F2AE A9 77
+        sta $07A1,x ; F2B0 9D A1 07
+        ;; 'P'
+        lda #$79    ; F2B3 A9 79
+        sta $07A2,x ; F2B5 9D A2 07
+        ;jmp .L_F291   ; F2B8 4C 91 F2
+        bne .continue_with_text ;textd_x.continue_with_text
+    .else   ;;__HACK_FOR_FF3C
+        ;;5e = 'L'
+        lda #$5E                            ; F2AC A9 5E
+        sta .tile_buffer_lower,x            ; F2AE 9D A0 07
+        ;;5f = 'V'
+        lda #$5F                            ; F2B1 A9 5F
+        sta .tile_buffer_lower+1,x          ; F2B3 9D A1 07
+        lda #$3e                            ; F2B6 A9 3E
+        ;jmp .L_F246                        ; F2B8 4C 46 F2
+        bne .textd_x.draw_status_value
+    .endif  ;;__HACK_FOR_FF3C
 ; ----------------------------------------------------------------------------
 textd_x.draw_status_name.name_id:
     .db $16,$17,$1b,$1c,$1d,$1e,$1f
