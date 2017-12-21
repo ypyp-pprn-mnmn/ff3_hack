@@ -14,10 +14,12 @@
     	.fail
     .endif
 
-    .ifndef field.window.ppu.FREE_BEGIN
+    ;.ifndef field.window.ppu.FREE_BEGIN
+	.ifndef menu.erase.FREE_BEGIN
         .fail
     .endif    
-	RESTORE_PC field.window.ppu.FREE_BEGIN
+	;RESTORE_PC field.window.ppu.FREE_BEGIN
+	RESTORE_PC menu.erase.FREE_BEGIN
 
 render_x.RENDERER_BEGIN:
 ;--------------------------------------------------------------------------------------------------
@@ -802,7 +804,8 @@ render_x.inflate_window_metrics:
 	inc <.window_height
 	rts
 
-	VERIFY_PC_TO_PATCH_END field.window.ppu
+	;VERIFY_PC_TO_PATCH_END field.window.ppu
+	VERIFY_PC_TO_PATCH_END menu.erase
 ;==================================================================================================
 	;RESTORE_PC floor.treasure.FREE_BEGIN
 ;--------------------------------------------------------------------------------------------------

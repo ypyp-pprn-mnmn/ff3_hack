@@ -86,7 +86,8 @@ field.window.ppu.FREE_BEGIN:
 ;==================================================================================================
 	.ifdef _OPTIMIZE_FIELD_WINDOW
 
-	INIT_PATCH_EX menu.erase, $3f, $f44b, $f4a1, $f44b
+	;INIT_PATCH_EX menu.erase, $3f, $f44b, $f4a1, $f44b
+	INIT_PATCH_EX menu.erase, $3f, $f44b, $f4a1, field.window.ppu.FREE_BEGIN
 ;; 1E:AA8E:20 4B F4  JSR $F44B
 menu.savefile.erase_window:	;;F44B
 	FIX_ADDR_ON_CALLER $3d,$aa8e+1
@@ -180,6 +181,8 @@ menu.erase_box_from_bottom:
 	jmp field.restore_banks  ; F49E 4C F5 EC
 
 	VERIFY_PC_TO_PATCH_END menu.erase
+menu.erase.FREE_BEGIN:
+
 	.endif	;;_OPTIMIZE_FIELD_WINDOW
 ;==================================================================================================
 	.ifdef _OPTIMIZE_FIELD_WINDOW
