@@ -1,0 +1,2251 @@
+GLOBAL {
+	COMMENTS	3;
+	INPUTOFFS	$68074;
+	STARTADDR	$8074;
+	INPUTSIZE	$000EC;
+	OUTPUTNAME	"34_8074-battleLoop.da65out.txt";
+};
+LABEL {
+	NAME "setCurrentPlayerPtrs";
+	ADDR $806c;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.getEvent";
+	ADDR $ea26;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "OnTreasure";
+	ADDR $e982;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.draw_window_content";
+	ADDR $f692;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "itemWindow_scrollLeft";
+	ADDR $b362;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "putHandakuten";
+	ADDR $9707;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "strToTileArray_OnLinefeed";
+	ADDR $9735;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "setMagicTarget";
+	ADDR $b953;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.get_next_input";
+	ADDR $ECC4;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "endItemWindow";
+	ADDR $b1b0;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.OnCharacterMoved";
+	ADDR $c6d5;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "strToTileArray";
+	ADDR $966a;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "call_switch2ndBank";
+	ADDR $ff09;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.init_window_tile_buffer";
+	ADDR $f683;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "dispCommand09_sub00";
+	ADDR $923c;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "endBattle";
+	ADDR $8160;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.unseek_text_to_line_beginning";
+	ADDR $ebd1;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.set_bg_attr_for_window";
+	ADDR $c9a9;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "commandWindow_OnMagic_inputHandlers8";
+	ADDR $ba2a;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "dispCommand_07_showTargetName";
+	ADDR $9177;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "commandWindow_OnDetect";
+	ADDR $ab07;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "command_escape";
+	ADDR $a8bf;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.erase_box_from_bottom";
+	ADDR $f47a;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "dispCommand09_sub02";
+	ADDR $9275;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "geomanceTargetFlag";
+	ADDR $ab06;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.draw_string_in_window";
+	ADDR $eec0;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "playEffect_03";
+	ADDR $8576;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.upload_window_content";
+	ADDR $f6aa;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "getSys1Random";
+	ADDR $a564;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.callSoundDriver";
+	ADDR $c750;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "loadFloorData";
+	ADDR $cbfa;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "rewindCharacterIndex";
+	ADDR $9a42;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.getEventSourceCoodinates";
+	ADDR $e4e9;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "flagTargetBit";
+	ADDR $fd20;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "commandWindow_OnSing";
+	ADDR $acd0;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "command_fight";
+	ADDR $a104;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "dispCommand_0C";
+	ADDR $9354;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "command_sing";
+	ADDR $acd5;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.sync_ppu_scroll";
+	ADDR $ede1;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "u8";
+	ADDR $ec67;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.get_next_input";
+	ADDR $ECbd;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "command_sneakAway";
+	ADDR $a93b;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "invert_treasure_loot_flag";
+	ADDR $f640;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "div";
+	ADDR $fc92;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.copyToVramWith_07d0";
+	ADDR $cb6b;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "playEffect_0c";
+	ADDR $84f6;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "beginBattle";
+	ADDR $c049;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "draw8LineWindow";
+	ADDR $8b38;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "playEffect_04";
+	ADDR $853b;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "command_jump";
+	ADDR $a9d8;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "modifyActionMessage";
+	ADDR $a56f;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "dispCommand_05_showActorName";
+	ADDR $905b;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "getPad1Input";
+	ADDR $fbaa;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "magicWindow_OnB";
+	ADDR $b8ee;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "handleCommand00_0a_do_nothing";
+	ADDR $9fa8;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "setTableBaseAddrTo$8c40";
+	ADDR $95c6;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "ppud.sync_registers_with_cache";
+	ADDR $f8cb;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "dispCommand09_sub03";
+	ADDR $92db;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.get_vram_addr_of_line_above";
+	ADDR $f435;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "command_0b";
+	ADDR $aa5d;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "loadTileArrayOfItemProps";
+	ADDR $b1d8;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "printHp";
+	ADDR $92b5;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "battle.load_string";
+	ADDR $a609;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "playEffect_0b";
+	ADDR $84fb;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.getInputAndHandleEvent";
+	ADDR $e2f8;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.merge_bg_attributes_with_buffer";
+	ADDR $cab1;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "shiftRightN";
+	ADDR $fd43;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "playEffect_05";
+	ADDR $8540;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "restoreFieldVariables";
+	ADDR $f83b;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "getVehicleSpeed";
+	ADDR $cd7e;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "mul8x8_reg";
+	ADDR $f8ea;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "commandWindow_OnSneakAway";
+	ADDR $a8b5;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "drawBorder";
+	ADDR $8de5;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "waitPad1ADown";
+	ADDR $926b;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "playEffect_0e";
+	ADDR $8470;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "getCommandInput_goNextCharacter";
+	ADDR $aa56;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.loadPatternForTiles";
+	ADDR $de5a;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "drawInfoWindow";
+	ADDR $9ba2;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.draw_window_top";
+	ADDR $ece5;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.enterDungeon";
+	ADDR $c1bb;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "playEffect_09";
+	ADDR $850a;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "command_intimidate";
+	ADDR $ad16;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "getInputAndUpdateCursor_OnStartOrSelect";
+	ADDR $8abe;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "commandWindow_OnItemSelected";
+	ADDR $adaf;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "mul8x8";
+	ADDR $fcd6;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "increment_gil";
+	ADDR $f5ff;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "offset$4E_16";
+	ADDR $a558;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "getSortedIndex";
+	ADDR $8f57;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.fireOnMove";
+	ADDR $e396;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "blackOutScreen";
+	ADDR $fa1d;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "getInputAndUpdateCursor_OnLeft";
+	ADDR $8a82;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "field_OnStart";
+	ADDR $c269;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.stream_string_in_window";
+	ADDR $ee65;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "presentBattle";
+	ADDR $8ff7;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "isHandFreeForItem";
+	ADDR $b242;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "updateEnemyStatus";
+	ADDR $9408;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "battle.cache_players_status";
+	ADDR $9d06;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "magicWindow_OnUp";
+	ADDR $b7f9;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.abort_item_window_scroll";
+	ADDR $eb3c;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.advance_frame_with_sound";
+	ADDR $ecd8;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.show_sprites_on_lower_half_screen";
+	ADDR $ec0c;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "switch_2pages";
+	ADDR $ff17;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "initTileArrayStorage";
+	ADDR $9754;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.OnMove";
+	ADDR $c4fc;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.get_treasure";
+	ADDR $f549;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "dispCommand_00010204_closeWindow";
+	ADDR $94d6;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.show_message_window";
+	ADDR $ec8b;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "setBackgroundProperty";
+	ADDR $8d03;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "call_switch1stBank";
+	ADDR $ff06;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "getInputAndUpdateCursor_OnB";
+	ADDR $89de;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "commandWindow_OnGuard";
+	ADDR $a877;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "getInputAndUpdateCursor_end";
+	ADDR $8ac1;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "incrementItem";
+	ADDR $bfb3;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "updatePlayerOffset";
+	ADDR $a541;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "commandWindow_OnSteal";
+	ADDR $ab9f;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.show_message_UNKNOWN";
+	ADDR $ec83;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "hardware_vectors";
+	ADDR $fff0;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "setTableBaseAddrTo$8a40";
+	ADDR $95bd;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "initBattleVars";
+	ADDR $8213;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.getWindowTilesForMiddle";
+	ADDR $ee1d;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "dispCommand_0B";
+	ADDR $934e;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "switch_to_object_params_bank";
+	ADDR $eb23;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "textd.save_text_ptr";
+	ADDR $f3e4;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.get_window_region";
+	ADDR $ed61;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.upload_palette";
+	ADDR $d381;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "itemWindow_moveCursor";
+	ADDR $b4d4;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.getInputOrFireObjectEvent";
+	ADDR $d219;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.loadMapRow";
+	ADDR $cc47;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "get2byteAtBank18";
+	ADDR $fd60;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "copyToVram";
+	ADDR $f970;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "mul16x16";
+	ADDR $fcf5;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "effect06";
+	ADDR $8528;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "dungeon.mainLoop";
+	ADDR $e1dc;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "offset$80_16";
+	ADDR $f8fe;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "dispCommand_09_show_message";
+	ADDR $91fe;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.show_window";
+	ADDR $ec8d;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.hide_sprites_under_window";
+	ADDR $ec18;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "itemWindow_OnB";
+	ADDR $b198;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.await_and_get_new_input";
+	ADDR $ECAB;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "loadSmallPatternToVram";
+	ADDR $de2a;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "commandWindow_OnJump";
+	ADDR $a9ab;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.getChipEvent";
+	ADDR $e51c;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "memcpy";
+	ADDR $f92f;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "commandWindow_OnEscapeSelected";
+	ADDR $a8ab;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "drawEnemyNamesWindow";
+	ADDR $9d9e;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.get_treasure_item_id";
+	ADDR $f5c4;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "playEffect_01";
+	ADDR $8577;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "saveFieldVars";
+	ADDR $fb17;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "eraseFromLeftBottom0Bx0A";
+	ADDR $8f0b;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "vehicleSpeeds";
+	ADDR $cd76;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.loadObjectPatterns";
+	ADDR $df08;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "call_doBattle";
+	ADDR $f800;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "set52toActorIndexFromEffectBit";
+	ADDR $8532;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "putWindowTopBottomBorderTile";
+	ADDR $8c84;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "field_setScroll";
+	ADDR $c398;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "call_32_8000";
+	ADDR $f854;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "getInputAndUpdateCursor_OnRight";
+	ADDR $8a9f;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "textd.eval_replacement";
+	ADDR $f02a;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.load_object_sprite_into_buffer";
+	ADDR $da3a;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "saveNmiIrqHandlerAndSetHandlerForBattle";
+	ADDR $fab5;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "commandWindow_OnCheer";
+	ADDR $ad6b;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "commandWindow_selectSingleTargetAndGoNext";
+	ADDR $a848;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "dungeon.loadFloor";
+	ADDR $e7ec;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "textd.draw_in_box";
+	ADDR $eefa;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "itemWindow_scrollRight";
+	ADDR $b2a7;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "setNoTargetMessage";
+	ADDR $91ce;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "clearTargetBit";
+	ADDR $fd2c;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "targetBitToCharIndex";
+	ADDR $86ab;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "isPlayerAllowedToUseItem";
+	ADDR $b8fd;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "Point";
+	ADDR $a823;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "draw1RowWindow";
+	ADDR $8d1b;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "getInputAndUpdateCursor_OnUp";
+	ADDR $89ee;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "playSoundEffect";
+	ADDR $9b79;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.processChipEvent";
+	ADDR $e917;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.event07";
+	ADDR $e6be;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "switchToBank3C";
+	ADDR $c98a;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.getAndMaskInput";
+	ADDR $d27a;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "field";
+	ADDR $c6b9;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "showArrowAndDecideCommand";
+	ADDR $a784;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "commandWindow_OnMagic";
+	ADDR $b646;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "playEffect_00";
+	ADDR $8613;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.init_window_attr_buffer";
+	ADDR $ed56;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "commandWindow_OnIntimidate";
+	ADDR $ad0c;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "call_bank30_9e58";
+	ADDR $fdf3;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "set_encounter_mode";
+	ADDR $87be;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "restore_banks_by_$57";
+	ADDR $ecf5;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "loadStatusMessage";
+	ADDR $9245;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "magicWindow_OnSelectOrStart";
+	ADDR $b874;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "loadPatternToVramEx";
+	ADDR $de0f;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "field_doScroll";
+	ADDR $c389;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "nmi_handler_01";
+	ADDR $ff2a;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "dungeon.loadFloorData";
+	ADDR $e803;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "battle.process_poison";
+	ADDR $ba41;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "commandWindow_0b_geomance";
+	ADDR $aa22;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "irq_handler";
+	ADDR $fb30;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "dispatchBattleFunction";
+	ADDR $8012;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.string.eval_code_10_13";
+	ADDR $f239;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "ppud.nmi_handler";
+	ADDR $fb57;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.erase_box_1e_x_14";
+	ADDR $f461;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.getWindowTilesForTop";
+	ADDR $edf6;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "getIndexOfGreatest";
+	ADDR $a30f;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.scrollup_item_window";
+	ADDR $eb69;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "endInputCommand";
+	ADDR $a433;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "doNothing_8689";
+	ADDR $8689;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "playEffect_0d";
+	ADDR $84d7;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "call_2e_9d53";
+	ADDR $fa0e;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "itemWindow_OnAButton";
+	ADDR $af4c;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "createCommandWindow";
+	ADDR $9a69;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "command_09_landing";
+	ADDR $aa11;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.getMapDataPointers";
+	ADDR $ccbb;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.get_max_available_job_id";
+	ADDR $f38a;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "getTileParamsVertical";
+	ADDR $ce7a;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "actionHandlers0x15";
+	ADDR $9fac;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "battle.can_continue";
+	ADDR $a458;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "command_forward";
+	ADDR $a7df;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "drawEquipWindow";
+	ADDR $b419;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "movePosition_end";
+	ADDR $a7c8;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "ppud.upload_palette";
+	ADDR $f897;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "dispCommand_0E";
+	ADDR $93c4;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "ppud.update_sprites_and_palette_after_nmi";
+	ADDR $f8b0;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.loadWarpDestinationFloor";
+	ADDR $cba4;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "showDamage";
+	ADDR $868a;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "updatePlayerStatus";
+	ADDR $93cd;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "getInvertedLineFlag";
+	ADDR $a816;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "battle.grow_player";
+	ADDR $bf7c;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.getObjectEvent";
+	ADDR $e9bb;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "dispCommand_0A_waitForAButtonDownOrMessageTimeOut";
+	ADDR $9450;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "drawMessageWindow";
+	ADDR $9253;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "textd.restore_text_ptr";
+	ADDR $f3ed;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.reflect_window_scroll";
+	ADDR $eb61;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.do_scrolldown_item_window";
+	ADDR $eb43;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.loadEventScriptStream";
+	ADDR $ea04;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "doBattle";
+	ADDR $fa26;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "dispCommand_03_back4or5CommandIfMessageRemainsElseClose";
+	ADDR $94e7;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "strToTileArray_OnChar02";
+	ADDR $9745;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "dive_into_float_land";
+	ADDR $c966;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "magicWindow_OnLeft";
+	ADDR $b863;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "setPlayerPtrs";
+	ADDR $88e1;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "init4SpritesAt$0220";
+	ADDR $8adf;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "ppud.update_palette_after_nmi";
+	ADDR $f8bc;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.get_input";
+	ADDR $d281;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "executeAction";
+	ADDR $9de4;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "beginBattlePhase";
+	ADDR $8374;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "getCurrentTerrain";
+	ADDR $aac3;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "dispCommand_06_showActionName";
+	ADDR $90a0;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "countAndDecrementUntil0";
+	ADDR $9648;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "restoreIrqHandlerAndNmiHandler";
+	ADDR $fadd;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.dispatchInput";
+	ADDR $c243;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "loadTileArrayForItemWindowColumn";
+	ADDR $b48b;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "initMoveArrowSprite";
+	ADDR $a7cd;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "thunk_await_nmi_by_set_handler";
+	ADDR $ff00;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "dispCommand_08_show_effect_message";
+	ADDR $91d4;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "copyTo_$7ad7_x_Until0";
+	ADDR $fd4a;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.load_and_draw_string";
+	ADDR $ee9a;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "loadTo7400Ex";
+	ADDR $fda6;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "flagJob";
+	ADDR $b93e;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "loadPatternToVram";
+	ADDR $de1a;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.event05";
+	ADDR $e69b;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "copyTo7400";
+	ADDR $fddc;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "initBattleRandom";
+	ADDR $fc27;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "switch_to_floor_logics_bank";
+	ADDR $eb28;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "handleCommand13_useItem";
+	ADDR $a3bb;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "magicWindow_OnRight";
+	ADDR $b86c;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "itemWindow_OnUse";
+	ADDR $b4f7;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "setYtoOffset2F";
+	ADDR $9b94;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.draw_in_place_window";
+	ADDR $ecfa;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "command_cheer";
+	ADDR $ad75;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "drawEquipWindowNoErase";
+	ADDR $b5f9;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.calc_draw_width_and_init_window_tile_buffer";
+	ADDR $f670;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "ppud.update_sprites_after_nmi";
+	ADDR $f8c5;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.getRandom";
+	ADDR $c711;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.show_sprites_on_region7";
+	ADDR $ec12;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.showhide_sprites_by_region";
+	ADDR $ec1a;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.draw_window_box";
+	ADDR $ed02;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.set_vram_addr_for_window";
+	ADDR $f40a;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.erase_box_1e_x_1c";
+	ADDR $f465;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "presentCharacter";
+	ADDR $8185;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.seek_text_to_next_line";
+	ADDR $eba9;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "setNmiHandlerTo_ff2a_andWaitNmi";
+	ADDR $ff36;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "getBattleRandom";
+	ADDR $fbef;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "magicWindow_OnA";
+	ADDR $b877;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "command_charge";
+	ADDR $ac6f;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "playEffect_0F";
+	ADDR $8460;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "call_switchFirst2Banks";
+	ADDR $ff03;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "dispatchPresentScene_1f";
+	ADDR $8545;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "switch_16k_synchronized";
+	ADDR $fb87;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "setActionTargetToSelf";
+	ADDR $9f87;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "getPrevLinePtr";
+	ADDR $9715;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.opening.title_page";
+	ADDR $c06e;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "handleCommand14_castMagic";
+	ADDR $a367;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.getWindowTilesForBottom";
+	ADDR $ee3e;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "itoa_16";
+	ADDR $95e1;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "commandWindow_OnInspect";
+	ADDR $ab6e;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.erase_box_of_width_1e";
+	ADDR $f467;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "do_sprite_dma_from_0200";
+	ADDR $f8aa;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "fireCannon";
+	ADDR $a50b;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.scrolldown_item_window";
+	ADDR $eb2d;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "command_detect";
+	ADDR $ab0c;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "setActorCommandIdAndClearMode";
+	ADDR $9f7b;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "executeAction_summon";
+	ADDR $9fd6;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "offset$7e_16";
+	ADDR $f8f2;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "effect07";
+	ADDR $852d;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "tileSprites2x2";
+	ADDR $892e;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "Point";
+	ADDR $a833;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "functionTableFor$8ff7_presentBattle0x0e";
+	ADDR $954d;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "command_inspect";
+	ADDR $ab73;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "ppud.await_nmi_completion";
+	ADDR $fb80;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.update_window_attr_buff";
+	ADDR $c98f;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "battle.end_turn_of_character";
+	ADDR $badc;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "battleLoop";
+	ADDR $8074;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "setYtoOffset03";
+	ADDR $9b8d;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "commandWindow_OnBack";
+	ADDR $a750;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.load_label_text_into_buffer";
+	ADDR $d1b1;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "eraseWindow";
+	ADDR $8eb0;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "setTableBaseAddrTo$00f0";
+	ADDR $95d8;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "updatePlayerBaseParams";
+	ADDR $8306;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "setTableBaseAddrTo$00e0";
+	ADDR $95cf;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "commandWindow_OnCommand0001090a13";
+	ADDR $9a68;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "sort";
+	ADDR $8f6f;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "consumeEquippedItem";
+	ADDR $a353;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "putWindowSideBorderTile";
+	ADDR $8c56;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.loadObjectPattern";
+	ADDR $df41;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.get_item_price";
+	ADDR $f5d4;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "switch_to_character_logics_bank";
+	ADDR $f727;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "command_guard";
+	ADDR $a881;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "putCanceledItem";
+	ADDR $9ae7;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "moveSelection_dispatchInput_inputHandlers8";
+	ADDR $8acf;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "maskTargetBit";
+	ADDR $fd38;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "textd.setup_output_ptr_to_next_column";
+	ADDR $f3ac;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "switch_16k_synchronized_nocache";
+	ADDR $fb89;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field_maskInput";
+	ADDR $d29a;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "putDakuten";
+	ADDR $96f9;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "initString";
+	ADDR $a549;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "loadAndInitCursorPos";
+	ADDR $8966;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "commandWindow_OnForwardSelected";
+	ADDR $a71c;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.draw_window_row";
+	ADDR $edc6;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "prize";
+	ADDR $bb49;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "loadTo7400FromBank30";
+	ADDR $ba3a;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "ppud.set_vram_addr";
+	ADDR $f8e0;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "magicWindow_OnDown";
+	ADDR $b82a;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "getInputAndUpdateCursor_OnA";
+	ADDR $89e6;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "shiftLeftN";
+	ADDR $fd3c;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "commandWindow_OnChargeSelected";
+	ADDR $ac65;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.getObjectEventPtr";
+	ADDR $c72c;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "setYtoOffset2E";
+	ADDR $9b9b;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "setYtoOffsetOf";
+	ADDR $9b88;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "playEffect";
+	ADDR $8411;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "dispCommand09_sub01";
+	ADDR $925f;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "command_back";
+	ADDR $a7ea;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "effect08";
+	ADDR $8516;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "buildEnemyDeadBits";
+	ADDR $8496;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "commandWindow_OnAttackSelected";
+	ADDR $a843;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "redrawColumn";
+	ADDR $b601;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "battle.increment_number_of_command_selection";
+	ADDR $8271;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "copy_to_vram_with_encounter_mode";
+	ADDR $f942;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "setEffectHandlerTo18";
+	ADDR $ab66;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "getActor2C";
+	ADDR $a42e;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "battle.init_players_defence_powers";
+	ADDR $81a0;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "switch_2nd_page";
+	ADDR $ff1f;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "setItemEffectTarget";
+	ADDR $b979;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "copyToVramDirect";
+	ADDR $f969;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.cache_event_script";
+	ADDR $ea1b;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "textd.trim_name_left";
+	ADDR $f3fa;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "dispCommand_0D";
+	ADDR $935f;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "getInputAndUpdateCursorWithSound";
+	ADDR $899e;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "switch_1st_page";
+	ADDR $ff0c;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "loadTilePatternToVram";
+	ADDR $deea;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "loadCursorSprites";
+	ADDR $8902;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "calcActionOrder";
+	ADDR $9777;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "command_steal";
+	ADDR $aba4;
+	COMMENT "bank $35";
+	SIZE	1;
+};
+LABEL {
+	NAME "getCommandInput";
+	ADDR $986c;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "cachePlayerStatus";
+	ADDR $9d1d;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "dispCommand09_sub04";
+	ADDR $932b;
+	COMMENT "bank $34";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.savefile.erase_windows";
+	ADDR $f44b;
+	COMMENT "bank $3f";
+	SIZE	1;
+};

@@ -82,6 +82,13 @@ function make_me_happy($bank, $addr, $tuple) {
 		## da65 won't accept utf8 with BOM
 		$info | Out-File -Encoding ascii -FilePath "${inspection_out_dir}/da65.info.txt";
 		Write-Host -ForegroundColor DarkMagenta "huh, you're so hungry you can't stop it: ${inspection_out_dir}/da65.info.txt";
+		## call another script to make things happen
+		try {
+			Push-Location ${inspection_dir}
+			& "./do-da65" -work_dir "./${bank}_${addr}"
+		} finally {
+			Pop-Location
+		}
 	}
 	$outpath = "${draft_dir}/${bank}_${addr}_DRAFT.md";
 	if (Test-Path $outpath) {
@@ -174,7 +181,7 @@ GLOBAL {
 	Get-ChildItem -Recurse -Filter "*.md" -Path "${published_dir}" | ForEach-Object {
 		## map file name into address
 		if ($_.Name -match $filename_pattern) {
-			if ($matches[3] -ne "") {
+			if (is_good_to_add_label $bank $addr $matches[1] $matches[2] $matches[3] ) {
 				$hash = $label_hashes[$matches[2]];
 				if ($hash -eq $null) {
 					$hash = @{};
@@ -204,6 +211,26 @@ LABEL {
 "@;
 	}
 	return $global + ($labels -join "");
+}
+
+function is_good_to_add_label(
+	$target_bank,
+	$target_addr,
+	$label_bank,
+	$label_addr,
+	$label_name
+) {
+	if ($label_name -eq "") {
+		return $false
+	}
+	$target_bank = [convert]::ToInt32($target_bank, 16);
+	$label_bank = [convert]::ToInt32($label_bank, 16);
+	return (
+		($label_bank -eq 0x3e) -or
+		($label_bank -eq 0x3F) -or
+		($label_bank -eq $target_bank) -or
+		(($label_bank -shr 1) -eq ($target_bank -shr 1))
+	);
 }
 ## ================================================================================
 ## do it.

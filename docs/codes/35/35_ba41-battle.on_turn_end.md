@@ -1,6 +1,6 @@
 ﻿
-# $35:ba41 battle.process_poison
-> 敵味方全員の毒状態を処理し、HP・ステータスの更新と表示を行う
+# $35:ba41 battle.on_turn_end
+> ターンを終了する。敵味方全員の毒状態を処理し、HP・ステータスの更新と表示を行う
 
 ### args:
 
@@ -49,7 +49,7 @@ there are 2 bugs found to be caused by this function.
 	$24 = 8;
 	$28,29 = 0x7575;
 	for ($24;$24 != 0xc;$24++) {
-		battle.apply_poison_damage();	//$badc();
+		battle.characters.on_turn_end();	//$badc();
 		$28,29 += #40;
 	}
 $ba73:
@@ -58,7 +58,7 @@ $ba73:
 	$28,29 = 0x7675;
 	for ($24;$24 != 8;$24++) {
 $ba82:
-		battle.apply_poison_damage();	//$badc();
+		battle.characters.on_turn_end();	//$badc();
 		x = $24;
 		$7ec4.x = $28[y = 1];
 		$28,29 += 0x40;
@@ -77,12 +77,13 @@ $bab2:
 		battle.present();	//8ff7
 		$7ec2 = 0x16;	//scene_id: 0x16 => effect_handler: 0xE => play dying effect
 		battle.play_effect();	//$8441()
-		canPlayerPartyContinueFighting();	//$a458();
+		battle.can_continue();	//$a458();
 	}
 $badb:
 	return;
 }
 ```
+
 
 
 

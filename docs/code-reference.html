@@ -8,7 +8,7 @@
     <meta name="generator" content="pandoc">
     <meta name="description" content>
     <meta name="author" content="ypyp-pprn-mnmn (aka “301”)">
-    <!-- generated-at 2017-12-21 02:55:22+0900 -->
+    <!-- generated-at 2017-12-21 23:26:09+0900 -->
     <title>FF3@FC Original Code Documentation</title>
 
     <!-- Bootstrap core CSS -->
@@ -626,8 +626,8 @@ code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Infor
           <li><a href="#b979-setitemeffecttarget">$35:b979 setItemEffectTarget</a></li>
           <li><a href="#ba2a-commandwindow_onmagic_inputhandlers8">$35:ba2a commandWindow_OnMagic_inputHandlers[8] =</a></li>
           <li><a href="#ba3a-loadto7400frombank30">$35:ba3a loadTo7400FromBank30</a></li>
-          <li><a href="#ba41-battle.process_poison">$35:ba41 battle.process_poison</a></li>
-          <li><a href="#badc-battle.end_turn_of_character">$35:badc battle.end_turn_of_character</a></li>
+          <li><a href="#ba41-battle.on_turn_end">$35:ba41 battle.on_turn_end</a></li>
+          <li><a href="#badc-battle.characters.on_turn_end">$35:badc battle.characters.on_turn_end</a></li>
           <li><a href="#bb49-prize">$35:bb49 prize</a></li>
           <li><a href="#bf7c-battle.grow_player">$35:bf7c battle.grow_player</a></li>
           <li><a href="#bfb3-incrementitem">$35:bfb3 incrementItem</a></li>
@@ -13195,9 +13195,9 @@ $b874:
 <div class="sourceLine" id="cb410-2" data-line-number="2">    <span class="cf">return</span> <span class="at">loadTo7400Ex</span>(<span class="dt">bank</span><span class="op">:</span>a <span class="op">=</span> #<span class="dv">18</span><span class="op">,</span><span class="dt">restore</span><span class="op">:</span>y <span class="op">=</span> #1a)<span class="op">;</span></div>
 <div class="sourceLine" id="cb410-3" data-line-number="3"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="ba41-battle.process_poison">$35:ba41 battle.process_poison</h1>
+<h1 id="ba41-battle.on_turn_end">$35:ba41 battle.on_turn_end</h1>
 <blockquote>
-<p>敵味方全員の毒状態を処理し、HP・ステータスの更新と表示を行う</p>
+<p>ターンを終了する。敵味方全員の毒状態を処理し、HP・ステータスの更新と表示を行う</p>
 </blockquote>
 <h3 id="args-154">args:</h3>
 <ul>
@@ -13245,7 +13245,7 @@ $b874:
 <div class="sourceLine" id="cb411-7" data-line-number="7">    $24 <span class="op">=</span> <span class="dv">8</span><span class="op">;</span></div>
 <div class="sourceLine" id="cb411-8" data-line-number="8">    $28<span class="op">,</span><span class="dv">29</span> <span class="op">=</span> <span class="bn">0x7575</span><span class="op">;</span></div>
 <div class="sourceLine" id="cb411-9" data-line-number="9">    <span class="cf">for</span> ($24<span class="op">;</span>$24 <span class="op">!=</span> <span class="bn">0xc</span><span class="op">;</span>$24<span class="op">++</span>) <span class="op">{</span></div>
-<div class="sourceLine" id="cb411-10" data-line-number="10">        <span class="va">battle</span>.<span class="at">apply_poison_damage</span>()<span class="op">;</span>   <span class="co">//$badc();</span></div>
+<div class="sourceLine" id="cb411-10" data-line-number="10">        <span class="va">battle</span>.<span class="va">characters</span>.<span class="at">on_turn_end</span>()<span class="op">;</span>    <span class="co">//$badc();</span></div>
 <div class="sourceLine" id="cb411-11" data-line-number="11">        $28<span class="op">,</span><span class="dv">29</span> <span class="op">+=</span> #<span class="dv">40</span><span class="op">;</span></div>
 <div class="sourceLine" id="cb411-12" data-line-number="12">    <span class="op">}</span></div>
 <div class="sourceLine" id="cb411-13" data-line-number="13"><span class="dt">$ba73</span><span class="op">:</span></div>
@@ -13254,7 +13254,7 @@ $b874:
 <div class="sourceLine" id="cb411-16" data-line-number="16">    $28<span class="op">,</span><span class="dv">29</span> <span class="op">=</span> <span class="bn">0x7675</span><span class="op">;</span></div>
 <div class="sourceLine" id="cb411-17" data-line-number="17">    <span class="cf">for</span> ($24<span class="op">;</span>$24 <span class="op">!=</span> <span class="dv">8</span><span class="op">;</span>$24<span class="op">++</span>) <span class="op">{</span></div>
 <div class="sourceLine" id="cb411-18" data-line-number="18"><span class="dt">$ba82</span><span class="op">:</span></div>
-<div class="sourceLine" id="cb411-19" data-line-number="19">        <span class="va">battle</span>.<span class="at">apply_poison_damage</span>()<span class="op">;</span>   <span class="co">//$badc();</span></div>
+<div class="sourceLine" id="cb411-19" data-line-number="19">        <span class="va">battle</span>.<span class="va">characters</span>.<span class="at">on_turn_end</span>()<span class="op">;</span>    <span class="co">//$badc();</span></div>
 <div class="sourceLine" id="cb411-20" data-line-number="20">        x <span class="op">=</span> $24<span class="op">;</span></div>
 <div class="sourceLine" id="cb411-21" data-line-number="21">        <span class="va">$7ec4</span>.<span class="at">x</span> <span class="op">=</span> $28[y <span class="op">=</span> <span class="dv">1</span>]<span class="op">;</span></div>
 <div class="sourceLine" id="cb411-22" data-line-number="22">        $28<span class="op">,</span><span class="dv">29</span> <span class="op">+=</span> <span class="bn">0x40</span><span class="op">;</span></div>
@@ -13273,13 +13273,13 @@ $b874:
 <div class="sourceLine" id="cb411-35" data-line-number="35">        <span class="va">battle</span>.<span class="at">present</span>()<span class="op">;</span>   <span class="co">//8ff7</span></div>
 <div class="sourceLine" id="cb411-36" data-line-number="36">        $7ec2 <span class="op">=</span> <span class="bn">0x16</span><span class="op">;</span>   <span class="co">//scene_id: 0x16 =&gt; effect_handler: 0xE =&gt; play dying effect</span></div>
 <div class="sourceLine" id="cb411-37" data-line-number="37">        <span class="va">battle</span>.<span class="at">play_effect</span>()<span class="op">;</span>   <span class="co">//$8441()</span></div>
-<div class="sourceLine" id="cb411-38" data-line-number="38">        <span class="at">canPlayerPartyContinueFighting</span>()<span class="op">;</span>   <span class="co">//$a458();</span></div>
+<div class="sourceLine" id="cb411-38" data-line-number="38">        <span class="va">battle</span>.<span class="at">can_continue</span>()<span class="op">;</span>  <span class="co">//$a458();</span></div>
 <div class="sourceLine" id="cb411-39" data-line-number="39">    <span class="op">}</span></div>
 <div class="sourceLine" id="cb411-40" data-line-number="40"><span class="dt">$badb</span><span class="op">:</span></div>
 <div class="sourceLine" id="cb411-41" data-line-number="41">    <span class="cf">return</span><span class="op">;</span></div>
 <div class="sourceLine" id="cb411-42" data-line-number="42"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="badc-battle.end_turn_of_character">$35:badc battle.end_turn_of_character</h1>
+<h1 id="badc-battle.characters.on_turn_end">$35:badc battle.characters.on_turn_end</h1>
 <blockquote>
 <p>まず毒のダメージを計算し対象のHPから減算する。その後、HPに基づいてステータスを更新(必要に応じて死亡フラグをセット)する。</p>
 </blockquote>
@@ -13292,8 +13292,8 @@ $b874:
 </ul>
 <h3 id="callers-12">callers:</h3>
 <ul>
-<li><code>1A:BA5B:20 DC BA  JSR $BADC</code> @ $35:ba41 battle.process_poison</li>
-<li><code>1A:BA82:20 DC BA  JSR $BADC</code> @ $35:ba41 battle.process_poison</li>
+<li><code>1A:BA5B:20 DC BA  JSR $BADC</code> @ $35:ba41 battle.on_turn_end</li>
+<li><code>1A:BA82:20 DC BA  JSR $BADC</code> @ $35:ba41 battle.on_turn_end</li>
 </ul>
 <h3 id="local-variables-27">local variables:</h3>
 <ul>

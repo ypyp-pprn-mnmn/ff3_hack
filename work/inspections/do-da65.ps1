@@ -7,7 +7,9 @@ Param(
     #[ValidatePattern("[\.\:\`$_]?[0-9a-fA-f]{2}[\.\:\`$_]?[0-9a-fA-f]{4}")]
         [string] $work_dir,
     [Parameter()]
-		[string] $nes_file = "../base-binary/ff3_plain.nes.noheader"
+        [string] $nes_file = "../base-binary/ff3_plain.nes.noheader",
+    [Parameter()]
+        [string] $format = "nesasm"
 )
 if (-not (Test-Path $work_dir)) {
     throw;
@@ -42,6 +44,19 @@ try {
     Push-Location $work_dir | Out-Null
     Invoke-Expression $command;
     $out_file = Get-ChildItem -Filter "*.da65out.txt" | Select-Object -First 1
+    if ($format -eq "nesasm") {
+        $output = Get-Content $out_file -Encoding UTF8;
+        $output = $output `
+            -replace '^L([0-9a-fA-F]{4}):', ".L_`$1:`r`n"`
+            -replace 'L([0-9a-fA-F]{4})', '.L_$1' `
+            -replace '^(\s+)(\S+)','    $2' `
+            -replace '(\S+)\s{5}', '$1 ' `
+            -replace '(\s{20});', ';' `
+            -replace ' (\$[0-9a-fA-F]{2})(,x)? ', ' <$1$2 ' `
+            -replace '\((\$[0-9a-fA-F]{2})\),y', '[$1],y';
+        $output | Out-File -Encoding utf8 -FilePath $out_file.FullName -Force
+            
+    }
     code --reuse-window $out_file.FullName
 } catch {
     throw;

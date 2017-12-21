@@ -1,5 +1,5 @@
 ﻿
-# $35:badc battle.end_turn_of_character
+# $35:badc battle.characters.on_turn_end
 > まず毒のダメージを計算し対象のHPから減算する。その後、HPに基づいてステータスを更新(必要に応じて死亡フラグをセット)する。
 
 ### args:
@@ -11,8 +11,8 @@
 
 ### callers:
 
--   `1A:BA5B:20 DC BA  JSR $BADC` @ $35:ba41 battle.process_poison
--   `1A:BA82:20 DC BA  JSR $BADC` @ $35:ba41 battle.process_poison
+-   `1A:BA5B:20 DC BA  JSR $BADC` @ $35:ba41 battle.on_turn_end
+-   `1A:BA82:20 DC BA  JSR $BADC` @ $35:ba41 battle.on_turn_end
 
 ### local variables:
 
@@ -119,6 +119,7 @@ $bb47:
 	return;
 }
 ```
+
 
 
 
