@@ -1,4 +1,5 @@
 ﻿
+
 # $3f:f467 menu.erase_box_of_width_1e
 > short description of the function
 
@@ -6,7 +7,7 @@
 +	in u8 A: box height.
 
 ### callers:
-+	yet to be investigated
++	`1E:9BD2:20 67 F4  JSR $F467` @ ?
 
 ### local variables:
 +	u8 $38: box left
@@ -40,4 +41,5 @@ write notes here
 ```
 
 **fall through**
+
 

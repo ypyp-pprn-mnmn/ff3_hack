@@ -82,12 +82,15 @@ field_x.set_vram_addr_current_y_with_specified_x
 	
 field.window.ppu.FREE_BEGIN:
 	VERIFY_PC_TO_PATCH_END field.window.ppu
-	.endif	;;FAST_FIELD_WINDOW
+	.endif	;;_OPTIMIZE_FIELD_WINDOW
 ;==================================================================================================
 	.ifdef _OPTIMIZE_FIELD_WINDOW
 
 	INIT_PATCH_EX menu.erase, $3f, $f44b, $f4a1, $f44b
-menu.savefile.erase_window:
+;; 1E:AA8E:20 4B F4  JSR $F44B
+menu.savefile.erase_window:	;;F44B
+	FIX_ADDR_ON_CALLER $3d,$aa8e+1
+;;
 	DECLARE_WINDOW_VARIABLES
 	lda #$02        ; F44B A9 02
 	sta <.window_top         ; F44D 85 39
@@ -100,16 +103,26 @@ menu.savefile.erase_window:
 	sta <.window_height         ; F45B 85 3D
 	lda #$02        ; F45D A9 02
 	bne menu.erase_box_from_bottom    ; F45F D0 19
-
+;--------------------------------------------------------------------------------------------------
+;; 1E:AF76:20 61 F4  JSR $F461
+menu.erase_box_1e_x_14:
+	FIX_ADDR_ON_CALLER $3d,$af76+1
+;;
 	lda #$14 ; F461 A9 14
     bne menu.erase_box_of_width_1e ; F463 D0 02
-
+;--------------------------------------------------------------------------------------------------
+;; 1E:A693:4C 65 F4  JMP $F465
 menu.erase_box_1e_x_1c:
+	FIX_ADDR_ON_CALLER $3d,$a693+1
+;;
 	DECLARE_WINDOW_VARIABLES
 	lda #$1C        ; F465 A9 1C
 	FALL_THROUGH_TO menu.erase_box_of_width_1e
-
+;--------------------------------------------------------------------------------------------------
+;; 1E:9BD2:20 67 F4  JSR $F467
 menu.erase_box_of_width_1e:
+	FIX_ADDR_ON_CALLER $3c,$9bd2+1
+;;
 	DECLARE_WINDOW_VARIABLES
 	sta <.window_height         ; F467 85 3D
 	lda #$1B        ; F469 A9 1B
@@ -122,7 +135,7 @@ menu.erase_box_of_width_1e:
 	lda <.window_height			; F477 A5 3D
 	lsr a           ; F479 4A
 	FALL_THROUGH_TO menu.erase_box_from_bottom
-
+;--------------------------------------------------------------------------------------------------
 ;; in:
 ;;	A: width
 menu.erase_box_from_bottom:

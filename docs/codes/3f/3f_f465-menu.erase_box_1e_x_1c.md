@@ -1,4 +1,5 @@
 ﻿
+
 # $3f:f465 menu.erase_box_1e_x_1c
 > short description of the function
 
@@ -6,7 +7,7 @@
 none.
 
 ### callers:
-+	yet to be investigated
++	`1E:A693:4C 65 F4  JMP $F465` @ ?
 
 ### local variables:
 none.
@@ -25,4 +26,5 @@ $f467:
 ```
 
 **fall through**
+
 

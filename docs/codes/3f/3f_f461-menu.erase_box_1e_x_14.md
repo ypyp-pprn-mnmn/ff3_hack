@@ -1,4 +1,5 @@
 ﻿
+
 # $3f:f461 menu.erase_box_1e_x_14
 > short description of the function
 
@@ -6,7 +7,7 @@
 +	yet to be investigated
 
 ### callers:
-+	yet to be investigated
++   `1E:AF76:20 61 F4  JSR $F461` @ ?
 
 ### local variables:
 +	none.
@@ -23,4 +24,5 @@ write notes here
 */
 }
 ```
+
 
