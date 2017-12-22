@@ -2,9 +2,9 @@
 
 ## v0.8.1 (22/12/2017)
 
-#### devops
+#### feature
 
--  release note自動生成 [#22](https://github.com/ypyp-pprn-mnmn/ff3_hack/issues/22)
+- [**feature**] 毒ダメージのカスタマイズ性をあげる [#31](https://github.com/ypyp-pprn-mnmn/ff3_hack/issues/31)
 
 ---
 
