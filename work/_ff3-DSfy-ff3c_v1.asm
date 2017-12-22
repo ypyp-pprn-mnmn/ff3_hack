@@ -21,5 +21,8 @@ JOB_AVAILABILITY.WATER = $10
 JOB_AVAILABILITY.EARTH = $13
 JOB_AVAILABILITY.EUREKA = $15	;;original == 30
 
-; the below should be final line of this file
+;; TODO:
+;;	add fix for 'STOMACH PAGING'
+
+; the below should be the final line of this file
 	.include "_build-master.asm"

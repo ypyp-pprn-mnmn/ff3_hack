@@ -15,5 +15,13 @@ EXPERIMENT_IMPL = 5	; encount test
 ;_FIX_POISON
 ;_FIX_REFLECTION
 POISON_DAMAGE_SHIFT = 1
-;; the below should be final line of this file
+
+;JOB_AVAILABILITY.NO_CRYSTAL = $00
+;JOB_AVAILABILITY.WIND = $05
+;JOB_AVAILABILITY.FIRE = $09	;;original == 09
+;JOB_AVAILABILITY.WATER = $10
+;JOB_AVAILABILITY.EARTH = $13	;;original == 13
+;JOB_AVAILABILITY.EUREKA = $30
+
+;; the below should be the final line of this file
 	.include "_ff3-DSfy.asm"

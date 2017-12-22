@@ -19,5 +19,5 @@ JOB_AVAILABILITY.EARTH = $30	;;original == 13
 JOB_AVAILABILITY.EUREKA = $30
 
 MAX_PLAYER_LV = 65
-; the below should be final line of this file
+; the below should be the final line of this file
 	.include "_build-master.asm"
