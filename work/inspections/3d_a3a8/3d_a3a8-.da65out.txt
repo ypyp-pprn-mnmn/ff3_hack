@@ -1,0 +1,444 @@
+﻿; da65 V2.11.0 - (C) Copyright 2000-2005,  Ullrich von Bassewitz
+; Created:    2017-12-23 03:10:58
+; Input file: D:\Documents\programming\eclipse workspaces\ff3\hack-and-patch\work\base-binary\ff3_plain.nes.noheader
+; Page:   1
+
+
+    .setcpu "65C02"
+
+; ----------------------------------------------------------------------------
+fieldMenu.updateCursorPos:= $91A3           ; bank $3c
+floor.copyEventScriptStream:= $92F3         ; bank $3c
+getEventFlag    := $9344; bank $3c
+floor.searchSpaceForItem:= $937E            ; bank $3c
+menu.upload_default_bg_attrs:= $956F        ; bank $3c
+menu.init_scroll:= $9592; bank $3c
+menu.init_ppu   := $959F; bank $3c
+jobMenu.main    := $962F; bank $3c
+menu.items.main_loop:= $9EC2                ; bank $3c
+checkmagic  := $A2DF; bank $3d
+menu.draw_pc_window:= $A328                 ; bank $3d
+menu.main_loop  := $A52F; bank $3d
+menu.draw_window:= $A666; bank $3d
+menu.stream_window_content:= $A66B          ; bank $3d
+menu.draw_window_content:= $A678            ; bank $3d
+menu.main.erase := $A685; bank $3d
+fieldMenu.selectCharacter:= $A6B4           ; bank $3d
+field.loadAndDrawString:= $A87A             ; bank $3d
+saveMenu.close  := $A88C; bank $3d
+fieldMenu.OnSaveSelected:= $A897            ; bank $3d
+menu.savefile.draw_file_summary:= $A9E1     ; bank $3d
+menu.savefile.load_game_at:= $A9F9          ; bank $3d
+menu.savefile.load_game:= $AA06             ; bank $3d
+menu.savefile.save_or_load_current_game_with_buffer:= $AA18; bank $3d
+menu.get_window_metrics:= $AABC             ; bank $3d
+menu.draw_window_box:= $AAF1                ; bank $3d
+field.menu_window_metrics:= $AAF7           ; bank $3d
+jobMenu.getCosts:= $AD85; bank $3d
+getJobParameter := $ADF2; bank $3d
+floor.shop  := $B0EB; bank $3d
+floor.shop.getItemValues:= $B220            ; bank $3d
+floor.shop.getSellingPrice:= $B248          ; bank $3d
+floor.shop.getItemValue:= $B270             ; bank $3d
+menu.stomach.build_content_text:= $B570     ; bank $3d
+getEncounterId  := $BD4D; bank $3d
+isEncounterOccured:= $BDB9                  ; bank $3d
+beginBattle := $C049; bank $3e
+.L_C063       := $C063
+menu.opening.title_page:= $C06E             ; bank $3e
+field.enterDungeon:= $C1BB                  ; bank $3e
+field.dispatchInput:= $C243                 ; bank $3e
+field_OnStart   := $C269; bank $3e
+field_doScroll  := $C389; bank $3e
+field_setScroll := $C398; bank $3e
+field.init_sprites_cache:= $C486            ; bank $3e
+field.OnMove    := $C4FC; bank $3e
+field       := $C6B9; bank $3e
+field.OnCharacterMoved:= $C6D5              ; bank $3e
+field.getRandom := $C711; bank $3e
+floor.getObjectEventPtr:= $C72C             ; bank $3e
+field.callSoundDriver:= $C750               ; bank $3e
+dive_into_float_land:= $C966                ; bank $3e
+switchToBank3C  := $C98A; bank $3e
+field.update_window_attr_buff:= $C98F       ; bank $3e
+field.set_bg_attr_for_window:= $C9A9        ; bank $3e
+field.merge_bg_attributes_with_buffer:= $CAB1   ; bank $3e
+field.copyToVramWith_07d0:= $CB6B           ; bank $3e
+field.loadWarpDestinationFloor:= $CBA4      ; bank $3e
+loadFloorData   := $CBFA; bank $3e
+field.loadMapRow:= $CC47; bank $3e
+field.getMapDataPointers:= $CCBB            ; bank $3e
+vehicleSpeeds   := $CD76; bank $3e
+getVehicleSpeed := $CD7E; bank $3e
+getTileParamsVertical:= $CE7A               ; bank $3e
+field.load_label_text_into_buffer:= $D1B1   ; bank $3e
+floor.getInputOrFireObjectEvent:= $D219     ; bank $3e
+field.getAndMaskInput:= $D27A               ; bank $3e
+field.get_input := $D281; bank $3e
+field_maskInput := $D29A; bank $3e
+field.clear_all_sprites:= $D336             ; bank $3e
+field.upload_palette:= $D381                ; bank $3e
+.L_D529       := $D529
+floor.load_object_sprite_into_buffer:= $DA3A    ; bank $3e
+loadPatternToVramEx:= $DE0F                 ; bank $3e
+loadPatternToVram:= $DE1A                   ; bank $3e
+loadSmallPatternToVram:= $DE2A              ; bank $3e
+floor.loadPatternForTiles:= $DE5A           ; bank $3e
+loadTilePatternToVram:= $DEEA               ; bank $3e
+floor.loadObjectPatterns:= $DF08            ; bank $3e
+floor.loadObjectPattern:= $DF41             ; bank $3e
+dungeon.mainLoop:= $E1DC; bank $3f
+floor.getInputAndHandleEvent:= $E2F8        ; bank $3f
+floor.fireOnMove:= $E396; bank $3f
+floor.getEventSourceCoodinates:= $E4E9      ; bank $3f
+floor.getChipEvent:= $E51C                  ; bank $3f
+floor.event05   := $E69B; bank $3f
+floor.event07   := $E6BE; bank $3f
+dungeon.loadFloor:= $E7EC                   ; bank $3f
+dungeon.loadFloorData:= $E803               ; bank $3f
+floor.processChipEvent:= $E917              ; bank $3f
+OnTreasure  := $E982; bank $3f
+floor.getObjectEvent:= $E9BB                ; bank $3f
+floor.loadEventScriptStream:= $EA04         ; bank $3f
+floor.cache_event_script:= $EA1B            ; bank $3f
+floor.getEvent  := $EA26; bank $3f
+switch_to_object_params_bank:= $EB23        ; bank $3f
+switch_to_floor_logics_bank:= $EB28         ; bank $3f
+field.scrolldown_item_window:= $EB2D        ; bank $3f
+field.abort_item_window_scroll:= $EB3C      ; bank $3f
+field.do_scrolldown_item_window:= $EB43     ; bank $3f
+field.reflect_window_scroll:= $EB61         ; bank $3f
+field.scrollup_item_window:= $EB69          ; bank $3f
+field.seek_text_to_next_line:= $EBA9        ; bank $3f
+field.unseek_text_to_line_beginning:= $EBD1 ; bank $3f
+field.show_sprites_on_lower_half_screen:= $EC0C ; bank $3f
+field.show_sprites_on_region7:= $EC12       ; bank $3f
+field.hide_sprites_under_window:= $EC18     ; bank $3f
+field.showhide_sprites_by_region:= $EC1A    ; bank $3f
+u8          := $EC67; bank $3f
+field.show_message_UNKNOWN:= $EC83          ; bank $3f
+field.show_message_window:= $EC8B           ; bank $3f
+field.show_window:= $EC8D                   ; bank $3f
+field.await_and_get_new_input:= $ECAB       ; bank $3f
+field.get_next_input:= $ECBD                ; bank $3f
+field.get_next_input:= $ECC4                ; bank $3f
+field.advance_frame_with_sound:= $ECD8      ; bank $3f
+field.draw_window_top:= $ECE5               ; bank $3f
+restore_banks_by_$57:= $ECF5                ; bank $3f
+field.draw_in_place_window:= $ECFA          ; bank $3f
+field.draw_window_box:= $ED02               ; bank $3f
+field.init_window_attr_buffer:= $ED56       ; bank $3f
+field.get_window_region:= $ED61             ; bank $3f
+field.draw_window_row:= $EDC6               ; bank $3f
+field.sync_ppu_scroll:= $EDE1               ; bank $3f
+field.getWindowTilesForTop:= $EDF6          ; bank $3f
+field.getWindowTilesForMiddle:= $EE1D       ; bank $3f
+field.getWindowTilesForBottom:= $EE3E       ; bank $3f
+field.stream_string_in_window:= $EE65       ; bank $3f
+field.load_and_draw_string:= $EE9A          ; bank $3f
+field.draw_string_in_window:= $EEC0         ; bank $3f
+textd.draw_in_box:= $EEFA                   ; bank $3f
+textd.eval_replacement:= $F02A              ; bank $3f
+field.string.eval_code_10_13:= $F239        ; bank $3f
+field.get_max_available_job_id:= $F38A      ; bank $3f
+textd.setup_output_ptr_to_next_column:= $F3AC   ; bank $3f
+textd.save_text_ptr:= $F3E4                 ; bank $3f
+textd.restore_text_ptr:= $F3ED              ; bank $3f
+textd.trim_name_left:= $F3FA                ; bank $3f
+field.set_vram_addr_for_window:= $F40A      ; bank $3f
+field.get_vram_addr_of_line_above:= $F435   ; bank $3f
+menu.savefile.erase_windows:= $F44B         ; bank $3f
+menu.erase_box_1e_x_14:= $F461              ; bank $3f
+menu.erase_box_1e_x_1c:= $F465              ; bank $3f
+menu.erase_box_of_width_1e:= $F467          ; bank $3f
+menu.erase_box_from_bottom:= $F47A          ; bank $3f
+floor.get_treasure:= $F549                  ; bank $3f
+floor.get_treasure_item_id:= $F5C4          ; bank $3f
+floor.get_item_price:= $F5D4                ; bank $3f
+increment_gil   := $F5FF; bank $3f
+invert_treasure_loot_flag:= $F640           ; bank $3f
+field.calc_draw_width_and_init_window_tile_buffer:= $F670; bank $3f
+field.init_window_tile_buffer:= $F683       ; bank $3f
+field.draw_window_content:= $F692           ; bank $3f
+field.upload_window_content:= $F6AA         ; bank $3f
+switch_to_character_logics_bank:= $F727     ; bank $3f
+call_doBattle   := $F800; bank $3f
+restoreFieldVariables:= $F83B               ; bank $3f
+call_32_8000    := $F854; bank $3f
+ppud.upload_palette:= $F897                 ; bank $3f
+do_sprite_dma_from_0200:= $F8AA             ; bank $3f
+ppud.update_sprites_and_palette_after_nmi:= $F8B0; bank $3f
+ppud.update_palette_after_nmi:= $F8BC       ; bank $3f
+ppud.update_sprites_after_nmi:= $F8C5       ; bank $3f
+ppud.sync_registers_with_cache:= $F8CB      ; bank $3f
+ppud.set_vram_addr:= $F8E0                  ; bank $3f
+mul8x8_reg  := $F8EA; bank $3f
+offset$7e_16    := $F8F2; bank $3f
+offset$80_16    := $F8FE; bank $3f
+memcpy      := $F92F; bank $3f
+copy_to_vram_with_encounter_mode:= $F942    ; bank $3f
+copyToVramDirect:= $F969; bank $3f
+copyToVram  := $F970; bank $3f
+call_2e_9d53    := $FA0E; bank $3f
+blackOutScreen  := $FA1D; bank $3f
+doBattle    := $FA26; bank $3f
+saveNmiIrqHandlerAndSetHandlerForBattle:= $FAB5 ; bank $3f
+restoreIrqHandlerAndNmiHandler:= $FADD      ; bank $3f
+saveFieldVars   := $FB17; bank $3f
+irq_handler := $FB30; bank $3f
+ppud.nmi_handler:= $FB57; bank $3f
+ppud.await_nmi_completion:= $FB80           ; bank $3f
+switch_16k_synchronized:= $FB87             ; bank $3f
+switch_16k_synchronized_nocache:= $FB89     ; bank $3f
+getPad1Input    := $FBAA; bank $3f
+getBattleRandom := $FBEF; bank $3f
+initBattleRandom:= $FC27; bank $3f
+div         := $FC92; bank $3f
+mul8x8      := $FCD6; bank $3f
+mul16x16    := $FCF5; bank $3f
+flagTargetBit   := $FD20; bank $3f
+clearTargetBit  := $FD2C; bank $3f
+maskTargetBit   := $FD38; bank $3f
+shiftLeftN  := $FD3C; bank $3f
+shiftRightN := $FD43; bank $3f
+copyTo_$7ad7_x_Until0:= $FD4A               ; bank $3f
+get2byteAtBank18:= $FD60; bank $3f
+loadTo7400Ex    := $FDA6; bank $3f
+copyTo7400  := $FDDC; bank $3f
+call_bank30_9e58:= $FDF3; bank $3f
+thunk_await_nmi_by_set_handler:= $FF00      ; bank $3f
+call_switchFirst2Banks:= $FF03              ; bank $3f
+call_switch1stBank:= $FF06                  ; bank $3f
+call_switch2ndBank:= $FF09                  ; bank $3f
+switch_1st_page := $FF0C; bank $3f
+switch_2pages   := $FF17; bank $3f
+switch_2nd_page := $FF1F; bank $3f
+nmi_handler_01  := $FF2A; bank $3f
+setNmiHandlerTo_ff2a_andWaitNmi:= $FF36     ; bank $3f
+hardware_vectors:= $FFF0; bank $3f
+; ----------------------------------------------------------------------------
+    lda <$B4     ; A3A8 A5 B4
+    sta $79EB   ; A3AA 8D EB 79
+    lda <$B5     ; A3AD A5 B5
+    sta $79EC   ; A3AF 8D EC 79
+    lda <$B6     ; A3B2 A5 B6
+    sta $79ED   ; A3B4 8D ED 79
+    lda <$B7     ; A3B7 A5 B7
+    sta $79EE   ; A3B9 8D EE 79
+    lda <$B8     ; A3BC A5 B8
+    sta $79EF   ; A3BE 8D EF 79
+    rts             ; A3C1 60
+; ----------------------------------------------------------------------------
+    lda <$8B     ; A3C2 A5 8B
+    cmp #$01    ; A3C4 C9 01
+    bne .L_A3EE   ; A3C6 D0 26
+    ldx <$7F     ; A3C8 A6 7F
+    lda $6102,x ; A3CA BD 02 61
+    and <$87     ; A3CD 25 87
+    bne .L_A3D6   ; A3CF D0 05
+.L_A3D1:
+  jsr .L_D529   ; A3D1 20 29 D5
+    sec             ; A3D4 38
+    rts             ; A3D5 60
+; ----------------------------------------------------------------------------
+.L_A3D6:
+  lda <$87     ; A3D6 A5 87
+    and $6102,x ; A3D8 3D 02 61
+    bpl .L_A3E2   ; A3DB 10 05
+    lda #$01    ; A3DD A9 01
+    sta $610C,x ; A3DF 9D 0C 61
+.L_A3E2:
+  lda <$87     ; A3E2 A5 87
+    eor #$FF    ; A3E4 49 FF
+    and $6102,x ; A3E6 3D 02 61
+    sta $6102,x ; A3E9 9D 02 61
+    clc             ; A3EC 18
+    rts             ; A3ED 60
+; ----------------------------------------------------------------------------
+.L_A3EE:
+  lda $6102   ; A3EE AD 02 61
+    ora $6142   ; A3F1 0D 42 61
+    ora $6182   ; A3F4 0D 82 61
+    ora $61C2   ; A3F7 0D C2 61
+    and <$87     ; A3FA 25 87
+    beq .L_A3D1   ; A3FC F0 D3
+    ldx #$00    ; A3FE A2 00
+    jsr .L_A40F   ; A400 20 0F A4
+    ldx #$40    ; A403 A2 40
+    jsr .L_A40F   ; A405 20 0F A4
+    ldx #$80    ; A408 A2 80
+    jsr .L_A40F   ; A40A 20 0F A4
+    ldx #$C0    ; A40D A2 C0
+.L_A40F:
+  lda $6102,x ; A40F BD 02 61
+    and <$87     ; A412 25 87
+    bne .L_A3D6   ; A414 D0 C0
+    clc             ; A416 18
+    rts             ; A417 60
+; ----------------------------------------------------------------------------
+    ldx <$7F     ; A418 A6 7F
+.L_A41A:
+  lda $6131,x ; A41A BD 31 61
+    sta $6130,x ; A41D 9D 30 61
+    inx             ; A420 E8
+    inx             ; A421 E8
+    txa             ; A422 8A
+    and #$0F    ; A423 29 0F
+    bne .L_A41A   ; A425 D0 F3
+    clc             ; A427 18
+    rts             ; A428 60
+; ----------------------------------------------------------------------------
+.L_A429:
+  ldx <$7F     ; A429 A6 7F
+    lda $6102,x ; A42B BD 02 61
+    cmp #$40    ; A42E C9 40
+    bcs .L_A465   ; A430 B0 33
+    lda <$83     ; A432 A5 83
+    bne .L_A458   ; A434 D0 22
+    lda <$81     ; A436 A5 81
+    clc             ; A438 18
+    adc $610C,x ; A439 7D 0C 61
+    sta $610C,x ; A43C 9D 0C 61
+    lda $610D,x ; A43F BD 0D 61
+    adc <$82     ; A442 65 82
+    sta $610D,x ; A444 9D 0D 61
+    cmp $610F,x ; A447 DD 0F 61
+    bcc .L_A465   ; A44A 90 19
+    beq .L_A450   ; A44C F0 02
+    bcs .L_A458   ; A44E B0 08
+.L_A450:
+  lda $610C,x ; A450 BD 0C 61
+    cmp $610E,x ; A453 DD 0E 61
+    bcc .L_A465   ; A456 90 0D
+.L_A458:
+  lda $610E,x ; A458 BD 0E 61
+    sta $610C,x ; A45B 9D 0C 61
+    lda $610F,x ; A45E BD 0F 61
+    sta $610D,x ; A461 9D 0D 61
+    clc             ; A464 18
+.L_A465:
+  rts             ; A465 60
+; ----------------------------------------------------------------------------
+    ldx <$0A     ; A466 A6 0A
+    lda $6110,x ; A468 BD 10 61
+    lsr a       ; A46B 4A
+    lsr a       ; A46C 4A
+    lsr a       ; A46D 4A
+    lsr a       ; A46E 4A
+    lsr a       ; A46F 4A
+    sta <$8C     ; A470 85 8C
+    lda $6101,x ; A472 BD 01 61
+    lsr a       ; A475 4A
+    lsr a       ; A476 4A
+    lsr a       ; A477 4A
+    lsr a       ; A478 4A
+    clc             ; A479 18
+    adc <$8C     ; A47A 65 8C
+    sta <$8C     ; A47C 85 8C
+    lda $611B,x ; A47E BD 1B 61
+    lsr a       ; A481 4A
+    lsr a       ; A482 4A
+    lsr a       ; A483 4A
+    lsr a       ; A484 4A
+    sec             ; A485 38
+    adc <$8C     ; A486 65 8C
+    sta <$8C     ; A488 85 8C
+    jsr .L_A4B5   ; A48A 20 B5 A4
+    lda <$8C     ; A48D A5 8C
+    sta <$80     ; A48F 85 80
+    jsr .L_A4D4   ; A491 20 D4 A4
+    lda <$8B     ; A494 A5 8B
+    sta <$80     ; A496 85 80
+    jsr .L_A500   ; A498 20 00 A5
+    lda <$8B     ; A49B A5 8B
+    cmp #$01    ; A49D C9 01
+    bne .L_A4A4   ; A49F D0 03
+    jmp .L_A429   ; A4A1 4C 29 A4
+; ----------------------------------------------------------------------------
+.L_A4A4:
+  lda #$00    ; A4A4 A9 00
+    sta <$7F     ; A4A6 85 7F
+.L_A4A8:
+  jsr .L_A429   ; A4A8 20 29 A4
+    lda <$7F     ; A4AB A5 7F
+    clc             ; A4AD 18
+    adc #$40    ; A4AE 69 40
+    sta <$7F     ; A4B0 85 7F
+    bne .L_A4A8   ; A4B2 D0 F4
+    rts             ; A4B4 60
+; ----------------------------------------------------------------------------
+.L_A4B5:
+  jsr field.getRandom             ; A4B5 20 11 C7
+    lsr a       ; A4B8 4A
+    sta <$81     ; A4B9 85 81
+    lda #$00    ; A4BB A9 00
+    sta <$82     ; A4BD 85 82
+    lda <$8D     ; A4BF A5 8D
+    sta <$80     ; A4C1 85 80
+    jsr .L_A4D4   ; A4C3 20 D4 A4
+    lda <$85     ; A4C6 A5 85
+    clc             ; A4C8 18
+    adc <$8D     ; A4C9 65 8D
+    sta <$81     ; A4CB 85 81
+    lda #$00    ; A4CD A9 00
+    adc #$00    ; A4CF 69 00
+    sta <$82     ; A4D1 85 82
+    rts             ; A4D3 60
+; ----------------------------------------------------------------------------
+.L_A4D4:
+  lda #$00    ; A4D4 A9 00
+    sta <$83     ; A4D6 85 83
+    sta <$84     ; A4D8 85 84
+    sta <$85     ; A4DA 85 85
+    sta <$86     ; A4DC 85 86
+.L_A4DE:
+  lsr <$80     ; A4DE 46 80
+    bcc .L_A4F5   ; A4E0 90 13
+    lda <$84     ; A4E2 A5 84
+    clc             ; A4E4 18
+    adc <$81     ; A4E5 65 81
+    sta <$84     ; A4E7 85 84
+    lda <$85     ; A4E9 A5 85
+    adc <$82     ; A4EB 65 82
+    sta <$85     ; A4ED 85 85
+    lda <$86     ; A4EF A5 86
+    adc <$83     ; A4F1 65 83
+    sta <$86     ; A4F3 85 86
+.L_A4F5:
+  asl <$81     ; A4F5 06 81
+    rol <$82     ; A4F7 26 82
+    rol <$83     ; A4F9 26 83
+    lda <$80     ; A4FB A5 80
+    bne .L_A4DE   ; A4FD D0 DF
+    rts             ; A4FF 60
+; ----------------------------------------------------------------------------
+.L_A500:
+  lda #$00    ; A500 A9 00
+    sta <$81     ; A502 85 81
+    sta <$82     ; A504 85 82
+    sta <$83     ; A506 85 83
+    lda #$00    ; A508 A9 00
+    ldx #$18    ; A50A A2 18
+.L_A50C:
+  asl <$81     ; A50C 06 81
+    rol <$82     ; A50E 26 82
+    rol <$83     ; A510 26 83
+    asl <$84     ; A512 06 84
+    rol <$85     ; A514 26 85
+    rol <$86     ; A516 26 86
+    rol a       ; A518 2A
+    cmp <$80     ; A519 C5 80
+    bcc .L_A521   ; A51B 90 04
+    sbc <$80     ; A51D E5 80
+    inc <$81     ; A51F E6 81
+.L_A521:
+  dex             ; A521 CA
+    bne .L_A50C   ; A522 D0 E8
+    rts             ; A524 60
+; ----------------------------------------------------------------------------
+    pla             ; A525 68
+    pla             ; A526 68
+    pla             ; A527 68
+    pla             ; A528 68
+    jsr menu.main.erase             ; A529 20 85 A6
+    jsr .L_C063   ; A52C 20 63 C0

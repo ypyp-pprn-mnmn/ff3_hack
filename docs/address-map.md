@@ -94,14 +94,15 @@
 066000-068000|code  | battle-mode logics: presentation
 068000-06a000|code  | battle-mode logics: flow controllers
 06a000-06c000|code  | battle-mode logics: flow controllers
-06c000-070000|mixed | sound driver, audio stream (music id:0x00...0x18)
-070000-072000|data  | audio stream (0x18...2a)
-072000-0720b0|data  | audio stream (2b...3a), `$39:8000 JobBaseInfo jobParams[22]`: 8bytes/entry
+06c000-06e000|code  | sound driver
+06e000-070000|data  | audio stream (music id: 0x00...0x18)
+070000-072000|data  | audio stream (0x19...2a)
+072000-0720b0|data  | `$39:8000 JobBaseInfo jobParams[22]`: 8bytes/entry
 0720b0-0721d6|?     |
 0721d6-0732a2|data  | `$39:a1d6 LvUpParam lvupParams[98][22]`: 2bytes/entry => 0x10d8 bytes
 0732a2-0732ae|?     |
 0732ae-0733ae|data  | `$39:b2ae u8 DropCapacity[256] = {};`
-0733b0-073c00|?     | seems like code, known structure(s): `$39:bb1a JobParam jobParams[22] //5bytes/entry`, `$39:bb88 u8 initialMp[8][9] //index=mp_type`
+0733b0-073c00|?     | audio stream (0x2b...3a)? known structure(s): `$39:bb1a JobParam jobParams[22] //5bytes/entry`, `$39:bb88 u8 initialMp[8][9] //index=mp_type`
 073c00-073e00|data  | warp_id => terrain_id mappings. `u8 [2][256]`.
 073e00-074000|data  | `u8 encounter_bounds[2][256]` index: warp_id.
 074180-074500|bitmap| "final fantasy iii"
