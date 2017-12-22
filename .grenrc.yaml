@@ -2,7 +2,8 @@
   #dataSource: "milestones" #milestones|issues|commits|prs
   dataSource: "issues"
   prefix: ""
-  ignoreLabels: 
+  #ignoreLabels: ""
+  ignoreIssuesWith: #actual meaning is: ignore issues 'labeled' with.
     - "devops"
     - "research"
   ignoreTagsWith: 
