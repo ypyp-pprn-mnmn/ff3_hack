@@ -1,4 +1,5 @@
 ﻿
+
 # $3c:91a3 menu.window1.get_input_and_update_cursor
 > メニューの1つ目のウインドウ($7800で管理)用にパッド入力を取得し、必要に応じてカーソル位置の情報を更新する。描画はしない。
 
@@ -33,9 +34,8 @@ $91c9:
 	a = $78f0 + $06;
 	if (a < $78f1) $91c5;
 	a -= $78f1;
-	if (a >= 0) $91c5;
+	goto $91c5;	//if (a >= 0) $91c5;	//always satisfied.
 $91d9:
 }
 ```
-**fall through**
 

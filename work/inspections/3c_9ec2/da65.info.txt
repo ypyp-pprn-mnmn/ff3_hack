@@ -1,9 +1,9 @@
 GLOBAL {
 	COMMENTS	3;
-	INPUTOFFS	$791D9;
-	STARTADDR	$91d9;
-	INPUTSIZE	$00034;
-	OUTPUTNAME	"3c_91d9-menu.window2.get_input_and_update_cursor.da65out.txt";
+	INPUTOFFS	$79EC2;
+	STARTADDR	$9ec2;
+	INPUTSIZE	$0613D;
+	OUTPUTNAME	"3c_9ec2-menu.items.main_loop.da65out.txt";
 };
 LABEL {
 	NAME "field.calc_draw_width_and_init_window_tile_buffer";
@@ -414,7 +414,7 @@ LABEL {
 	SIZE	1;
 };
 LABEL {
-	NAME "menu.items.get_input_and_scroll";
+	NAME "menu.window3.get_input_and_scroll";
 	ADDR $920d;
 	COMMENT "bank $3c";
 	SIZE	1;

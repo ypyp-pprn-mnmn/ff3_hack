@@ -1,5 +1,6 @@
 ﻿
-# $3c:920d menu.items.get_input_and_scroll
+
+# $3c:920d menu.window3.get_input_and_scroll
 > パッド入力を取得し、必要に応じてウインドウのスクロール値を更新し、画面を更新する。
 
 ### args:
@@ -13,7 +14,7 @@
 +	u8 $06: cursor delta y
 
 ### notes:
-write notes here
+unlike other siblings, this logic DOES render the screen.
 
 ### (pseudo)code:
 ```js
@@ -67,4 +68,5 @@ write notes here
 */
 }
 ```
+
 

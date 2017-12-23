@@ -10,7 +10,8 @@
 +	out u8 $79f1: last valid y position of menu item (= 0x0c)
 
 ### callers:
-+	$3d:a984 menu.savefile.build_menu
++	`1E:A98E:20 A0 A9  JSR menu.savefile.build_file_menu` @ $3d:a984 menu.savefile.build_menu
++   `1E:BA4B:20 A0 A9  JSR menu.savefile.build_file_menu` @ ?, probably load menu
 
 ### local variables:
 
@@ -55,4 +56,5 @@ write notes here
 */
 }
 ```
+
 
