@@ -85,6 +85,8 @@
 		.include "ff3_field_render_x.asm"	;consume
 		
 		.include "ff3_menu_of_stomach.asm"
+		;;v0.8.x:
+		.include "ff3_menu_savefile.asm"
 	.endif	;;_OPTIMIZE_FIELD_WINDOW
 	
 	.ifdef EXPERIMENTAL

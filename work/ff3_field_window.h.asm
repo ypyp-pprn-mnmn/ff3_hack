@@ -39,6 +39,8 @@
 DECLARE_WINDOW_VARIABLES	.macro
 .menu_item_continue_building = $1e
 .lines_drawn = $1f
+.a_button_down = $24
+.b_button_down = $25
 .in_menu_mode = $37
 .window_left = $38
 .window_top = $39
@@ -53,6 +55,8 @@ DECLARE_WINDOW_VARIABLES	.macro
 .text_bank = $93
 .p_text_table = $94	;;stores offset from $30000(18:8000) to the text 
 .window_type = $96
+.cursor_offset_x = $97
+.cursor_offset_y = $98
 ;;
 .tile_buffer_upper = $0780
 .tile_buffer_lower = $07a0
@@ -71,8 +75,8 @@ render_x.NEED_TOP_BORDER = $02
 render_x.NEED_BOTTOM_BORDER = $01
 ;; capacity limits.
 ;render_x.BUFFER_CAPACITY = $c0
-render_x.BUFFER_CAPACITY = $80
-render_x.ADDR_CAPACITY = $0c
+;render_x.BUFFER_CAPACITY = $80
+;render_x.ADDR_CAPACITY = $0c
 ;; the fuel denotes available cpu cycles for rendering in
 ;; units of which need to put 1 byte onto vram (= 8 cpu cycle in current impl.)
 ;; as rendering occurred in NMI, there also need bookkeeping ops so that

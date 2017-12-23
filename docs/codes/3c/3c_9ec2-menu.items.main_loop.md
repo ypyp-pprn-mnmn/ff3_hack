@@ -109,7 +109,7 @@ menu.items.main_loop:
     jsr .L_A356   ; 9F78 20 56 A3
     plp             ; 9F7B 28
     bcs .L_9EFE   ; 9F7C B0 80
-    jsr .L_AA8E   ; 9F7E 20 8E AA
+    jsr menu.items.erase_message   ; 9F7E 20 8E AA
     jsr .L_A356   ; 9F81 20 56 A3
     jsr menu.items.load_render_params   ; 9F84 20 75 90
     jsr menu.pc_select.load_states  ; 9F87 20 8E A3

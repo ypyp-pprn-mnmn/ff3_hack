@@ -24,11 +24,12 @@ ff3_field_window_driver_begin:
 field.draw_inplace_window:
 ;; patch out external callers {
 ;;}
-.window_id = $96
-	sta <.window_id
+	DECLARE_WINDOW_VARIABLES
+;.window_id = $96
+	sta <.window_type
 	lda #0
-	sta <$24
-	sta <$25
+	sta <.a_button_down	;<$24
+	sta <.b_button_down ;<$25
 	;;originally fall through to $3f:ed02 field::draw_window_box
 	FALL_THROUGH_TO field.draw_window_box
 
@@ -166,7 +167,6 @@ field_x.begin_ppu_update:
 	;VERIFY_PC $ede1
 ;--------------------------------------------------------------------------------------------------
 ;;# $3f:eb2d field.scrolldown_item_window
-;;<details>
 ;;
 ;;## args:
 ;;+	[in,out] ptr $1c: pointer to text
@@ -177,10 +177,10 @@ field_x.begin_ppu_update:
 ;;+	[in,out] u16 ($79f0,$79f2): ?
 ;;+	[out] bool carry: 1: scroll aborted, 0: otherwise
 ;;## callers:
-;;+	`1E:9255:20 2D EB  JSR field.scrolldown_item_window` @ ?
+;;+	`1E:9255:20 2D EB  JSR field.scrolldown_item_window` @ 
 field.scrolldown_item_window:	;;$3f:eb2d
 ;; fixups
-	FIX_ADDR_ON_CALLER $3c,$9255+1
+	FIX_ADDR_ON_CALLER $3c,$9255+1	;;@ $3c:920d menu.window3.get_input_and_scroll
 ;; ---
 ;.text_bank = $93
 .p_text = $1c
@@ -243,17 +243,17 @@ field_x.reflect_item_window_scroll:
 	.ifdef _FEATURE_DEFERRED_RENDERING
 		;;note:
 		;;	the item window could be rendered with border
-		;;	and doing so does not impact the resulting screen.
-		;;	however, borders takes extra 1f to render.
+		;;	and doing so does not impact the resulting contents.
+		;;	however, borders takes extra 1f to render
+		;;	and there are cases that borders cascaded
+		;;	in different order than the original implementation would.
 		;;	so here request to omit borders as a speed optimizaion.
 		;;	this logic is called on both in menu mode and in floor (use item to object)
 		jsr render_x.init_as_no_borders
 	.endif
-
 	FALL_THROUGH_TO field.reflect_window_scroll
 ;--------------------------------------------------------------------------------------------------
 ;;# $3f$eb61 field.reflect_window_scroll
-;;<details>
 ;;
 ;;## args:
 ;;+	[in] u8 $57: bank number to restore
@@ -268,8 +268,8 @@ field_x.reflect_item_window_scroll:
 ;;+	`1F:EB9F:4C 61 EB  JMP field.reflect_item_window_scroll` @ $3f$eb69 field.scrollup_item_window
 field.reflect_window_scroll:	;;$3f$eb61
 ;; fixups:
-	FIX_ADDR_ON_CALLER $3c,$9f92+1
-	FIX_ADDR_ON_CALLER $3d,$a889+1
+	FIX_ADDR_ON_CALLER $3c,$9f92+1	;;@ $3c:9ec2 menu.items.main_loop
+	FIX_ADDR_ON_CALLER $3d,$a889+1	;;@ $3d:a87a menu.draw_view_of_buffered_string
 	FIX_ADDR_ON_CALLER $3d,$b436+1
 	FIX_ADDR_ON_CALLER $3d,$b616+1
 	FIX_ADDR_ON_CALLER $3d,$b624+1	;;shop, right after selected to sell item
@@ -289,7 +289,6 @@ field.reflect_window_scroll:	;;$3f$eb61
 
 ;--------------------------------------------------------------------------------------------------
 ;;# $3f$eb69 field.scrollup_item_window
-;;<details>
 ;;
 ;;## args:
 ;;+	[in,out] ptr $1c: pointer to text
@@ -302,7 +301,7 @@ field.reflect_window_scroll:	;;$3f$eb61
 ;;+	`1E:9233:20 69 EB  JSR field.scrollup_item_window` @ ?
 field.scrollup_item_window:	;;$3f$eb69
 ;; fixups:
-	FIX_ADDR_ON_CALLER $3c,$9233+1
+	FIX_ADDR_ON_CALLER $3c,$9233+1	;;@ $3c:920d menu.window3.get_input_and_scroll
 ;; ---
 .p_text = $1c
 .p_text_end = $3e
@@ -811,8 +810,13 @@ field.draw_window_top:
 		jsr render_x.setup_deferred_rendering
 		;; contents of the item window will be redrawn after the border rendered.
 		;; so it is ok to fill content area with empty background, though not looking good.
-		jsr field.draw_window_content
+		;jsr field.draw_window_content
+		jsr render_x.queue_top_border
 		jsr render_x.finalize
+		;; HACK ---> TODO: do it cleaner way
+		lda #0
+		sta render_x.q.init_flags
+		;; <--- HACK
 	.else	;;ifdef _FEATURE_DEFERRED_RENDERING
 		lda <.window_top
 		sta <.window_row_in_drawing

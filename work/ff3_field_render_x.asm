@@ -662,6 +662,10 @@ render_x.build_temp_buffer:
 	inx
 	rts
 ;--------------------------------------------------------------------------------------------------
+;render_x.init_as_with_bottom:
+;	ldx #(render_x.NEED_BOTTOM_BORDER|render_x.PENDING_INIT|render_x.RENDER_RUNNING)
+;	bne render_x.setup_deferred_rendering
+;--------------------------------------------------------------------------------------------------
 render_x.init_as_no_borders:
 	ldx #(render_x.NO_BORDERS|render_x.PENDING_INIT|render_x.RENDER_RUNNING)
 	FALL_THROUGH_TO render_x.setup_deferred_rendering

@@ -14,6 +14,10 @@
 	.include "ff3_32-33.h.asm"
 	.include "ff3_34-35.h.asm"
 ;--------------------------------------------------------------------------------------------------
+;;$3c-3d
+menu.stream_window_content = $a66b
+menu.savefile.load_game_at = $a9f9
+
 ;$3e-3f
 field.call_sound_driver			= $c750
 field.update_window_attr_buff	= $c98f

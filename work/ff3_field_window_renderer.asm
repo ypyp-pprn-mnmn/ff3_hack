@@ -418,6 +418,23 @@ render_x.fill_to_bottom:
 	bne render_x.fill_to_bottom.loop
 .done:
 	rts
+;--------------------------------------------------------------------------------------------------
+render_x.draw_empty_box:
+	DECLARE_WINDOW_VARIABLES
+.flags1 = render_x.PENDING_INIT|render_x.RENDER_RUNNING
+.init_flags = .flags1 | render_x.NEED_TOP_BORDER|render_x.NEED_BOTTOM_BORDER|render_x.NEED_ATTRIBUTES
+	;jsr field.init_window_tile_buffer
+	;ldx #(.init_flags)
+	;jsr render_x.setup_deferred_rendering
+	;jsr render_x.fill_to_bottom
+	;jmp field.restore_banks
+	lda #0
+	sta <.text_bank
+	sta <.p_text+1
+	lda #.text_bank
+	sta <.p_text
+	jmp render_x.defer_window_text_with_border
+
 	.endif	;;_FEATURE_DEFERRED_RENDERING
 ;--------------------------------------------------------------------------------------------------
 	;VERIFY_PC $f6aa
