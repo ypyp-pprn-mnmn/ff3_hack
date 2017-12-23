@@ -1,17 +1,21 @@
 ﻿
-
 # $3d:a9e1 menu.savefile.draw_file_summary
->指定のゲームデータの内容をウインドウに描画する。
+>指定のゲームデータの内容をウインドウに描画する。ファイルが存在しない場合は描画をスキップする。
 
 ### args:
 
 #### in:
 +	u8 A: higher byte of addres of the file (0x64, 0x68, 0x6c)
 
+#### out:
++	bool carry: is file available. where:
+	+ 1 = available.
+	+ 0 = unavailable. (therefore window hasn't drawn.)
+
 ### callers:
-+	`1E:A9AF:20 E1 A9  JSR menu.savefile.draw_summary` file1
-+	`1E:A9BB:20 E1 A9  JSR menu.savefile.draw_summary` file2
-+	`1E:A9C7:20 E1 A9  JSR menu.savefile.draw_summary` file3
++	`1E:A9AF:20 E1 A9  JSR menu.savefile.draw_summary` file1 @$3d:a9a0 menu.savefile.build_file_menu
++	`1E:A9BB:20 E1 A9  JSR menu.savefile.draw_summary` file2 @$3d:a9a0 menu.savefile.build_file_menu
++	`1E:A9C7:20 E1 A9  JSR menu.savefile.draw_summary` file3 @$3d:a9a0 menu.savefile.build_file_menu
 
 ### local variables:
 none.
@@ -36,5 +40,4 @@ write notes here
 	return;
 }
 ```
-
 

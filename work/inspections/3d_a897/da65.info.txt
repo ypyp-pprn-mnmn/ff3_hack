@@ -1,0 +1,1357 @@
+GLOBAL {
+	COMMENTS	3;
+	INPUTOFFS	$7A897;
+	STARTADDR	$a897;
+	INPUTSIZE	$0014A;
+	OUTPUTNAME	"3d_a897-fieldMenu.OnSaveSelected.da65out.txt";
+};
+LABEL {
+	NAME "field.calc_draw_width_and_init_window_tile_buffer";
+	ADDR $f670;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.savefile.erase_windows";
+	ADDR $f44b;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.copyEventScriptStream";
+	ADDR $92f3;
+	COMMENT "bank $3c";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.getInputOrFireObjectEvent";
+	ADDR $d219;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "u8";
+	ADDR $ec67;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.opening.title_page";
+	ADDR $c06e;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.put_cursor_attrs_on_sprite_cache";
+	ADDR $9164;
+	COMMENT "bank $3c";
+	SIZE	1;
+};
+LABEL {
+	NAME "ppud.update_sprites_after_nmi";
+	ADDR $f8c5;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "switch_16k_synchronized_nocache";
+	ADDR $fb89;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "jobMenu.main";
+	ADDR $962f;
+	COMMENT "bank $3c";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.queue_SE_of_move_of_cursor";
+	ADDR $d213;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.draw_in_place_window";
+	ADDR $ecfa;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.shop.getSellingPrice";
+	ADDR $b248;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.advance_frame_with_sound";
+	ADDR $ecd8;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.draw_window_content";
+	ADDR $a678;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "field_setScroll";
+	ADDR $c398;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "dungeon.loadFloor";
+	ADDR $e7ec;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.erase_box_from_bottom";
+	ADDR $f47a;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.showhide_sprites_by_region";
+	ADDR $ec1a;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "shiftRightN";
+	ADDR $fd43;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "saveNmiIrqHandlerAndSetHandlerForBattle";
+	ADDR $fab5;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "textd.trim_name_left";
+	ADDR $f3fa;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.init_window_attr_buffer";
+	ADDR $ed56;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.scrolldown_item_window";
+	ADDR $eb2d;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.items.on_close";
+	ADDR $9ebc;
+	COMMENT "bank $3c";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.get_treasure";
+	ADDR $f549;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "hardware_vectors";
+	ADDR $fff0;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "ppud.set_vram_addr";
+	ADDR $f8e0;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.main.erase";
+	ADDR $a685;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.items.main_loop";
+	ADDR $9ec2;
+	COMMENT "bank $3c";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.pc_select.save_states";
+	ADDR $a3a8;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "copyToVram";
+	ADDR $f970;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.getMapDataPointers";
+	ADDR $ccbb;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.update_window_attr_buff";
+	ADDR $c98f;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "shiftLeftN";
+	ADDR $fd3c;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "initBattleRandom";
+	ADDR $fc27;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.enterDungeon";
+	ADDR $c1bb;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.erase_box_of_width_1e";
+	ADDR $f467;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field_maskInput";
+	ADDR $d29a;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "loadPatternToVramEx";
+	ADDR $de0f;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "isEncounterOccured";
+	ADDR $bdb9;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.upload_window_content";
+	ADDR $f6aa;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field_doScroll";
+	ADDR $c389;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "ppud.sync_registers_with_cache";
+	ADDR $f8cb;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.draw_string_in_window";
+	ADDR $eec0;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.searchSpaceForItem";
+	ADDR $937e;
+	COMMENT "bank $3c";
+	SIZE	1;
+};
+LABEL {
+	NAME "checkmagic";
+	ADDR $a2df;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "OnTreasure";
+	ADDR $e982;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.call_sound_driver_and_restore_banks";
+	ADDR $c758;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "fieldMenu.selectCharacter";
+	ADDR $a6b4;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.seek_text_to_next_line";
+	ADDR $eba9;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "flagTargetBit";
+	ADDR $fd20;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "do_sprite_dma_from_0200";
+	ADDR $f8aa;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "getBattleRandom";
+	ADDR $fbef;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.loadAndDrawString";
+	ADDR $a87a;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "dungeon.mainLoop";
+	ADDR $e1dc;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "invert_treasure_loot_flag";
+	ADDR $f640;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.pc_select.load_states";
+	ADDR $a38e;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.savefile.draw_file_summary";
+	ADDR $a9e1;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "switch_to_character_logics_bank";
+	ADDR $f727;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.pc_select.draw_window";
+	ADDR $a328;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.event07";
+	ADDR $e6be;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "clearTargetBit";
+	ADDR $fd2c;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "switch_2nd_page";
+	ADDR $ff1f;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.show_sprites_on_region7";
+	ADDR $ec12;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "offset$80_16";
+	ADDR $f8fe;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.items.get_input_and_scroll";
+	ADDR $920d;
+	COMMENT "bank $3c";
+	SIZE	1;
+};
+LABEL {
+	NAME "ppud.update_sprites_and_palette_after_nmi";
+	ADDR $f8b0;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.draw_window";
+	ADDR $a666;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "fieldMenu.OnSaveSelected";
+	ADDR $a897;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.erase_box_1e_x_1c";
+	ADDR $f465;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "ppud.await_nmi_completion";
+	ADDR $fb80;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "call_2e_9d53";
+	ADDR $fa0e;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "loadPatternToVram";
+	ADDR $de1a;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "doBattle";
+	ADDR $fa26;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.shop";
+	ADDR $b0eb;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "increment_gil";
+	ADDR $f5ff;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "loadTilePatternToVram";
+	ADDR $deea;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "field";
+	ADDR $c6b9;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "setNmiHandlerTo_ff2a_andWaitNmi";
+	ADDR $ff36;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.string.eval_code_10_13";
+	ADDR $f239;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.show_message_UNKNOWN";
+	ADDR $ec83;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.draw_window_box";
+	ADDR $ed02;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "jobMenu.getCosts";
+	ADDR $ad85;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "switch_2pages";
+	ADDR $ff17;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "restoreIrqHandlerAndNmiHandler";
+	ADDR $fadd;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "switch_to_floor_logics_bank";
+	ADDR $eb28;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "dungeon.loadFloorData";
+	ADDR $e803;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.erase_box_1e_x_14";
+	ADDR $f461;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "switch_16k_synchronized";
+	ADDR $fb87;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.getEvent";
+	ADDR $ea26;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.stomach.build_content_text";
+	ADDR $b570;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.init_sprites_cache";
+	ADDR $c486;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.init_window_tile_buffer";
+	ADDR $f683;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "offset$7e_16";
+	ADDR $f8f2;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "saveFieldVars";
+	ADDR $fb17;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "getEncounterId";
+	ADDR $bd4d;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "get2byteAtBank18";
+	ADDR $fd60;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.getEventSourceCoodinates";
+	ADDR $e4e9;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.menu_window_metrics";
+	ADDR $aaf7;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.getWindowTilesForBottom";
+	ADDR $ee3e;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.processChipEvent";
+	ADDR $e917;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "copyToVramDirect";
+	ADDR $f969;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.await_and_get_new_input";
+	ADDR $ECAB;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.select_pc.put_pc_sprites";
+	ADDR $8000;
+	COMMENT "bank $3c";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.hide_sprites_under_window";
+	ADDR $ec18;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.abort_item_window_scroll";
+	ADDR $eb3c;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.put_cursor_on_window3";
+	ADDR $914c;
+	COMMENT "bank $3c";
+	SIZE	1;
+};
+LABEL {
+	NAME "getEventFlag";
+	ADDR $9344;
+	COMMENT "bank $3c";
+	SIZE	1;
+};
+LABEL {
+	NAME "textd.draw_in_box";
+	ADDR $eefa;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.sync_ppu_scroll";
+	ADDR $ede1;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.getObjectEvent";
+	ADDR $e9bb;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.init_input_states";
+	ADDR $9592;
+	COMMENT "bank $3c";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.get_input";
+	ADDR $d281;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "restore_banks_by_$57";
+	ADDR $ecf5;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.get_input_and_queue_SE";
+	ADDR $9175;
+	COMMENT "bank $3c";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.cache_event_script";
+	ADDR $ea1b;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "restoreFieldVariables";
+	ADDR $f83b;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.fireOnMove";
+	ADDR $e396;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "copyTo7400";
+	ADDR $fddc;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.render_cursor";
+	ADDR $a7cd;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.OnCharacterMoved";
+	ADDR $c6d5;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "loadSmallPatternToVram";
+	ADDR $de2a;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "copyTo_$7ad7_x_Until0";
+	ADDR $fd4a;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.do_scrolldown_item_window";
+	ADDR $eb43;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.main_loop";
+	ADDR $a52f;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.loadObjectPatterns";
+	ADDR $df08;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "field_OnStart";
+	ADDR $c269;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "ppud.update_palette_after_nmi";
+	ADDR $f8bc;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "call_32_8000";
+	ADDR $f854;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "switch_1st_page";
+	ADDR $ff0c;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.get_window_metrics";
+	ADDR $aabc;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "textd.save_text_ptr";
+	ADDR $f3e4;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.draw_window_top";
+	ADDR $ece5;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "mul16x16";
+	ADDR $fcf5;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.event05";
+	ADDR $e69b;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.loadPatternForTiles";
+	ADDR $de5a;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.load_and_draw_string";
+	ADDR $ee9a;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.loadEventScriptStream";
+	ADDR $ea04;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "thunk_await_nmi_by_set_handler";
+	ADDR $ff00;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.set_vram_addr_for_window";
+	ADDR $f40a;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "maskTargetBit";
+	ADDR $fd38;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.getAndMaskInput";
+	ADDR $d27a;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.getRandom";
+	ADDR $c711;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "vehicleSpeeds";
+	ADDR $cd76;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.reflect_window_scroll";
+	ADDR $eb61;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "loadFloorData";
+	ADDR $cbfa;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.queue_SE_of_valid_action";
+	ADDR $d20d;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "getJobParameter";
+	ADDR $adf2;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.loadObjectPattern";
+	ADDR $df41;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "mul8x8";
+	ADDR $fcd6;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.get_next_input";
+	ADDR $ECbd;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "textd.restore_text_ptr";
+	ADDR $f3ed;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "ppud.nmi_handler";
+	ADDR $fb57;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.unseek_text_to_line_beginning";
+	ADDR $ebd1;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "loadTo7400Ex";
+	ADDR $fda6;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.draw_window_box";
+	ADDR $aaf1;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.show_sprites_on_lower_half_screen";
+	ADDR $ec0c;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.draw_window_row";
+	ADDR $edc6;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "memcpy";
+	ADDR $f92f;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.queue_SE_of_invalid_action";
+	ADDR $d529;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.loadWarpDestinationFloor";
+	ADDR $cba4;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.get_vram_addr_of_line_above";
+	ADDR $f435;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "switch_to_object_params_bank";
+	ADDR $eb23;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "call_bank30_9e58";
+	ADDR $fdf3;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.merge_bg_attributes_with_buffer";
+	ADDR $cab1;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "nmi_handler_01";
+	ADDR $ff2a;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.getInputAndHandleEvent";
+	ADDR $e2f8;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.put_cursor_on_window2";
+	ADDR $912a;
+	COMMENT "bank $3c";
+	SIZE	1;
+};
+LABEL {
+	NAME "blackOutScreen";
+	ADDR $fa1d;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.savefile.save_or_load_current_game_with_buffer";
+	ADDR $aa18;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.clear_all_sprites";
+	ADDR $d336;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.call_sound_driver";
+	ADDR $c750;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "div";
+	ADDR $fc92;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.put_cursor_on_window1";
+	ADDR $9119;
+	COMMENT "bank $3c";
+	SIZE	1;
+};
+LABEL {
+	NAME "call_doBattle";
+	ADDR $f800;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.getWindowTilesForMiddle";
+	ADDR $ee1d;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "call_switch1stBank";
+	ADDR $ff06;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "textd.setup_output_ptr_to_next_column";
+	ADDR $f3ac;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "call_switchFirst2Banks";
+	ADDR $ff03;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "beginBattle";
+	ADDR $c049;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.upload_default_bg_attrs";
+	ADDR $956f;
+	COMMENT "bank $3c";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.OnMove";
+	ADDR $c4fc;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.get_max_available_job_id";
+	ADDR $f38a;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "saveMenu.close";
+	ADDR $a88c;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.get_item_price";
+	ADDR $f5d4;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.draw_window_content";
+	ADDR $f692;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.scrollup_item_window";
+	ADDR $eb69;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.stream_window_content";
+	ADDR $a66b;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.init_ppu";
+	ADDR $959f;
+	COMMENT "bank $3c";
+	SIZE	1;
+};
+LABEL {
+	NAME "dive_into_float_land";
+	ADDR $c966;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.show_window";
+	ADDR $ec8d;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.load_object_sprite_into_buffer";
+	ADDR $da3a;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "copy_to_vram_with_encounter_mode";
+	ADDR $f942;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.dispatchInput";
+	ADDR $c243;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.savefile.load_game_at";
+	ADDR $a9f9;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.get_window_region";
+	ADDR $ed61;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.loadMapRow";
+	ADDR $cc47;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.set_bg_attr_for_window";
+	ADDR $c9a9;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.get_treasure_item_id";
+	ADDR $f5c4;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.upload_palette";
+	ADDR $d381;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.getObjectEventPtr";
+	ADDR $c72c;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "getPad1Input";
+	ADDR $fbaa;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.getChipEvent";
+	ADDR $e51c;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "ppud.upload_palette";
+	ADDR $f897;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.copyToVramWith_07d0";
+	ADDR $cb6b;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "call_switch2ndBank";
+	ADDR $ff09;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.shop.getItemValue";
+	ADDR $b270;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "mul8x8_reg";
+	ADDR $f8ea;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "switchToBank3C";
+	ADDR $c98a;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.load_label_text_into_buffer";
+	ADDR $d1b1;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "textd.eval_replacement";
+	ADDR $f02a;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.items.load_render_params";
+	ADDR $9075;
+	COMMENT "bank $3c";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.savefile.load_game";
+	ADDR $aa06;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "getTileParamsVertical";
+	ADDR $ce7a;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.show_message_window";
+	ADDR $ec8b;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.getWindowTilesForTop";
+	ADDR $edf6;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.stream_string_in_window";
+	ADDR $ee65;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "floor.shop.getItemValues";
+	ADDR $b220;
+	COMMENT "bank $3d";
+	SIZE	1;
+};
+LABEL {
+	NAME "irq_handler";
+	ADDR $fb30;
+	COMMENT "bank $3f";
+	SIZE	1;
+};
+LABEL {
+	NAME "getVehicleSpeed";
+	ADDR $cd7e;
+	COMMENT "bank $3e";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.accept_input_action";
+	ADDR $8f74;
+	COMMENT "bank $3c";
+	SIZE	1;
+};
+LABEL {
+	NAME "menu.items.save_render_params";
+	ADDR $903d;
+	COMMENT "bank $3c";
+	SIZE	1;
+};
+LABEL {
+	NAME "fieldMenu.updateCursorPos";
+	ADDR $91a3;
+	COMMENT "bank $3c";
+	SIZE	1;
+};
+LABEL {
+	NAME "field.get_next_input";
+	ADDR $ECC4;
+	COMMENT "bank $3f";
+	SIZE	1;
+};

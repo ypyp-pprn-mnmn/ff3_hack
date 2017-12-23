@@ -1,9 +1,10 @@
 ﻿
+
 # $3e:d213 field.queue_SE_of_move_of_cursor
 > カーソル移動を示す効果音をキューに入れる。
 
 ### args:
-+	out u8 $7f49: sound effect id (= 0x98)
++	out u8 $7f49: sound effect id (= 0x18) and play flags (= 0x80: play new)
 
 ### callers:
 +	yet to be investigated
@@ -25,4 +26,5 @@ coceptually, this logic does 'feedback_move_of_cursor'.
 */
 }
 ```
+
 
