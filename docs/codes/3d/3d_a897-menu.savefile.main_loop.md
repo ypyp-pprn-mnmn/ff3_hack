@@ -1,4 +1,5 @@
 ﻿
+
 # $3d:a897 menu.savefile.main_loop
 > 「セーブ」メニューを処理するメインのループ。メインメニューから「セーブ」を選択したときに実行される。
 
@@ -27,7 +28,7 @@ $a8eb:
 		a = ($79f0 >> 2) & 3;
 		$8241();
 		a = 4;
-		$91d9();
+		menu.window2.get_input_and_update_cursor(); //$91d9();
 		if ($25 != 0) $a88c;	//b
 	} while ($24 == 0); //beq a8eb:
 $a905:
@@ -42,7 +43,7 @@ $a916:
 		a = ($79f0 >> 2) & 3;
 		$8241();
 
-		menu.get_input_for_window1_and_update_cursor({position_delta:a = 4});	//$91a3();
+		menu.window1.get_input_and_update_cursor({position_delta:a = 4});	//$91a3();
 		if ($25 != 0) $a935; //b
 	} while ($24 == 0); //beq $a916
 $a930:
@@ -76,9 +77,9 @@ $a969:
 		$81++; $83++;
 	} while (($81 & 3) != 0); //bne a962 $80,81 == $6400 になるまで
 $a973:
-	$aa67();
-	$aa4b();
-	return saveMenu::close();	//$a88c();
+	menu.savefile.draw_saved_file_summary(); //$aa67();
+	menu.await_new_input();    //$aa4b();
+	return menu.savefile.close();	//$a88c();
 $a984:
 /*
     lda $7F38   ; A897 AD 38 7F
@@ -196,6 +197,7 @@ $a984:
 $a984:
 }
 ```
+
 
 
 

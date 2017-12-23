@@ -35,9 +35,10 @@ write notes here
 		return;
 	}
 	menu.savefile.load_game_at({address_high: pop()});	//$a9f9;
-	field.draw_menu_window_content({text_id: 0x25});	//$a66b
+	menu.stream_window_content({text_id: 0x25});	//$a66b
 	sec;
 	return;
 }
 ```
+
 
