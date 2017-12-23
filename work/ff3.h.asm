@@ -15,7 +15,6 @@
 	.include "ff3_34-35.h.asm"
 ;--------------------------------------------------------------------------------------------------
 ;$3e-3f
-;field.callSoundDriver			= $c750
 field.call_sound_driver			= $c750
 field.update_window_attr_buff	= $c98f
 field.set_bg_attr_for_window	= $c9a9

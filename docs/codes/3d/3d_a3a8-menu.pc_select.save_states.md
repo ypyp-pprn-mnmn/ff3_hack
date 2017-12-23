@@ -1,6 +1,7 @@
 ﻿
-# $3d:a3a8 menu.pc_select.init_states
-> プレイヤーキャラ選択ウインドウの状態を初期化する。
+
+# $3d:a3a8 menu.pc_select.save_states
+> プレイヤーキャラ選択ウインドウの状態を(メニューの管理情報領域に)保存する。
 
 ### args:
 
@@ -55,4 +56,5 @@ write notes here
 */
 }
 ```
+
 
