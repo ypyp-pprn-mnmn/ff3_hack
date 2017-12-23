@@ -17,6 +17,7 @@
 ;;$3c-3d
 menu.stream_window_content = $a66b
 menu.savefile.load_game_at = $a9f9
+menu.get_window_metrics = $aabc
 
 ;$3e-3f
 field.call_sound_driver			= $c750

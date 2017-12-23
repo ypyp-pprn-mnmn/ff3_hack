@@ -1,4 +1,5 @@
 ﻿
+
 # $3d:aaa6 menu.get_window_content_metrics
 > 各種メニューウインドウのコンテンツ領域のメトリック(サイズ・位置)を取得する。
 
@@ -14,6 +15,13 @@
 +   u8 $3d: box height
 +   u8 $97: cursor stop offset x
 +   u8 $98: cursor stop offset y
+
+### callers:
++   `1E:9660:20 A6 AA  JSR $AAA6` @ $3c:962f menu.jobs.main_loop
++   `1E:9791:20 A6 AA  JSR menu.get_window_content_metric` @ $3c:9761 menu.magic.main_loop
++   `1E:A334:20 A6 AA  JSR menu.get_window_content_metric` @ $3d:a332 menu.party_summary.draw_content
++   `1E:B9BC:20 A6 AA  JSR menu.get_window_content_metric` @ ?
++   `1F:C02B:20 A6 AA  JSR menu.get_window_content_metric` @ ?
 
 ### notes:
 
@@ -41,6 +49,7 @@
 	return;
 }
 ```
+
 
 
 
