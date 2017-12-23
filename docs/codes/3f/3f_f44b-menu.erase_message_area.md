@@ -1,13 +1,13 @@
 ﻿
-
-# $3f:f44b menu.savefile.erase_windows
-> short description of the function
+# $3f:f44b menu.erase_message_area
+> 各種メニューでメッセージ用のウインドウを配置する領域((9,2)-(31,6))を消去する。
 
 ### args:
-+	yet to be investigated
+none.
 
 ### callers:
-+	`1E:AA8E:20 4B F4  JSR $F44B` @ ?
++	`1E:AA8E:20 4B F4  JSR $F44B` @ $3d:aa8e menu.items.erase_message
++	yet to be investigated
 
 ### local variables:
 +	yet to be investigated
@@ -34,6 +34,7 @@ write notes here
 $f461:
 }
 ```
+
 
 
 
