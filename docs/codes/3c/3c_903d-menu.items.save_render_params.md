@@ -1,6 +1,6 @@
 ﻿
-# $3c:903d menu.items.init_states
-> アイテムメニューの状態を初期化する。
+# $3c:903d menu.items.save_render_params
+> アイテムウインドウ($7a00で管理)の描画用パラメータを(管理用の領域に)保存する。
 
 ### args:
 
@@ -41,7 +41,7 @@
 none.
 
 ### notes:
-write notes here
+`$3c:9075` does the opposite of this logic.
 
 ### (pseudo)code:
 ```js
@@ -74,4 +74,5 @@ write notes here
 $9075:
 }
 ```
+
 
