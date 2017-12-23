@@ -62,7 +62,7 @@ menu.items.main_loop:
     lda #$02    ; 9F16 A9 02
     sta <$A3     ; 9F18 85 A3
     sta <$A4     ; 9F1A 85 A4
-    jsr .L_A363   ; 9F1C 20 63 A3
+    jsr menu.items.clone_for_2nd_selection   ; 9F1C 20 63 A3
     lda $7AF0   ; 9F1F AD F0 7A
     sta $79F0   ; 9F22 8D F0 79
     tax             ; 9F25 AA
@@ -95,6 +95,7 @@ menu.items.main_loop:
 .L_9F5A:
   	lda <$24     ; 9F5A A5 24
     beq .L_9F3B   ; 9F5C F0 DD
+;; 2nd item has just selected.
     jsr menu.pc_select.save_states  ; 9F5E 20 A8 A3
     jsr .L_A349   ; 9F61 20 49 A3
     jsr menu.accept_input_action    ; 9F64 20 74 8F
