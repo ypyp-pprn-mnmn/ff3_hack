@@ -1,10 +1,16 @@
 # Changelog
 
-## v0.8.1 (22/12/2017)
+## v0.8.2 (24/12/2017)
 
 #### bug
 
+- [**bug**] 未セーブのスロットが真っ黒 [#39](https://github.com/ypyp-pprn-mnmn/ff3_hack/issues/39)
 - [**bug**] 0.8.0のonly-fast-windowがぜんぜんonlyじゃない [#38](https://github.com/ypyp-pprn-mnmn/ff3_hack/issues/38)
+- [**bug**] メニューのウインドウの重なりをオリジナル準拠にする [#32](https://github.com/ypyp-pprn-mnmn/ff3_hack/issues/32)
+
+---
+
+## v0.8.1 (22/12/2017)
 
 #### feature
 
