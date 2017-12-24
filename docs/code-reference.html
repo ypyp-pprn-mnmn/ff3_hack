@@ -8,7 +8,7 @@
     <meta name="generator" content="pandoc">
     <meta name="description" content>
     <meta name="author" content="ypyp-pprn-mnmn (aka “301”)">
-    <!-- generated-at 2017-12-24 17:00:58+0900 -->
+    <!-- generated-at 2017-12-24 21:37:03+0900 -->
     <title>FF3@FC Original Code Documentation</title>
 
     <!-- Bootstrap core CSS -->
@@ -691,17 +691,17 @@ code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Infor
           <li><a href="#c9ec2-menu.items.main_loop">$3c:9ec2 menu.items.main_loop</a></li>
           <li><a href="#c9fa5-menu.items.on_2nd_item_selected">$3c:9fa5 menu.items.on_2nd_item_selected</a></li>
           <li><a href="#da2df-checkmagic">$3d:a2df checkmagic</a></li>
-          <li><a href="#da328-menu.pc_select.draw_window">$3d:a328 menu.pc_select.draw_window</a></li>
+          <li><a href="#da328-menu.party_summary.draw_window">$3d:a328 menu.party_summary.draw_window</a></li>
           <li><a href="#da332-menu.party_summary.draw_content">$3d:a332 menu.party_summary.draw_content</a></li>
           <li><a href="#da33c-menu.items.consume_item">$3d:a33c menu.items.consume_item</a></li>
           <li><a href="#da363-menu.items.clone_for_2nd_selection">$3d:a363 menu.items.clone_for_2nd_selection</a></li>
-          <li><a href="#da38e-menu.pc_select.load_states">$3d:a38e menu.pc_select.load_states</a></li>
-          <li><a href="#da3a8-menu.pc_select.save_states">$3d:a3a8 menu.pc_select.save_states</a></li>
+          <li><a href="#da38e-menu.party_summary.load_render_params">$3d:a38e menu.party_summary.load_render_params</a></li>
+          <li><a href="#da3a8-menu.party_summary.save_render_params">$3d:a3a8 menu.party_summary.save_render_params</a></li>
           <li><a href="#da52f-menu.main_loop">$3d:a52f menu.main_loop</a></li>
           <li><a href="#da666-menu.draw_window">$3d:a666 menu.draw_window</a></li>
           <li><a href="#da66b-menu.stream_window_content">$3d:a66b menu.stream_window_content</a></li>
           <li><a href="#da678-menu.draw_window_content">$3d:a678 menu.draw_window_content</a></li>
-          <li><a href="#da685-menu.main.erase">$3d:a685 menu.main.erase</a></li>
+          <li><a href="#da685-menu.erase_entirely">$3d:a685 menu.erase_entirely</a></li>
           <li><a href="#da6b4-fieldmenuselectcharacter">$3d:a6b4 fieldMenu::selectCharacter</a></li>
           <li><a href="#da7cd-menu.render_cursor">$3d:a7cd menu.render_cursor</a></li>
           <li><a href="#da87a-menu.draw_view_of_buffered_string">$3d:a87a menu.draw_view_of_buffered_string</a></li>
@@ -15540,7 +15540,7 @@ $b874:
 <h3 id="args-186">args:</h3>
 <ul>
 <li>in u8 $a2: cursor availablity flags on window-1.</li>
-<li>in u8 $78f0: offset of selected item (each menu item consists of 4-byte structure)</li>
+<li>in u8 $78f0: byte offset of selected item (each menu item consists of 4-byte structure)</li>
 <li>in MenuItem $7800<a href="#section-8"></a>: cursor stop</li>
 </ul>
 <h3 id="callers-21">callers:</h3>
@@ -15582,7 +15582,7 @@ $b874:
 <h3 id="args-187">args:</h3>
 <ul>
 <li>in u8 $a3: cursor availablity flags on window-2.</li>
-<li>in u8 $79f0: offset of selected item (each menu item consists of 4-byte structure)</li>
+<li>in u8 $79f0: byte offset of selected item (each menu item consists of 4-byte structure)</li>
 <li>in MenuItem $7900<a href="#section-8"></a>: cursor stop</li>
 </ul>
 <h3 id="callers-22">callers:</h3>
@@ -15635,7 +15635,7 @@ $b874:
 <li>01: blink cursor.</li>
 </ul></li>
 <li>in u8 $f0: frame counter. used to blink the cursor.</li>
-<li>in u8 $7af0: offset of selected item (each menu item consists of 4-byte structure)</li>
+<li>in u8 $7af0: byte offset of selected item (each menu item consists of 4-byte structure)</li>
 <li>in MenuItem $7a00<a href="#section-8"></a>: cursor stop</li>
 </ul>
 <h3 id="callers-23">callers:</h3>
@@ -15783,9 +15783,9 @@ $b874:
 </blockquote>
 <h3 id="args-191">args:</h3>
 <ul>
-<li><a href="#in-2">in</a> u8 a : cursor position delta</li>
-<li>[in,out] u8 $78f0 : cursor position</li>
-<li><a href="#in-2">in</a> u8 $78f1 : last valid cursor position y</li>
+<li>in u8 A: offset delta for up/down key</li>
+<li>in,out u8 $78f0: byte offset of selected item (each menu item consists of 4-byte structure)</li>
+<li>in u8 $78f1: last valid offset of the view</li>
 </ul>
 <h3 id="pseudocode-37">(pseudo)code:</h3>
 <pre class="sourceCode js" id="cb462"><code class="sourceCode javascript"><div class="sourceLine" id="cb462-1" data-line-number="1"><span class="op">{</span></div>
@@ -15822,9 +15822,9 @@ $b874:
 </blockquote>
 <h3 id="args-192">args:</h3>
 <ul>
-<li>in u8 A: cursor position delta y</li>
-<li>in,out u8 $79f0 : cursor position</li>
-<li>in u8 $79f1 : last valid cursor position y</li>
+<li>in u8 A: offset delta for up/down key</li>
+<li>in,out u8 $79f0: byte offset of selected item (each menu item consists of 4-byte structure)</li>
+<li>in u8 $79f1: last valid offset of the view</li>
 </ul>
 <h3 id="callers-26">callers:</h3>
 <ul>
@@ -15878,7 +15878,9 @@ $b874:
 </blockquote>
 <h3 id="args-193">args:</h3>
 <ul>
-<li>in u8 A: initial delta</li>
+<li>in u8 A: offset delta for up/down key</li>
+<li>in,out u8 $7af0: byte offset of selected item (each menu item consists of 4-byte structure)</li>
+<li>in u8 $7af1: last valid offset of the view</li>
 </ul>
 <h3 id="callers-27">callers:</h3>
 <ul>
@@ -15886,8 +15888,8 @@ $b874:
 </ul>
 <h3 id="local-variables-40">local variables:</h3>
 <ul>
-<li>u8 $05: cursor delta x?</li>
-<li>u8 $06: cursor delta y</li>
+<li>u8 $05: offset delta for up/down key?</li>
+<li>u8 $06: offset delta effective?</li>
 </ul>
 <h3 id="notes-60">notes:</h3>
 <p>unlike other siblings, this logic DOES render the screen.</p>
@@ -16161,7 +16163,7 @@ $b874:
 <h3 id="args-199">args:</h3>
 <ul>
 <li>u8 in $7f: character index.</li>
-<li>u8 out $78f0: cursor pos, set to 0x14 on exit</li>
+<li>u8 out $78f0: byte offset of selected menu-item, set to 0x14 (= 6th entry) on exit.</li>
 </ul>
 <pre class="sourceCode js" id="cb472"><code class="sourceCode javascript"><div class="sourceLine" id="cb472-1" data-line-number="1"><span class="op">{</span></div>
 <div class="sourceLine" id="cb472-2" data-line-number="2"><span class="co">/*</span></div>
@@ -16926,7 +16928,7 @@ $b874:
 <div class="sourceLine" id="cb478-10" data-line-number="10">    $7c00<span class="op">,</span>x <span class="op">=</span> itemid of magic</div>
 <div class="sourceLine" id="cb478-11" data-line-number="11"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="da328-menu.pc_select.draw_window">$3d:a328 menu.pc_select.draw_window</h1>
+<h1 id="da328-menu.party_summary.draw_window">$3d:a328 menu.party_summary.draw_window</h1>
 <blockquote>
 <p>プレイヤーキャラ選択ウインドウ(type: 0x07)を描画する。</p>
 </blockquote>
@@ -17059,18 +17061,18 @@ $b874:
 <div class="sourceLine" id="cb482-23" data-line-number="23"><span class="co">*/</span></div>
 <div class="sourceLine" id="cb482-24" data-line-number="24"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="da38e-menu.pc_select.load_states">$3d:a38e menu.pc_select.load_states</h1>
+<h1 id="da38e-menu.party_summary.load_render_params">$3d:a38e menu.party_summary.load_render_params</h1>
 <blockquote>
-<p>(メニューの管理情報領域から)プレイヤーキャラ選択ウインドウの状態をロードする。</p>
+<p>(メニューの管理情報領域から)プレイヤーキャラ選択ウインドウの描画用パラメータをロードする。</p>
 </blockquote>
 <h3 id="args-209">args:</h3>
 <h4 id="in-10">in:</h4>
 <ul>
-<li>u8 $79eb</li>
-<li>u8 $79ec</li>
-<li>u8 $79ed</li>
-<li>u8 $79ee</li>
-<li>u8 $79ef</li>
+<li>u8 $79eb: ?</li>
+<li>u8 $79ec: sprite placement box top</li>
+<li>u8 $79ed: sprite placement box left</li>
+<li>u8 $79ee: sprite placement box bottom</li>
+<li>u8 $79ef: sprite placement box right</li>
 </ul>
 <h4 id="out-8">out:</h4>
 <ul>
@@ -17105,18 +17107,18 @@ $b874:
 <div class="sourceLine" id="cb483-14" data-line-number="14"><span class="co">*/</span></div>
 <div class="sourceLine" id="cb483-15" data-line-number="15"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="da3a8-menu.pc_select.save_states">$3d:a3a8 menu.pc_select.save_states</h1>
+<h1 id="da3a8-menu.party_summary.save_render_params">$3d:a3a8 menu.party_summary.save_render_params</h1>
 <blockquote>
-<p>プレイヤーキャラ選択ウインドウの状態を(メニューの管理情報領域に)保存する。</p>
+<p>プレイヤーキャラ選択ウインドウの描画用パラメータを(メニューの管理情報領域に)保存する。</p>
 </blockquote>
 <h3 id="args-210">args:</h3>
 <h4 id="in-11">in:</h4>
 <ul>
 <li>u8 $b4: ?</li>
-<li>u8 $b5: ?</li>
-<li>u8 $b6: ?</li>
-<li>u8 $b7: ?</li>
-<li>u8 $b8: ?</li>
+<li>u8 $b5: sprite placement box top</li>
+<li>u8 $b6: sprite placement box left</li>
+<li>u8 $b7: sprite placement box bottom</li>
+<li>u8 $b8: sprite placement box right</li>
 </ul>
 <h4 id="out-9">out:</h4>
 <ul>
@@ -17164,7 +17166,7 @@ $b874:
 <hr />
 <h1 id="da52f-menu.main_loop">$3d:a52f menu.main_loop</h1>
 <blockquote>
-<p>フィールドでstartボタンを押したときに実行され、メインメニューのUI処理を行うメインのループ。</p>
+<p>フィールドでstartボタンを押したときに実行される、メインメニューのUI処理を行うメインのループ。</p>
 </blockquote>
 <h3 id="pseudocode-59">(pseudo)code:</h3>
 <pre class="sourceCode js" id="cb485"><code class="sourceCode javascript"><div class="sourceLine" id="cb485-1" data-line-number="1"><span class="op">{</span></div>
@@ -17404,9 +17406,9 @@ $b874:
 <div class="sourceLine" id="cb488-9" data-line-number="9"><span class="co">*/</span></div>
 <div class="sourceLine" id="cb488-10" data-line-number="10"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="da685-menu.main.erase">$3d:a685 menu.main.erase</h1>
+<h1 id="da685-menu.erase_entirely">$3d:a685 menu.erase_entirely</h1>
 <blockquote>
-<p>スプライトを初期化して、その後メインメニューを消去する。</p>
+<p>スプライトを画面とキャッシュから消去し、その後画面全体を消去する。</p>
 </blockquote>
 <h3 id="args-214">args:</h3>
 <p>none.</p>
@@ -17431,12 +17433,12 @@ $b874:
 <h3 id="pseudocode-63">(pseudo)code:</h3>
 <pre class="sourceCode js" id="cb489"><code class="sourceCode javascript"><div class="sourceLine" id="cb489-1" data-line-number="1"><span class="op">{</span></div>
 <div class="sourceLine" id="cb489-2" data-line-number="2"><span class="co">/*</span></div>
-<div class="sourceLine" id="cb489-3" data-line-number="3"><span class="co">    jsr field.init_sprites_cache                ; A685 20 86 C4</span></div>
+<div class="sourceLine" id="cb489-3" data-line-number="3"><span class="co">    jsr field.init_sprites_cache        ; A685 20 86 C4</span></div>
 <div class="sourceLine" id="cb489-4" data-line-number="4"><span class="co">    jsr thunk_await_nmi_by_set_handler  ; A688 20 00 FF</span></div>
-<div class="sourceLine" id="cb489-5" data-line-number="5"><span class="co">    lda #$02                    ; A68B A9 02</span></div>
-<div class="sourceLine" id="cb489-6" data-line-number="6"><span class="co">    sta $4014                   ; A68D 8D 14 40</span></div>
-<div class="sourceLine" id="cb489-7" data-line-number="7"><span class="co">    jsr .L_959F                 ; A690 20 9F 95</span></div>
-<div class="sourceLine" id="cb489-8" data-line-number="8"><span class="co">    jmp menu.erase_box_1e_x_1c  ; A693 4C 65 F4</span></div>
+<div class="sourceLine" id="cb489-5" data-line-number="5"><span class="co">    lda #$02                            ; A68B A9 02</span></div>
+<div class="sourceLine" id="cb489-6" data-line-number="6"><span class="co">    sta $4014                           ; A68D 8D 14 40</span></div>
+<div class="sourceLine" id="cb489-7" data-line-number="7"><span class="co">    jsr menu.init_ppu                   ; A690 20 9F 95</span></div>
+<div class="sourceLine" id="cb489-8" data-line-number="8"><span class="co">    jmp menu.erase_box_1e_x_1c          ; A693 4C 65 F4</span></div>
 <div class="sourceLine" id="cb489-9" data-line-number="9"><span class="co">*/</span></div>
 <div class="sourceLine" id="cb489-10" data-line-number="10"><span class="dt">$a696</span><span class="op">:</span></div>
 <div class="sourceLine" id="cb489-11" data-line-number="11"><span class="op">}</span></div></code></pre>
@@ -17582,7 +17584,7 @@ $b874:
 </blockquote>
 <h3 id="args-218">args:</h3>
 <ul>
-<li>out u8 $78f0: cursor position y of window-1. set to 0x18 on exit.</li>
+<li>out u8 $78f0: byte offset of selected menu-item of window-1. set to 0x18 (= 7th entry) on exit.</li>
 </ul>
 <h3 id="pseudocode-67">(pseudo)code:</h3>
 <pre class="sourceCode js" id="cb493"><code class="sourceCode javascript"><div class="sourceLine" id="cb493-1" data-line-number="1"><span class="op">{</span></div>
@@ -18135,7 +18137,7 @@ $b874:
 </blockquote>
 <h3 id="args-229">args:</h3>
 <ul>
-<li>in u8 $79f0: cursor pos y</li>
+<li>in u8 $79f0: byte offset of selected menu-item</li>
 </ul>
 <h3 id="pseudocode-78">(pseudo)code:</h3>
 <pre class="sourceCode js" id="cb504"><code class="sourceCode javascript"><div class="sourceLine" id="cb504-1" data-line-number="1"><span class="op">{</span></div>
@@ -21005,9 +21007,10 @@ $b874:
 <li>[in,out] ptr $1c: pointer to text</li>
 <li>[in,out] ptr $3e: pointer to text</li>
 <li><a href="#in-2">in</a> u8 $93: bank number of the text</li>
-<li><a href="#in-2">in</a> u8 $a3: ?</li>
+<li><a href="#in-2">in</a> u8 $a3: cursor availability flags (of menu window #2)</li>
 <li><a href="#out-2">out</a> u8 $b4: ? (= 0x40(if aborted) or 0xC0(if scrolled))</li>
-<li>[in,out] u16 ($79f0,$79f2): ?</li>
+<li>in,out u8 $79f0: byte offset of selected menu-item (of menu window #2)</li>
+<li>in,out u8 $79f2: ?</li>
 <li><a href="#out-2">out</a> bool carry: 1: scroll aborted, 0: otherwise</li>
 </ul>
 <h3 id="callers-66">callers:</h3>
@@ -21027,8 +21030,7 @@ $b874:
 <div class="sourceLine" id="cb615-10" data-line-number="10"><span class="co">*/</span></div>
 <div class="sourceLine" id="cb615-11" data-line-number="11"><span class="dt">$eb3c</span><span class="op">:</span></div>
 <div class="sourceLine" id="cb615-12" data-line-number="12"><span class="op">}</span></div></code></pre>
-<p><strong>fall through</strong></p>
-<hr />
+<p><strong>fall through</strong> ________________________________________________________________________________</p>
 <h1 id="feb3c-field.abort_item_window_scroll">$3f:eb3c field.abort_item_window_scroll</h1>
 <h3 id="args-289">args:</h3>
 <ul>
@@ -21109,9 +21111,10 @@ $b874:
 <ul>
 <li>[in,out] ptr $1c: pointer to text</li>
 <li><a href="#in-2">in</a> u8 $93: bank number of the text</li>
-<li><a href="#in-2">in</a> u8 $a3: ?</li>
+<li>in u8 $a3: cursor availability flags (of menu window #2)</li>
 <li><a href="#out-2">out</a> u8 $b4: ? (= 0xc0 if scrolled, or 0x80 if aborted)</li>
-<li>[in,out] u16 ($79f0,$79f2): ?</li>
+<li>in,out u8 $79f0: byte offset of selected menu-item (of menu window #2)</li>
+<li>in,out u8 $79f2: ?</li>
 <li><a href="#out-2">out</a> bool carry: 1: scroll aborted, 0: scroll successful</li>
 </ul>
 <h3 id="callers-70">callers:</h3>
@@ -21709,22 +21712,28 @@ $b874:
 <li>3: Gil (can be checked at INN)</li>
 <li>4: floor name</li>
 </ul></li>
-<li>u8 $29: floor_scroll_x (in 16x16 unit)</li>
-<li>u8 $2f: floor_scroll_y (in 16x16 unit)</li>
+<li>u8 $29: floor_scroll_x (in map chip (i.e., 16x16) unit)</li>
+<li>u8 $2f: floor_scroll_y (in map chip (i.e., 16x16) unit)</li>
 <li>u8 $37: in_menu_mode</li>
 </ul>
 <h4 id="out-17">out:</h4>
+<h5 id="the-following-metrics-are-calculated-as-relative-to-bg-origin.">the following metrics are calculated as relative to <em>BG</em> origin.</h5>
+<p>i.e., it is an absolute offset. the scroll value of floor is accounted within.</p>
 <ul>
-<li>u8 $38: window_left (border included)</li>
-<li>u8 $39: window_top (border included)</li>
-<li>u8 $3c: window_width (border included)</li>
-<li>u8 $3d: window_height (border included)</li>
-<li>u8 $97:</li>
-<li>u8 $98:</li>
-<li>u8 $b5:</li>
-<li>u8 $b6:</li>
-<li>u8 $b7:</li>
-<li>u8 $b8:</li>
+<li>u8 $38: window box left, with border included</li>
+<li>u8 $39: window box top, with border included</li>
+</ul>
+<h5 id="the-following-metrics-are-calculated-as-relative-to-viewport-origin.">the following metrics are calculated as relative to <em>viewport</em> origin.</h5>
+<p>i.e., it is an relative offset. the scroll value of floor is NOT accounted within.</p>
+<ul>
+<li>u8 $3c: window box width, with border included.</li>
+<li>u8 $3d: window box height, with border included.</li>
+<li>u8 $97: cursor origin x. (= window box left - 1, if ignoring the scroll value)</li>
+<li>u8 $98: cursor origin y. (= window bot top + 2, if ignoring the scroll value)</li>
+<li>u8 $b5: sprite placement box top. (= window box top + 1, if ignoring the scroll value)</li>
+<li>u8 $b6: sprite placement box left. (= window box left, if ignoring the scroll value)</li>
+<li>u8 $b7: sprite placement box bottom. (top + window box height - 3)</li>
+<li>u8 $b8: sprite placement box right. (left + window box width - 1)</li>
 </ul>
 <h3 id="callers-85">callers:</h3>
 <ul>
@@ -21735,7 +21744,7 @@ $b874:
 <li><p>to reflect changes in screen those made by <code>field.hide_sprites_under_window</code>, which is called from within this function, caller must upload sprite attr onto OAM, such as:</p>
 <pre><code>lda #2
 sta $4014   ;DMA</code></pre></li>
-<li>this logic is very simlar to <code>$3d$aabc field::get_menu_window_metrics</code>. the difference is:
+<li>this logic is very simlar to <code>$3d$aabc menu.get_window_metrics</code>. the difference is:
 <ul>
 <li><ol type="A">
 <li>this logic takes care of wrap-around unlike the other one, which does not.</li>

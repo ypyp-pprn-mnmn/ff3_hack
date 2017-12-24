@@ -37,6 +37,7 @@
 ;; ------------------------------------------------------------------------------------------------
 ;; shared variables.
 DECLARE_WINDOW_VARIABLES	.macro
+.p_text_line = $1c
 .menu_item_continue_building = $1e
 .lines_drawn = $1f
 .a_button_down = $24
@@ -49,14 +50,16 @@ DECLARE_WINDOW_VARIABLES	.macro
 .window_width = $3c
 .window_height = $3d
 .p_text = $3e
+;; text driver variables.
 .output_index = $90
 .width_in_1st = $91
 .text_id = $92
 .text_bank = $93
-.p_text_table = $94	;;stores offset from $30000(18:8000) to the text 
+.p_text_table = $94	;;pointer to pointer table, which stores offset from $30000(18:8000) to the text 
+;; menu control variables.
 .window_type = $96
-.cursor_offset_x = $97
-.cursor_offset_y = $98
+.cursor_origin_x = $97  ;; usually calculated as: window.left - 1 (value including borders)
+.cursor_origin_y = $98  ;; usually calculated as: window.top + 2 (value incluing borders)
 ;;
 .tile_buffer_upper = $0780
 .tile_buffer_lower = $07a0

@@ -7,7 +7,7 @@
 +	in u8 $a4: cursor availablity flags on window-3.
 	- 01: blink cursor.
 +	in u8 $f0: frame counter. used to blink the cursor.
-+	in u8 $7af0: offset of selected item (each menu item consists of 4-byte structure)
++	in u8 $7af0: byte offset of selected item (each menu item consists of 4-byte structure)
 +	in MenuItem $7a00[]: cursor stop
 
 ### callers:

@@ -1,16 +1,15 @@
 ﻿
-
-# $3d:a3a8 menu.pc_select.save_states
-> プレイヤーキャラ選択ウインドウの状態を(メニューの管理情報領域に)保存する。
+# $3d:a3a8 menu.party_summary.save_render_params
+> プレイヤーキャラ選択ウインドウの描画用パラメータを(メニューの管理情報領域に)保存する。
 
 ### args:
 
 #### in:
 +	u8 $b4: ?
-+	u8 $b5: ?
-+	u8 $b6: ?
-+	u8 $b7: ?
-+	u8 $b8: ?
++	u8 $b5: sprite placement box top
++	u8 $b6: sprite placement box left
++	u8 $b7: sprite placement box bottom
++	u8 $b8: sprite placement box right
 
 #### out:
 +	u8 $79eb: = $b4
@@ -56,5 +55,6 @@ write notes here
 */
 }
 ```
+
 
 

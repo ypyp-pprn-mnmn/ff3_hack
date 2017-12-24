@@ -1,13 +1,12 @@
-﻿
-# $3f:eb69 field.scrollup_item_window
-
+﻿# $3f:eb69 field.scrollup_item_window
 
 ### args:
 +	[in,out] ptr $1c: pointer to text
 +	[in] u8 $93: bank number of the text
-+	[in] u8 $a3: ?
++	in u8 $a3: cursor availability flags (of menu window #2)
 +	[out] u8 $b4: ? (= 0xc0 if scrolled, or 0x80 if aborted)
-+	[in,out] u16 ($79f0,$79f2): ?
++	in,out u8 $79f0: byte offset of selected menu-item (of menu window #2)
++   in,out u8 $79f2: ?
 +	[out] bool carry: 1: scroll aborted, 0: scroll successful
 
 ### callers:
@@ -49,6 +48,3 @@
 */
 }
 ```
-
-
-

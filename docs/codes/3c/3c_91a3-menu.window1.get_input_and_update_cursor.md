@@ -4,9 +4,9 @@
 > メニューの1つ目のウインドウ($7800で管理)用にパッド入力を取得し、必要に応じてカーソル位置の情報を更新する。描画はしない。
 
 ### args:
-+	[in] u8 a : cursor position delta
-+	[in,out] u8 $78f0 : cursor position
-+	[in] u8 $78f1 : last valid cursor position y
++	in u8 A: offset delta for up/down key
++	in,out u8 $78f0: byte offset of selected item (each menu item consists of 4-byte structure)
++	in u8 $78f1: last valid offset of the view
 
 ### (pseudo)code:
 ```js

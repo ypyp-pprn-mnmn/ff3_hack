@@ -1,6 +1,7 @@
 ﻿
-# $3d:a685 menu.main.erase
-> スプライトを初期化して、その後メインメニューを消去する。
+
+# $3d:a685 menu.erase_entirely
+> スプライトを画面とキャッシュから消去し、その後画面全体を消去する。
 
 ### args:
 none.
@@ -29,15 +30,16 @@ many callers (6 out of 10) made this call right before a callout to $956f.
 ```js
 {
 /*
-    jsr field.init_sprites_cache   				; A685 20 86 C4
+    jsr field.init_sprites_cache   		; A685 20 86 C4
     jsr thunk_await_nmi_by_set_handler  ; A688 20 00 FF
-    lda #$02    				; A68B A9 02
-    sta $4014   				; A68D 8D 14 40
-    jsr .L_959F   				; A690 20 9F 95
-    jmp menu.erase_box_1e_x_1c  ; A693 4C 65 F4
+    lda #$02    				        ; A68B A9 02
+    sta $4014   				        ; A68D 8D 14 40
+    jsr menu.init_ppu			        ; A690 20 9F 95
+    jmp menu.erase_box_1e_x_1c          ; A693 4C 65 F4
 */
 $a696:
 }
 ```
+
 
 

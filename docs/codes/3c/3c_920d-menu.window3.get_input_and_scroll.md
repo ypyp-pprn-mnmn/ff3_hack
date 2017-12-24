@@ -4,14 +4,16 @@
 > パッド入力を取得し、必要に応じてウインドウのスクロール値を更新し、画面を更新する。
 
 ### args:
-+	in u8 A: initial delta
++	in u8 A: offset delta for up/down key
++	in,out u8 $7af0: byte offset of selected item (each menu item consists of 4-byte structure)
++	in u8 $7af1: last valid offset of the view
 
 ### callers:
 +	yet to be investigated
 
 ### local variables:
-+	u8 $05: cursor delta x?
-+	u8 $06: cursor delta y
++	u8 $05: offset delta for up/down key?
++	u8 $06: offset delta effective?
 
 ### notes:
 unlike other siblings, this logic DOES render the screen.

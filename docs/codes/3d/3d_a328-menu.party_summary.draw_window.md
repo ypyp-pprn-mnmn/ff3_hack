@@ -1,5 +1,6 @@
 ﻿
-# $3d:a328 menu.pc_select.draw_window
+
+# $3d:a328 menu.party_summary.draw_window
 > プレイヤーキャラ選択ウインドウ(type: 0x07)を描画する。
 
 ### args:
@@ -26,4 +27,5 @@ write notes here
 */
 }
 ```
+
 

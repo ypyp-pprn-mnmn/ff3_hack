@@ -5,9 +5,9 @@
 > メニューの2つ目のウインドウ($7900で管理)用にパッド入力を取得し、必要に応じてカーソル位置の情報を更新する。描画はしない。
 
 ### args:
-+	in u8 A: cursor position delta y
-+	in,out u8 $79f0 : cursor position
-+	in u8 $79f1 : last valid cursor position y
++	in u8 A: offset delta for up/down key
++	in,out u8 $79f0: byte offset of selected item (each menu item consists of 4-byte structure)
++	in u8 $79f1: last valid offset of the view
 
 ### callers:
 +	yet to be investigated

@@ -3,7 +3,7 @@
 > 「セーブ」メニューで選択されたファイルの情報を描画する。
 
 ### args:
-+	in u8 $79f0: cursor pos y
++	in u8 $79f0: byte offset of selected menu-item
 
 ### (pseudo)code:
 ```js

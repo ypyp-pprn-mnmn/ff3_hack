@@ -4,7 +4,7 @@
 
 ### args:
 +	u8 in $7f: character index.
-+	u8 out $78f0: cursor pos, set to 0x14 on exit
++	u8 out $78f0: byte offset of selected menu-item, set to 0x14 (= 6th entry) on exit.
 
 ```js
 {

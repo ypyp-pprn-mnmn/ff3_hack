@@ -5,7 +5,7 @@
 
 ### args:
 +	in u8 $a3: cursor availablity flags on window-2.
-+	in u8 $79f0: offset of selected item (each menu item consists of 4-byte structure)
++	in u8 $79f0: byte offset of selected item (each menu item consists of 4-byte structure)
 +	in MenuItem $7900[]: cursor stop
 
 ### callers:

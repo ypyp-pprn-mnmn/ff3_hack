@@ -1,14 +1,13 @@
-﻿
-# $3f:eb2d field.scrolldown_item_window
-
+﻿# $3f:eb2d field.scrolldown_item_window
 
 ### args:
 +	[in,out] ptr $1c: pointer to text
 +	[in,out] ptr $3e: pointer to text
 +	[in] u8 $93: bank number of the text
-+	[in] u8 $a3: ?
++	[in] u8 $a3: cursor availability flags (of menu window #2)
 +	[out] u8 $b4: ? (= 0x40(if aborted) or 0xC0(if scrolled))
-+	[in,out] u16 ($79f0,$79f2): ?
++	in,out u8 $79f0: byte offset of selected menu-item (of menu window #2)
++   in,out u8 $79f2: ?
 +	[out] bool carry: 1: scroll aborted, 0: otherwise
 
 ### callers:
@@ -30,6 +29,4 @@ $eb3c:
 }
 ```
 
-
 **fall through**
-

@@ -19,39 +19,21 @@ textd.PARSE_ABORTED = $ff
     INIT_PATCH_EX textd,$3f,$eefa,$f40a,field.window.driver.BULK_PATCH_FREE_BEGIN
 
 ;; -------------------------
+;; --- declare additional variables shared among 'textd' logics, along with 'window rendering'.
 DECLARE_TEXTD_VARIABLES	.macro
-	;; --- variables.
-.output_index = $90
-.text_id = $92
-.text_bank = $93
-.p_text_table = $94	;;stores offset from $30000(18:8000) to the text 
-.p_text_saved = $99
-;; floor
-.inn_charge = $61	;24 bits.
-.treasure_item_id = $bb
-;; textd
-.p_text_line = $1c
-.menu_item_continue_building = $1e
-.lines_drawn = $1f
+    DECLARE_WINDOW_VARIABLES
 ;; temporary.
 .cached_param = $67
 .parameter_byte = $84
 ;; ---
+;; floor
 .program_bank = $57
-;; --- window related
-.in_menu_mode = $37
-.window_left = $38
-.window_top = $39
-.offset_x = $3a
-.offset_y = $3b
-.window_width = $3c
-.window_height = $3d
-.p_text = $3e
-;;
-.tile_buffer_upper = $0780
-.tile_buffer_lower = $07a0
-
-	.endm
+.character_name_buffer = $5a    ;;6bytes+terminating null at $60.
+.inn_charge = $61	;24 bits.
+.treasure_item_id = $bb
+;; textd
+.p_text_saved = $99
+	.endm   ;;DECLARE_TEXTD_VARIABLES
 
 ;; ------------------------------------------------------------------------------------------------
 textd_x.seek_source_buffer:

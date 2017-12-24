@@ -1,15 +1,16 @@
 ﻿
-# $3d:a38e menu.pc_select.load_states
-> (メニューの管理情報領域から)プレイヤーキャラ選択ウインドウの状態をロードする。
+
+# $3d:a38e menu.party_summary.load_render_params
+> (メニューの管理情報領域から)プレイヤーキャラ選択ウインドウの描画用パラメータをロードする。
 
 ### args:
 
 #### in:
-+	u8 $79eb
-+	u8 $79ec
-+	u8 $79ed
-+	u8 $79ee
-+	u8 $79ef
++	u8 $79eb: ?
++	u8 $79ec: sprite placement box top
++	u8 $79ed: sprite placement box left
++	u8 $79ee: sprite placement box bottom
++	u8 $79ef: sprite placement box right
 
 #### out:
 +	u8 $b4: = $79eb
@@ -45,4 +46,5 @@ write notes here
 */
 }
 ```
+
 
