@@ -207,13 +207,22 @@ sound.previous_music_id = $7f41
 sound.request = $7f42	;01:play next(7f43) 02:play previous(7f41,saved when 01) 04:stop 80:play on
 sound.next_music_id = $7f43;
 sound.effect_id = $7f49	;msb should be 1
-
-sound.effect.pulse1.flags = $7f4f
+;; track control flags. (details TBC)
+sound.music.pulse1.flags = $7f4a
+sound.music.pulse2.flags = $7f4b
+sound.music.triangle.flags = $7f4c
+sound.music.noise.flags = $7f4d
+sound.music.dm.flags = $7f4e
+sound.effect.pulse2.flags = $7f4f
 sound.effect.noise.flags = $7f50
-; -- tbc.
-sound.music.pulse1.note = $7f51
-sound.music.pulse2.note = $7f52
-sound.music.triangle.note = $7f53
+; stream pointers (low byte) (details TBC)
+sound.music.pulse1.stream.low = $7f51
+sound.music.pulse2.stream.low = $7f52
+sound.music.triangle.stream.low = $7f53
+sound.music.noise.stream.low = $7f54
+sound.music.dm.stream.low = $7f55
+sound.effect.pulse2.stream.low = $7f56
+sound.effect.noise.stream.low = $7f57
 ;----------------------------------------------------------------------------------------------------------
 ;world-mode
 world.map_chip_buffer = $7000; 256 tiles x 15 lines

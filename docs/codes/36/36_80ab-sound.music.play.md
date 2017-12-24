@@ -1,5 +1,5 @@
 ﻿
-# $36:80ab sound.play_music
+# $36:80ab sound.music.play
 > BGMを再生する。
 
 ### args:
@@ -268,6 +268,7 @@ $81c3:
 */
 }
 ```
+
 
 
 
