@@ -15,6 +15,7 @@
 	.include "ff3_34-35.h.asm"
 ;--------------------------------------------------------------------------------------------------
 ;;$3c-3d
+;;TODO: move this into separate file.
 menu.stream_window_content = $a66b
 menu.savefile.load_game_at = $a9f9
 menu.get_window_metrics = $aabc
@@ -206,6 +207,13 @@ sound.previous_music_id = $7f41
 sound.request = $7f42	;01:play next(7f43) 02:play previous(7f41,saved when 01) 04:stop 80:play on
 sound.next_music_id = $7f43;
 sound.effect_id = $7f49	;msb should be 1
+
+sound.effect.pulse1.flags = $7f4f
+sound.effect.noise.flags = $7f50
+; -- tbc.
+sound.music.pulse1.note = $7f51
+sound.music.pulse2.note = $7f52
+sound.music.triangle.note = $7f53
 ;----------------------------------------------------------------------------------------------------------
 ;world-mode
 world.map_chip_buffer = $7000; 256 tiles x 15 lines

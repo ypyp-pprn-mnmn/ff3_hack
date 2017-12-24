@@ -1,16 +1,43 @@
 ﻿
-
 # $36:80ab sound.play_music
 > BGMを再生する。
 
 ### args:
-+	in u8 $7f42: music_id
++	in u8 $7f42: music playback control flags. where:
+    - 01: play next music. (at 7f43)
+    - 02: play previous music. (at 7f41,saved when 01)
+    - 04: stop.
+    - 08: unimplemented? (ignored. the driver won't change this flag)
+    - 10: ? (the driver clears this flag)
+    - 20: fade in (counts up the volume (at $7f44) until it reaches to 0xF)
+    - 40: fade out (counts down the volume (at $7f44) and stops playback once it reached to 0)
+    - 80: continue playback.
+
+#### these are control flags for each channel, defined as follows:
+-   01: feed next wave data
+-   80: channel available
+---
++   in,out u8 $7f4a: square#1 channel control flags for music playback.
++   in,out u8 $7f4b: square#2 channel control flags for music playback.
++   in,out u8 $7f4c: triangle channel control flags for music playback.
++   in,out u8 $7f4d: noise channel control flags for music playback.
++   in,out u8 $7f4e: delta modulation channel control flags for music playback.
++   in u8 $7f4f: square#2 channel control flags for *SE* playback.
++   in u8 $7f50: noise channel control flags for *SE* playback.
+---
++   in u8 $7f7b: square#1 channel volume?
++   in u8 $7f7c: square#2 channel volume?
++   in u8 $7f7d: triangle channel volume?
++   in u8 $7f7e: noise channel volume?
 
 ### callers:
 +	$36:8003 sound.update_playback
 
 ### notes:
-music playback utilizes all the channels available in the console.
+music playbacks utilize all the channels available in the console.
+for square#2 and noise channels, sound effects have precedence over music playbacks.
+that is, if at the same time, both playbacks are having wavedata
+that would be fed into the channels, ones for music will be ignored.
 
 ### code:
 ```js
@@ -241,6 +268,7 @@ $81c3:
 */
 }
 ```
+
 
 
 
