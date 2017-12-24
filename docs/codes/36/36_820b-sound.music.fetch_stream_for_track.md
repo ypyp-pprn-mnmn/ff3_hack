@@ -1,5 +1,6 @@
 ﻿
 # $36:820b sound.music.fetch_stream_for_track
+> 指定のトラックについて、次の音楽データを取得し、各種再生データと状態を更新する。
 
 ### args:
 +	in u8 X: track #, [0...7). (music 5 channels + SE 2 channels)
@@ -23,7 +24,8 @@
 	-	indexed by lower 4bits of command byte (or 'note') fetched.
 	-	caller of this function decrements this by 1 on each call.
 
-+	out u16 [$7f6d[x], $7f74[x]]: wave length?
++	out u16 [$7f6d[x], $7f74[x]]: timer value.
+    -   will be fed into timer register on each channel. ($4002/4003, 4006/4007, 400a/400b, 400e/400f)
 	-	looked up in static table $872d or $87bd, depending on value of $d1.
 	-	$872d for pulse1/2, triangle
 	-	$87bd for noise
@@ -39,9 +41,24 @@
 
 ### static references:
 +	ptr $822f[< 0x20]: pointer to some handler, indexed by command byte found in the stream.
-+	u16 $872d[12x6]: (used if $di >= 3) wave length? of the tone denoted by command byte (higher 4bits)
-+	u8 $87bd[12x?]: (used if $d1 == 1) wave length? 
++	u16 $872d[12x6]: (used if $d1 >= 2) timer value of the tone denoted by command byte (higher 4bits)
+    -   values are defined as follows: (bytes are swapped for readability)
+    -   f = 1789773 / (16 * (1 + value_below)); f = CPU / (16 * (t + 1)); 1.789773MHz NTSC
+    -   00FD = 440.396899606299 (hz)
+
+            C    C#   D    D#   E    F    F#   G    G#   A    A#   B
+            06AB 064D 05F3 059D 054C 0501 04B8 0474 0434 03F7 03BE 0388
+            0355 0326 02F9 02CE 02A6 0280 025C 023A 0219 01FB 01DE 01C4 
+            01AA 0193 017C 0167 0152 013F 012D 011C 010C[00FD]00EF 00E1
+            00D5 00C9 00BE 00B3 00A9 009F 0096 008E 0086 007E 0077 0070 
+            006A 0064 005E 0059 0054 004F 004B 0046 0042 003E 003B 0038
+            0034 0031 002F 002C 0029 0027 0025 0023 0021 001F 001D 001B 
+
++	u8 $87bd[12x?]: (used if $d1 == 1) timer value? 
 +	u8 $8805[< 0x10]: some enum value, indxed by lower 4bits of command byte fetched.
+    -   values are:
+            `60 48 30 24 20 18 12 10 0C 09 08 06 04 03 02 01`
+
 
 ### code
 ```js
@@ -185,6 +202,7 @@ $821e:
 */
 }
 ```
+
 
 
 

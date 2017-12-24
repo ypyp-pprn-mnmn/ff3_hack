@@ -16,19 +16,33 @@
 #### these are control flags for each channel, defined as follows:
 -   01: feed next wave data
 -   80: channel available
+
 ---
-+   in,out u8 $7f4a: square#1 channel control flags for music playback.
-+   in,out u8 $7f4b: square#2 channel control flags for music playback.
-+   in,out u8 $7f4c: triangle channel control flags for music playback.
-+   in,out u8 $7f4d: noise channel control flags for music playback.
-+   in,out u8 $7f4e: delta modulation channel control flags for music playback.
-+   in u8 $7f4f: square#2 channel control flags for *SE* playback.
-+   in u8 $7f50: noise channel control flags for *SE* playback.
+
++   in,out u8 $7f4a: music track#1, square#1 channel control flags
++   in,out u8 $7f4b: music track#2, square#2 channel control flags
++   in,out u8 $7f4c: music track#3, triangle channel control flags
++   in,out u8 $7f4d: music track#4, noise channel control flags
++   in,out u8 $7f4e: music track#5, delta modulation channel control flags
++   in u8 $7f4f: soundeffect track#1, square#2 channel control flags
++   in u8 $7f50: soundeffect track#2, noise channel control flags
+
 ---
-+   in u8 $7f7b: square#1 channel volume?
-+   in u8 $7f7c: square#2 channel volume?
-+   in u8 $7f7d: triangle channel volume?
-+   in u8 $7f7e: noise channel volume?
++   in u8 $7f7b: music track#1, volume
++   in u8 $7f7c: music track#2, volume
++   in u8 $7f7d: music track#3, volume
++   in u8 $7f7e: music track#4, volume
+
+---
+
++   in u8 $7f82: music track#1, (square#1 channel) sweep ctrl
++   in u8 $7f83: music track#2, (square#2 channel) sweep ctrl
+
+---
++   in u8 $7f89: music track#1, duty/volume ctrl
++   in u8 $7f8a: music track#2, duty/volume ctrl
++   in u8 $7f8b: music track#3, duty/volume ctrl
++   in u8 $7f8c: music track#4, duty/volume ctrl
 
 ### callers:
 +	$36:8003 sound.update_playback
@@ -268,6 +282,8 @@ $81c3:
 */
 }
 ```
+
+
 
 
 
