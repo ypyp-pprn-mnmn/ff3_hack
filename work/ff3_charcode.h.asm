@@ -54,7 +54,7 @@ CHAR.SPACE_FILL = $14   ;param = fill length
 
 ;;15-17: left-align (tabulate) text by the parameter,
 ;;setup internal structure for later reference,
-;;and increment the menu-item index. (stored at $78f1/79f1/7af1)
+;;and increment the byte offset of end of menu-item. (stored at $78f1/79f1/7af1)
 CHAR.SETUP_WINDOW1_MENUITEM = $15   ;; command dialog. (menu command, inn (yes/no), job, shop command)
 CHAR.SETUP_WINDOW2_MENUITEM = $16   ;; target dialog. (magic, item) + shop offerings.
 CHAR.SETUP_WINDOW3_MENUITEM = $17   ;; item dialog. (cast, use, equip, withdraw, sell)

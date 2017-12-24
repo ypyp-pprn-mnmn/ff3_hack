@@ -6,7 +6,7 @@
 ### args:
 +	in u8 A: offset delta for up/down key
 +	in,out u8 $78f0: byte offset of selected item (each menu item consists of 4-byte structure)
-+	in u8 $78f1: last valid offset of the view
++	in u8 $78f1: byte offset of the end of menu-item in the view
 
 ### (pseudo)code:
 ```js

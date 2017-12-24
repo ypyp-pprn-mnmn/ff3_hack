@@ -7,7 +7,7 @@
 +	out MenuItem $7900[4]:
 	menu items describing each file menu
 	and command menu on top right on the screen
-+	out u8 $79f1: last valid y position of menu item (= 0x0c)
++	out u8 $79f1: byte offset of the end of menu-item in the view (= 0x0c)
 
 ### callers:
 +	`1E:A98E:20 A0 A9  JSR menu.savefile.build_file_menu` @ $3d:a984 menu.savefile.build_menu

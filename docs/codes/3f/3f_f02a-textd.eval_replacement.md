@@ -1,10 +1,4 @@
-﻿
-
-
-
-
-# $3f:f02a textd.eval_replacement
-
+﻿# $3f:f02a textd.eval_replacement
 
 ### args:
 +	[in] a: charcode
@@ -103,9 +97,3 @@ $f19a:
 	if (a == #1f) {} //bne f1bb
 }
 ```
-
-
-
-
-
-

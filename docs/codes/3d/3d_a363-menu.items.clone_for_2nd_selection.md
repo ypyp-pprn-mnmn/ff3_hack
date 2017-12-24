@@ -4,9 +4,9 @@
 
 ### args:
 +	in MenuItem $7a00[0x21]: 'item' menu-items
-+	in u8 $7af1: last valid cursor stop Y
++	in u8 $7af1: byte offset of the end of menu-item in the view (of $7a00)
 +	out MenuItem $7900[0x21]: cloned menu-items, with right-shifted X by 1
-+	out u8 $79f1: last valid cursor stop Y (= $7af1)
++	out u8 $79f1: byte offset of the end of menu-item in the view (of $7900, set to $7af1 on ext)
 
 ### callers:
 +	$3c:9ec2 menu.items.main_loop

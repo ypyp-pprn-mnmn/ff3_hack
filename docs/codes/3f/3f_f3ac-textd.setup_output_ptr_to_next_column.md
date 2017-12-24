@@ -1,6 +1,4 @@
-﻿
-
-# $3f:f3ac textd.setup_output_ptr_to_next_column
+﻿# $3f:f3ac textd.setup_output_ptr_to_next_column
 > co-routine of charcode 0x1b, 'item name of which is stored in the fatty choccobo'.
 
 ### args:
@@ -10,7 +8,7 @@
 +	out u8 $90: offset into output buffer.
 +	in u8 $97: X scroll of window box?
 +	in u8 $98: Y scroll of window box?
-+	in,out u8 $7af1: offset into $7a00.
++	in,out u8 $7af1: byte offset of the end of menu-item in $7a00.
 +	out selectable_item $7a00[?]: 4-tuple describing item in the menu. where:
 	- +00: X offset into output buffer? $90 + $97.
 	- +01: Y offset into output buffer? $1f + $98.
@@ -65,5 +63,3 @@ LF3C2:
 */
 }
 ```
-
-
