@@ -240,6 +240,23 @@ field.do_scrolldown_item_window:	;;$3f$eb43
 field_x.reflect_item_window_scroll:
 	lda #$c0
 	sta <$b4
+	FALL_THROUGH_TO field.reflect_window_scroll
+;--------------------------------------------------------------------------------------------------
+;;# $3f$eb61 field.reflect_window_scroll
+;;
+;;## args:
+;;+	[in] u8 $57: bank number to restore
+;;+	[out] bool carry: always 0. (= scroll successful)
+;;## callers:
+;;+	`1E:9F92:20 61 EB  JSR field.reflect_item_window_scro` @ $3c:9ec2 menu.items.main_loop
+;;+	`1E:A889:4C 61 EB  JMP field.reflect_item_window_scro` @ $3d:a87a menu.draw_view_of_buffered_string
+;;+	`1E:B436:20 61 EB  JSR field.reflect_item_window_scro`
+;;+	`1E:B616:4C 61 EB  JMP field.reflect_item_window_scro`
+;;+	`1E:B624:4C 61 EB  JMP field.reflect_item_window_scro`
+;;+	`1E:BC0F:4C 61 EB  JMP field.reflect_item_window_scro`
+;;+	`1F:EB9F:4C 61 EB  JMP field.reflect_item_window_scroll` @ $3f$eb69 field.scrollup_item_window
+field_x.reflect_window_scroll_without_borders
+	FIX_ADDR_ON_CALLER $3c,$9f92+1	;;@ $3c:9ec2 menu.items.main_loop
 	.ifdef _FEATURE_DEFERRED_RENDERING
 		;;note:
 		;;	the item window could be rendered with border
@@ -251,24 +268,9 @@ field_x.reflect_item_window_scroll:
 		;;	this logic is called on both in menu mode and in floor (use item to object)
 		jsr render_x.init_as_no_borders
 	.endif
-	FALL_THROUGH_TO field.reflect_window_scroll
-;--------------------------------------------------------------------------------------------------
-;;# $3f$eb61 field.reflect_window_scroll
-;;
-;;## args:
-;;+	[in] u8 $57: bank number to restore
-;;+	[out] bool carry: always 0. (= scroll successful)
-;;## callers:
-;;+	`1E:9F92:20 61 EB  JSR field.reflect_item_window_scro`
-;;+	`1E:A889:4C 61 EB  JMP field.reflect_item_window_scro`
-;;+	`1E:B436:20 61 EB  JSR field.reflect_item_window_scro`
-;;+	`1E:B616:4C 61 EB  JMP field.reflect_item_window_scro`
-;;+	`1E:B624:4C 61 EB  JMP field.reflect_item_window_scro`
-;;+	`1E:BC0F:4C 61 EB  JMP field.reflect_item_window_scro`
-;;+	`1F:EB9F:4C 61 EB  JMP field.reflect_item_window_scroll` @ $3f$eb69 field.scrollup_item_window
 field.reflect_window_scroll:	;;$3f$eb61
 ;; fixups:
-	FIX_ADDR_ON_CALLER $3c,$9f92+1	;;@ $3c:9ec2 menu.items.main_loop
+	;FIX_ADDR_ON_CALLER $3c,$9f92+1	;;@ $3c:9ec2 menu.items.main_loop
 	FIX_ADDR_ON_CALLER $3d,$a889+1	;;@ $3d:a87a menu.draw_view_of_buffered_string
 	FIX_ADDR_ON_CALLER $3d,$b436+1
 	FIX_ADDR_ON_CALLER $3d,$b616+1
@@ -277,7 +279,7 @@ field.reflect_window_scroll:	;;$3f$eb61
 ;; ---
 	.ifdef _FEATURE_DEFERRED_RENDERING
 		;; as name entry window is solely rendered with this function,
-		;; it is required to default to be with border here, in order to render safaly.
+		;; it is required to default to be with border here, in order to render safely.
 		jsr render_x.defer_window_text_with_border
 
 	.else
@@ -1052,12 +1054,15 @@ field.stream_string_in_window:
 ;;+	`1F:C036:20 9A EE  JSR field::load_and_draw_string` @ opening title
 ;;+	`1F:EE65:20 9A EE  JSR field::load_and_draw_string` @ $3f:ee65 field::stream_string_in_window
 ;;+	`3c:9116  jmp $EE9A `   @ some menu content
-;;+	`3d:a682  jmp $EE9A `	@ some menu content (nearby but not $3d:a66b field.draw_menu_window_content)
+;;+	`3d:a682  jmp $EE9A `	@ $3d:a678 menu.draw_window_content
 field_x.load_and_draw_string_without_border:
 	FIX_ADDR_ON_CALLER $3e, $c036+1
 	.ifdef _FEATURE_DEFERRED_RENDERING
 		;; opening title roll should be rendered without border.
-		jsr render_x.init_as_no_borders
+		;; however, this call is made after a call into 'menu.get_window_content_metrics'.
+		;; as of patch version 0.8.2, that function does equivalent initialization.
+		;; so we no longer need do it again here.
+		;jsr render_x.init_as_no_borders
 	.endif	;;_FEATURE_DEFERRED_RENDERING
 field.load_and_draw_string:	;;$ee9a
 ;; fixups.

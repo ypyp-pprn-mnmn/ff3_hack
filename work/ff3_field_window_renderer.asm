@@ -421,13 +421,9 @@ render_x.fill_to_bottom:
 ;--------------------------------------------------------------------------------------------------
 render_x.draw_empty_box:
 	DECLARE_WINDOW_VARIABLES
-.flags1 = render_x.PENDING_INIT|render_x.RENDER_RUNNING
-.init_flags = .flags1 | render_x.NEED_TOP_BORDER|render_x.NEED_BOTTOM_BORDER|render_x.NEED_ATTRIBUTES
-	;jsr field.init_window_tile_buffer
-	;ldx #(.init_flags)
-	;jsr render_x.setup_deferred_rendering
-	;jsr render_x.fill_to_bottom
-	;jmp field.restore_banks
+	;; draw empty box by just rendering an empty string and fill up the box.
+	;; the trick here is set 0(CHAR.NUL) to both as a bank number and high byte of pointer.
+	;; [ptr] = $0093, [$0093] == CHAR.NUL / bank #0
 	lda #0
 	sta <.text_bank
 	sta <.p_text+1

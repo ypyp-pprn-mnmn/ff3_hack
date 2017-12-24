@@ -835,17 +835,22 @@ render_x.RENDERER_END:
 ;;+   u8 $98: cursor stop offset y
 ;;
 ;;### callers:
-;;+   `1E:9660:20 A6 AA  JSR $AAA6` @ $3c:962f menu.jobs.main_loop
+;;+   `1E:9660:20 A6 AA  JSR $AAA6` @ $3c:962f menu.jobs.main_loop (x = 0x0e)
 ;;+   `1E:9791:20 A6 AA  JSR menu.get_window_content_metric` @ $3c:9761 menu.magic.main_loop
 ;;+   `1E:A334:20 A6 AA  JSR menu.get_window_content_metric` @ $3d:a332 menu.party_summary.draw_content
-;;+   `1E:B9BC:20 A6 AA  JSR menu.get_window_content_metric` @ ?
-;;+   `1F:C02B:20 A6 AA  JSR menu.get_window_content_metric` @ ?
-menu.get_window_content_metrics:
-	DECLARE_WINDOW_VARIABLES
+;;+   `1E:B9BC:20 A6 AA  JSR menu.get_window_content_metric` @ ? name display at new game. (x = 0x22)
+;;+   `1F:C02B:20 A6 AA  JSR menu.get_window_content_metric` @ ? opening title.
+menu.get_window_content_metrics:	;;$3d:aaa6
     jsr menu.get_window_metrics     ; AAA6 20 BC AA
-	jsr field_x.shrink_window_metrics
-	rts
-	;jmp render_x.init_as_no_borders
+	jmp field_x.shrink_window_metrics
+menu_x.get_window_metrics_and_init_as_without_borders:
+;; fixups.
+	FIX_ADDR_ON_CALLER $3c,$9791+1	;;$3c:9761 menu.magic.main_loop
+	FIX_ADDR_ON_CALLER $3d,$a334+1	;;$3d:a332 menu.party_summary.draw_content
+	FIX_ADDR_ON_CALLER $3e,$c02b+1	;;opening.
+;;
+	jsr menu.get_window_content_metrics
+	jmp render_x.init_as_no_borders
     ;inc <$38    ; AAA9 E6 38
     ;inc <$39    ; AAAB E6 39
     ;lda <$3C    ; AAAD A5 3C
