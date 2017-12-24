@@ -2,6 +2,10 @@
 
 ## v0.8.1 (22/12/2017)
 
+#### bug
+
+- [**bug**] 0.8.0のonly-fast-windowがぜんぜんonlyじゃない [#38](https://github.com/ypyp-pprn-mnmn/ff3_hack/issues/38)
+
 #### feature
 
 - [**feature**] 毒ダメージのカスタマイズ性をあげる [#31](https://github.com/ypyp-pprn-mnmn/ff3_hack/issues/31)
