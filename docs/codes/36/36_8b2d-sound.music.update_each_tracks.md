@@ -1,21 +1,37 @@
 ﻿
 # $36:8b2d sound.music.update_each_tracks
-> それぞれのトラックについて音楽の再生データを更新する。
+> それぞれのトラックについて、BPMに従って音楽の再生データを更新する。
 
 ### args:
-+	in u8 $7f45: ?
-+	in,out u16 $7f46: ?
++	in u8 $7f45: BPM. beat counter delta.
+    -   bpm = (delta / 150) / 96 * (60 sec * 60 NMIs/s)
+        = (delta * 3600) / (150 * 96)
+        = (delta) / 4 (if a counter value of 96 denotes a quater note)
+        = (delta) (if a counter value of 96 denotes a whole note)
+    -   maximum number of internal counter for a note is 96 (0x60).
++	in,out u16 $7f46: beat counter, decremented by 150 on each call.
 +	out u8 $d0: track #, [0...7). music 5 channels + SE 2 channels. set to 3 on exit.
 
 ### callers:
 +	$36:8925 sound.music.update_stream
 
 ### local variables:
-+	u8 $d1: ?
++	u8 $d1: channel index.
+    -   0: DMC
+    -   1: noise
+    -   2: triangle
+    -   3: pulse2
+    -   4: pulse1
 +	u8 $d2: 0?
 
 ### notes:
-write notes here
+lengths of notes have encoded in lower 4-bits of music stream,
+which indexes predefined length lookup table (at $8805).
+The table is defined as follows:
+    `60 48 30 24 20 18 12 10 0C 09 08 06 04 03 02 01`
+
+exact playback timing is depending on how frequently this logic is called,
+and may vary in tempo if callers don't make callouts periodically.
 
 ### (pseudo)code:
 ```js
@@ -42,8 +58,8 @@ write notes here
 */
 	$d2 = 0;
 	u16($7f46) += $7f45;
-	while (u16($7f47) >= 0x96) {
-		u16($7f47) -= 0x96;
+	while (u16($7f46) >= 0x96) {
+		u16($7f46) -= 0x96;
 		$d1 = 0;
 		sound.music.update_track({track_no:$d0 = 4});	//$81e6
 		
@@ -105,4 +121,5 @@ $8bb6:
 */
 }
 ```
+
 

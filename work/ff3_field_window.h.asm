@@ -80,9 +80,9 @@ render_x.NEED_BOTTOM_BORDER = $01
 ;render_x.BUFFER_CAPACITY = $c0
 ;render_x.BUFFER_CAPACITY = $80
 ;render_x.ADDR_CAPACITY = $0c
-;; the fuel denotes available cpu cycles for rendering in
-;; units of which need to put 1 byte onto vram (= 8 cpu cycle in current impl.)
-;; as rendering occurred in NMI, there also need bookkeeping ops so that
+;; the fuel denotes available cpu cycles for rendering,
+;; in units of what required to put 1 byte onto vram (= 8 cpu cycle in current impl, thus shifted right by 3.)
+;; since rendering occurred in NMI, there also need bookkeeping ops so that
 ;; approximately the cycles below will be available for the rendering,
 ;; at the begininng of each NMI.
 ;;	18 scanlines x 113.6 cpu cycles (= 341 ppu cycles)
@@ -98,11 +98,6 @@ render_x.UNROLL_DEPTH = 3
 ;render_x.nmi.LOCALS_COUNT = $1
 ;render_x.nmi.STATE_VARIABLES_BASE = $c2
 ;render_x.nmi.STATE_VARIABLES_END = $d0
-
-;render_x.nmi.eol_offset = $80
-;render_x.nmi.sequence = $81
-;render_x.nmi.sequence_index = $82
-;render_x.nmi.target_index = $83
 ;; ------------------------------------------------------------------------------------------------
 
 ;; state controls
@@ -115,6 +110,6 @@ render_x.q.done_attrs = $c4	;;2byte. 1bit per 16x16 row. lower first.
 render_x.q.strides = $c6
 
 ;; buffer and addresses are shared among for name table and attributes.
-render_x.q.buffer = $7310	;max 0xf0 bytes = 240 titles.
+render_x.q.buffer = $7310	;max 0xf0 bytes = 240 tiles.
 render_x.temp_buffer = $07d0
     .endif  ;;_FEATURE_DEFERRED_RENDERING

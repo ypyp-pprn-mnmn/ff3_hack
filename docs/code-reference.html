@@ -8,7 +8,7 @@
     <meta name="generator" content="pandoc">
     <meta name="description" content>
     <meta name="author" content="ypyp-pprn-mnmn (aka “301”)">
-    <!-- generated-at 2017-12-25 04:53:53+0900 -->
+    <!-- generated-at 2017-12-25 20:56:28+0900 -->
     <title>FF3@FC Original Code Documentation</title>
 
     <!-- Bootstrap core CSS -->
@@ -14369,6 +14369,7 @@ $b874:
 <li>1: noise</li>
 <li>0: delta modulation</li>
 </ul></li>
+<li>in u8 $7f44: master volume?</li>
 <li>in,out $7f4a[x]: control flags. depending on the value of byte fetched from stream, some flags are set as follows:
 <ul>
 <li>01: set if [00…C0)</li>
@@ -14377,12 +14378,13 @@ $b874:
 <li>depends on the handler: [E0…FF]</li>
 </ul></li>
 <li><p>in,out ptr [$7f51.x, $7f58.x]: pointer to music stream?, its value varies in synch with music playback.</p></li>
-<li>out u8 $7f5f[x]: duration?
+<li>out u8 $7f5f[x]: note length countdown. unit = 96th of a whole note. (e.g, 24 = quarter note)
 <ul>
 <li>value looked up in static table $8805</li>
 <li>indexed by lower 4bits of command byte (or ‘note’) fetched.</li>
 <li>caller of this function decrements this by 1 on each call.</li>
 </ul></li>
+<li><p>in u8 $7f66[x]: octave value. higher value denotes higher pitch. &lt;- low 0 … 5 high -&gt;</p></li>
 <li>out u16 [$7f6d[x], $7f74[x]]: timer value.
 <ul>
 <li>will be fed into timer register on each channel. ($4002/4003, 4006/4007, 400a/400b, 400e/400f)</li>
@@ -14391,6 +14393,11 @@ $b874:
 <li>$87bd for noise</li>
 <li>unchanged for delta modulation</li>
 </ul></li>
+<li>out u8 $7fba: ?, set to 0 on exit if value of the byte fetched &lt; 0xe0.</li>
+<li>out u8 $7fc8: ?, set to 0 on exit if value of the byte fetched &lt; 0xe0.</li>
+<li>out u8 $7fdd: ?, set to 0 on exit if value of the byte fetched &lt; 0xe0.</li>
+<li>out u8 $7ff2: ?, set to 0 on exit if value of the byte fetched &lt; 0xe0.</li>
+<li><p>out u8 $7ff9: ?, set to 0 on exit if value of the byte fetched &lt; 0xe0.</p></li>
 </ul>
 <h3 id="callers-17">callers:</h3>
 <ul>
@@ -14405,11 +14412,11 @@ $b874:
 <h3 id="static-references-4">static references:</h3>
 <ul>
 <li>ptr $822f[&lt; 0x20]: pointer to some handler, indexed by command byte found in the stream.</li>
-<li>u16 $872d[12x6]: (used if $d1 &gt;= 2) timer value of the tone denoted by command byte (higher 4bits)
+<li>u16 $872d[12x6]: (used if $d1 &gt;= 2) timer values of the tone denoted by command byte (higher 4bits)
 <ul>
 <li>values are defined as follows: (bytes are swapped for readability)</li>
 <li>f = 1789773 / (16 * (1 + value_below)); f = CPU / (16 * (t + 1)); 1.789773MHz NTSC</li>
-<li><p>00FD = 440.396899606299 (hz)</p>
+<li><p>e.g., 00FD = 440.396899606299 (hz)</p>
 <pre><code>C    C#   D    D#   E    F    F#   G    G#   A    A#   B
 06AB 064D 05F3 059D 054C 0501 04B8 0474 0434 03F7 03BE 0388
 0355 0326 02F9 02CE 02A6 0280 025C 023A 0219 01FB 01DE 01C4 
@@ -14418,7 +14425,7 @@ $b874:
 006A 0064 005E 0059 0054 004F 004B 0046 0042 003E 003B 0038
 0034 0031 002F 002C 0029 0027 0025 0023 0021 001F 001D 001B </code></pre></li>
 </ul></li>
-<li>u8 $87bd[12x?]: (used if $d1 == 1) timer value?</li>
+<li>u8 $87bd[12x?]: (used if $d1 == 1) timer values of the tone denoted by command byte (higher 4bits), for noise channel.</li>
 <li>u8 $8805[&lt; 0x10]: some enum value, indxed by lower 4bits of command byte fetched.
 <ul>
 <li>values are: <code>60 48 30 24 20 18 12 10 0C 09 08 06 04 03 02 01</code></li>
@@ -14426,144 +14433,190 @@ $b874:
 </ul>
 <h3 id="code-139">code</h3>
 <pre class="sourceCode js" id="cb422"><code class="sourceCode javascript"><div class="sourceLine" id="cb422-1" data-line-number="1"><span class="op">{</span></div>
-<div class="sourceLine" id="cb422-2" data-line-number="2">    $d3<span class="op">,</span>d4 <span class="op">=</span> <span class="va">$7f51</span>.<span class="at">x</span><span class="op">,</span><span class="va">$7f58</span>.<span class="at">x</span></div>
+<div class="sourceLine" id="cb422-2" data-line-number="2">    [$d3<span class="op">,</span> $d4] <span class="op">=</span> [<span class="va">$7f51</span>.<span class="at">x</span><span class="op">,</span> <span class="va">$7f58</span>.<span class="at">x</span>]<span class="op">;</span></div>
 <div class="sourceLine" id="cb422-3" data-line-number="3">    y <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></div>
 <div class="sourceLine" id="cb422-4" data-line-number="4">    a <span class="op">=</span> $d3[y]<span class="op">;</span> y<span class="op">++;</span></div>
-<div class="sourceLine" id="cb422-5" data-line-number="5">    <span class="cf">if</span> (a <span class="op">&lt;</span> #e0) $826f</div>
+<div class="sourceLine" id="cb422-5" data-line-number="5">    <span class="cf">if</span> (a <span class="op">&gt;=</span> <span class="bn">0xe0</span>) <span class="op">{</span> </div>
 <div class="sourceLine" id="cb422-6" data-line-number="6"><span class="dt">$821e</span><span class="op">:</span></div>
-<div class="sourceLine" id="cb422-7" data-line-number="7">    x <span class="op">=</span> (a <span class="op">-</span> #e0) <span class="op">&lt;&lt;</span> <span class="dv">1</span><span class="op">;</span></div>
-<div class="sourceLine" id="cb422-8" data-line-number="8">    $d8<span class="op">,</span>d9 <span class="op">=</span> <span class="va">$822f</span>.<span class="at">x</span><span class="op">,</span><span class="va">$8230</span>.<span class="at">x</span></div>
-<div class="sourceLine" id="cb422-9" data-line-number="9">    (<span class="op">*</span>$d8)()<span class="op">;</span></div>
-<div class="sourceLine" id="cb422-10" data-line-number="10"><span class="co">/*</span></div>
-<div class="sourceLine" id="cb422-11" data-line-number="11"><span class="co">; ----------------------------------------------------------------------------</span></div>
-<div class="sourceLine" id="cb422-12" data-line-number="12"><span class="co">    lda $7F51,x ; 820B BD 51 7F</span></div>
-<div class="sourceLine" id="cb422-13" data-line-number="13"><span class="co">    sta &lt;$D3     ; 820E 85 D3</span></div>
-<div class="sourceLine" id="cb422-14" data-line-number="14"><span class="co">    lda $7F58,x ; 8210 BD 58 7F</span></div>
-<div class="sourceLine" id="cb422-15" data-line-number="15"><span class="co">    sta &lt;$D4     ; 8213 85 D4</span></div>
-<div class="sourceLine" id="cb422-16" data-line-number="16"><span class="co">    ldy #$00    ; 8215 A0 00</span></div>
-<div class="sourceLine" id="cb422-17" data-line-number="17"><span class="co">.L_8217:</span></div>
-<div class="sourceLine" id="cb422-18" data-line-number="18"><span class="co">    lda [$D3],y ; 8217 B1 D3</span></div>
-<div class="sourceLine" id="cb422-19" data-line-number="19"><span class="co">    iny             ; 8219 C8</span></div>
-<div class="sourceLine" id="cb422-20" data-line-number="20"><span class="co">    cmp #$E0    ; 821A C9 E0</span></div>
-<div class="sourceLine" id="cb422-21" data-line-number="21"><span class="co">    bcc .L_826F   ; 821C 90 51</span></div>
-<div class="sourceLine" id="cb422-22" data-line-number="22"><span class="co">        sbc #$E0    ; 821E E9 E0</span></div>
-<div class="sourceLine" id="cb422-23" data-line-number="23"><span class="co">        asl a       ; 8220 0A</span></div>
-<div class="sourceLine" id="cb422-24" data-line-number="24"><span class="co">        tax             ; 8221 AA</span></div>
-<div class="sourceLine" id="cb422-25" data-line-number="25"><span class="co">        lda .L_822F,x ; 8222 BD 2F 82</span></div>
-<div class="sourceLine" id="cb422-26" data-line-number="26"><span class="co">        sta .L_00D8   ; 8225 85 D8</span></div>
-<div class="sourceLine" id="cb422-27" data-line-number="27"><span class="co">        lda .L_8230,x ; 8227 BD 30 82</span></div>
-<div class="sourceLine" id="cb422-28" data-line-number="28"><span class="co">        sta &lt;$D9     ; 822A 85 D9</span></div>
-<div class="sourceLine" id="cb422-29" data-line-number="29"><span class="co">        jmp (.L_00D8) ; 822C 6C D8 00</span></div>
-<div class="sourceLine" id="cb422-30" data-line-number="30"><span class="co">; ----------------------------------------------------------------------------</span></div>
-<div class="sourceLine" id="cb422-31" data-line-number="31"><span class="co">.L_826F:</span></div>
-<div class="sourceLine" id="cb422-32" data-line-number="32"><span class="co">    sta &lt;$D5     ; 826F 85 D5</span></div>
-<div class="sourceLine" id="cb422-33" data-line-number="33"><span class="co">    ldx &lt;$D0     ; 8271 A6 D0</span></div>
-<div class="sourceLine" id="cb422-34" data-line-number="34"><span class="co">    tya             ; 8273 98</span></div>
-<div class="sourceLine" id="cb422-35" data-line-number="35"><span class="co">    clc             ; 8274 18</span></div>
-<div class="sourceLine" id="cb422-36" data-line-number="36"><span class="co">    adc &lt;$D3     ; 8275 65 D3</span></div>
-<div class="sourceLine" id="cb422-37" data-line-number="37"><span class="co">    sta &lt;$D3     ; 8277 85 D3</span></div>
-<div class="sourceLine" id="cb422-38" data-line-number="38"><span class="co">    sta $7F51,x ; 8279 9D 51 7F</span></div>
-<div class="sourceLine" id="cb422-39" data-line-number="39"><span class="co">    lda &lt;$D4     ; 827C A5 D4</span></div>
-<div class="sourceLine" id="cb422-40" data-line-number="40"><span class="co">    adc #$00    ; 827E 69 00</span></div>
-<div class="sourceLine" id="cb422-41" data-line-number="41"><span class="co">    sta &lt;$D4     ; 8280 85 D4</span></div>
-<div class="sourceLine" id="cb422-42" data-line-number="42"><span class="co">    sta $7F58,x ; 8282 9D 58 7F</span></div>
-<div class="sourceLine" id="cb422-43" data-line-number="43"><span class="co">    lda &lt;$D5     ; 8285 A5 D5</span></div>
-<div class="sourceLine" id="cb422-44" data-line-number="44"><span class="co">    and #$0F    ; 8287 29 0F</span></div>
-<div class="sourceLine" id="cb422-45" data-line-number="45"><span class="co">    tay             ; 8289 A8</span></div>
-<div class="sourceLine" id="cb422-46" data-line-number="46"><span class="co">    lda .L_8805,y ; 828A B9 05 88</span></div>
-<div class="sourceLine" id="cb422-47" data-line-number="47"><span class="co">    sta $7F5F,x ; 828D 9D 5F 7F</span></div>
-<div class="sourceLine" id="cb422-48" data-line-number="48"><span class="co">    lda &lt;$D5     ; 8290 A5 D5</span></div>
-<div class="sourceLine" id="cb422-49" data-line-number="49"><span class="co">    cmp #$D0    ; 8292 C9 D0</span></div>
-<div class="sourceLine" id="cb422-50" data-line-number="50"><span class="co">    bcs .L_82E9   ; 8294 B0 53</span></div>
-<div class="sourceLine" id="cb422-51" data-line-number="51"><span class="co">        cmp #$C0    ; 8296 C9 C0</span></div>
-<div class="sourceLine" id="cb422-52" data-line-number="52"><span class="co">        bcs .L_8307   ; 8298 B0 6D</span></div>
-<div class="sourceLine" id="cb422-53" data-line-number="53"><span class="co">            lda $7F4A,x ; 829A BD 4A 7F</span></div>
-<div class="sourceLine" id="cb422-54" data-line-number="54"><span class="co">            ora #$01    ; 829D 09 01</span></div>
-<div class="sourceLine" id="cb422-55" data-line-number="55"><span class="co">            and #$FD    ; 829F 29 FD</span></div>
-<div class="sourceLine" id="cb422-56" data-line-number="56"><span class="co">            sta $7F4A,x ; 82A1 9D 4A 7F</span></div>
-<div class="sourceLine" id="cb422-57" data-line-number="57"><span class="co">            lda #$00    ; 82A4 A9 00</span></div>
-<div class="sourceLine" id="cb422-58" data-line-number="58"><span class="co">            sta $7FBA,x ; 82A6 9D BA 7F</span></div>
-<div class="sourceLine" id="cb422-59" data-line-number="59"><span class="co">            sta $7FC8,x ; 82A9 9D C8 7F</span></div>
-<div class="sourceLine" id="cb422-60" data-line-number="60"><span class="co">            sta $7FDD,x ; 82AC 9D DD 7F</span></div>
-<div class="sourceLine" id="cb422-61" data-line-number="61"><span class="co">            sta $7FF9,x ; 82AF 9D F9 7F</span></div>
-<div class="sourceLine" id="cb422-62" data-line-number="62"><span class="co">            sta $7FF2,x ; 82B2 9D F2 7F</span></div>
-<div class="sourceLine" id="cb422-63" data-line-number="63"><span class="co">            lda &lt;$D1     ; 82B5 A5 D1</span></div>
-<div class="sourceLine" id="cb422-64" data-line-number="64"><span class="co">            beq .L_8310   ; 82B7 F0 57</span></div>
-<div class="sourceLine" id="cb422-65" data-line-number="65"><span class="co">                </span></div>
-<div class="sourceLine" id="cb422-66" data-line-number="66"><span class="co">            cmp #$02    ; 82B9 C9 02</span></div>
-<div class="sourceLine" id="cb422-67" data-line-number="67"><span class="co">            beq .L_82C6   ; 82BB F0 09</span></div>
-<div class="sourceLine" id="cb422-68" data-line-number="68"><span class="co">            </span></div>
-<div class="sourceLine" id="cb422-69" data-line-number="69"><span class="co">                jsr .L_831D   ; 82BD 20 1D 83</span></div>
-<div class="sourceLine" id="cb422-70" data-line-number="70"><span class="co">                lda &lt;$D1     ; 82C0 A5 D1</span></div>
-<div class="sourceLine" id="cb422-71" data-line-number="71"><span class="co">                cmp #$01    ; 82C2 C9 01</span></div>
-<div class="sourceLine" id="cb422-72" data-line-number="72"><span class="co">                beq .L_82EA   ; 82C4 F0 24</span></div>
-<div class="sourceLine" id="cb422-73" data-line-number="73"><span class="co">        .L_82C6:</span></div>
-<div class="sourceLine" id="cb422-74" data-line-number="74"><span class="co">        ;; $d1 &gt;= 0x03 || $d1 == 2</span></div>
-<div class="sourceLine" id="cb422-75" data-line-number="75"><span class="co">            lda $7F66,x ; 82C6 BD 66 7F</span></div>
-<div class="sourceLine" id="cb422-76" data-line-number="76"><span class="co">            asl a       ; 82C9 0A</span></div>
-<div class="sourceLine" id="cb422-77" data-line-number="77"><span class="co">            asl a       ; 82CA 0A</span></div>
-<div class="sourceLine" id="cb422-78" data-line-number="78"><span class="co">            sta .L_00D6   ; 82CB 85 D6</span></div>
-<div class="sourceLine" id="cb422-79" data-line-number="79"><span class="co">            ;; A / $d6 = $7f66 x 4</span></div>
-<div class="sourceLine" id="cb422-80" data-line-number="80"><span class="co">            asl a       ; 82CD 0A</span></div>
-<div class="sourceLine" id="cb422-81" data-line-number="81"><span class="co">            ;; A = $7f66 x 8</span></div>
-<div class="sourceLine" id="cb422-82" data-line-number="82"><span class="co">            adc .L_00D6   ; 82CE 65 D6</span></div>
-<div class="sourceLine" id="cb422-83" data-line-number="83"><span class="co">            sta .L_00D6   ; 82D0 85 D6</span></div>
-<div class="sourceLine" id="cb422-84" data-line-number="84"><span class="co">            ;; $d6 = $7f66 x 12</span></div>
-<div class="sourceLine" id="cb422-85" data-line-number="85"><span class="co">            lda &lt;$D5     ; 82D2 A5 D5</span></div>
-<div class="sourceLine" id="cb422-86" data-line-number="86"><span class="co">            lsr a       ; 82D4 4A</span></div>
-<div class="sourceLine" id="cb422-87" data-line-number="87"><span class="co">            lsr a       ; 82D5 4A</span></div>
-<div class="sourceLine" id="cb422-88" data-line-number="88"><span class="co">            lsr a       ; 82D6 4A</span></div>
-<div class="sourceLine" id="cb422-89" data-line-number="89"><span class="co">            lsr a       ; 82D7 4A</span></div>
-<div class="sourceLine" id="cb422-90" data-line-number="90"><span class="co">            clc             ; 82D8 18</span></div>
-<div class="sourceLine" id="cb422-91" data-line-number="91"><span class="co">            adc .L_00D6   ; 82D9 65 D6</span></div>
-<div class="sourceLine" id="cb422-92" data-line-number="92"><span class="co">            asl a       ; 82DB 0A</span></div>
-<div class="sourceLine" id="cb422-93" data-line-number="93"><span class="co">            tay             ; 82DC A8</span></div>
-<div class="sourceLine" id="cb422-94" data-line-number="94"><span class="co">            ;; $d5 := always &lt; 0xc0.</span></div>
-<div class="sourceLine" id="cb422-95" data-line-number="95"><span class="co">            ;; Y = (($7f66 x 12) + ($d5 &gt;&gt; 4)) &lt;&lt; 1</span></div>
-<div class="sourceLine" id="cb422-96" data-line-number="96"><span class="co">            ;; Y = pitch or note??, $7f66 = octave?</span></div>
-<div class="sourceLine" id="cb422-97" data-line-number="97"><span class="co">            lda .L_872D,y ; 82DD B9 2D 87</span></div>
-<div class="sourceLine" id="cb422-98" data-line-number="98"><span class="co">            sta $7F6D,x ; 82E0 9D 6D 7F</span></div>
-<div class="sourceLine" id="cb422-99" data-line-number="99"><span class="co">            lda .L_872E,y ; 82E3 B9 2E 87</span></div>
-<div class="sourceLine" id="cb422-100" data-line-number="100"><span class="co">            sta $7F74,x ; 82E6 9D 74 7F</span></div>
-<div class="sourceLine" id="cb422-101" data-line-number="101"><span class="co">.L_82E9:</span></div>
-<div class="sourceLine" id="cb422-102" data-line-number="102"><span class="co">    rts             ; 82E9 60</span></div>
-<div class="sourceLine" id="cb422-103" data-line-number="103"><span class="co">; ----------------------------------------------------------------------------</span></div>
-<div class="sourceLine" id="cb422-104" data-line-number="104"><span class="co">.L_82EA:</span></div>
-<div class="sourceLine" id="cb422-105" data-line-number="105"><span class="co">                    lda $7F66,x ; 82EA BD 66 7F</span></div>
-<div class="sourceLine" id="cb422-106" data-line-number="106"><span class="co">                    asl a       ; 82ED 0A</span></div>
-<div class="sourceLine" id="cb422-107" data-line-number="107"><span class="co">                    asl a       ; 82EE 0A</span></div>
-<div class="sourceLine" id="cb422-108" data-line-number="108"><span class="co">                    sta .L_00D6   ; 82EF 85 D6</span></div>
-<div class="sourceLine" id="cb422-109" data-line-number="109"><span class="co">                    asl a       ; 82F1 0A</span></div>
-<div class="sourceLine" id="cb422-110" data-line-number="110"><span class="co">                    adc .L_00D6   ; 82F2 65 D6</span></div>
-<div class="sourceLine" id="cb422-111" data-line-number="111"><span class="co">                    sta .L_00D6   ; 82F4 85 D6</span></div>
-<div class="sourceLine" id="cb422-112" data-line-number="112"><span class="co">                    lda &lt;$D5     ; 82F6 A5 D5</span></div>
-<div class="sourceLine" id="cb422-113" data-line-number="113"><span class="co">                    lsr a       ; 82F8 4A</span></div>
-<div class="sourceLine" id="cb422-114" data-line-number="114"><span class="co">                    lsr a       ; 82F9 4A</span></div>
-<div class="sourceLine" id="cb422-115" data-line-number="115"><span class="co">                    lsr a       ; 82FA 4A</span></div>
-<div class="sourceLine" id="cb422-116" data-line-number="116"><span class="co">                    lsr a       ; 82FB 4A</span></div>
-<div class="sourceLine" id="cb422-117" data-line-number="117"><span class="co">                    clc             ; 82FC 18</span></div>
-<div class="sourceLine" id="cb422-118" data-line-number="118"><span class="co">                    adc .L_00D6   ; 82FD 65 D6</span></div>
-<div class="sourceLine" id="cb422-119" data-line-number="119"><span class="co">                    tay             ; 82FF A8</span></div>
-<div class="sourceLine" id="cb422-120" data-line-number="120"><span class="co">                    lda .L_87BD,y ; 8300 B9 BD 87</span></div>
-<div class="sourceLine" id="cb422-121" data-line-number="121"><span class="co">                    sta $7F6D,x ; 8303 9D 6D 7F</span></div>
-<div class="sourceLine" id="cb422-122" data-line-number="122"><span class="co">                    rts             ; 8306 60</span></div>
-<div class="sourceLine" id="cb422-123" data-line-number="123"><span class="co">; ----------------------------------------------------------------------------</span></div>
-<div class="sourceLine" id="cb422-124" data-line-number="124"><span class="co">.L_8307:</span></div>
-<div class="sourceLine" id="cb422-125" data-line-number="125"><span class="co">          lda $7F4A,x ; 8307 BD 4A 7F</span></div>
-<div class="sourceLine" id="cb422-126" data-line-number="126"><span class="co">          ora #$02    ; 830A 09 02</span></div>
-<div class="sourceLine" id="cb422-127" data-line-number="127"><span class="co">          sta $7F4A,x ; 830C 9D 4A 7F</span></div>
-<div class="sourceLine" id="cb422-128" data-line-number="128"><span class="co">          rts             ; 830F 60</span></div>
-<div class="sourceLine" id="cb422-129" data-line-number="129"><span class="co">; ----------------------------------------------------------------------------</span></div>
-<div class="sourceLine" id="cb422-130" data-line-number="130"><span class="co">.L_8310:</span></div>
-<div class="sourceLine" id="cb422-131" data-line-number="131"><span class="co">    lda $7F44   ; 8310 AD 44 7F</span></div>
-<div class="sourceLine" id="cb422-132" data-line-number="132"><span class="co">    cmp #$05    ; 8313 C9 05</span></div>
-<div class="sourceLine" id="cb422-133" data-line-number="133"><span class="co">    bcc .L_831C   ; 8315 90 05</span></div>
-<div class="sourceLine" id="cb422-134" data-line-number="134"><span class="co">        lda #$FF    ; 8317 A9 FF</span></div>
-<div class="sourceLine" id="cb422-135" data-line-number="135"><span class="co">        sta $4011   ; 8319 8D 11 40</span></div>
-<div class="sourceLine" id="cb422-136" data-line-number="136"><span class="co">.L_831C:</span></div>
-<div class="sourceLine" id="cb422-137" data-line-number="137"><span class="co">    rts             ; 831C 60</span></div>
-<div class="sourceLine" id="cb422-138" data-line-number="138"><span class="co">*/</span></div>
-<div class="sourceLine" id="cb422-139" data-line-number="139"><span class="op">}</span></div></code></pre>
+<div class="sourceLine" id="cb422-7" data-line-number="7">        x <span class="op">=</span> (a <span class="op">-</span> <span class="bn">0xe0</span>) <span class="op">&lt;&lt;</span> <span class="dv">1</span><span class="op">;</span></div>
+<div class="sourceLine" id="cb422-8" data-line-number="8">        [$d8<span class="op">,</span> $d9] <span class="op">=</span> [<span class="va">$822f</span>.<span class="at">x</span><span class="op">,</span> <span class="va">$8230</span>.<span class="at">x</span>]<span class="op">;</span></div>
+<div class="sourceLine" id="cb422-9" data-line-number="9">        <span class="cf">return</span> ($d8)()<span class="op">;</span></div>
+<div class="sourceLine" id="cb422-10" data-line-number="10">    <span class="op">}</span></div>
+<div class="sourceLine" id="cb422-11" data-line-number="11"><span class="dt">$826f</span><span class="op">:</span></div>
+<div class="sourceLine" id="cb422-12" data-line-number="12">    <span class="co">// a &lt; 0xE0</span></div>
+<div class="sourceLine" id="cb422-13" data-line-number="13">    $d5 <span class="op">=</span> a<span class="op">;</span></div>
+<div class="sourceLine" id="cb422-14" data-line-number="14">    a <span class="op">=</span> y<span class="op">;</span>  <span class="co">//a == 1</span></div>
+<div class="sourceLine" id="cb422-15" data-line-number="15">    <span class="at">u16</span>($d3) <span class="op">+=</span> a<span class="op">;</span></div>
+<div class="sourceLine" id="cb422-16" data-line-number="16">    <span class="at">u16</span>([<span class="va">$7f51</span>.<span class="at">x</span><span class="op">,</span> <span class="va">$7f58</span>.<span class="at">x</span>]) <span class="op">+=</span> a<span class="op">;</span></div>
+<div class="sourceLine" id="cb422-17" data-line-number="17">    y <span class="op">=</span> $d5 <span class="op">&amp;</span> <span class="bn">0x0f</span><span class="op">;</span></div>
+<div class="sourceLine" id="cb422-18" data-line-number="18">    <span class="va">$7f5f</span>.<span class="at">x</span> <span class="op">=</span> <span class="va">$8805</span>.<span class="at">y</span><span class="op">;</span>  <span class="co">//note length. (=&gt; beat counter)</span></div>
+<div class="sourceLine" id="cb422-19" data-line-number="19">    <span class="cf">if</span> ($d5 <span class="op">&gt;=</span> <span class="bn">0xd0</span>) <span class="op">{</span></div>
+<div class="sourceLine" id="cb422-20" data-line-number="20">        <span class="cf">return</span><span class="op">;</span></div>
+<div class="sourceLine" id="cb422-21" data-line-number="21">    <span class="op">}</span> <span class="cf">else</span> <span class="cf">if</span> ($d5 <span class="op">&gt;=</span> <span class="bn">0xc0</span>) <span class="op">{</span></div>
+<div class="sourceLine" id="cb422-22" data-line-number="22">        <span class="va">$7f4a</span>.<span class="at">x</span> <span class="op">|=</span> <span class="bn">0x02</span><span class="op">;</span></div>
+<div class="sourceLine" id="cb422-23" data-line-number="23">        <span class="cf">return</span><span class="op">;</span></div>
+<div class="sourceLine" id="cb422-24" data-line-number="24">    <span class="op">}</span></div>
+<div class="sourceLine" id="cb422-25" data-line-number="25"><span class="dt">$829a</span><span class="op">:</span></div>
+<div class="sourceLine" id="cb422-26" data-line-number="26">    <span class="co">// $d5 &lt; 0xc0</span></div>
+<div class="sourceLine" id="cb422-27" data-line-number="27">    <span class="va">$7f4a</span>.<span class="at">x</span> <span class="op">=</span> (<span class="va">$7f4a</span>.<span class="at">x</span> <span class="op">|</span> <span class="bn">0x01</span>) <span class="op">&amp;</span> (<span class="op">~</span><span class="bn">0x02</span>)<span class="op">;</span></div>
+<div class="sourceLine" id="cb422-28" data-line-number="28">    <span class="va">$7fba</span>.<span class="at">x</span> <span class="op">=</span></div>
+<div class="sourceLine" id="cb422-29" data-line-number="29">    <span class="va">$7fc8</span>.<span class="at">x</span> <span class="op">=</span></div>
+<div class="sourceLine" id="cb422-30" data-line-number="30">    <span class="va">$7fdd</span>.<span class="at">x</span> <span class="op">=</span></div>
+<div class="sourceLine" id="cb422-31" data-line-number="31">    <span class="va">$7ff9</span>.<span class="at">x</span> <span class="op">=</span></div>
+<div class="sourceLine" id="cb422-32" data-line-number="32">    <span class="va">$7ff2</span>.<span class="at">x</span> <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></div>
+<div class="sourceLine" id="cb422-33" data-line-number="33">    <span class="cf">if</span> ($d1 <span class="op">==</span> <span class="dv">0</span>) <span class="op">{</span></div>
+<div class="sourceLine" id="cb422-34" data-line-number="34"><span class="dt">$8310</span><span class="op">:</span>  <span class="co">//DMC</span></div>
+<div class="sourceLine" id="cb422-35" data-line-number="35">        <span class="cf">if</span> ($7f44 <span class="op">&gt;=</span> <span class="bn">0x05</span>) <span class="op">{</span></div>
+<div class="sourceLine" id="cb422-36" data-line-number="36">            $4011 <span class="op">=</span> <span class="bn">0xff</span><span class="op">;</span></div>
+<div class="sourceLine" id="cb422-37" data-line-number="37">        <span class="op">}</span></div>
+<div class="sourceLine" id="cb422-38" data-line-number="38"><span class="dt">$831c</span><span class="op">:</span></div>
+<div class="sourceLine" id="cb422-39" data-line-number="39">        <span class="cf">return</span><span class="op">;</span></div>
+<div class="sourceLine" id="cb422-40" data-line-number="40">    <span class="op">}</span></div>
+<div class="sourceLine" id="cb422-41" data-line-number="41">    <span class="cf">if</span> ($d1 <span class="op">!=</span> <span class="dv">2</span>) <span class="op">{</span></div>
+<div class="sourceLine" id="cb422-42" data-line-number="42"><span class="dt">$82bd</span><span class="op">:</span></div>
+<div class="sourceLine" id="cb422-43" data-line-number="43">        <span class="at">$831d</span>()<span class="op">;</span></div>
+<div class="sourceLine" id="cb422-44" data-line-number="44">        <span class="cf">if</span> ($d1 <span class="op">==</span> <span class="dv">1</span>) <span class="op">{</span></div>
+<div class="sourceLine" id="cb422-45" data-line-number="45"><span class="dt">$82ea</span><span class="op">:</span>  <span class="co">//noise</span></div>
+<div class="sourceLine" id="cb422-46" data-line-number="46">            y <span class="op">=</span> $d6 <span class="op">=</span> ($7f66 <span class="op">*</span> <span class="dv">12</span>) <span class="op">+</span> ($d5 <span class="op">&gt;&gt;</span> <span class="dv">4</span>)<span class="op">;</span></div>
+<div class="sourceLine" id="cb422-47" data-line-number="47">            <span class="va">$7f6d</span>.<span class="at">x</span> <span class="op">=</span> <span class="va">$87bd</span>.<span class="at">y</span><span class="op">;</span>  <span class="co">//pitch</span></div>
+<div class="sourceLine" id="cb422-48" data-line-number="48">            <span class="cf">return</span><span class="op">;</span></div>
+<div class="sourceLine" id="cb422-49" data-line-number="49">        <span class="op">}</span></div>
+<div class="sourceLine" id="cb422-50" data-line-number="50">    <span class="op">}</span></div>
+<div class="sourceLine" id="cb422-51" data-line-number="51"><span class="dt">$82c6</span><span class="op">:</span>  <span class="co">//pulse1,pulse2,triangle</span></div>
+<div class="sourceLine" id="cb422-52" data-line-number="52">    y <span class="op">=</span> $d6 <span class="op">=</span> ($7f66 <span class="op">*</span> <span class="dv">12</span>) <span class="op">+</span> ($d5 <span class="op">&gt;&gt;</span> <span class="dv">4</span>)<span class="op">;</span></div>
+<div class="sourceLine" id="cb422-53" data-line-number="53">    <span class="va">$7f6d</span>.<span class="at">x</span> <span class="op">=</span> <span class="va">$872d</span>.<span class="at">y</span><span class="op">;</span>  <span class="co">//pitch (=&gt; timer legnth low)</span></div>
+<div class="sourceLine" id="cb422-54" data-line-number="54">    <span class="va">$7f74</span>.<span class="at">x</span> <span class="op">=</span> <span class="va">$872e</span>.<span class="at">y</span><span class="op">;</span>  <span class="co">//pitch (=&gt; timer length high)</span></div>
+<div class="sourceLine" id="cb422-55" data-line-number="55">    <span class="cf">return</span><span class="op">;</span></div>
+<div class="sourceLine" id="cb422-56" data-line-number="56"><span class="co">/*</span></div>
+<div class="sourceLine" id="cb422-57" data-line-number="57"><span class="co">; ----------------------------------------------------------------------------</span></div>
+<div class="sourceLine" id="cb422-58" data-line-number="58"><span class="co">    lda $7F51,x ; 820B BD 51 7F</span></div>
+<div class="sourceLine" id="cb422-59" data-line-number="59"><span class="co">    sta &lt;$D3     ; 820E 85 D3</span></div>
+<div class="sourceLine" id="cb422-60" data-line-number="60"><span class="co">    lda $7F58,x ; 8210 BD 58 7F</span></div>
+<div class="sourceLine" id="cb422-61" data-line-number="61"><span class="co">    sta &lt;$D4     ; 8213 85 D4</span></div>
+<div class="sourceLine" id="cb422-62" data-line-number="62"><span class="co">    ldy #$00    ; 8215 A0 00</span></div>
+<div class="sourceLine" id="cb422-63" data-line-number="63"><span class="co">.L_8217:</span></div>
+<div class="sourceLine" id="cb422-64" data-line-number="64"><span class="co">    lda [$D3],y ; 8217 B1 D3</span></div>
+<div class="sourceLine" id="cb422-65" data-line-number="65"><span class="co">    iny             ; 8219 C8</span></div>
+<div class="sourceLine" id="cb422-66" data-line-number="66"><span class="co">    cmp #$E0    ; 821A C9 E0</span></div>
+<div class="sourceLine" id="cb422-67" data-line-number="67"><span class="co">    bcc .L_826F   ; 821C 90 51</span></div>
+<div class="sourceLine" id="cb422-68" data-line-number="68"><span class="co">        sbc #$E0    ; 821E E9 E0</span></div>
+<div class="sourceLine" id="cb422-69" data-line-number="69"><span class="co">        asl a       ; 8220 0A</span></div>
+<div class="sourceLine" id="cb422-70" data-line-number="70"><span class="co">        tax             ; 8221 AA</span></div>
+<div class="sourceLine" id="cb422-71" data-line-number="71"><span class="co">        lda .L_822F,x ; 8222 BD 2F 82</span></div>
+<div class="sourceLine" id="cb422-72" data-line-number="72"><span class="co">        sta .L_00D8   ; 8225 85 D8</span></div>
+<div class="sourceLine" id="cb422-73" data-line-number="73"><span class="co">        lda .L_8230,x ; 8227 BD 30 82</span></div>
+<div class="sourceLine" id="cb422-74" data-line-number="74"><span class="co">        sta &lt;$D9     ; 822A 85 D9</span></div>
+<div class="sourceLine" id="cb422-75" data-line-number="75"><span class="co">        jmp (.L_00D8) ; 822C 6C D8 00</span></div>
+<div class="sourceLine" id="cb422-76" data-line-number="76"><span class="co">; ----------------------------------------------------------------------------</span></div>
+<div class="sourceLine" id="cb422-77" data-line-number="77"><span class="co">.L_826F:</span></div>
+<div class="sourceLine" id="cb422-78" data-line-number="78"><span class="co">    sta &lt;$D5     ; 826F 85 D5</span></div>
+<div class="sourceLine" id="cb422-79" data-line-number="79"><span class="co">    ldx &lt;$D0     ; 8271 A6 D0</span></div>
+<div class="sourceLine" id="cb422-80" data-line-number="80"><span class="co">    tya             ; 8273 98</span></div>
+<div class="sourceLine" id="cb422-81" data-line-number="81"><span class="co">    clc             ; 8274 18</span></div>
+<div class="sourceLine" id="cb422-82" data-line-number="82"><span class="co">    adc &lt;$D3     ; 8275 65 D3</span></div>
+<div class="sourceLine" id="cb422-83" data-line-number="83"><span class="co">    sta &lt;$D3     ; 8277 85 D3</span></div>
+<div class="sourceLine" id="cb422-84" data-line-number="84"><span class="co">    sta $7F51,x ; 8279 9D 51 7F</span></div>
+<div class="sourceLine" id="cb422-85" data-line-number="85"><span class="co">    lda &lt;$D4     ; 827C A5 D4</span></div>
+<div class="sourceLine" id="cb422-86" data-line-number="86"><span class="co">    adc #$00    ; 827E 69 00</span></div>
+<div class="sourceLine" id="cb422-87" data-line-number="87"><span class="co">    sta &lt;$D4     ; 8280 85 D4</span></div>
+<div class="sourceLine" id="cb422-88" data-line-number="88"><span class="co">    sta $7F58,x ; 8282 9D 58 7F</span></div>
+<div class="sourceLine" id="cb422-89" data-line-number="89"><span class="co">    lda &lt;$D5     ; 8285 A5 D5</span></div>
+<div class="sourceLine" id="cb422-90" data-line-number="90"><span class="co">    and #$0F    ; 8287 29 0F</span></div>
+<div class="sourceLine" id="cb422-91" data-line-number="91"><span class="co">    tay             ; 8289 A8</span></div>
+<div class="sourceLine" id="cb422-92" data-line-number="92"><span class="co">    lda .L_8805,y ; 828A B9 05 88</span></div>
+<div class="sourceLine" id="cb422-93" data-line-number="93"><span class="co">    sta $7F5F,x ; 828D 9D 5F 7F</span></div>
+<div class="sourceLine" id="cb422-94" data-line-number="94"><span class="co">    lda &lt;$D5     ; 8290 A5 D5</span></div>
+<div class="sourceLine" id="cb422-95" data-line-number="95"><span class="co">    cmp #$D0    ; 8292 C9 D0</span></div>
+<div class="sourceLine" id="cb422-96" data-line-number="96"><span class="co">    bcs .L_82E9   ; 8294 B0 53</span></div>
+<div class="sourceLine" id="cb422-97" data-line-number="97"><span class="co">        cmp #$C0    ; 8296 C9 C0</span></div>
+<div class="sourceLine" id="cb422-98" data-line-number="98"><span class="co">        bcs .L_8307   ; 8298 B0 6D</span></div>
+<div class="sourceLine" id="cb422-99" data-line-number="99"><span class="co">            lda $7F4A,x ; 829A BD 4A 7F</span></div>
+<div class="sourceLine" id="cb422-100" data-line-number="100"><span class="co">            ora #$01    ; 829D 09 01</span></div>
+<div class="sourceLine" id="cb422-101" data-line-number="101"><span class="co">            and #$FD    ; 829F 29 FD</span></div>
+<div class="sourceLine" id="cb422-102" data-line-number="102"><span class="co">            sta $7F4A,x ; 82A1 9D 4A 7F</span></div>
+<div class="sourceLine" id="cb422-103" data-line-number="103"><span class="co">            lda #$00    ; 82A4 A9 00</span></div>
+<div class="sourceLine" id="cb422-104" data-line-number="104"><span class="co">            sta $7FBA,x ; 82A6 9D BA 7F</span></div>
+<div class="sourceLine" id="cb422-105" data-line-number="105"><span class="co">            sta $7FC8,x ; 82A9 9D C8 7F</span></div>
+<div class="sourceLine" id="cb422-106" data-line-number="106"><span class="co">            sta $7FDD,x ; 82AC 9D DD 7F</span></div>
+<div class="sourceLine" id="cb422-107" data-line-number="107"><span class="co">            sta $7FF9,x ; 82AF 9D F9 7F</span></div>
+<div class="sourceLine" id="cb422-108" data-line-number="108"><span class="co">            sta $7FF2,x ; 82B2 9D F2 7F</span></div>
+<div class="sourceLine" id="cb422-109" data-line-number="109"><span class="co">            lda &lt;$D1     ; 82B5 A5 D1</span></div>
+<div class="sourceLine" id="cb422-110" data-line-number="110"><span class="co">            beq .L_8310   ; 82B7 F0 57</span></div>
+<div class="sourceLine" id="cb422-111" data-line-number="111"><span class="co">                </span></div>
+<div class="sourceLine" id="cb422-112" data-line-number="112"><span class="co">            cmp #$02    ; 82B9 C9 02</span></div>
+<div class="sourceLine" id="cb422-113" data-line-number="113"><span class="co">            beq .L_82C6   ; 82BB F0 09</span></div>
+<div class="sourceLine" id="cb422-114" data-line-number="114"><span class="co">            </span></div>
+<div class="sourceLine" id="cb422-115" data-line-number="115"><span class="co">                jsr .L_831D   ; 82BD 20 1D 83</span></div>
+<div class="sourceLine" id="cb422-116" data-line-number="116"><span class="co">                lda &lt;$D1     ; 82C0 A5 D1</span></div>
+<div class="sourceLine" id="cb422-117" data-line-number="117"><span class="co">                cmp #$01    ; 82C2 C9 01</span></div>
+<div class="sourceLine" id="cb422-118" data-line-number="118"><span class="co">                beq .L_82EA   ; 82C4 F0 24</span></div>
+<div class="sourceLine" id="cb422-119" data-line-number="119"><span class="co">        .L_82C6:</span></div>
+<div class="sourceLine" id="cb422-120" data-line-number="120"><span class="co">        ;; $d1 &gt;= 0x03 || $d1 == 2</span></div>
+<div class="sourceLine" id="cb422-121" data-line-number="121"><span class="co">            lda $7F66,x ; 82C6 BD 66 7F</span></div>
+<div class="sourceLine" id="cb422-122" data-line-number="122"><span class="co">            asl a       ; 82C9 0A</span></div>
+<div class="sourceLine" id="cb422-123" data-line-number="123"><span class="co">            asl a       ; 82CA 0A</span></div>
+<div class="sourceLine" id="cb422-124" data-line-number="124"><span class="co">            sta .L_00D6   ; 82CB 85 D6</span></div>
+<div class="sourceLine" id="cb422-125" data-line-number="125"><span class="co">            ;; A / $d6 = $7f66 x 4</span></div>
+<div class="sourceLine" id="cb422-126" data-line-number="126"><span class="co">            asl a       ; 82CD 0A</span></div>
+<div class="sourceLine" id="cb422-127" data-line-number="127"><span class="co">            ;; A = $7f66 x 8</span></div>
+<div class="sourceLine" id="cb422-128" data-line-number="128"><span class="co">            adc .L_00D6   ; 82CE 65 D6</span></div>
+<div class="sourceLine" id="cb422-129" data-line-number="129"><span class="co">            sta .L_00D6   ; 82D0 85 D6</span></div>
+<div class="sourceLine" id="cb422-130" data-line-number="130"><span class="co">            ;; $d6 = $7f66 x 12</span></div>
+<div class="sourceLine" id="cb422-131" data-line-number="131"><span class="co">            lda &lt;$D5     ; 82D2 A5 D5</span></div>
+<div class="sourceLine" id="cb422-132" data-line-number="132"><span class="co">            lsr a       ; 82D4 4A</span></div>
+<div class="sourceLine" id="cb422-133" data-line-number="133"><span class="co">            lsr a       ; 82D5 4A</span></div>
+<div class="sourceLine" id="cb422-134" data-line-number="134"><span class="co">            lsr a       ; 82D6 4A</span></div>
+<div class="sourceLine" id="cb422-135" data-line-number="135"><span class="co">            lsr a       ; 82D7 4A</span></div>
+<div class="sourceLine" id="cb422-136" data-line-number="136"><span class="co">            clc             ; 82D8 18</span></div>
+<div class="sourceLine" id="cb422-137" data-line-number="137"><span class="co">            adc .L_00D6   ; 82D9 65 D6</span></div>
+<div class="sourceLine" id="cb422-138" data-line-number="138"><span class="co">            asl a       ; 82DB 0A</span></div>
+<div class="sourceLine" id="cb422-139" data-line-number="139"><span class="co">            tay             ; 82DC A8</span></div>
+<div class="sourceLine" id="cb422-140" data-line-number="140"><span class="co">            ;; $d5 := always &lt; 0xc0.</span></div>
+<div class="sourceLine" id="cb422-141" data-line-number="141"><span class="co">            ;; Y = (($7f66 x 12) + ($d5 &gt;&gt; 4)) &lt;&lt; 1</span></div>
+<div class="sourceLine" id="cb422-142" data-line-number="142"><span class="co">            ;; Y = pitch or note??, $7f66 = octave?</span></div>
+<div class="sourceLine" id="cb422-143" data-line-number="143"><span class="co">            lda .L_872D,y ; 82DD B9 2D 87</span></div>
+<div class="sourceLine" id="cb422-144" data-line-number="144"><span class="co">            sta $7F6D,x ; 82E0 9D 6D 7F</span></div>
+<div class="sourceLine" id="cb422-145" data-line-number="145"><span class="co">            lda .L_872E,y ; 82E3 B9 2E 87</span></div>
+<div class="sourceLine" id="cb422-146" data-line-number="146"><span class="co">            sta $7F74,x ; 82E6 9D 74 7F</span></div>
+<div class="sourceLine" id="cb422-147" data-line-number="147"><span class="co">.L_82E9:</span></div>
+<div class="sourceLine" id="cb422-148" data-line-number="148"><span class="co">    rts             ; 82E9 60</span></div>
+<div class="sourceLine" id="cb422-149" data-line-number="149"><span class="co">; ----------------------------------------------------------------------------</span></div>
+<div class="sourceLine" id="cb422-150" data-line-number="150"><span class="co">.L_82EA:</span></div>
+<div class="sourceLine" id="cb422-151" data-line-number="151"><span class="co">                    lda $7F66,x ; 82EA BD 66 7F</span></div>
+<div class="sourceLine" id="cb422-152" data-line-number="152"><span class="co">                    asl a       ; 82ED 0A</span></div>
+<div class="sourceLine" id="cb422-153" data-line-number="153"><span class="co">                    asl a       ; 82EE 0A</span></div>
+<div class="sourceLine" id="cb422-154" data-line-number="154"><span class="co">                    sta .L_00D6   ; 82EF 85 D6</span></div>
+<div class="sourceLine" id="cb422-155" data-line-number="155"><span class="co">                    asl a       ; 82F1 0A</span></div>
+<div class="sourceLine" id="cb422-156" data-line-number="156"><span class="co">                    adc .L_00D6   ; 82F2 65 D6</span></div>
+<div class="sourceLine" id="cb422-157" data-line-number="157"><span class="co">                    sta .L_00D6   ; 82F4 85 D6</span></div>
+<div class="sourceLine" id="cb422-158" data-line-number="158"><span class="co">                    lda &lt;$D5     ; 82F6 A5 D5</span></div>
+<div class="sourceLine" id="cb422-159" data-line-number="159"><span class="co">                    lsr a       ; 82F8 4A</span></div>
+<div class="sourceLine" id="cb422-160" data-line-number="160"><span class="co">                    lsr a       ; 82F9 4A</span></div>
+<div class="sourceLine" id="cb422-161" data-line-number="161"><span class="co">                    lsr a       ; 82FA 4A</span></div>
+<div class="sourceLine" id="cb422-162" data-line-number="162"><span class="co">                    lsr a       ; 82FB 4A</span></div>
+<div class="sourceLine" id="cb422-163" data-line-number="163"><span class="co">                    clc             ; 82FC 18</span></div>
+<div class="sourceLine" id="cb422-164" data-line-number="164"><span class="co">                    adc .L_00D6   ; 82FD 65 D6</span></div>
+<div class="sourceLine" id="cb422-165" data-line-number="165"><span class="co">                    tay             ; 82FF A8</span></div>
+<div class="sourceLine" id="cb422-166" data-line-number="166"><span class="co">                    lda .L_87BD,y ; 8300 B9 BD 87</span></div>
+<div class="sourceLine" id="cb422-167" data-line-number="167"><span class="co">                    sta $7F6D,x ; 8303 9D 6D 7F</span></div>
+<div class="sourceLine" id="cb422-168" data-line-number="168"><span class="co">                    rts             ; 8306 60</span></div>
+<div class="sourceLine" id="cb422-169" data-line-number="169"><span class="co">; ----------------------------------------------------------------------------</span></div>
+<div class="sourceLine" id="cb422-170" data-line-number="170"><span class="co">.L_8307:</span></div>
+<div class="sourceLine" id="cb422-171" data-line-number="171"><span class="co">          lda $7F4A,x ; 8307 BD 4A 7F</span></div>
+<div class="sourceLine" id="cb422-172" data-line-number="172"><span class="co">          ora #$02    ; 830A 09 02</span></div>
+<div class="sourceLine" id="cb422-173" data-line-number="173"><span class="co">          sta $7F4A,x ; 830C 9D 4A 7F</span></div>
+<div class="sourceLine" id="cb422-174" data-line-number="174"><span class="co">          rts             ; 830F 60</span></div>
+<div class="sourceLine" id="cb422-175" data-line-number="175"><span class="co">; ----------------------------------------------------------------------------</span></div>
+<div class="sourceLine" id="cb422-176" data-line-number="176"><span class="co">.L_8310:</span></div>
+<div class="sourceLine" id="cb422-177" data-line-number="177"><span class="co">    lda $7F44   ; 8310 AD 44 7F</span></div>
+<div class="sourceLine" id="cb422-178" data-line-number="178"><span class="co">    cmp #$05    ; 8313 C9 05</span></div>
+<div class="sourceLine" id="cb422-179" data-line-number="179"><span class="co">    bcc .L_831C   ; 8315 90 05</span></div>
+<div class="sourceLine" id="cb422-180" data-line-number="180"><span class="co">        lda #$FF    ; 8317 A9 FF</span></div>
+<div class="sourceLine" id="cb422-181" data-line-number="181"><span class="co">        sta $4011   ; 8319 8D 11 40</span></div>
+<div class="sourceLine" id="cb422-182" data-line-number="182"><span class="co">.L_831C:</span></div>
+<div class="sourceLine" id="cb422-183" data-line-number="183"><span class="co">    rts             ; 831C 60</span></div>
+<div class="sourceLine" id="cb422-184" data-line-number="184"><span class="co">*/</span></div>
+<div class="sourceLine" id="cb422-185" data-line-number="185"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="d-sound.music.update_volume">$36:857d sound.music.update_volume?</h1>
 <blockquote>
@@ -14860,12 +14913,16 @@ $b874:
 <hr />
 <h1 id="b2d-sound.music.update_each_tracks">$36:8b2d sound.music.update_each_tracks</h1>
 <blockquote>
-<p>それぞれのトラックについて音楽の再生データを更新する。</p>
+<p>それぞれのトラックについて、BPMに従って音楽の再生データを更新する。</p>
 </blockquote>
 <h3 id="args-167">args:</h3>
 <ul>
-<li>in u8 $7f45: ?</li>
-<li>in,out u16 $7f46: ?</li>
+<li>in u8 $7f45: BPM. beat counter delta.
+<ul>
+<li>bpm = (delta / 150) / 96 * (60 sec * 60 NMIs/s) = (delta * 3600) / (150 * 96) = (delta) / 4 (if a counter value of 96 denotes a quater note) = (delta) (if a counter value of 96 denotes a whole note)</li>
+<li>maximum number of internal counter for a note is 96 (0x60).</li>
+</ul></li>
+<li>in,out u16 $7f46: beat counter, decremented by 150 on each call.</li>
 <li>out u8 $d0: track #, [0…7). music 5 channels + SE 2 channels. set to 3 on exit.</li>
 </ul>
 <h3 id="callers-19">callers:</h3>
@@ -14874,11 +14931,19 @@ $b874:
 </ul>
 <h3 id="local-variables-31">local variables:</h3>
 <ul>
-<li>u8 $d1: ?</li>
+<li>u8 $d1: channel index.
+<ul>
+<li>0: DMC</li>
+<li>1: noise</li>
+<li>2: triangle</li>
+<li>3: pulse2</li>
+<li>4: pulse1</li>
+</ul></li>
 <li>u8 $d2: 0?</li>
 </ul>
 <h3 id="notes-49">notes:</h3>
-<p>write notes here</p>
+<p>lengths of notes have encoded in lower 4-bits of music stream, which indexes predefined length lookup table (at $8805). The table is defined as follows: <code>60 48 30 24 20 18 12 10 0C 09 08 06 04 03 02 01</code></p>
+<p>exact playback timing is depending on how frequently this logic is called, and may vary in tempo if callers don’t make callouts periodically.</p>
 <h3 id="pseudocode-7">(pseudo)code:</h3>
 <pre class="sourceCode js" id="cb428"><code class="sourceCode javascript"><div class="sourceLine" id="cb428-1" data-line-number="1"><span class="op">{</span></div>
 <div class="sourceLine" id="cb428-2" data-line-number="2"><span class="co">/*</span></div>
@@ -14903,8 +14968,8 @@ $b874:
 <div class="sourceLine" id="cb428-21" data-line-number="21"><span class="co">*/</span></div>
 <div class="sourceLine" id="cb428-22" data-line-number="22">    $d2 <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></div>
 <div class="sourceLine" id="cb428-23" data-line-number="23">    <span class="at">u16</span>($7f46) <span class="op">+=</span> $7f45<span class="op">;</span></div>
-<div class="sourceLine" id="cb428-24" data-line-number="24">    <span class="cf">while</span> (<span class="at">u16</span>($7f47) <span class="op">&gt;=</span> <span class="bn">0x96</span>) <span class="op">{</span></div>
-<div class="sourceLine" id="cb428-25" data-line-number="25">        <span class="at">u16</span>($7f47) <span class="op">-=</span> <span class="bn">0x96</span><span class="op">;</span></div>
+<div class="sourceLine" id="cb428-24" data-line-number="24">    <span class="cf">while</span> (<span class="at">u16</span>($7f46) <span class="op">&gt;=</span> <span class="bn">0x96</span>) <span class="op">{</span></div>
+<div class="sourceLine" id="cb428-25" data-line-number="25">        <span class="at">u16</span>($7f46) <span class="op">-=</span> <span class="bn">0x96</span><span class="op">;</span></div>
 <div class="sourceLine" id="cb428-26" data-line-number="26">        $d1 <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></div>
 <div class="sourceLine" id="cb428-27" data-line-number="27">        <span class="va">sound</span>.<span class="va">music</span>.<span class="at">update_track</span>(<span class="op">{</span><span class="dt">track_no</span><span class="op">:</span>$d0 <span class="op">=</span> <span class="dv">4</span><span class="op">}</span>)<span class="op">;</span>   <span class="co">//$81e6</span></div>
 <div class="sourceLine" id="cb428-28" data-line-number="28">        </div>

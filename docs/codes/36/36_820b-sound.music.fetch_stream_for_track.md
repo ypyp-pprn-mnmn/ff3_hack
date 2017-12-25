@@ -1,4 +1,5 @@
 ﻿
+
 # $36:820b sound.music.fetch_stream_for_track
 > 指定のトラックについて、次の音楽データを取得し、各種再生データと状態を更新する。
 
@@ -11,6 +12,7 @@
 	- 1: noise
 	- 0: delta modulation
 
++   in u8 $7f44: master volume?
 +	in,out $7f4a[x]: control flags. depending on the value of byte fetched from stream, some flags are set as follows:
 	-	01: set if [00...C0)
 	-	02: set if [C0...D0)
@@ -19,10 +21,12 @@
 
 +	in,out ptr [$7f51.x, $7f58.x]: pointer to music stream?, its value varies in synch with music playback.
 
-+	out u8 $7f5f[x]: duration?
++	out u8 $7f5f[x]: note length countdown. unit = 96th of a whole note. (e.g, 24 = quarter note)
 	-	value looked up in static table $8805
 	-	indexed by lower 4bits of command byte (or 'note') fetched.
 	-	caller of this function decrements this by 1 on each call.
+
++   in u8 $7f66[x]: octave value. higher value denotes higher pitch. <- low 0 ... 5 high ->
 
 +	out u16 [$7f6d[x], $7f74[x]]: timer value.
     -   will be fed into timer register on each channel. ($4002/4003, 4006/4007, 400a/400b, 400e/400f)
@@ -30,6 +34,12 @@
 	-	$872d for pulse1/2, triangle
 	-	$87bd for noise
 	-	unchanged for delta modulation
+
++   out u8 $7fba: ?, set to 0 on exit if value of the byte fetched < 0xe0.
++   out u8 $7fc8: ?, set to 0 on exit if value of the byte fetched < 0xe0.
++   out u8 $7fdd: ?, set to 0 on exit if value of the byte fetched < 0xe0.
++   out u8 $7ff2: ?, set to 0 on exit if value of the byte fetched < 0xe0.
++   out u8 $7ff9: ?, set to 0 on exit if value of the byte fetched < 0xe0.
 
 ### callers:
 +	$36:81e6 sound.music.update_track
@@ -41,10 +51,10 @@
 
 ### static references:
 +	ptr $822f[< 0x20]: pointer to some handler, indexed by command byte found in the stream.
-+	u16 $872d[12x6]: (used if $d1 >= 2) timer value of the tone denoted by command byte (higher 4bits)
++	u16 $872d[12x6]: (used if $d1 >= 2) timer values of the tone denoted by command byte (higher 4bits)
     -   values are defined as follows: (bytes are swapped for readability)
     -   f = 1789773 / (16 * (1 + value_below)); f = CPU / (16 * (t + 1)); 1.789773MHz NTSC
-    -   00FD = 440.396899606299 (hz)
+    -   e.g., 00FD = 440.396899606299 (hz)
 
             C    C#   D    D#   E    F    F#   G    G#   A    A#   B
             06AB 064D 05F3 059D 054C 0501 04B8 0474 0434 03F7 03BE 0388
@@ -54,7 +64,7 @@
             006A 0064 005E 0059 0054 004F 004B 0046 0042 003E 003B 0038
             0034 0031 002F 002C 0029 0027 0025 0023 0021 001F 001D 001B 
 
-+	u8 $87bd[12x?]: (used if $d1 == 1) timer value? 
++	u8 $87bd[12x?]: (used if $d1 == 1) timer values of the tone denoted by command byte (higher 4bits), for noise channel.
 +	u8 $8805[< 0x10]: some enum value, indxed by lower 4bits of command byte fetched.
     -   values are:
             `60 48 30 24 20 18 12 10 0C 09 08 06 04 03 02 01`
@@ -63,14 +73,60 @@
 ### code
 ```js
 {
-	$d3,d4 = $7f51.x,$7f58.x
+	[$d3, $d4] = [$7f51.x, $7f58.x];
 	y = 0;
 	a = $d3[y]; y++;
-	if (a < #e0) $826f
+	if (a >= 0xe0) { 
 $821e:
-	x = (a - #e0) << 1;
-	$d8,d9 = $822f.x,$8230.x
-	(*$d8)();
+	    x = (a - 0xe0) << 1;
+	    [$d8, $d9] = [$822f.x, $8230.x];
+	    return ($d8)();
+    }
+$826f:
+    // a < 0xE0
+    $d5 = a;
+    a = y;  //a == 1
+    u16($d3) += a;
+    u16([$7f51.x, $7f58.x]) += a;
+    y = $d5 & 0x0f;
+    $7f5f.x = $8805.y;  //note length. (=> beat counter)
+    if ($d5 >= 0xd0) {
+        return;
+    } else if ($d5 >= 0xc0) {
+        $7f4a.x |= 0x02;
+        return;
+    }
+$829a:
+    // $d5 < 0xc0
+    $7f4a.x = ($7f4a.x | 0x01) & (~0x02);
+    $7fba.x =
+    $7fc8.x =
+    $7fdd.x =
+    $7ff9.x =
+    $7ff2.x = 0;
+    if ($d1 == 0) {
+$8310:  //DMC
+        if ($7f44 >= 0x05) {
+            $4011 = 0xff;
+        }
+$831c:
+        return;
+    }
+    if ($d1 != 2) {
+$82bd:
+        $831d();
+        if ($d1 == 1) {
+$82ea:  //noise
+            y = $d6 = ($7f66 * 12) + ($d5 >> 4);
+            $7f6d.x = $87bd.y;  //pitch
+            return;
+        }
+    }
+$82c6:  //pulse1,pulse2,triangle
+    y = $d6 = ($7f66 * 12) + ($d5 >> 4);
+    $7f6d.x = $872d.y;  //pitch (=> timer legnth low)
+    $7f74.x = $872e.y;  //pitch (=> timer length high)
+    return;
 /*
 ; ----------------------------------------------------------------------------
     lda $7F51,x ; 820B BD 51 7F
@@ -202,6 +258,7 @@ $821e:
 */
 }
 ```
+
 
 
 
