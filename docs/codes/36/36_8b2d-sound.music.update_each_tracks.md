@@ -1,10 +1,12 @@
 ﻿
+
 # $36:8b2d sound.music.update_each_tracks
 > それぞれのトラックについて、BPMに従って音楽の再生データを更新する。
 
 ### args:
 +	in u8 $7f45: BPM. beat counter delta.
-    -   bpm = (delta / 150) / 96 * (60 sec * 60 NMIs/s)
+        
+        bpm = (delta / 150) / 96 * (60 sec * 60 NMIs/s)
         = (delta * 3600) / (150 * 96)
         = (delta) / 4 (if a counter value of 96 denotes a quater note)
         = (delta) (if a counter value of 96 denotes a whole note)
@@ -25,7 +27,7 @@
 +	u8 $d2: 0?
 
 ### notes:
-lengths of notes have encoded in lower 4-bits of music stream,
+lengths of notes have been encoded in lower 4-bits of music stream,
 which indexes predefined length lookup table (at $8805).
 The table is defined as follows:
     `60 48 30 24 20 18 12 10 0C 09 08 06 04 03 02 01`
@@ -121,5 +123,6 @@ $8bb6:
 */
 }
 ```
+
 
 

@@ -103,7 +103,7 @@ waitNmiBySetHandler			= $ff00
 call_switch_2banks			= $ff03	; => jmp $ff17
 call_switch1stBank			= $ff06	; => jmp $ff0c
 call_switch2ndBank			= $ff09	; => jmp $ff1f
-;----------------------------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------
 ;well known vars
 pNmiHandler			= $0101	;$0100 jmp xxxx, sometimes just rti :$0100 rti (0x40)
 nmi_handler_entry	= $0100
@@ -200,33 +200,51 @@ play_protectionTargetBits = $7edf
 effect.protection_causal_bits = $7ee0
 play_segmentedGroup = $7ee1
 effect.proliferated_group = $7ee1
-
+;--------------------------------------------------------------------------------------------------
 ;; sound driver
+;	.rsset 0
+;SOUND_TRACK_MUSIC_PULSE1	.rs 1
+;SOUND_TRACK_MUSIC_PULSE2	.rs 1
+;SOUND_TRACK_MUSIC_TRIANGLE	.rs 1
+;SOUND_TRACK_MUSIC_NOISE		.rs 1
+;SOUND_TRACK_MUSIC_DM		.rs 1
+;SOUND_TRACK_EFFECT_PULSE2	.rs 1
+;SOUND_TRACK_EFFECT_NOISE	.rs 1
+
 sound.music_id = $7f40
 sound.previous_music_id = $7f41
 sound.request = $7f42	;01:play next(7f43) 02:play previous(7f41,saved when 01) 04:stop 80:play on
 sound.next_music_id = $7f43;
+sound.master_volume = $7f44	;;details TBC. valid only lower 4 bits.
+sound.tempo = $74f5	;;BPM.
+sound.beat_counter.low = $7f46		;; decremented by 150 (= 240 * 5 / 8) per a callout to the sound driver.
+sound.beat_counter.high = $7f47		;; on the other hand, length of a whole note is defined to 96 (60 * 8 / 5).
 sound.effect_id = $7f49	;msb should be 1
 ;; track control flags. (details TBC)
-sound.music.pulse1.flags = $7f4a
-sound.music.pulse2.flags = $7f4b
-sound.music.triangle.flags = $7f4c
-sound.music.noise.flags = $7f4d
-sound.music.dm.flags = $7f4e
-sound.effect.pulse2.flags = $7f4f
-sound.effect.noise.flags = $7f50
-; stream pointers (low byte) (details TBC)
-sound.music.pulse1.stream.low = $7f51
-sound.music.pulse2.stream.low = $7f52
-sound.music.triangle.stream.low = $7f53
-sound.music.noise.stream.low = $7f54
-sound.music.dm.stream.low = $7f55
-sound.effect.pulse2.stream.low = $7f56
-sound.effect.noise.stream.low = $7f57
-;----------------------------------------------------------------------------------------------------------
+sound.track_controls = $7f4a
+;sound.track_control.music.pulse1 = $7f4a
+;sound.track_control.music.pulse2 = $7f4b
+;sound.track_control.music.triangle = $7f4c
+;sound.track_control.music.noise = $7f4d
+;sound.track_control.music.dm = $7f4e
+;sound.track_control.effect.pulse2 = $7f4f
+;sound.track_control.effect.noise = $7f50
+;; stream pointers.
+sound.p_streams.low = $7f51
+sound.p_streams.high = $7f58
+sound.note_lengths = $7f5f	;; in 96th of a whole note.
+sound.note_octaves = $7f66	;; [0,6). details TBC.
+sound.note_pitch_timers.low = $7f6d		;;'timer' value of the equation: wave frequency = CPU clock / (16 * (timer + 1))
+sound.note_pitch_timers.high = $7f74	;;'timer' value of the equation: wave frequency = CPU clock / (16 * (timer + 1))
+sound.volume_controls = $7f7b	;; will be fed into $4000+4n. details TBC. 
+sound.sweep_controls = $7f82	;; will be fed into $4001+4n. details TBC. 
+sound.duty_controls = $7f89		;; will be fed into $4000+4n. details TBC. 
+sound.track_lengths.low = $7f97	;; decremented by 1 per a note played. details TBC. 
+sound.track_lengths.high = $7f9e	;; details TBC
+;--------------------------------------------------------------------------------------------------
 ;world-mode
 world.map_chip_buffer = $7000; 256 tiles x 15 lines
-;----------------------------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------
 ;floor-mode
 floor.npc_params_1 = $7000; 0x10 bytes x 11 npcs
 floor.npc_params_2 = $7100; 0x10 bytes x 11 npcs
@@ -234,7 +252,7 @@ floor.map_chip_buffer = $7400	;0x400 = 32x32 bytes. @see $3e:cbfa. reloaded afte
 floor.event_script_buffer = $7b00	;0x40 bytes. @see $3e:ea04.
 floor.label_text_buffer = $7b01	;max 0x100 bytes. @see $3e:d1b1.
 floor.tile_pattern_data = $7f00	;tbc. @see $3e:de5a.
-;----------------------------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------
 ;menu-mode
 menu.job.costs = $7200	;;tbc. $3d:ad85
 ;; copied from $6000. 0x400 bytes. details tbc. copies happen at $3d:aa2b
@@ -256,19 +274,19 @@ menu.shop_item_ask.mid = $7bb0
 menu.shop_item_ask.high = $7bb8
 menu.available_items_in_stomach = $7c00; item_id[256]
 menu.job.params = $7c00	;details tbc. $3d:adf2 get_job_parameter
-;----------------------------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------
 ;in memory structs
 
 ;; ---
 playerBattleParams	= $7575	;$40*4
 enemyBattleParams	= $7675	;$40*8
-;----------------------------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------
 ;string pointers
 textd.message_texts = $8000;
 textd.menu_window_contents = $8200
 textd.status_and_area_names = $8200	;$18:8200 = $30200. see also $3e:d1b1
 textd.item_names = $8800;
-;----------------------------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------
 ;in rom structs
 userFlags			= $00900
 stringPtrTable		= $30000
@@ -282,6 +300,6 @@ commandIdToEffectMap	= $683f8
 commandEffectHandlers	= $6843e
 commandWindowHandlers	= $69a16
 commandHandlers			= $69fac
-;------------------------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------
 TEMP_RAM = $7900	;we cannot use stack region due to dugeon's floor save
-;------------------------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------
