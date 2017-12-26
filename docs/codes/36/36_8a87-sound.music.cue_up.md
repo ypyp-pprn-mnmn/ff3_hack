@@ -1,6 +1,6 @@
 ﻿
 # $36:8a87 sound.music.cue_up
-> 要求フラグ($7f42)に応じて、次の音楽を開始状態にする。
+> リクエストされた曲を、要求フラグ($7f42)に応じて、開始状態またはフェードイン状態へ移行させる。
 
 ### args:
 +	in,out u8 $7f42: request flags. see also `$36:80ab sound.play_music`.
@@ -8,7 +8,7 @@
 		01: play next music. (at 7f43)
 		02: play previous music. (at 7f41,saved when 01)
 		04: stop.
-		08: pause?. this logic checks this.
+		08: soft transition.
 		10: ? (the driver clears this flag)
 		20: fade in (counts up the volume (at $7f44) until it reaches to 0xF)
 		40: fade out (counts down the volume (at $7f44) and stops playback once it reached to 0)
@@ -55,4 +55,5 @@ write notes here
 */
 }
 ```
+
 

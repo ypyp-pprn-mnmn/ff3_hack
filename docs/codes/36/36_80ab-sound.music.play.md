@@ -1,16 +1,19 @@
 ﻿
+
 # $36:80ab sound.music.play
 > BGMを再生する。
 
 ### args:
-+	in u8 $7f42: music playback control flags. where:
++	in u8 $7f42: music playback control flags. see also `$36:8a87 sound.music.cue_up`.
     - 01: play next music. (at 7f43)
     - 02: play previous music. (at 7f41,saved when 01)
     - 04: stop.
-    - 08: unimplemented? (ignored. the driver won't change this flag)
+    - 08: make soft transition.
+        when new song is requested, it starts fading-in.
+        when stop of playback is requested, it stops after fading out.
     - 10: ? (the driver clears this flag)
-    - 20: fade in (counts up the volume (at $7f44) until it reaches to 0xF)
-    - 40: fade out (counts down the volume (at $7f44) and stops playback once it reached to 0)
+    - 20: fading in (counts up the volume (at $7f44) until it reaches to 0xF)
+    - 40: fading out (counts down the volume (at $7f44) and stops playback once it reached to 0)
     - 80: continue playback.
 
 #### these are control flags for each channel, defined as follows:
@@ -282,6 +285,7 @@ $81c3:
 */
 }
 ```
+
 
 
 

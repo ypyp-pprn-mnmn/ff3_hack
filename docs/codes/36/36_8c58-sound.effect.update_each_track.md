@@ -1,4 +1,5 @@
 ﻿
+
 # $36:8c58 sound.effect.update_each_track
 > 効果音(SE)の各トラックの再生データを更新する。
 
@@ -17,7 +18,7 @@
 ### notes:
 unlike the siblings for music playback (`$36:8b2d sound.music.update_each_track`),
 this function doesn't count any tempo.
-in other words, sound effects are always played in the fixed tempo, which is of bpm 150.
+in other words, sound effects are always played in the fixed tempo, which is equivalent of bpm 150.
 
 ### code:
 ```js

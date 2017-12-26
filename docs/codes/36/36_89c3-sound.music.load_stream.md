@@ -1,9 +1,24 @@
 ﻿
+
 # $36:89c3 sound.music.load_stream
 > 指定の音楽のデータを再生用にロードする。
 
 ### args:
 +	in u8 $7f43: music id
++   out u8 $7f45: bpm. set to 150 (as a default) on exit.
++   out u16 $7f46: beat counter. set to 0 on exit.
++   out u8 $7f4a[7]: track control flags.
+    on exit, set to 0x80, if the track is available in the song loaded. otherwise 0.
++   out u8 $7f51[7]: pointer to stream, low.
++   out u8 $7f58[7]: pointer to stream, high.
+    if both low and high are 0xff, then the track is not used for the song loaded.
++   out u8 $7f7b[7]: volume, set to 0x00 on exit.
++   out u8 $7f82[7]: sweep, set to 0x08 on exit.
++   out u8 $7f89[7]: duty/envelope, set to 0x30 on exit.
++   out u8 $7f90[7]: ?, set to 0x0f on exit.
++   out u8 $7fa5[7]: ?
++   out u8 $7fba[7]: ?
++   out u8 $7fc1[7]: ?
 
 ### callers:
 +	$36:8925 sound.music.update_or_load_stream
@@ -12,12 +27,12 @@
 +	ptr $d8: pointer to stream (track pointers.)
 
 ### static references:
-+	MusicTrack* $a000[]: pointer to stream, for music_id: [0x00,0x19)
-+	MusicTrack* $a000[]: pointer to stream, for music_id: [0x19,0x2B)
++	MusicTrack* $a000[]: (6e000) pointer to stream, for music_id: [0x00,0x19)
++	MusicTrack* $a000[]: (70000) pointer to stream, for music_id: [0x19,0x2B)
 	- note: though the address is the same as the above, ROM address is different.
-+	MusicTrack* $8c77[]: pointer to stream, for music_id: [0x2B,0x37)
-+	MusicTrack* $b3ae[]: pointer to stream, for music_id: [0x37,0x3B)
-+	MusicTrack* $b400[]: pointer to stream, for music_id: [0x3B,...)
++	MusicTrack* $8c77[]: (6ac77) pointer to stream, for music_id: [0x2B,0x37)
++	MusicTrack* $b3ae[]: (733ae) pointer to stream, for music_id: [0x37,0x3B)
++	MusicTrack* $b400[]: (73400) pointer to stream, for music_id: [0x3B,...)
 
 		MusicTrack : {
 			AudioStream* pulse1, pulse2, triangle, noise, dmc;
@@ -198,4 +213,5 @@ write notes here
 $8a87:
 }
 ```
+
 
