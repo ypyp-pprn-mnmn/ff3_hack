@@ -1,6 +1,5 @@
 ﻿
-
-# $36:820b sound.music.fetch_stream_for_track
+# $36:820b sound.fetch_note_for_track
 > 指定のトラックについて、次の音楽データを取得し、各種再生データと状態を更新する。
 
 ### args:
@@ -42,11 +41,11 @@
 +   out u8 $7ff9: ?, set to 0 on exit if value of the byte fetched < 0xe0.
 
 ### callers:
-+	$36:81e6 sound.music.update_track
++	$36:81e6 sound.update_track
 
 ### local variables:
 +	ptr $d3: pointer to music stream?, = [$7f51.x, $7f58.x]
-+	u8 $d5: command byte fetched from the music stream.
++	u8 $d5: command byte (aka note) fetched from the music stream.
 +	ptr $d8: pointer to some handler, = [$822f[*$d3 - 0x30]].
 
 ### static references:
@@ -258,6 +257,7 @@ $82c6:  //pulse1,pulse2,triangle
 */
 }
 ```
+
 
 
 

@@ -1,6 +1,5 @@
 ﻿
-
-# $36:8b2d sound.music.update_each_tracks
+# $36:8b2d sound.music.update_each_track
 > それぞれのトラックについて、BPMに従って音楽の再生データを更新する。
 
 ### args:
@@ -63,25 +62,25 @@ and may vary in tempo if callers don't make callouts periodically.
 	while (u16($7f46) >= 0x96) {
 		u16($7f46) -= 0x96;
 		$d1 = 0;
-		sound.music.update_track({track_no:$d0 = 4});	//$81e6
+		sound.update_track({track_no:$d0 = 4});	//$81e6
 		
 		$d1 = 1;
-		sound.music.update_track({track_no: --$d0});	//$81e6
+		sound.update_track({track_no: --$d0});	//$81e6
 		
 		$d1 = 2;
-		sound.music.update_track({track_no: --$d0});	//$81e6
+		sound.update_track({track_no: --$d0});	//$81e6
 
 		$d1 = 3;
-		sound.music.update_track({track_no: --$d0});	//$81e6
+		sound.update_track({track_no: --$d0});	//$81e6
 
 		$d1 = 4;
-		sound.music.update_track({track_no: --$d0});	//$81e6
+		sound.update_track({track_no: --$d0});	//$81e6
 	}
 $8bb6:
-	sound.music.update_volume({track_no:$d0 = 0});	//$857d
-	sound.music.update_volume({track_no: ++$d0});	//$857d
-	sound.music.update_volume({track_no: ++$d0});	//$857d
-	sound.music.update_volume({track_no: ++$d0});	//$857d
+	sound.update_volume({track_no:$d0 = 0});	//$857d
+	sound.update_volume({track_no: ++$d0});	//$857d
+	sound.update_volume({track_no: ++$d0});	//$857d
+	sound.update_volume({track_no: ++$d0});	//$857d
 	return;
 /*
     sta $7F47   ; 8B4E 8D 47 7F
@@ -123,6 +122,7 @@ $8bb6:
 */
 }
 ```
+
 
 
 

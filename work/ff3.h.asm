@@ -234,8 +234,8 @@ sound.p_streams.low = $7f51
 sound.p_streams.high = $7f58
 sound.note_lengths = $7f5f	;; in 96th of a whole note.
 sound.note_octaves = $7f66	;; [0,6). details TBC.
-sound.note_pitch_timers.low = $7f6d		;;'timer' value of the equation: wave frequency = CPU clock / (16 * (timer + 1))
-sound.note_pitch_timers.high = $7f74	;;'timer' value of the equation: wave frequency = CPU clock / (16 * (timer + 1))
+sound.note_pitch_timers.low = $7f6d		;;'timer' value of the equation: wave frequency = CPU frequency / (16 * (timer + 1))
+sound.note_pitch_timers.high = $7f74	;;note: APU outputs 8-phased 1-bit waveform. APU frequency = CPU frequency / 2.
 sound.volume_controls = $7f7b	;; will be fed into $4000+4n. details TBC. 
 sound.sweep_controls = $7f82	;; will be fed into $4001+4n. details TBC. 
 sound.duty_controls = $7f89		;; will be fed into $4000+4n. details TBC. 

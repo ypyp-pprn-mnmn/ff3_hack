@@ -1,6 +1,6 @@
 ﻿
-# $36:81e6 sound.music.update_track
->指定されたトラックについて音楽の再生データを更新する。
+# $36:81e6 sound.update_track
+> 指定されたトラックについて音楽または効果音の再生データを更新する。
 
 ### args:
 +	in u8 $d0: track #, [0...7). music 5 channels + SE 2 channels.
@@ -14,7 +14,8 @@
 	-	some counter, indexed by $d0, decremented by 1 per a note played ($7f5f had reached to 0)
 
 ### callers:
-+	$36:8b2d sound.music.update_each_tracks
++	$36:8b2d sound.music.update_each_track
++	$36:8c58 sound.effect.update_each_track
 
 ### code
 ```js
@@ -22,7 +23,7 @@
 	x = $d0;
 	if ($7f4a.x < 0) {
 		if ($7f5f.x == 0) {
-			sound.music.fetch_stream_for_track({track_no: x});	//$820b();
+			sound.fetch_note_for_track({track_no: x});	//$820b();
 		}
 	$81f5:
 		x = $d0;
@@ -62,4 +63,5 @@ $820a:
 */
 }
 ```
+
 

@@ -1,5 +1,5 @@
 ﻿
-# $36:857d sound.music.update_volume?
+# $36:857d sound.update_volume?
 > short description of the function
 
 ### args:
@@ -12,7 +12,8 @@
 	will be fed into duty/volume register on each channel. ($4000,4004,4008,400c,4010)
 
 ### callers:
-+	$36:8b2d sound.music.update_each_tracks
++	$36:8b2d sound.music.update_each_track
++	$36:8c58 sound.effect.update_each_track
 
 ### local variables:
 none.
@@ -43,4 +44,5 @@ write notes here
 $8595:
 }
 ```
+
 
