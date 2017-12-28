@@ -1,5 +1,5 @@
 ﻿
-# $36:831d sound.sum_lengths_2_3rd
+# $36:831d sound.sum_note_lengths_2_3rd
 > short description of the function
 
 ### args:
@@ -7,6 +7,8 @@
 +	in u8 $d1: channel id
 +	in AuditoStream* $d3: pointer to stream
 +	in u8 $d5: command byte fetched from stream
++   out u8 $7f97[7]: note lengths, low
++   out u8 $7f9e[7]: note lengths, high
 
 ### callers:
 +	$36:820b sound.fetch_note_for_track
@@ -57,4 +59,5 @@ write notes here
 */
 }
 ```
+
 

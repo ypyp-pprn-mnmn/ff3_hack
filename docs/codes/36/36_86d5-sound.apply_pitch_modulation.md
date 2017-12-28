@@ -1,4 +1,5 @@
 ﻿
+
 # $36:86d5 sound.apply_pitch_modulation
 > short description of the function
 
@@ -7,12 +8,13 @@
 +	in u8 $d2: ?, some ctrl flags
 +	in PitchModulation* $d8: pointer value dereferenced by $9aeb[indexed by $7feb], pointing to stream of 2-byte entires
 
-		```cpp
-		struct PitchModulation {
-			s8 timer_counter;	//00: nop, positive: counter, negative: back
-			s8 adjustment;	//will be fed into lower byte of the pitch timer
-		};
-		```
+```cpp
+struct PitchModulation {
+	s8 timer_counter;	//00: nop, positive: counter, negative: back
+	s8 adjustment;	//will be fed into lower byte of the pitch timer
+};
+```
+
 +	in,out u8 $7f6d[7]: note pitch timers, low.
 +	in u8 $7feb[7]: pitch modulation type, used to index $9aeb
 +	in,out u8 $7ff2[7]: next index of pitch modulation curve, the stream pointed to by $d8.
@@ -166,4 +168,5 @@ $872d:
 */
 }
 ```
+
 
