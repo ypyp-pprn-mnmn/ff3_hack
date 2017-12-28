@@ -1,6 +1,6 @@
 ﻿
-# $36:857d sound.update_volume?
-> short description of the function
+# $36:857d sound.apply_effecters
+> 指定のトラックについてエフェクタの状態を更新して、再生用の状態データに反映する。
 
 ### args:
 +	in u8 $d0: track #, [0...7). music 5 channels + SE 2 channels.
@@ -41,8 +41,22 @@ write notes here
 .L_8594:
     rts             ; 8594 60
 */
+	x = $d0;
+	a = $7f4a.x;
+	if (a < 0) {
+		if (!(a & 0x02)) {
+			sound.apply_volume_effects();	//8595
+			sound.apply_pitch_modulation();	//86d5
+		} else {
+$858f:
+			$7f7b.x = 0;
+		}
+	}
+$8594:
+	return;
 $8595:
 }
 ```
+
 
 

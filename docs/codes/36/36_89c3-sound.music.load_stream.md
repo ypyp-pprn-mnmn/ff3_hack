@@ -1,5 +1,4 @@
 ﻿
-
 # $36:89c3 sound.music.load_stream
 > 指定の音楽のデータを再生用にロードする。
 
@@ -15,10 +14,11 @@
 +   out u8 $7f7b[7]: volume, set to 0x00 on exit.
 +   out u8 $7f82[7]: sweep, set to 0x08 on exit.
 +   out u8 $7f89[7]: duty/envelope, set to 0x30 on exit.
-+   out u8 $7f90[7]: ?, set to 0x0f on exit.
-+   out u8 $7fa5[7]: ?
-+   out u8 $7fba[7]: ?
-+   out u8 $7fc1[7]: ?
++   out u8 $7f90[7]: ?, set to 0x0f on exit. volume curve pattern? some enum used to index static curve patterns.
++   out u8 $7fa5[7]: ?, set to 0xff on exit.
++   out u8 $7fba[7]: ?, set to 0xff on exit. some looped counter related to volume control commands.
++   out u8 $7fc1[7]: ?, set to 0xff on exit. some index related to volume control commands.
++   out u8 $7feb[7]: ?, set to 0xff on exit. some enum related to pitch modulation commands.
 
 ### callers:
 +	$36:8925 sound.music.update_or_load_stream
@@ -213,5 +213,6 @@ write notes here
 $8a87:
 }
 ```
+
 
 

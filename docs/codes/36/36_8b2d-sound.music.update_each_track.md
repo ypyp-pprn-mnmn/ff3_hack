@@ -77,10 +77,10 @@ and may vary in tempo if callers don't make callouts periodically.
 		sound.update_track({track_no: --$d0});	//$81e6
 	}
 $8bb6:
-	sound.update_volume({track_no:$d0 = 0});	//$857d
-	sound.update_volume({track_no: ++$d0});	//$857d
-	sound.update_volume({track_no: ++$d0});	//$857d
-	sound.update_volume({track_no: ++$d0});	//$857d
+	sound.apply_effecters({track_no:$d0 = 0, playback_type:$d2 = 0});	//$857d
+	sound.apply_effecters({track_no: ++$d0, playback_type:$d2});	//$857d
+	sound.apply_effecters({track_no: ++$d0, playback_type:$d2});	//$857d
+	sound.apply_effecters({track_no: ++$d0, playback_type:$d2});	//$857d
 	return;
 /*
     sta $7F47   ; 8B4E 8D 47 7F
@@ -122,6 +122,7 @@ $8bb6:
 */
 }
 ```
+
 
 
 

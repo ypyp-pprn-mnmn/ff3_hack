@@ -1,5 +1,4 @@
 ﻿
-
 # $36:8c58 sound.effect.update_each_track
 > 効果音(SE)の各トラックの再生データを更新する。
 
@@ -10,7 +9,7 @@
 +	u8 $d1: channel id. where:
 	- 03: pulse#2
 	- 01: noise
-+	u8 $d2: ?, something related to volume. ($8595, $86d5. see `$36:857d sound.update_volume`.)
++	u8 $d2: ?, something related to volume. ($8595, $86d5. see `$36:857d sound.apply_effecters`.)
 
 ### callers:
 +	$36:8b9d sound.effect.update_or_load_stream
@@ -40,10 +39,10 @@ in other words, sound effects are always played in the fixed tempo, which is equ
     rts             ; 8C76 60
 */
 	sound.update_track({track_no:$d0 = 0x05, channel_id:$d1 = 0x03});
-	sound.volume({track_no:$d0, unknown:$d2 = 0xff});
+	sound.apply_effecters({track_no:$d0, playback_type:$d2 = 0xff});
 
 	sound.update_track({track_no: ++$d0, channel_id:$d1 = 0x01});
-	sound.volume({track_no:$d0, unknown:$d2 });
+	sound.apply_effecters({track_no:$d0, playback_type:$d2 });
 
 	return;
 }
