@@ -241,9 +241,11 @@ sound.duty_controls = $7f89		;; will be fed into $4000+4n. details TBC.
 sound.volume_curves.control = $7f90	;; details tbc.
 sound.track_lengths.low = $7f97	;; decremented by 1 per a note played. details TBC. 
 sound.track_lengths.high = $7f9e	;; details TBC
-;;$7fa5
-;;$7fac
-;;$7fb3
+
+sound.loop.controls = $7fa5		;; 00 = use $7fac; !00 = use $7fb3. note: this variable is initilized on stream load, and set to 0xff.
+sound.loop.counter_1 = $7fac
+sound.loop.counter_2 = $7fb3
+
 sound.volume_curves.type = $7dba	;; tbc. used to index curve patterns
 ;;sound.volume_curves.x = $7fc1		;;tbc.
 sound.volume_curves.phase = $7fc8	;; tbc. used to index stream of volumes.
@@ -251,6 +253,7 @@ sound.volume_curves.volume = $7fcf	;; tbc.
 sound.volume_curves.interval = $7fd6	;; tbc. 2/3 of bpm.
 sound.volume_curves.timer = $7fdd	;; triggers lowering volume,  once reached to 100 (0x64)
 sound.volume_curves.countdown = $7fe4	;; triggers volume change
+
 sound.pitch_modulations.type = $7feb	;; tbc.
 sound.pitch_modulations.phase = $7ff2	;; tbc.
 sound.pitch_modulations.timer = $7ff9	;; tbc.

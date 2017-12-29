@@ -408,6 +408,7 @@ hardware_vectors:= $FFF0; bank $3f
     sta $7FB3,x ; 84A9 9D B3 7F
     jmp .L_8217   ; 84AC 4C 17 82
 ; ----------------------------------------------------------------------------
+;; case 0xFC:
     ldx <$D0     ; 84AF A6 D0
     lda $7FA5,x ; 84B1 BD A5 7F
     bne .L_84C3   ; 84B4 D0 0D
@@ -426,6 +427,7 @@ hardware_vectors:= $FFF0; bank $3f
     dec $7FA5,x ; 84CA DE A5 7F
     jmp .L_8217   ; 84CD 4C 17 82
 ; ----------------------------------------------------------------------------
+;; case 0xFD:
     ldx <$D0     ; 84D0 A6 D0
     lda $7FA5,x ; 84D2 BD A5 7F
     bne .L_84E2   ; 84D5 D0 0B
@@ -446,6 +448,7 @@ hardware_vectors:= $FFF0; bank $3f
 ; ----------------------------------------------------------------------------
 .L_84ED:
     dec $7FA5,x ; 84ED DE A5 7F
+;; case 0xFE:
 .L_84F0:
     lda [$D3],y ; 84F0 B1 D3
     iny             ; 84F2 C8
@@ -456,6 +459,7 @@ hardware_vectors:= $FFF0; bank $3f
     ldy #$00    ; 84FA A0 00
     jmp .L_8217   ; 84FC 4C 17 82
 ; ----------------------------------------------------------------------------
+;; case 0xFF:
     ldx <$D0     ; 84FF A6 D0
     lda $7F4A,x ; 8501 BD 4A 7F
     and #$7F    ; 8504 29 7F
@@ -472,7 +476,7 @@ hardware_vectors:= $FFF0; bank $3f
     sta $4000   ; 851B 8D 00 40
     bne .L_8559   ; 851E D0 39
 .L_8520:
-  lda <$D2     ; 8520 A5 D2
+    lda <$D2     ; 8520 A5 D2
     beq .L_852E   ; 8522 F0 0A
     lda $7F4B   ; 8524 AD 4B 7F
     ora #$02    ; 8527 09 02

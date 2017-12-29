@@ -1,4 +1,5 @@
 ﻿
+
 # $36:820b sound.fetch_note_for_track
 > 指定のトラックについて、次の音楽データを取得し、各種再生データと状態を更新する。
 
@@ -56,21 +57,7 @@
         f0 83F2 83FC 8406 8410 841A 8424 843A 8450 
         f8 8466 8471 8485 8499 84AF 84D0 84F0 84FF 
 
-    -   e0: set tempo ($7f45).
-    -   e1...ee: set $7f90 to 2...F, respectively.
-    -   ef...f4: set octave ($7f66) to 0...5, respectively.
-    -   f5: set duty/envelope to 0x30, fetch more 2 bytes and copy them into $7fc1, $7feb.
-    -   f6: set duty/envelope to 0x70, fetch more 2 bytes and copy them into into $7fc1, $7feb.
-    -   f7: set duty/envelope to 0xb0, fetch more 2 bytes and copy them into into $7fc1, $7feb.
-    -   f8: set sweep ($7f82) to the byte fetched.
-    -   f9: set octave ($7f66) to 4, set $7f90 to 0x8,set $7fc1 to 0.
-    -   fa: set octave ($7f66) to 5, set $7f90 to 0xf,set $7fc1 to 1.
-    -   fb: increment $7fa5, then copy the byte fetched into either $7fac or $7fb3.
-        if $7fa5 was 0xff then $7fac
-        otherwise $7fb3
-    -   fc: TBC
-    -   fd: TBC
-    -   fe: reload pointer value from the stream.
+    see `$36:8353 sound.process_note_commands` for further details.
 
 
 +	u16 $872d[12x6]: (used if $d1 >= 2) timer values of the tone denoted by command byte (higher 4bits)
@@ -96,8 +83,9 @@
 ```js
 {
 	[$d3, $d4] = [$7f51.x, $7f58.x];
-	y = 0;
-	a = $d3[y]; y++;
+    y = 0;
+$8217:
+    a = $d3[y]; y++;
 	if (a >= 0xe0) { 
 $821e:
 	    x = (a - 0xe0) << 1;
@@ -280,4 +268,5 @@ $82c6:  //pulse1,pulse2,triangle
 */
 }
 ```
+
 
