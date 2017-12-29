@@ -14,3 +14,9 @@ http://benjaminsoule.fr/tools/vmml/
 
 ## notes:
 track #32 - battle1, utilizing command d0...e0 & 5 channels
+track #7 - victory, utilizing 5 channels.
+track #18 - tool's bug?
+track #3 - aria.
+track #40 - dark cloud. utilizing 5 channels.
+track #42 - battl2. utilizing 5 channels.
+track #47 - sunken world.

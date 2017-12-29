@@ -131,6 +131,13 @@ module.exports = {
         const PITCH = "C C+ D D+ E F F+ G G+ A A+ B".split(/ +/);
         //           60 48 30 24 20 18 12 10 0C 09 08 06 04 03 02 01
         const LEN = "1  2. 2  4. 3  4  8. 6  8  16. 12 16 24 32 48 96".split(/ +/);
+        const DUTY_MAPS = [
+            [1, 2, 4],
+            [5, 6, 4],
+            [8, 8, 8],
+            [9, 9, 9],
+            [10, 10, 10],
+        ];
         const OCTAVE_SHIFT = 3;
         const CHANNEL_DEFAULTS = [
             `%1 @2 t150 o${OCTAVE_SHIFT + 4} v15`,
@@ -154,7 +161,7 @@ module.exports = {
                         } else if (command < 0xe0) {
                             //tie?
                             //return `!:${command.toString(16)}`;
-                            return `${PITCH[result.states.last_note >> 4]}${LEN[command & 0xF]}`;
+                            return `&${PITCH[result.states.last_note >> 4]}${LEN[command & 0xF]}`;
                         } else if (command == 0xe0) {
                             //tempo.
                             return `T${command_bytes[1]}`;
@@ -166,7 +173,7 @@ module.exports = {
                             return `O${command - 0xEF + OCTAVE_SHIFT}`;
                         } else if (0xf5 <= command && command < 0xf8) {
                             //set duty/envelope.
-                            return `@${command - 0xf5 + 1}`;
+                            return `@${DUTY_MAPS[k][command - 0xf5]}`;
                         } else if (command == 0xf8) {
                             //set sweep.
                             return `K${command_bytes[1]}`;

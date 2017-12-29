@@ -8,7 +8,7 @@
     <meta name="generator" content="pandoc">
     <meta name="description" content>
     <meta name="author" content="ypyp-pprn-mnmn (aka “301”)">
-    <!-- generated-at 2017-12-29 22:42:00+0900 -->
+    <!-- generated-at 2017-12-30 01:10:14+0900 -->
     <title>FF3@FC Original Code Documentation</title>
 
     <!-- Bootstrap core CSS -->
@@ -14725,7 +14725,8 @@ f8 8466 8471 8485 8499 84AF 84D0 84F0 84FF </code></pre>
 <li>none.</li>
 </ul>
 <h3 id="notes-48">notes:</h3>
-<p>each command byte are mapped to one of the following functions:</p>
+<p>command bytes are assigned as follows: - 00…BF: play note, higher 4bits denotes pitch tone, lower 4bits denotes note length. - C0…CF: rest note, lower 4bits denotes note length. higher 4bits seems to be ignored. - D0…DF: tie note, lower 4bits denotes (extended) note length. higher 4bits seems to be ignored. - E0…FF: command note, see below.</p>
+<p>for E0 or higher commands, each command byte are mapped to one of the following functions:</p>
 <ul>
 <li>e0: set tempo ($7f45).</li>
 <li>e1…ee: set $7f90 to 2…F, respectively.</li>
