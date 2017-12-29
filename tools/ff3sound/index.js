@@ -4,7 +4,7 @@ const BinaryFile = require('binary-file');
 module.exports = {
     ADDITIONAL_LENGTH: [
         1, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,
-        0, 0, 0, 0,  0, 2, 2, 2,  1, 0, 0, 1,  0, 0, 0, 0,
+        0, 0, 0, 0,  0, 2, 2, 2,  1, 0, 0, 1,  2, 2, 2, 0,
     ],
     TRACK_BOUNDARIES: [
         //0,
@@ -85,18 +85,44 @@ module.exports = {
             .map((v, i) => buffer.readUInt16LE(p_stream + i * 2))
             .filter((p) => p != 0xffff)
             .map((p, k) => {
-                const result = [];
-                var cursor = map_address(p);
-                var note;
-                console.log(`channel #${k} - stream begins at ${p.toString(16)} => ${cursor.toString(16)}`);
-                while ((note = buffer.readUInt8(cursor++)) != 0xff) {
+                const result = {
+                    start: map_address(p),
+                    commands: {},
+                    address_trails: [],
+                    map_address
+                };
+                const address_queue = [result.start];
+                console.log(`channel #${k} - stream begins at ${p.toString(16)} => ${result.start.toString(16)}`);
+                
+                while (address_queue.length > 0) {
+                    let cursor = address_queue.pop();
+                    if (!!result.commands[cursor]) {
+                        console.log(`address ${cursor.toString(16)} has already parsed.`);
+                        continue;
+                    }
+                    result.address_trails.push(cursor);
+                    let note = buffer.readUInt8(cursor);
+                    /*
+                    if (note == 0xff) {
+                        continue;
+                    }//*/
+                    const command_bytes = (result.commands[cursor++] = []);
                     const len = ((note < 0xe0) ? 0 : this.ADDITIONAL_LENGTH[note - 0xe0]);
-                    result.push([
+                    command_bytes.push(
                         note,
                         ...Array(len).fill(0).map((v, i) => buffer.readUInt8(cursor++))
-                    ]);
+                    );
+                    if (0x00 <= note && note < 0xfe) {
+                        //0xfe is 'jump always'
+                        address_queue.push(cursor);
+                    }
+                    // parse jump target first, if any.
+                    if (0xfc <= note && note < 0xff) {
+                        const jump_target = command_bytes[1] | (command_bytes[2] << 8);
+                        console.log(`adding jump target for parsing: ${jump_target.toString(16)}`);
+                        address_queue.push(map_address(jump_target));
+                    }
                 }
-                //return buffer.slice(p, cursor);
                 return result;
             });
            
@@ -109,49 +135,78 @@ module.exports = {
         const CHANNEL_DEFAULTS = [
             `%1 @2 t150 o${OCTAVE_SHIFT + 4} v15`,
             `%1 @3 o${OCTAVE_SHIFT + 4} v15`,
-            `%1 @8 o${OCTAVE_SHIFT + 3} v15`,
+            `%1 @8 o${OCTAVE_SHIFT + 4} v15`,
             `%1 @9 o${OCTAVE_SHIFT + 4} v15`,
             `%1 @10 o${OCTAVE_SHIFT + 4} v15`,
         ];
         return streams.map(
-            (note_stream, k) => [
-                //TRACK_DEFAULT,
-                CHANNEL_DEFAULTS[k],
-                "",
-                ...note_stream.map((command_bytes) => {
-                    const command = command_bytes[0];
-                    if (command < 0xc0) {
-                        //play note.
-                        return `${PITCH[command >> 4]}${LEN[command & 0xF]}`;
-                    } else if (command < 0xd0) {
-                        //rest.
-                        return `R${LEN[command & 0xF]}`;
-                    } else if (command == 0xe0) {
-                        //tempo.
-                        return `T${command_bytes[1]}`;
-                    } else if (0xe1 <= command && command < 0xef) {
-                        //volume envelopse?
-                        return `V${command - 0xe1 + 2}`;
-                    } else if (0xEf <= command && command < 0xf5) {
-                        //set octave.
-                        return `O${command - 0xEF + OCTAVE_SHIFT}`;
-                    } else if (command == 0xf8) {
-                        //set sweep.
-                        return `K${command_bytes[1]}`;
-                    } else if (command == 0xF9) {
-                        //set note defaults?
-                        return `O${4 + OCTAVE_SHIFT}`;
-                    } else if (command == 0xFA) {
-                        //set note defaults?
-                        return `O${5 + OCTAVE_SHIFT}`;
-                    } else if (0xf5 <= command && command < 0xf8) {
-                        //set duty/envelope.
-                        return `@${command - 0xf5 + 1}`;
+            (note_stream, k) => {
+                const mml_stream = Object.keys(note_stream.commands).reduce((result, rom_addr) => {
+                    const command_bytes = note_stream.commands[rom_addr];
+                    const to_mml = ((command_bytes) => {
+                        const command = command_bytes[0];
+                        if (command < 0xc0) {
+                            //play note.
+                            return `${PITCH[command >> 4]}${LEN[command & 0xF]}`;
+                        } else if (command < 0xd0) {
+                            //rest.
+                            return `R${LEN[command & 0xF]}`;
+                        } else if (command == 0xe0) {
+                            //tempo.
+                            return `T${command_bytes[1]}`;
+                        } else if (0xe1 <= command && command < 0xef) {
+                            //volume envelopse?
+                            return `V${command - 0xe1 + 2}`;
+                        } else if (0xEf <= command && command < 0xf5) {
+                            //set octave.
+                            return `O${command - 0xEF + OCTAVE_SHIFT}`;
+                        } else if (0xf5 <= command && command < 0xf8) {
+                            //set duty/envelope.
+                            return `@${command - 0xf5 + 1}`;
+                        } else if (command == 0xf8) {
+                            //set sweep.
+                            return `K${command_bytes[1]}`;
+                        } else if (command == 0xF9) {
+                            //set note defaults?
+                            return `O${4 + OCTAVE_SHIFT}`;
+                        } else if (command == 0xFA) {
+                            //set note defaults?
+                            return `O${5 + OCTAVE_SHIFT}`;
+                        } else if (0xfb <= command && command < 0xff) {
+                            //return `!:${command.toString(16)}`;
+                            return "";
+                        }
+                        return "";
+                    });
+                    result.mml[rom_addr] = to_mml(command_bytes);
+                    // handle loops.
+                    if (command_bytes[0] == 0xfb) {
+                        //enter loop.
+                        result.states.counters[++result.states.loop_index] = command_bytes[1];
+                    } else if (command_bytes[0] == 0xfc || command_bytes[0] == 0xfd) {
+                        //exit loop.
+                        const counter = result.states.counters[result.states.loop_index--];
+                        const jump_target = note_stream.map_address(command_bytes[1] | (command_bytes[2] << 8));
+                        result.mml[rom_addr] = `${result.mml[rom_addr]} ]${counter}`;
+                        result.mml[jump_target] = `[ ${result.mml[jump_target]}`;
+                    } else if (command_bytes[0] == 0xfe) {
+                        const jump_target = note_stream.map_address(command_bytes[1] | (command_bytes[2] << 8));
+                        result.mml[jump_target] = `\$ ${result.mml[jump_target]}`;
                     }
-                    return "";
-                }),
-                "",
-            ].map((note) => note.toLowerCase()).join(" ")
+                    return result;
+                }, {
+                    mml: {},
+                    states: {
+                        loop_index: -1,     //$7fa5
+                        counters: [0, 0]    //$7fac, $7fb3
+                    },
+                });
+
+                return [
+                    CHANNEL_DEFAULTS[k],
+                    ...note_stream.address_trails.map((rom_addr) => mml_stream.mml[rom_addr]),
+                ].map((note) => note.toLowerCase()).join(" ");
+            }
         ).join(`;\n${'-'.repeat(100)}\n`);
     }
 };
