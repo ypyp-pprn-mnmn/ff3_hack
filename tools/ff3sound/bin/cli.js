@@ -8,6 +8,7 @@ const argv = require('minimist')(
         string: [
             "--input-path",
             "--output-path",
+            "--all"
         ],
         alias: {
             "i": "input-path",
@@ -24,12 +25,24 @@ const argv = require('minimist')(
 console.dir(argv);
 console.log(process.argv);
 
-require('../').export_track_as({
-    input: argv['input-path'],
-    output: argv['output-path'],
-    track_no: argv['track-number'],
-    format: 'mml',
-});
+const ff3sound = require('../');
+if (argv.all) {
+    Array(0x3b).fill(0).forEach((i, k) => {
+        ff3sound.export_track_as({
+            input: argv['input-path'],
+            output: argv['output-path'],
+            track_no: k,
+            format: 'mml',
+        });
+    });
+} else {
+    ff3sound.export_track_as({
+        input: argv['input-path'],
+        output: argv['output-path'],
+        track_no: argv['track-number'],
+        format: 'mml',
+    });
+}
 /*
 commander
     .version('0.1.0')

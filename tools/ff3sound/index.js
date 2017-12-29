@@ -39,6 +39,7 @@ module.exports = {
                 await infile.close();
             }
         });
+        const output_path = `${output.replace(/\.mml$/, "")}${track_no}.mml`;
         get_input_buffer().then((buffer) => {
             const out_buffer =
                 this.to_format(
@@ -46,7 +47,7 @@ module.exports = {
                     this.get_native_stream(track_no, buffer)
                 );
             try {
-                require('fs').writeFile(output, out_buffer, "utf8", (error) => {
+                require('fs').writeFile(output_path, out_buffer, "utf8", (error) => {
                     if (!!error) {
                         console.log(error);
                     }
@@ -59,25 +60,33 @@ module.exports = {
         });
     },
     get_native_stream(track_no, buffer) {
-        const map_address = (bank, offset) => ((bank << 13) & 0xfe000) | (offset & ((1 << 13) -1));
+        const map_address = (offset) => {
+            const do_map = (bank, offset) => ((bank << 13) & 0xfe000) | (offset & ((1 << 13) -1));
+            if ((offset & 0xe000) != 0x8000) {
+                return do_map(this.TRACK_BANKS[track_range_index], offset);
+            } else {
+                return do_map(0x36, offset);
+            }
+        };
         const track_range_index = this.TRACK_BOUNDARIES.findIndex((bound) => track_no < bound);
-        const p_stream = map_address(
-            this.TRACK_BANKS[track_range_index],
+        const pp_stream = map_address(
             buffer.readUInt16LE(
-                map_address(this.TRACK_BANKS[track_range_index], this.OFFSET_TO_TABLE[track_range_index]))
+                map_address(this.OFFSET_TO_TABLE[track_range_index]))
                 + 2 * (track_no - this.TRACK_BOUNDARIES[track_range_index])
             );
+        const p_stream = map_address(buffer.readUInt16LE(pp_stream));
         if (typeof p_stream === 'undefined') {
             throw `eighter track_no or input_file is wrong. track_no=${track_no}`;
         }
-        console.log(`track #${track_no} - stream pointers at ${p_stream.toString(16)}`);
+        console.log(`track #${track_no} - pointer to stream at ${pp_stream.toString(16)}
+            => stream pointers begin at ${p_stream.toString(16)} / range: ${track_range_index}`);
         //const pointers = 
         return Array(5).fill(0)
             .map((v, i) => buffer.readUInt16LE(p_stream + i * 2))
             .filter((p) => p != 0xffff)
             .map((p, k) => {
                 const result = [];
-                var cursor = map_address(this.TRACK_BANKS[track_range_index], p);
+                var cursor = map_address(p);
                 var note;
                 console.log(`channel #${k} - stream begins at ${p.toString(16)} => ${cursor.toString(16)}`);
                 while ((note = buffer.readUInt8(cursor++)) != 0xff) {
@@ -96,27 +105,52 @@ module.exports = {
         const PITCH = "C C+ D D+ E F F+ G G+ A A+ B".split(/ +/);
         //           60 48 30 24 20 18 12 10 0C 09 08 06 04 03 02 01
         const LEN = "1  2. 2  4. 3  4  8. 6  8  16. 12 16 24 32 48 96".split(/ +/);
-        const TRACK_DEFAULT = "T150 O4";
+        const OCTAVE_SHIFT = 3;
+        const CHANNEL_DEFAULTS = [
+            `%1 @2 t150 o${OCTAVE_SHIFT + 4} v15`,
+            `%1 @3 o${OCTAVE_SHIFT + 4} v15`,
+            `%1 @8 o${OCTAVE_SHIFT + 3} v15`,
+            `%1 @9 o${OCTAVE_SHIFT + 4} v15`,
+            `%1 @10 o${OCTAVE_SHIFT + 4} v15`,
+        ];
         return streams.map(
-            (note_stream) => [
-                TRACK_DEFAULT,
+            (note_stream, k) => [
+                //TRACK_DEFAULT,
+                CHANNEL_DEFAULTS[k],
+                "",
                 ...note_stream.map((command_bytes) => {
                     const command = command_bytes[0];
                     if (command < 0xc0) {
+                        //play note.
                         return `${PITCH[command >> 4]}${LEN[command & 0xF]}`;
                     } else if (command < 0xd0) {
+                        //rest.
                         return `R${LEN[command & 0xF]}`;
                     } else if (command == 0xe0) {
+                        //tempo.
                         return `T${command_bytes[1]}`;
+                    } else if (0xe1 <= command && command < 0xef) {
+                        //volume envelopse?
+                        return `V${command - 0xe1 + 2}`;
                     } else if (0xEf <= command && command < 0xf5) {
-                        return `O${command - 0xEF}`;
+                        //set octave.
+                        return `O${command - 0xEF + OCTAVE_SHIFT}`;
+                    } else if (command == 0xf8) {
+                        //set sweep.
+                        return `K${command_bytes[1]}`;
                     } else if (command == 0xF9) {
-                        return `O4`;
+                        //set note defaults?
+                        return `O${4 + OCTAVE_SHIFT}`;
                     } else if (command == 0xFA) {
-                        return `O5`;
+                        //set note defaults?
+                        return `O${5 + OCTAVE_SHIFT}`;
+                    } else if (0xf5 <= command && command < 0xf8) {
+                        //set duty/envelope.
+                        return `@${command - 0xf5 + 1}`;
                     }
                     return "";
-                })
+                }),
+                "",
             ].map((note) => note.toLowerCase()).join(" ")
         ).join(`;\n${'-'.repeat(100)}\n`);
     }
