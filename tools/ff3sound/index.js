@@ -112,15 +112,15 @@ module.exports = {
                         note,
                         ...Array(len).fill(0).map((v, i) => buffer.readUInt8(cursor++))
                     );
-                    if (0x00 <= note && note < 0xfe) {
-                        //0xfe is 'jump always'
-                        address_queue.push(cursor);
-                    }
-                    // parse jump target first, if any.
+                    // parse jump target later, if any.
                     if (0xfc <= note && note < 0xff) {
                         const jump_target = command_bytes[1] | (command_bytes[2] << 8);
                         console.log(`adding jump target for parsing: ${jump_target.toString(16)}`);
                         address_queue.push(map_address(jump_target));
+                    }
+                    if (0x00 <= note && note < 0xfe) {
+                        //0xfe is 'jump always'
+                        address_queue.push(cursor);
                     }
                 }
                 return result;
@@ -151,6 +151,10 @@ module.exports = {
                         } else if (command < 0xd0) {
                             //rest.
                             return `R${LEN[command & 0xF]}`;
+                        } else if (command < 0xe0) {
+                            //tie?
+                            //return `!:${command.toString(16)}`;
+                            return `${PITCH[result.states.last_note >> 4]}${LEN[command & 0xF]}`;
                         } else if (command == 0xe0) {
                             //tempo.
                             return `T${command_bytes[1]}`;
@@ -179,16 +183,22 @@ module.exports = {
                         return "";
                     });
                     result.mml[rom_addr] = to_mml(command_bytes);
+                    //
+                    if (command_bytes < 0xc0) {
+                        result.states.last_note = command_bytes[0];
+                    }
                     // handle loops.
                     if (command_bytes[0] == 0xfb) {
                         //enter loop.
                         result.states.counters[++result.states.loop_index] = command_bytes[1];
-                    } else if (command_bytes[0] == 0xfc || command_bytes[0] == 0xfd) {
+                    } else if (command_bytes[0] == 0xfc) {
                         //exit loop.
                         const counter = result.states.counters[result.states.loop_index--];
                         const jump_target = note_stream.map_address(command_bytes[1] | (command_bytes[2] << 8));
                         result.mml[rom_addr] = `${result.mml[rom_addr]} ]${counter}`;
                         result.mml[jump_target] = `[ ${result.mml[jump_target]}`;
+                    } else if (command_bytes[0] == 0xfd) {
+                        result.mml[rom_addr] = `${result.mml[rom_addr]} |`;
                     } else if (command_bytes[0] == 0xfe) {
                         const jump_target = note_stream.map_address(command_bytes[1] | (command_bytes[2] << 8));
                         result.mml[jump_target] = `\$ ${result.mml[jump_target]}`;
@@ -198,7 +208,8 @@ module.exports = {
                     mml: {},
                     states: {
                         loop_index: -1,     //$7fa5
-                        counters: [0, 0]    //$7fac, $7fb3
+                        counters: [0, 0],    //$7fac, $7fb3
+                        last_note: null,
                     },
                 });
 

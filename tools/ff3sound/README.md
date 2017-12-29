@@ -11,3 +11,6 @@ options could be specified with single hyphen + initial letter of corresponing l
 ## testing:
 convenient with testing of outputs:
 http://benjaminsoule.fr/tools/vmml/
+
+## notes:
+track #32 - battle1, utilizing command d0...e0 & 5 channels
