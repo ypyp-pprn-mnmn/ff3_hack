@@ -153,40 +153,52 @@ module.exports = {
                     const to_mml = ((command_bytes) => {
                         const command = command_bytes[0];
                         if (command < 0xc0) {
-                            //play note.
+                            //00-BF: play note.
                             return `${PITCH[command >> 4]}${LEN[command & 0xF]}`;
                         } else if (command < 0xd0) {
-                            //rest.
+                            //C0-CF: rest note.
                             return `R${LEN[command & 0xF]}`;
                         } else if (command < 0xe0) {
-                            //tie?
+                            //D0-DF: tie note.
                             //return `!:${command.toString(16)}`;
                             return `&${PITCH[result.states.last_note >> 4]}${LEN[command & 0xF]}`;
                         } else if (command == 0xe0) {
-                            //tempo.
+                            //E0: set tempo ($7f45)
                             return `T${command_bytes[1]}`;
                         } else if (0xe1 <= command && command < 0xef) {
-                            //volume envelopse?
+                            //E1...EF: set volume goals ($7f90)
                             return `V${command - 0xe1 + 2}`;
                         } else if (0xEf <= command && command < 0xf5) {
-                            //set octave.
+                            //EF...F5: set octave ($7f66).
                             return `O${command - 0xEF + OCTAVE_SHIFT}`;
                         } else if (0xf5 <= command && command < 0xf8) {
-                            //set duty/envelope.
+                            //F5: set duty/envelope ($7f89).
                             return `@${DUTY_MAPS[k][command - 0xf5]}`;
                         } else if (command == 0xf8) {
-                            //set sweep.
+                            //F8: set sweep ($7f82).
+                            //FIXME: use pitch envelope to simulate this
                             return `K${command_bytes[1]}`;
                         } else if (command == 0xF9) {
-                            //set note defaults?
-                            return `O${4 + OCTAVE_SHIFT}`;
+                            //F9: set note defaults?
+                            // $7f66 = octave = 4
+                            // $7f90 = volume goal = 8
+                            // $7fc1 = volume envelope type = 0
+                            return `O${4 + OCTAVE_SHIFT} V8`;
                         } else if (command == 0xFA) {
-                            //set note defaults?
-                            return `O${5 + OCTAVE_SHIFT}`;
+                            //FA: set note defaults?
+                            // $7f66 = octave = 5
+                            // $7f90 = volume goal = 0xF
+                            // $7fc1 = volume envelope type = 1
+                            return `O${5 + OCTAVE_SHIFT} V15`;
                         } else if (0xfb <= command && command < 0xff) {
+                            //FB: enter (initialize) loop.
+                            //FC: end loop, decrement counter.
+                            //FD: exit loop, if loop counter is odd.
+                            //FE: jump.
                             //return `!:${command.toString(16)}`;
                             return "";
                         }
+                        //FF: end of track.
                         return "";
                     });
                     result.mml[rom_addr] = to_mml(command_bytes);
