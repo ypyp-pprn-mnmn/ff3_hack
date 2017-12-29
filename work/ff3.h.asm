@@ -210,6 +210,12 @@ effect.proliferated_group = $7ee1
 ;SOUND_TRACK_MUSIC_DM		.rs 1
 ;SOUND_TRACK_EFFECT_PULSE2	.rs 1
 ;SOUND_TRACK_EFFECT_NOISE	.rs 1
+	.rsset 0
+SOUND_CHANNEL_DMC		.rs 1
+SOUND_CHANNEL_NOISE		.rs 1
+SOUND_CHANNEL_TRIANGLE	.rs 1
+SOUND_CHANNEL_PULSE2	.rs 1
+SOUND_CHANNEL_PULSE1	.rs 1
 
 sound.music_id = $7f40
 sound.previous_music_id = $7f41
@@ -222,13 +228,6 @@ sound.beat_counter.high = $7f47		;; on the other hand, length of a whole note is
 sound.effect_id = $7f49	;msb should be 1
 ;; track control flags. (details TBC)
 sound.track_controls = $7f4a
-;sound.track_control.music.pulse1 = $7f4a
-;sound.track_control.music.pulse2 = $7f4b
-;sound.track_control.music.triangle = $7f4c
-;sound.track_control.music.noise = $7f4d
-;sound.track_control.music.dm = $7f4e
-;sound.track_control.effect.pulse2 = $7f4f
-;sound.track_control.effect.noise = $7f50
 ;; stream pointers.
 sound.p_streams.low = $7f51
 sound.p_streams.high = $7f58

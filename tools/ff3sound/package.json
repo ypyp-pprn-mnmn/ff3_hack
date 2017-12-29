@@ -1,0 +1,32 @@
+{
+  "name": "ff3sound",
+  "version": "0.1.0",
+  "description": "offers cli to export/import audio tracks from/to ordinary ff3@famicom.",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "ff3sound": "./bin/cli.js"
+  },
+  "keywords": [
+    "nes",
+    "famicom",
+    "ff3",
+    "sound",
+    "bgm",
+    "mml"
+  ],
+  "author": "956539+ypyp-pprn-mnmn@users.noreply.github.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ypyp-pprn-mnmn/ff3_hack"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "binary-file": "^0.2.1",
+    "commander": "^2.12.2",
+    "minimist": "^1.2.0"
+  }
+}
