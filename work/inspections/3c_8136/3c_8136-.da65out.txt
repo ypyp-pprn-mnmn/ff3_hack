@@ -1,0 +1,338 @@
+﻿; da65 V2.11.0 - (C) Copyright 2000-2005,  Ullrich von Bassewitz
+; Created:    2017-12-31 02:03:11
+; Input file: D:\Documents\programming\eclipse workspaces\ff3\hack-and-patch\work\base-binary\ff3_plain.nes.noheader
+; Page:   1
+
+
+    .setcpu "65C02"
+
+; ----------------------------------------------------------------------------
+menu.party_summary.put_pc_sprites:= $8000   ; bank $3c
+.L_8B83       := $8B83
+.L_8B97       := $8B97
+.L_8B9D       := $8B9D
+.L_8BA3       := $8BA3
+.L_8BA9       := $8BA9
+.L_8BAF       := $8BAF
+.L_8BCC       := $8BCC
+.L_8BD6       := $8BD6
+.L_8BE0       := $8BE0
+.L_8BEA       := $8BEA
+.L_8BF5       := $8BF5
+.L_8CB2       := $8CB2
+.L_8CF5       := $8CF5
+.L_8D26       := $8D26
+.L_8D57       := $8D57
+menu.accept_input_action:= $8F74            ; bank $3c
+menu.items.save_render_params:= $903D       ; bank $3c
+menu.items.load_render_params:= $9075       ; bank $3c
+menu.put_cursor_on_window1:= $9119          ; bank $3c
+menu.put_cursor_on_window2:= $912A          ; bank $3c
+menu.put_cursor_on_window3:= $914C          ; bank $3c
+menu.put_cursor_attrs_on_sprite_cache:= $9164   ; bank $3c
+menu.get_input_and_queue_SE:= $9175         ; bank $3c
+menu.window1.get_input_and_update_cursor:= $91A3; bank $3c
+menu.window2.get_input_and_update_cursor:= $91D9; bank $3c
+menu.window3.get_input_and_scroll:= $920D   ; bank $3c
+floor.copyEventScriptStream:= $92F3         ; bank $3c
+getEventFlag    := $9344; bank $3c
+floor.searchSpaceForItem:= $937E            ; bank $3c
+menu.upload_default_bg_attrs:= $956F        ; bank $3c
+field.queue_SE_of_healing:= $958C           ; bank $3c
+menu.init_input_states:= $9592              ; bank $3c
+menu.reset_ppu  := $959F; bank $3c
+menu.jobs.on_close:= $961C                  ; bank $3c
+menu.jobs.main_loop:= $962F                 ; bank $3c
+menu.magic.main_loop:= $9761                ; bank $3c
+menu.items.on_close:= $9EBC                 ; bank $3c
+menu.items.main_loop:= $9EC2                ; bank $3c
+menu.items.on_2nd_item_selected:= $9FA5     ; bank $3c
+checkmagic  := $A2DF; bank $3d
+menu.party_summary.draw_window:= $A328      ; bank $3d
+menu.party_summary.draw_content:= $A332     ; bank $3d
+menu.items.consume_item:= $A33C             ; bank $3d
+menu.items.clone_for_2nd_selection:= $A363  ; bank $3d
+menu.party_summary.load_render_params:= $A38E   ; bank $3d
+menu.party_summary.save_render_params:= $A3A8   ; bank $3d
+menu.main_loop  := $A52F; bank $3d
+menu.draw_window:= $A666; bank $3d
+menu.stream_window_content:= $A66B          ; bank $3d
+menu.draw_window_content:= $A678            ; bank $3d
+menu.erase_entirely:= $A685                 ; bank $3d
+fieldMenu.selectCharacter:= $A6B4           ; bank $3d
+menu.render_cursor:= $A7CD                  ; bank $3d
+menu.draw_view_of_buffered_string:= $A87A   ; bank $3d
+menu.savefile.close:= $A88C                 ; bank $3d
+menu.savefile.main_loop:= $A897             ; bank $3d
+menu.savefile.build_menu:= $A984            ; bank $3d
+menu.savefile.draw_message:= $A996          ; bank $3d
+menu.savefile.build_file_menu:= $A9A0       ; bank $3d
+menu.savefile.draw_file_summary:= $A9E1     ; bank $3d
+menu.savefile.load_game_at:= $A9F9          ; bank $3d
+menu.savefile.load_game:= $AA06             ; bank $3d
+menu.savefile.save_or_load_current_game_with_buffer:= $AA18; bank $3d
+menu.await_new_input:= $AA4B                ; bank $3d
+menu.await_nmi_with_sound:= $AA60           ; bank $3d
+menu.savefile.draw_saved_file_summary:= $AA67   ; bank $3d
+menu.items.erase_message:= $AA8E            ; bank $3d
+menu.draw_window_top:= $AAA0                ; bank $3d
+menu.get_window_content_metrics:= $AAA6     ; bank $3d
+menu.get_window_metrics:= $AABC             ; bank $3d
+menu.draw_window_box:= $AAF1                ; bank $3d
+field.menu_window_metrics:= $AAF7           ; bank $3d
+menu.jobs.get_change_costs:= $AD85          ; bank $3d
+getJobParameter := $ADF2; bank $3d
+menu.clear_eligible_status_of_all_characters:= $AEC3; bank $3d
+menu.stomach.close:= $AF5E                  ; bank $3d
+floor.shop  := $B0EB; bank $3d
+floor.shop.getItemValues:= $B220            ; bank $3d
+floor.shop.getSellingPrice:= $B248          ; bank $3d
+floor.shop.getItemValue:= $B270             ; bank $3d
+menu.init_ppu   := $B369; bank $3d
+menu.stomach.store_item:= $B4AE             ; bank $3d
+menu.stomach.build_content_text:= $B570     ; bank $3d
+menu.stomach.draw_subcommands:= $B5ED       ; bank $3d
+menu.stomach.draw_message:= $B5F7           ; bank $3d
+menu.draw_item_select_window:= $B619        ; bank $3d
+getEncounterId  := $BD4D; bank $3d
+isEncounterOccured:= $BDB9                  ; bank $3d
+beginBattle := $C049; bank $3e
+menu.opening.title_page:= $C06E             ; bank $3e
+field.enterDungeon:= $C1BB                  ; bank $3e
+field.dispatchInput:= $C243                 ; bank $3e
+field_OnStart   := $C269; bank $3e
+field_doScroll  := $C389; bank $3e
+field_setScroll := $C398; bank $3e
+field.init_sprites_cache:= $C486            ; bank $3e
+field.OnMove    := $C4FC; bank $3e
+field       := $C6B9; bank $3e
+field.OnCharacterMoved:= $C6D5              ; bank $3e
+field.getRandom := $C711; bank $3e
+floor.getObjectEventPtr:= $C72C             ; bank $3e
+field.call_sound_driver:= $C750             ; bank $3e
+field.call_sound_driver_and_restore_banks:= $C758; bank $3e
+dive_into_float_land:= $C966                ; bank $3e
+switchToBank3C  := $C98A; bank $3e
+field.update_window_attr_buff:= $C98F       ; bank $3e
+field.set_bg_attr_for_window:= $C9A9        ; bank $3e
+field.merge_bg_attributes_with_buffer:= $CAB1   ; bank $3e
+field.copyToVramWith_07d0:= $CB6B           ; bank $3e
+field.loadWarpDestinationFloor:= $CBA4      ; bank $3e
+loadFloorData   := $CBFA; bank $3e
+field.loadMapRow:= $CC47; bank $3e
+field.getMapDataPointers:= $CCBB            ; bank $3e
+vehicleSpeeds   := $CD76; bank $3e
+getVehicleSpeed := $CD7E; bank $3e
+getTileParamsVertical:= $CE7A               ; bank $3e
+menu.call_recalc_character_params:= $D10B   ; bank $3e
+field.load_label_text_into_buffer:= $D1B1   ; bank $3e
+field.queue_SE_of_valid_action:= $D20D      ; bank $3e
+field.queue_SE_of_move_of_cursor:= $D213    ; bank $3e
+floor.getInputOrFireObjectEvent:= $D219     ; bank $3e
+field.getAndMaskInput:= $D27A               ; bank $3e
+field.get_input := $D281; bank $3e
+field_maskInput := $D29A; bank $3e
+field.upload_all_palette_entries:= $D308    ; bank $3e
+field.clear_all_sprites:= $D336             ; bank $3e
+field.upload_bg_palette:= $D381             ; bank $3e
+menu.queue_SE_of_invalid_action:= $D529     ; bank $3e
+floor.load_object_sprite_into_buffer:= $DA3A    ; bank $3e
+loadPatternToVramEx:= $DE0F                 ; bank $3e
+loadPatternToVram:= $DE1A                   ; bank $3e
+loadSmallPatternToVram:= $DE2A              ; bank $3e
+floor.loadPatternForTiles:= $DE5A           ; bank $3e
+loadTilePatternToVram:= $DEEA               ; bank $3e
+floor.loadObjectPatterns:= $DF08            ; bank $3e
+floor.loadObjectPattern:= $DF41             ; bank $3e
+dungeon.mainLoop:= $E1DC; bank $3f
+floor.getInputAndHandleEvent:= $E2F8        ; bank $3f
+floor.fireOnMove:= $E396; bank $3f
+floor.getEventSourceCoodinates:= $E4E9      ; bank $3f
+floor.getChipEvent:= $E51C                  ; bank $3f
+floor.event05   := $E69B; bank $3f
+floor.event07   := $E6BE; bank $3f
+dungeon.loadFloor:= $E7EC                   ; bank $3f
+dungeon.loadFloorData:= $E803               ; bank $3f
+floor.processChipEvent:= $E917              ; bank $3f
+OnTreasure  := $E982; bank $3f
+floor.getObjectEvent:= $E9BB                ; bank $3f
+floor.loadEventScriptStream:= $EA04         ; bank $3f
+floor.cache_event_script:= $EA1B            ; bank $3f
+floor.getEvent  := $EA26; bank $3f
+switch_to_object_params_bank:= $EB23        ; bank $3f
+switch_to_floor_logics_bank:= $EB28         ; bank $3f
+field.scrolldown_item_window:= $EB2D        ; bank $3f
+field.abort_item_window_scroll:= $EB3C      ; bank $3f
+field.do_scrolldown_item_window:= $EB43     ; bank $3f
+field.reflect_window_scroll:= $EB61         ; bank $3f
+field.scrollup_item_window:= $EB69          ; bank $3f
+field.seek_text_to_next_line:= $EBA9        ; bank $3f
+field.unseek_text_to_line_beginning:= $EBD1 ; bank $3f
+field.show_sprites_on_lower_half_screen:= $EC0C ; bank $3f
+field.show_sprites_on_region7:= $EC12       ; bank $3f
+field.hide_sprites_under_window:= $EC18     ; bank $3f
+field.showhide_sprites_by_region:= $EC1A    ; bank $3f
+u8          := $EC67; bank $3f
+field.show_message_UNKNOWN:= $EC83          ; bank $3f
+field.show_message_window:= $EC8B           ; bank $3f
+field.show_window:= $EC8D                   ; bank $3f
+field.await_and_get_new_input:= $ECAB       ; bank $3f
+field.get_next_input:= $ECBD                ; bank $3f
+field.get_next_input:= $ECC4                ; bank $3f
+field.advance_frame_with_sound:= $ECD8      ; bank $3f
+field.draw_window_top:= $ECE5               ; bank $3f
+restore_banks_by_$57:= $ECF5                ; bank $3f
+field.draw_in_place_window:= $ECFA          ; bank $3f
+field.draw_window_box:= $ED02               ; bank $3f
+field.init_window_attr_buffer:= $ED56       ; bank $3f
+field.get_window_region:= $ED61             ; bank $3f
+field.draw_window_row:= $EDC6               ; bank $3f
+field.sync_ppu_scroll:= $EDE1               ; bank $3f
+field.getWindowTilesForTop:= $EDF6          ; bank $3f
+field.getWindowTilesForMiddle:= $EE1D       ; bank $3f
+field.getWindowTilesForBottom:= $EE3E       ; bank $3f
+field.stream_string_in_window:= $EE65       ; bank $3f
+field.load_and_draw_string:= $EE9A          ; bank $3f
+field.draw_string_in_window:= $EEC0         ; bank $3f
+textd.draw_in_box:= $EEFA                   ; bank $3f
+textd.eval_replacement:= $F02A              ; bank $3f
+field.string.eval_code_10_13:= $F239        ; bank $3f
+field.get_max_available_job_id:= $F38A      ; bank $3f
+textd.setup_output_ptr_to_next_column:= $F3AC   ; bank $3f
+textd.save_text_ptr:= $F3E4                 ; bank $3f
+textd.restore_text_ptr:= $F3ED              ; bank $3f
+textd.trim_name_left:= $F3FA                ; bank $3f
+field.set_vram_addr_for_window:= $F40A      ; bank $3f
+field.get_vram_addr_of_line_above:= $F435   ; bank $3f
+menu.erase_message_area:= $F44B             ; bank $3f
+menu.erase_box_1e_x_14:= $F461              ; bank $3f
+menu.erase_box_1e_x_1c:= $F465              ; bank $3f
+menu.erase_box_of_width_1e:= $F467          ; bank $3f
+menu.erase_box_from_bottom:= $F47A          ; bank $3f
+floor.get_treasure:= $F549                  ; bank $3f
+floor.get_treasure_item_id:= $F5C4          ; bank $3f
+floor.get_item_price:= $F5D4                ; bank $3f
+increment_gil   := $F5FF; bank $3f
+invert_treasure_loot_flag:= $F640           ; bank $3f
+field.calc_draw_width_and_init_window_tile_buffer:= $F670; bank $3f
+field.init_window_tile_buffer:= $F683       ; bank $3f
+field.draw_window_content:= $F692           ; bank $3f
+field.upload_window_content:= $F6AA         ; bank $3f
+switch_to_character_logics_bank:= $F727     ; bank $3f
+call_doBattle   := $F800; bank $3f
+thunk.call_recalc_character_params:= $F803  ; bank $3f
+field.call_recalc_character_params:= $F820  ; bank $3f
+restoreFieldVariables:= $F83B               ; bank $3f
+call_32_8000    := $F854; bank $3f
+ppud.upload_palette:= $F897                 ; bank $3f
+do_sprite_dma_from_0200:= $F8AA             ; bank $3f
+ppud.update_sprites_and_palette_after_nmi:= $F8B0; bank $3f
+ppud.update_palette_after_nmi:= $F8BC       ; bank $3f
+ppud.update_sprites_after_nmi:= $F8C5       ; bank $3f
+ppud.sync_registers_with_cache:= $F8CB      ; bank $3f
+ppud.set_vram_addr:= $F8E0                  ; bank $3f
+mul8x8_reg  := $F8EA; bank $3f
+offset$7e_16    := $F8F2; bank $3f
+offset$80_16    := $F8FE; bank $3f
+memcpy      := $F92F; bank $3f
+copy_to_vram_with_encounter_mode:= $F942    ; bank $3f
+copyToVramDirect:= $F969; bank $3f
+copyToVram  := $F970; bank $3f
+call_2e_9d53    := $FA0E; bank $3f
+blackOutScreen  := $FA1D; bank $3f
+doBattle    := $FA26; bank $3f
+saveNmiIrqHandlerAndSetHandlerForBattle:= $FAB5 ; bank $3f
+restoreIrqHandlerAndNmiHandler:= $FADD      ; bank $3f
+saveFieldVars   := $FB17; bank $3f
+irq_handler := $FB30; bank $3f
+ppud.nmi_handler:= $FB57; bank $3f
+ppud.await_nmi_completion:= $FB80           ; bank $3f
+switch_16k_synchronized:= $FB87             ; bank $3f
+switch_16k_synchronized_nocache:= $FB89     ; bank $3f
+getPad1Input    := $FBAA; bank $3f
+getBattleRandom := $FBEF; bank $3f
+initBattleRandom:= $FC27; bank $3f
+div         := $FC92; bank $3f
+mul8x8      := $FCD6; bank $3f
+mul16x16    := $FCF5; bank $3f
+flagTargetBit   := $FD20; bank $3f
+clearTargetBit  := $FD2C; bank $3f
+maskTargetBit   := $FD38; bank $3f
+shiftLeftN  := $FD3C; bank $3f
+shiftRightN := $FD43; bank $3f
+copyTo_$7ad7_x_Until0:= $FD4A               ; bank $3f
+get2byteAtBank18:= $FD60; bank $3f
+loadTo7400Ex    := $FDA6; bank $3f
+copyTo7400  := $FDDC; bank $3f
+call_bank30_9e58:= $FDF3; bank $3f
+thunk.await_nmi_by_set_handler:= $FF00      ; bank $3f
+thunk.switch_2banks:= $FF03                 ; bank $3f
+thunk.switch_1st_bank:= $FF06               ; bank $3f
+thunk.switch_2nd_bank:= $FF09               ; bank $3f
+switch_1st_bank := $FF0C; bank $3f
+switch_2banks   := $FF17; bank $3f
+switch_2nd_bank := $FF1F; bank $3f
+disable_handler_and_return_from_nmi:= $FF2A ; bank $3f
+await_nmi_by_set_handler:= $FF36            ; bank $3f
+hardware_vectors:= $FFF0; bank $3f
+; ----------------------------------------------------------------------------
+    lda #$00    ; 8136 A9 00
+    cpx #$00    ; 8138 E0 00
+    beq .L_814A   ; 813A F0 0E
+    lda #$12    ; 813C A9 12
+    cpx #$40    ; 813E E0 40
+    beq .L_814A   ; 8140 F0 08
+    lda #$24    ; 8142 A9 24
+    cpx #$80    ; 8144 E0 80
+    beq .L_814A   ; 8146 F0 02
+    lda #$36    ; 8148 A9 36
+.L_814A:
+    sta <$82     ; 814A 85 82
+    jsr .L_81E0   ; 814C 20 E0 81
+    lda $6102,x ; 814F BD 02 61
+    and #$E8    ; 8152 29 E8
+    bne .L_816C   ; 8154 D0 16
+    lda $6102,x ; 8156 BD 02 61
+    lsr a       ; 8159 4A
+    bcc .L_8169   ; 815A 90 0D
+    lda <$F0     ; 815C A5 F0
+    and #$10    ; 815E 29 10
+    bne .L_8169   ; 8160 D0 07
+    lda <$82     ; 8162 A5 82
+    clc             ; 8164 18
+    adc #$0C    ; 8165 69 0C
+    sta <$82     ; 8167 85 82
+.L_8169:
+    jmp .L_819B   ; 8169 4C 9B 81
+; ----------------------------------------------------------------------------
+.L_816C:
+    asl a       ; 816C 0A
+    bcs .L_8180   ; 816D B0 11
+    asl a       ; 816F 0A
+    asl a       ; 8170 0A
+    bcs .L_8191   ; 8171 B0 1E
+    asl a       ; 8173 0A
+    asl a       ; 8174 0A
+    bcs .L_8179   ; 8175 B0 02
+    bcc .L_8187   ; 8177 90 0E
+.L_8179:
+    lda #$54    ; 8179 A9 54
+    sta <$82     ; 817B 85 82
+    jmp .L_819B   ; 817D 4C 9B 81
+; ----------------------------------------------------------------------------
+.L_8180:
+    lda #$48    ; 8180 A9 48
+    sta <$82     ; 8182 85 82
+    jmp .L_819B   ; 8184 4C 9B 81
+; ----------------------------------------------------------------------------
+.L_8187:
+    lda <$82     ; 8187 A5 82
+    clc             ; 8189 18
+    adc #$06    ; 818A 69 06
+    sta <$82     ; 818C 85 82
+    jmp .L_819B   ; 818E 4C 9B 81
+; ----------------------------------------------------------------------------
+.L_8191:
+    lda #$4E    ; 8191 A9 4E
+    sta <$82     ; 8193 85 82
+    jmp .L_819B   ; 8195 4C 9B 81

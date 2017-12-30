@@ -1,9 +1,9 @@
 ﻿
-# $3c:959f menu.init_ppu
-> PPUの各レジスタを初期化する。
+# $3c:959f menu.reset_ppu
+> PPUの各レジスタを初期化する。Ctrlレジスタ($2000)は事前に設定した内容($ff)に従う。
 
 ### args:
-none.
++ in u8 $ff: ppu ctrl cache.
 
 ### callers:
 +	`1E:9B0D:20 9F 95  JSR menu.init_ppu`
@@ -16,7 +16,8 @@ none.
 none.
 
 ### notes:
-write notes here
+this function is very similar to `$3d:b369 menu.init_ppu`.
+unlike other one, this function doesn't set cache values (at $ff).
 
 ### (pseudo)code:
 ```js
