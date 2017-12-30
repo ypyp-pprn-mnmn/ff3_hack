@@ -88,7 +88,9 @@
 		;;v0.8.x:
 		.include "ff3_menu_savefile.asm"
 	.endif	;;_OPTIMIZE_FIELD_WINDOW
-	
+	;;v0.9.0:
+	.include "ff3_bank_switch.asm"
+
 	.ifdef EXPERIMENTAL
 		.include "ff3_experimental.asm"
 	.endif	;;EXPERIMENTAL

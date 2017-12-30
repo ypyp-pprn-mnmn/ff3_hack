@@ -9,7 +9,7 @@
 ff3_interrupt_begin:
 ;------------------------------------------------------------------------------------------------------
 	INIT_PATCH $3f,$ff00,$ff03
-dispatch_await_nmi:
+thunk.await_nmi_by_set_handler:
 	jmp await_nmi_by_set_handler
 	VERIFY_PC $ff03
 ;------------------------------------------------------------------------------------------------------
@@ -40,8 +40,7 @@ await_nmi_by_set_handler:
 	sta pNmiHandler-1
 .await_nmi:
 	jmp .await_nmi
-.thunk_template:
-	;jmp disable_handler_and_return_from_nmi
+
 	VERIFY_PC $ff48
 ;------------------------------------------------------------------------------------------------------
 	;RESTORE_PC ff3_field_window_begin
