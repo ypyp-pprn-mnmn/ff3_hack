@@ -8,7 +8,7 @@
     <meta name="generator" content="pandoc">
     <meta name="description" content>
     <meta name="author" content="ypyp-pprn-mnmn (aka “301”)">
-    <!-- generated-at 2017-12-30 19:31:13+0900 -->
+    <!-- generated-at 2017-12-30 22:39:16+0900 -->
     <title>FF3@FC Original Code Documentation</title>
 
     <!-- Bootstrap core CSS -->
@@ -636,7 +636,7 @@ code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Infor
           <li><a href="#ab-sound.music.play">$36:80ab sound.music.play</a></li>
           <li><a href="#e6-sound.update_track">$36:81e6 sound.update_track</a></li>
           <li><a href="#b-sound.fetch_note_for_track">$36:820b sound.fetch_note_for_track</a></li>
-          <li><a href="#d-sound.sum_note_lengths_2_3rd">$36:831d sound.sum_note_lengths_2_3rd</a></li>
+          <li><a href="#d-sound.udpate_keyoff_timers">$36:831d sound.udpate_keyoff_timers</a></li>
           <li><a href="#sound.process_note_command">$36:8353 sound.process_note_command</a></li>
           <li><a href="#d-sound.apply_effecters">$36:857d sound.apply_effecters</a></li>
           <li><a href="#sound.apply_volume_effects">$36:8595 sound.apply_volume_effects</a></li>
@@ -14311,12 +14311,12 @@ $b874:
 </ul></li>
 <li>in,out u8 $7f5f[7]: note length in 96th of a whole note.
 <ul>
-<li>some counter, indexed by $d0, decremented by 1 on each call.</li>
-<li>if it reaches 0, next byte is fetched from the stream.</li>
+<li>indexed by $d0, decremented by 1 on each call.</li>
+<li>if it reaches 0, next command byte (aka ‘note’) is fetched from the stream.</li>
 </ul></li>
-<li>in,out u16 [$7f97[7],$7f9e[7]]: note counter?
+<li>in,out u16 [$7f97[7],$7f9e[7]]: key-off timers.
 <ul>
-<li>some counter, indexed by $d0, decremented by 1 per a note played ($7f5f had reached to 0)</li>
+<li>indexed by $d0, decremented by 1 on each call</li>
 </ul></li>
 </ul>
 <h3 id="callers-16">callers:</h3>
@@ -14495,7 +14495,7 @@ f8 8466 8471 8485 8499 84AF 84D0 84F0 84FF </code></pre>
 <div class="sourceLine" id="cb423-41" data-line-number="41">    <span class="op">}</span></div>
 <div class="sourceLine" id="cb423-42" data-line-number="42">    <span class="cf">if</span> ($d1 <span class="op">!=</span> <span class="dv">2</span>) <span class="op">{</span></div>
 <div class="sourceLine" id="cb423-43" data-line-number="43"><span class="dt">$82bd</span><span class="op">:</span></div>
-<div class="sourceLine" id="cb423-44" data-line-number="44">        <span class="va">sound</span>.<span class="at">sum_note_lengths_2_3rd</span>()<span class="op">;</span> <span class="co">//$831d();</span></div>
+<div class="sourceLine" id="cb423-44" data-line-number="44">        <span class="va">sound</span>.<span class="at">udpate_keyoff_timers</span>()<span class="op">;</span> <span class="co">//$831d();</span></div>
 <div class="sourceLine" id="cb423-45" data-line-number="45">        <span class="cf">if</span> ($d1 <span class="op">==</span> <span class="dv">1</span>) <span class="op">{</span></div>
 <div class="sourceLine" id="cb423-46" data-line-number="46"><span class="dt">$82ea</span><span class="op">:</span>  <span class="co">//noise</span></div>
 <div class="sourceLine" id="cb423-47" data-line-number="47">            y <span class="op">=</span> $d6 <span class="op">=</span> ($7f66 <span class="op">*</span> <span class="dv">12</span>) <span class="op">+</span> ($d5 <span class="op">&gt;&gt;</span> <span class="dv">4</span>)<span class="op">;</span></div>
@@ -14639,9 +14639,9 @@ f8 8466 8471 8485 8499 84AF 84D0 84F0 84FF </code></pre>
 <div class="sourceLine" id="cb423-185" data-line-number="185"><span class="co">*/</span></div>
 <div class="sourceLine" id="cb423-186" data-line-number="186"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="d-sound.sum_note_lengths_2_3rd">$36:831d sound.sum_note_lengths_2_3rd</h1>
+<h1 id="d-sound.udpate_keyoff_timers">$36:831d sound.udpate_keyoff_timers</h1>
 <blockquote>
-<p>short description of the function</p>
+<p>次の音符(play note)の発声時間を計算して、再生状態に反映する。</p>
 </blockquote>
 <h3 id="args-164">args:</h3>
 <ul>
@@ -14649,8 +14649,8 @@ f8 8466 8471 8485 8499 84AF 84D0 84F0 84FF </code></pre>
 <li>in u8 $d1: channel id</li>
 <li>in AuditoStream* $d3: pointer to stream</li>
 <li>in u8 $d5: command byte fetched from stream</li>
-<li>out u8 $7f97[7]: note lengths, low</li>
-<li>out u8 $7f9e[7]: note lengths, high</li>
+<li>out u8 $7f97[7]: key-off timers, low</li>
+<li>out u8 $7f9e[7]: key-off timers, high</li>
 </ul>
 <h3 id="callers-18">callers:</h3>
 <ul>
@@ -14662,10 +14662,10 @@ f8 8466 8471 8485 8499 84AF 84D0 84F0 84FF </code></pre>
 </ul>
 <h3 id="static-references-5">static references:</h3>
 <ul>
-<li>u8 $8815[0x10]: tone length, 2/3 of $8805. <code>48 36 24 1B 18 12 0D 0C 09 07 06 04 03 02 01 00</code></li>
+<li>u8 $8815[0x10]: key-off timers length, 2/3 of tone lengths (defined in $8805). <code>48 36 24 1B 18 12 0D 0C 09 07 06 04 03 02 01 00</code></li>
 </ul>
 <h3 id="notes-47">notes:</h3>
-<p>write notes here</p>
+<p>if a note about to play is immediately followed by ‘tie’ notes (<span class="math inline"><em>d</em>0−</span>df), then key-off timer is sum of those tie notes and the play note itself.</p>
 <h3 id="pseudocode-6">(pseudo)code:</h3>
 <pre class="sourceCode js" id="cb424"><code class="sourceCode javascript"><div class="sourceLine" id="cb424-1" data-line-number="1"><span class="op">{</span></div>
 <div class="sourceLine" id="cb424-2" data-line-number="2"><span class="co">/*</span></div>
@@ -15227,11 +15227,11 @@ f8 8466 8471 8485 8499 84AF 84D0 84F0 84FF </code></pre>
 <li>in u8 $d0: track #</li>
 <li>in u8 $d2: ? some ctrl flags. 0 for music, 0xff for sound effects.</li>
 <li>out u8 $7f7b[7]: volume for each track.</li>
-<li>in u8 $7f97[7]: track length remaining, low?</li>
-<li>in u8 $7f9e[7]: track length remaining, high?</li>
-<li>in,out u8 $7fba[7]: ?, incremented by 1 if track length is 0. on entry, 0 if the last note command was &lt; 0xe0</li>
+<li>in u8 $7f97[7]: current note’s key-off timer, low.</li>
+<li>in u8 $7f9e[7]: current note’s key-off timer, high.</li>
+<li>in,out u8 $7fba[7]: ?, incremented by 1 if key-off timer has reached to 0. on entry, 0 if the last note command was &lt; 0xe0 1: indicating that a note is still in play but no longer is sounding since key-off timer had reached.</li>
 <li>in u8 $7fc1[7]: ?, used to index $9a7c.</li>
-<li>out u8 $7fc8[7]: ?, 0 if track length is 0.</li>
+<li>out u8 $7fc8[7]: ?, 0 if key-off timer had reached to 0.</li>
 </ul>
 <h3 id="callers-20">callers:</h3>
 <ul>

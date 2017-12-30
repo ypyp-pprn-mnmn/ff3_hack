@@ -1,14 +1,14 @@
 ﻿
-# $36:831d sound.sum_note_lengths_2_3rd
-> short description of the function
+# $36:831d sound.udpate_keyoff_timers
+> 次の音符(play note)の発声時間を計算して、再生状態に反映する。
 
 ### args:
 +	in u8 $d0: track #
 +	in u8 $d1: channel id
 +	in AuditoStream* $d3: pointer to stream
 +	in u8 $d5: command byte fetched from stream
-+   out u8 $7f97[7]: note lengths, low
-+   out u8 $7f9e[7]: note lengths, high
++   out u8 $7f97[7]: key-off timers, low
++   out u8 $7f9e[7]: key-off timers, high
 
 ### callers:
 +	$36:820b sound.fetch_note_for_track
@@ -17,11 +17,12 @@
 +	yet to be investigated
 
 ### static references:
-+	u8 $8815[0x10]: tone length, 2/3 of $8805.
++	u8 $8815[0x10]: key-off timers length, 2/3 of tone lengths (defined in $8805).
 	`48 36 24 1B 18 12 0D 0C 09 07 06 04 03 02 01 00`
 
 ### notes:
-write notes here
+if a note about to play is immediately followed by 'tie' notes ($d0-$df),
+then key-off timer is sum of those tie notes and the play note itself. 
 
 ### (pseudo)code:
 ```js
@@ -59,4 +60,5 @@ write notes here
 */
 }
 ```
+
 

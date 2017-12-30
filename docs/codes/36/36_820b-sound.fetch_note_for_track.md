@@ -1,5 +1,4 @@
 ﻿
-
 # $36:820b sound.fetch_note_for_track
 > 指定のトラックについて、次の音楽データを取得し、各種再生データと状態を更新する。
 
@@ -124,7 +123,7 @@ $831c:
     }
     if ($d1 != 2) {
 $82bd:
-        sound.sum_note_lengths_2_3rd(); //$831d();
+        sound.udpate_keyoff_timers(); //$831d();
         if ($d1 == 1) {
 $82ea:  //noise
             y = $d6 = ($7f66 * 12) + ($d5 >> 4);
@@ -268,5 +267,4 @@ $82c6:  //pulse1,pulse2,triangle
 */
 }
 ```
-
 

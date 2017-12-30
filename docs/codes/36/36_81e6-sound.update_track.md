@@ -8,10 +8,10 @@
 	-   01: feed next wave data?
 	-   80: channel available
 +	in,out u8 $7f5f[7]: note length in 96th of a whole note.
-	-	some counter, indexed by $d0, decremented by 1 on each call.
-	-	if it reaches 0, next byte is fetched from the stream.
-+	in,out u16 [$7f97[7],$7f9e[7]]: note counter?
-	-	some counter, indexed by $d0, decremented by 1 per a note played ($7f5f had reached to 0)
+	-	indexed by $d0, decremented by 1 on each call.
+	-	if it reaches 0, next command byte (aka 'note') is fetched from the stream.
++	in,out u16 [$7f97[7],$7f9e[7]]: key-off timers.
+	-	indexed by $d0, decremented by 1 on each call
 
 ### callers:
 +	$36:8b2d sound.music.update_each_track
@@ -63,5 +63,6 @@ $820a:
 */
 }
 ```
+
 
 
