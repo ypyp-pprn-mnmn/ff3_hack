@@ -1,5 +1,6 @@
 ﻿
-# $3f:f817 field.call_get_eligibility_for_item
+
+# $3f:f817 field.call_get_eligiblity_for_item
 > 一時的に戦闘モードへ移行し、指定のキャラクターについて指定のアイテムの装備可否を `$34:8009` を呼び出すことによって計算する。
 
 ### args:
@@ -25,4 +26,5 @@ write notes here
 */
 }
 ```
+
 

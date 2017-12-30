@@ -8,7 +8,7 @@
     <meta name="generator" content="pandoc">
     <meta name="description" content>
     <meta name="author" content="ypyp-pprn-mnmn (aka “301”)">
-    <!-- generated-at 2017-12-31 04:54:51+0900 -->
+    <!-- generated-at 2017-12-31 05:10:09+0900 -->
     <title>FF3@FC Original Code Documentation</title>
 
     <!-- Bootstrap core CSS -->
@@ -913,12 +913,12 @@ code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Infor
           <li><a href="#ff727-switch_to_character_logics_bank">$3f:f727 switch_to_character_logics_bank</a></li>
           <li><a href="#ff800-call_dobattle">$3f:f800 call_doBattle</a></li>
           <li><a href="#ff803-thunk.call_recalc_character_params">$3f:f803 thunk.call_recalc_character_params</a></li>
-          <li><a href="#ff806-thunk.call_get_eligibility_for_item">$3f:f806 thunk.call_get_eligibility_for_item</a></li>
-          <li><a href="#ff817-field.call_get_eligibility_for_item">$3f:f817 field.call_get_eligibility_for_item</a></li>
+          <li><a href="#ff806-thunk.call_get_eligiblity_for_item">$3f:f806 thunk.call_get_eligiblity_for_item</a></li>
+          <li><a href="#ff817-field.call_get_eligiblity_for_item">$3f:f817 field.call_get_eligiblity_for_item</a></li>
           <li><a href="#ff820-field.call_recalc_character_params">$3f:f820 field.call_recalc_character_params</a></li>
           <li><a href="#ff826-field.back_to_field_mode_with_result">$3f:f826 field.back_to_field_mode_with_result</a></li>
           <li><a href="#ff82c-field.switch_to_battle_mode">$3f:f82c field.switch_to_battle_mode</a></li>
-          <li><a href="#ff83b-restorefieldvariables">$3f:f83b restoreFieldVariables</a></li>
+          <li><a href="#ff83b-field.restore_variables_from_battle_mode">$3f:f83b field.restore_variables_from_battle_mode</a></li>
           <li><a href="#ff854-call_32_8000">$3f:f854 call_32_8000</a></li>
           <li><a href="#ff897-ppud.upload_palette">$3f:f897 ppud.upload_palette</a></li>
           <li><a href="#ff8aa-do_sprite_dma_from_0200">$3f:f8aa do_sprite_dma_from_0200</a></li>
@@ -26318,7 +26318,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb714-4" data-line-number="4"><span class="co">*/</span></div>
 <div class="sourceLine" id="cb714-5" data-line-number="5"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="ff806-thunk.call_get_eligibility_for_item">$3f:f806 thunk.call_get_eligibility_for_item</h1>
+<h1 id="ff806-thunk.call_get_eligiblity_for_item">$3f:f806 thunk.call_get_eligiblity_for_item</h1>
 <blockquote>
 <p>$f817を呼び出すためのthunk.</p>
 </blockquote>
@@ -26341,10 +26341,10 @@ sta $4014   ;DMA</code></pre></li>
 <p>write notes here</p>
 <h3 id="pseudocode-144">(pseudo)code:</h3>
 <pre class="sourceCode js" id="cb715"><code class="sourceCode javascript"><div class="sourceLine" id="cb715-1" data-line-number="1"><span class="op">{</span></div>
-<div class="sourceLine" id="cb715-2" data-line-number="2">    <span class="cf">return</span> <span class="va">field</span>.<span class="at">call_get_eligibility_for_item</span>()<span class="op">;</span> <span class="co">// jmp .L_F817   ; F806 4C 17 F8</span></div>
+<div class="sourceLine" id="cb715-2" data-line-number="2">    <span class="cf">return</span> <span class="va">field</span>.<span class="at">call_get_eligiblity_for_item</span>()<span class="op">;</span> <span class="co">// jmp .L_F817   ; F806 4C 17 F8</span></div>
 <div class="sourceLine" id="cb715-3" data-line-number="3"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="ff817-field.call_get_eligibility_for_item">$3f:f817 field.call_get_eligibility_for_item</h1>
+<h1 id="ff817-field.call_get_eligiblity_for_item">$3f:f817 field.call_get_eligiblity_for_item</h1>
 <blockquote>
 <p>一時的に戦闘モードへ移行し、指定のキャラクターについて指定のアイテムの装備可否を <code>$34:8009</code> を呼び出すことによって計算する。</p>
 </blockquote>
@@ -26409,7 +26409,7 @@ sta $4014   ;DMA</code></pre></li>
 </ul>
 <h3 id="callers-145">callers:</h3>
 <ul>
-<li><code>jmp .L_F826   ; F81D 4C 26 F8</code> @</li>
+<li><code>jmp .L_F826   ; F81D 4C 26 F8</code> @ $3f:f817 field.call_get_eligiblity_for_item</li>
 <li><code>jsr .L_8006   ; F823 20 06 80</code> (fall through) @ $3f:f820 field.call_recalc_character_params</li>
 </ul>
 <h3 id="local-variables-126">local variables:</h3>
@@ -26465,19 +26465,31 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb719-21" data-line-number="21"><span class="dt">$f83b</span><span class="op">:</span></div>
 <div class="sourceLine" id="cb719-22" data-line-number="22"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="ff83b-restorefieldvariables">$3f:f83b restoreFieldVariables</h1>
+<h1 id="ff83b-field.restore_variables_from_battle_mode">$3f:f83b field.restore_variables_from_battle_mode</h1>
+<blockquote>
+<p>戦闘モード用に退避した変数を復元する。</p>
+</blockquote>
+<h3 id="args-363">args:</h3>
+<ul>
+<li>in u8 $7480[0xd0]: =&gt; $00</li>
+<li>in u8 $7550[0x20]: =&gt; $e0</li>
+<li>out u8 $00[0xd0]: &lt;= $7480</li>
+<li>out u8 $e0[0x20]: &lt;= $7550</li>
+</ul>
+<h3 id="notes-167">notes:</h3>
+<p>address range $d0 to $df (inclusive) is utilized by sound driver. this function is avoiding any operation on that range.</p>
 <h3 id="code-271">code:</h3>
 <pre class="sourceCode js" id="cb720"><code class="sourceCode javascript"><div class="sourceLine" id="cb720-1" data-line-number="1"><span class="op">{</span></div>
-<div class="sourceLine" id="cb720-2" data-line-number="2">    <span class="cf">for</span> (x <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>x <span class="op">!=</span> #d0<span class="op">;</span>x<span class="op">++</span>) <span class="op">{</span></div>
+<div class="sourceLine" id="cb720-2" data-line-number="2">    <span class="cf">for</span> (x <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>x <span class="op">!=</span> <span class="bn">0xd0</span><span class="op">;</span>x<span class="op">++</span>) <span class="op">{</span></div>
 <div class="sourceLine" id="cb720-3" data-line-number="3">        <span class="va">$0000</span>.<span class="at">x</span> <span class="op">=</span> <span class="va">$7480</span>.<span class="at">x</span><span class="op">;</span></div>
 <div class="sourceLine" id="cb720-4" data-line-number="4">    <span class="op">}</span></div>
-<div class="sourceLine" id="cb720-5" data-line-number="5">    <span class="cf">for</span> (x <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>x <span class="op">!=</span> #e0<span class="op">;</span>x<span class="op">++</span>) <span class="op">{</span></div>
+<div class="sourceLine" id="cb720-5" data-line-number="5">    <span class="cf">for</span> (x <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>x <span class="op">!=</span> <span class="bn">0xe0</span><span class="op">;</span>x<span class="op">++</span>) <span class="op">{</span></div>
 <div class="sourceLine" id="cb720-6" data-line-number="6">        <span class="va">$0000</span>.<span class="at">x</span> <span class="op">=</span> <span class="va">$7470</span>.<span class="at">x</span><span class="op">;</span></div>
 <div class="sourceLine" id="cb720-7" data-line-number="7">    <span class="op">}</span></div>
 <div class="sourceLine" id="cb720-8" data-line-number="8"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ff854-call_32_8000">$3f:f854 call_32_8000</h1>
-<h3 id="args-363">args:</h3>
+<h3 id="args-364">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 a,x : param</li>
 <li><a href="#in-2">in</a> u8 $7cf6 : currentBank (bankToRestore)</li>
@@ -26497,7 +26509,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb721-12" data-line-number="12"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ff897-ppud.upload_palette">$3f:f897 ppud.upload_palette</h1>
-<h3 id="args-364">args:</h3>
+<h3 id="args-365">args:</h3>
 <ul>
 <li>in u8 $7cf7[0x20]: NES color indexes</li>
 </ul>
@@ -26522,7 +26534,7 @@ sta $4014   ;DMA</code></pre></li>
 <blockquote>
 <p>awaits nmi, then updates sprites and palette.</p>
 </blockquote>
-<h3 id="args-365">args:</h3>
+<h3 id="args-366">args:</h3>
 <ul>
 <li><span class="citation" data-cites="see">@see [$3f:f897 ppud.up*load*_palette]</span></li>
 </ul>
@@ -26538,7 +26550,7 @@ sta $4014   ;DMA</code></pre></li>
 <blockquote>
 <p>awaits nmi, then barely updates palette.</p>
 </blockquote>
-<h3 id="args-366">args:</h3>
+<h3 id="args-367">args:</h3>
 <ul>
 <li>see [$3f:f897 ppud.up<em>load</em>_palette]</li>
 </ul>
@@ -26550,7 +26562,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li>none</li>
 </ul>
-<h3 id="notes-167">notes:</h3>
+<h3 id="notes-168">notes:</h3>
 <h3 id="pseudocode-148">(pseudo)code:</h3>
 <pre class="sourceCode js" id="cb725"><code class="sourceCode javascript"><div class="sourceLine" id="cb725-1" data-line-number="1"><span class="op">{</span></div>
 <div class="sourceLine" id="cb725-2" data-line-number="2">    <span class="va">ppud</span>.<span class="at">await_nmi_completion</span>()<span class="op">;</span>    <span class="co">//$fb80</span></div>
@@ -26559,7 +26571,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb725-5" data-line-number="5"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ff8c5-ppud.update_sprites_after_nmi">$3f:f8c5 ppud.update_sprites_after_nmi</h1>
-<h3 id="args-367">args:</h3>
+<h3 id="args-368">args:</h3>
 <ul>
 <li>in u8 $06: ppu ctrl cache</li>
 <li>in u8 $09: ppu mask cache</li>
@@ -26576,7 +26588,7 @@ sta $4014   ;DMA</code></pre></li>
 <p><strong>fall through</strong></p>
 <hr />
 <h1 id="ff8cb-ppud.sync_registers_with_cache">$3f:f8cb ppud.sync_registers_with_cache</h1>
-<h3 id="args-368">args:</h3>
+<h3 id="args-369">args:</h3>
 <ul>
 <li>in u8 $06: ppu ctrl cache</li>
 <li>in u8 $09: ppu mask cache</li>
@@ -26593,7 +26605,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb727-7" data-line-number="7"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ff8e0-ppud.set_vram_addr">$3f:f8e0 ppud.set_vram_addr</h1>
-<h3 id="args-369">args:</h3>
+<h3 id="args-370">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 a : addr(high byte)</li>
 <li><a href="#in-2">in</a> u8 x : addr(low byte)</li>
@@ -26606,7 +26618,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb728-5" data-line-number="5"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ff8ea-mul8x8_reg">$3f:f8ea mul8x8_reg</h1>
-<h3 id="args-370">args:</h3>
+<h3 id="args-371">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 a : multicand</li>
 <li><a href="#in-2">in</a> u8 x : multiplier</li>
@@ -26631,7 +26643,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb731-3" data-line-number="3"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ff92f-memcpy">$3f:f92f memcpy</h1>
-<h3 id="args-371">args:</h3>
+<h3 id="args-372">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u16 $7e : sourceAddr</li>
 <li><a href="#in-2">in</a> u16 $80 : destAddr</li>
@@ -26678,7 +26690,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb734-4" data-line-number="4"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ff970-copytovram">$3f:f970 copyToVram</h1>
-<h3 id="args-372">args:</h3>
+<h3 id="args-373">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u16 $7e : sourceBuffer</li>
 <li><a href="#in-2">in</a> u16 $80 : destVramAddr</li>
@@ -26750,11 +26762,11 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb735-59" data-line-number="59"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ffa0e-call_2e_9d53">$3f:fa0e call_2e_9d53</h1>
-<h3 id="args-373">args:</h3>
+<h3 id="args-374">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 A : 9d53_param</li>
 </ul>
-<h3 id="notes-168">notes:</h3>
+<h3 id="notes-169">notes:</h3>
 <p>各種ゲームシーン表示系のルーチンから呼ばれる</p>
 <h3 id="code-286">code:</h3>
 <pre class="sourceCode js" id="cb736"><code class="sourceCode javascript"><div class="sourceLine" id="cb736-1" data-line-number="1"><span class="op">{</span></div>
@@ -26772,13 +26784,13 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb737-3" data-line-number="3"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ffa26-dobattle">$3f:fa26 doBattle</h1>
-<h3 id="args-374">args:</h3>
+<h3 id="args-375">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> a : encounter id</li>
 <li><a href="#in-2">in</a> x : backgroound sight graphics</li>
 <li><a href="#in-2">in</a> y : battleMode?</li>
 </ul>
-<h3 id="notes-169">notes:</h3>
+<h3 id="notes-170">notes:</h3>
 <pre><code>least value of S = $1a = $20 - 6</code></pre>
 <h3 id="code-288">code:</h3>
 <pre class="sourceCode js" id="cb739"><code class="sourceCode javascript"><div class="sourceLine" id="cb739-1" data-line-number="1"><span class="op">{</span></div>
@@ -26869,11 +26881,11 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb743-9" data-line-number="9"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ffb30-irq_handler">$3f:fb30 irq_handler</h1>
-<h3 id="args-375">args:</h3>
+<h3 id="args-376">args:</h3>
 <ul>
 <li>[in,out] u8</li>
 </ul>
-<h3 id="notes-170">notes:</h3>
+<h3 id="notes-171">notes:</h3>
 <p>戦闘中のハンドラ。 バンク変更中を考慮している。</p>
 <h3 id="code-293">code:</h3>
 <pre class="sourceCode js" id="cb744"><code class="sourceCode javascript"><div class="sourceLine" id="cb744-1" data-line-number="1"><span class="op">{</span></div>
@@ -26898,7 +26910,7 @@ sta $4014   ;DMA</code></pre></li>
 <blockquote>
 <p>戦闘モード時のnmiハンドラ</p>
 </blockquote>
-<h3 id="args-376">args:</h3>
+<h3 id="args-377">args:</h3>
 <ul>
 <li>[in,out] u8 $05: nmi_pending (<span class="citation" data-cites="see">@see</span> <code>$3f:fb80 ppud.await_nmi_completion</code>)</li>
 <li><a href="#in-2">in</a> u8 $7cf3: ?</li>
@@ -26910,7 +26922,7 @@ sta $4014   ;DMA</code></pre></li>
 <li><a href="#out-2">out</a> u8 $02: irq countdown?</li>
 <li><a href="#in-2">in</a> u8 $03: irq countdown?</li>
 </ul>
-<h3 id="notes-171">notes:</h3>
+<h3 id="notes-172">notes:</h3>
 <ul>
 <li>the ppu set VBlank flag at 2nd tick of scanline 241, where the VBlank NMI also occurs.</li>
 <li>cpu cycles this handler takes to execute is depending on the value at $7cf3:
@@ -26939,7 +26951,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb745-17" data-line-number="17"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ffb80-ppud.await_nmi_completion">$3f:fb80 ppud.await_nmi_completion</h1>
-<h3 id="args-377">args:</h3>
+<h3 id="args-378">args:</h3>
 <ul>
 <li>in,out u8 $05: pending_nmi
 <ul>
@@ -26947,7 +26959,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>otherwise: pending nmi completion</li>
 </ul></li>
 </ul>
-<h3 id="notes-172">notes:</h3>
+<h3 id="notes-173">notes:</h3>
 <p>$05 is set by <code>$3f:fb57 ppud.nmi_handler</code></p>
 <h3 id="code-295">code:</h3>
 <pre class="sourceCode js" id="cb746"><code class="sourceCode javascript"><div class="sourceLine" id="cb746-1" data-line-number="1"><span class="op">{</span></div>
@@ -26957,7 +26969,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb746-5" data-line-number="5"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ffb87-switch_16k_synchronized">$3f:fb87 switch_16k_synchronized</h1>
-<h3 id="args-378">args:</h3>
+<h3 id="args-379">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 A : bankNo (per <em>16k</em> unit)</li>
 <li><a href="#out-2">out</a> u8 $ab : per16kBankNo</li>
@@ -26971,7 +26983,7 @@ sta $4014   ;DMA</code></pre></li>
 <p><strong>fall through</strong></p>
 <hr />
 <h1 id="ffb89-switch_16k_synchronized_nocache">$3f:fb89 switch_16k_synchronized_nocache</h1>
-<h3 id="args-379">args:</h3>
+<h3 id="args-380">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 A : bankNo (per <em>16k</em> unit)</li>
 <li><a href="#out-2">out</a> u8 $ab : per16kBankNo</li>
@@ -26999,7 +27011,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb748-17" data-line-number="17"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ffbaa-getpad1input">$3f:fbaa getPad1Input()</h1>
-<h3 id="args-380">args:</h3>
+<h3 id="args-381">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $13 : inputMask?</li>
 <li><a href="#out-2">out</a> u8 $12 : inputFlag(bit7 &gt; &lt; v ^ st sel b a bit0)</li>
@@ -27042,14 +27054,14 @@ sta $4014   ;DMA</code></pre></li>
 <blockquote>
 <p>指定した乱数系列から乱数値を一つ取得する</p>
 </blockquote>
-<h3 id="args-381">args:</h3>
+<h3 id="args-382">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 A : max?</li>
 <li><a href="#in-2">in</a> u8 X : min?</li>
 <li><a href="#in-2">in</a> u8 $21 : randSystemIndex?</li>
 <li><a href="#out-2">out</a> u8 A : rand [x-a] の乱数値 上限も含む</li>
 </ul>
-<h3 id="notes-173">notes:</h3>
+<h3 id="notes-174">notes:</h3>
 <pre><code>上位8bitを$21で指定した系列から取得した乱数(0x00-0xFF),下位8bitを0x80とした16bit値(A)と最大と最小の差分(8bit)(B)を掛けて
 結果のbit16-23の8bitを乱数の基本値として採用する。
 結果のbit8-15=(diff*baseRand + diff&gt;&gt;1)が
@@ -27121,7 +27133,7 @@ $fc3b a9 01</code></pre>
 <blockquote>
 <p>筆算的に割り算</p>
 </blockquote>
-<h3 id="args-382">args:</h3>
+<h3 id="args-383">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u16 $18 dividend</li>
 <li><a href="#in-2">in</a> u16 $1a divisor</li>
@@ -27156,7 +27168,7 @@ $fc3b a9 01</code></pre>
 <blockquote>
 <p>筆算的掛け算(8bit*8bit)</p>
 </blockquote>
-<h3 id="args-383">args:</h3>
+<h3 id="args-384">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 a : multicand</li>
 <li><a href="#in-2">in</a> u8 x : multiplier</li>
@@ -27181,7 +27193,7 @@ $fc3b a9 01</code></pre>
 <blockquote>
 <p>筆算の要領で掛け算をする(16bit*16bit)</p>
 </blockquote>
-<h3 id="args-384">args:</h3>
+<h3 id="args-385">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u16 $18 multicand</li>
 <li><a href="#in-2">in</a> u16 $1a multiplier</li>
@@ -27241,7 +27253,7 @@ $fc3b a9 01</code></pre>
 <div class="sourceLine" id="cb761-8" data-line-number="8"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ffd4a-copyto_7ad7_x_until0">$3f:fd4a copyTo_$7ad7_x_Until0</h1>
-<h3 id="args-385">args:</h3>
+<h3 id="args-386">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 A : sourceBank(per16k)</li>
 <li>[in,out] u8 X : destOffset</li>
@@ -27263,7 +27275,7 @@ $fc3b a9 01</code></pre>
 <div class="sourceLine" id="cb762-11" data-line-number="11"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ffd60-get2byteatbank18">$3f:fd60 get2byteAtBank18</h1>
-<h3 id="args-386">args:</h3>
+<h3 id="args-387">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u16 $18 : baseOffset</li>
 <li><a href="#in-2">in</a> u8 $1a : index</li>
@@ -27280,7 +27292,7 @@ $fc3b a9 01</code></pre>
 <div class="sourceLine" id="cb763-8" data-line-number="8"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ffd8b">$3f:fd8b</h1>
-<h3 id="args-387">args:</h3>
+<h3 id="args-388">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> x : userTypeId (itemParam[7])</li>
 </ul>
@@ -27290,7 +27302,7 @@ $fc3b a9 01</code></pre>
 <div class="sourceLine" id="cb764-3" data-line-number="3"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ffda6-loadto7400ex">$3f:fda6 loadTo7400Ex</h1>
-<h3 id="args-388">args:</h3>
+<h3 id="args-389">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u8 $18 : index</li>
 <li><a href="#in-2">in</a> u8 $1a : dataSize</li>
@@ -27322,7 +27334,7 @@ $fc3b a9 01</code></pre>
 <div class="sourceLine" id="cb765-19" data-line-number="19"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="ffddc-copyto7400">$3f:fddc copyTo7400</h1>
-<h3 id="args-389">args:</h3>
+<h3 id="args-390">args:</h3>
 <ul>
 <li><a href="#in-2">in</a> u16 $46 : sourceBasePtr</li>
 <li><a href="#in-2">in</a> u8 $4a : bankToRestore</li>
@@ -27351,9 +27363,9 @@ $fc3b a9 01</code></pre>
 <blockquote>
 <p>$3f:ff36へのthunk. (次のNMIを待つ)</p>
 </blockquote>
-<h3 id="args-390">args:</h3>
+<h3 id="args-391">args:</h3>
 <p>none.</p>
-<h3 id="notes-174">notes:</h3>
+<h3 id="notes-175">notes:</h3>
 <p>processor registers carry, overflow, X and Y are preserved acorss the call.</p>
 <h3 id="code-313">code:</h3>
 <pre class="sourceCode js" id="cb768"><code class="sourceCode javascript"><div class="sourceLine" id="cb768-1" data-line-number="1"><span class="op">{</span></div>
@@ -27364,11 +27376,11 @@ $fc3b a9 01</code></pre>
 <blockquote>
 <p>$3f:ff17 switch_2banks へのthunk. (切り替え可能ななPRG ROM bankのページ二つ($8000-BFFF)を指定のbankへ切り替える。)</p>
 </blockquote>
-<h3 id="args-391">args:</h3>
+<h3 id="args-392">args:</h3>
 <ul>
 <li>in u8 A: index of first PRG ROM bank (per 8k bytes) to switch.</li>
 </ul>
-<h3 id="notes-175">notes:</h3>
+<h3 id="notes-176">notes:</h3>
 <p>this function always maps 2 consecutive 8k banks into <span class="math inline">8000−</span>bfff.</p>
 <h3 id="code-314">code:</h3>
 <pre class="sourceCode js" id="cb769"><code class="sourceCode javascript"><div class="sourceLine" id="cb769-1" data-line-number="1"><span class="op">{</span></div>
@@ -27379,7 +27391,7 @@ $fc3b a9 01</code></pre>
 <blockquote>
 <p>$3f:ff0c switch_1st_bank へのthunk. (切り替え可能ななPRG ROM bankの一つ目($8000-9FFF)を指定のbankへ切り替える。)</p>
 </blockquote>
-<h3 id="args-392">args:</h3>
+<h3 id="args-393">args:</h3>
 <ul>
 <li>in u8 A: index of PRG ROM bank (per 8k bytes) to switch.</li>
 </ul>
@@ -27392,7 +27404,7 @@ $fc3b a9 01</code></pre>
 <blockquote>
 <p>$3f:ff1f switch_2nd_bank へのthunk. (切り替え可能なPRG ROM bankの二つ目(A000-BFFF)を指定のbankへ切り替える。)</p>
 </blockquote>
-<h3 id="args-393">args:</h3>
+<h3 id="args-394">args:</h3>
 <ul>
 <li>in u8 A: index of PRG ROM bank (per 8k bytes) to switch.</li>
 </ul>
@@ -27405,7 +27417,7 @@ $fc3b a9 01</code></pre>
 <blockquote>
 <p>切り替え可能ななPRG ROM bankの一つ目($8000-9FFF)を指定のbankへ切り替える。</p>
 </blockquote>
-<h3 id="args-394">args:</h3>
+<h3 id="args-395">args:</h3>
 <ul>
 <li>in u8 A: index of PRG ROM bank (per 8k bytes) to switch.</li>
 </ul>
@@ -27426,7 +27438,7 @@ $fc3b a9 01</code></pre>
 <blockquote>
 <p>Switches PRG banks mapped to first two 8k pages (<span class="math inline">8000−</span>BFFF) to the given consecutive banks.</p>
 </blockquote>
-<h3 id="args-395">args:</h3>
+<h3 id="args-396">args:</h3>
 <ul>
 <li>in u8 A: basebank (per 8k)</li>
 </ul>
@@ -27434,7 +27446,7 @@ $fc3b a9 01</code></pre>
 <ul>
 <li>$3f:ff03 thunk.switch_2banks: it is an only caller of this function.</li>
 </ul>
-<h3 id="notes-176">notes:</h3>
+<h3 id="notes-177">notes:</h3>
 <p>processor registers X and Y are unaffected and preserved across calls. some status flags are affected but in a manner expectible. specifically, status flags are affected in the following way:</p>
 <h3 id="processor-flags">processor flags:</h3>
 <ul>
@@ -27457,7 +27469,7 @@ $fc3b a9 01</code></pre>
 <blockquote>
 <p>切り替え可能なPRG ROM bankの二つ目(A000-BFFF)を指定のbankへ切り替える。</p>
 </blockquote>
-<h3 id="args-396">args:</h3>
+<h3 id="args-397">args:</h3>
 <ul>
 <li>in u8 A: index of PRG ROM bank (per 8k bytes) to switch.</li>
 </ul>
@@ -27465,7 +27477,7 @@ $fc3b a9 01</code></pre>
 <ul>
 <li>$3f:ff09 thunk.switch_2nd_bank: it is an only caller of this function.</li>
 </ul>
-<h3 id="notes-177">notes:</h3>
+<h3 id="notes-178">notes:</h3>
 <p>processor registers X and Y are unaffected and preserved across calls.</p>
 <h3 id="code-319">code:</h3>
 <pre class="sourceCode js" id="cb774"><code class="sourceCode javascript"><div class="sourceLine" id="cb774-1" data-line-number="1"><span class="op">{</span></div>
@@ -27480,9 +27492,9 @@ $fc3b a9 01</code></pre>
 <blockquote>
 <p>nmiハンドラから自身を取り除き、$3f:ff36の呼び出し元へ直接戻る。</p>
 </blockquote>
-<h3 id="args-397">args:</h3>
+<h3 id="args-398">args:</h3>
 <p>none. as this is an NMI handler.</p>
-<h3 id="notes-178">notes:</h3>
+<h3 id="notes-179">notes:</h3>
 <p>technically the continuation of this function is NOT an instruction executed right before the NMI inturrupt happened as usual. rather, it is a return address of <code>$3f:ff36 await_nmi_by_set_handler</code> which had set this function as NMI handler. this is done by manipulating stacks.</p>
 <h3 id="code-320">code:</h3>
 <pre class="sourceCode js" id="cb775"><code class="sourceCode javascript"><div class="sourceLine" id="cb775-1" data-line-number="1"><span class="op">{</span></div>
@@ -27496,7 +27508,7 @@ $fc3b a9 01</code></pre>
 <blockquote>
 <p>この関数の呼び出し元へ直接戻る特殊なNMIハンドラを設定することによって、次のNMIを待つ。</p>
 </blockquote>
-<h3 id="notes-179">notes:</h3>
+<h3 id="notes-180">notes:</h3>
 <p>this function internally utilizes nmi handler to await next NMI, but returns to caller as usual function. this is done by the NMI handler by manipulating stacks. processor registers carry, overflow, X and Y are preserved acorss the call.</p>
 <h3 id="code-321">code:</h3>
 <pre class="sourceCode js" id="cb776"><code class="sourceCode javascript"><div class="sourceLine" id="cb776-1" data-line-number="1"><span class="op">{</span></div>

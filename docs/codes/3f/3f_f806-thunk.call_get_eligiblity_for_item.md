@@ -1,5 +1,6 @@
 ﻿
-# $3f:f806 thunk.call_get_eligibility_for_item
+
+# $3f:f806 thunk.call_get_eligiblity_for_item
 > $f817を呼び出すためのthunk.
 
 ### args:
@@ -22,7 +23,8 @@ write notes here
 ### (pseudo)code:
 ```js
 {
-	return field.call_get_eligibility_for_item(); // jmp .L_F817   ; F806 4C 17 F8
+	return field.call_get_eligiblity_for_item(); // jmp .L_F817   ; F806 4C 17 F8
 }
 ```
+
 
