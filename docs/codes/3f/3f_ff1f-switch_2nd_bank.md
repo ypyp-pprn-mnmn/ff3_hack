@@ -1,6 +1,6 @@
 ﻿
 # $3f:ff1f switch_2nd_bank
->切り替え可能ななPRG ROM bankの二つ目($A000-BFFF)を指定のbankへ切り替える。
+> 切り替え可能なPRG ROM bankの二つ目(A000-BFFF)を指定のbankへ切り替える。
 
 ### args:
 +	in u8 A: index of PRG ROM bank (per 8k bytes) to switch.
@@ -21,4 +21,5 @@ processor registers X and Y are unaffected and preserved across calls.
 $ff2a:
 }
 ```
+
 

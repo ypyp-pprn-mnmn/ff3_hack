@@ -9,16 +9,19 @@
 __FF3_BANK_SWITCH_INCLUDED__
 	.ifdef _FEATURE_MEMOIZE_BANK_SWITCH
 ;--------------------------------------------------------------------------------------------------
-	INIT_PATCH_EX sys.switch_bank, $3f,$ff0c,$ff2a,$ff0c
+	INIT_PATCH_EX sys.switch_bank, $3f,$ff03,$ff2a,$ff03
 
+;; these 3 functions are public endpoints called directly from other codes.
 thunk.switch_2banks:
     jmp switch_2banks               ; FF03 4C 17 FF
 
 thunk.switch_1st_bank:
-    jmp switch_1st_page             ; FF06 4C 0C FF
+    jmp switch_1st_bank             ; FF06 4C 0C FF
 
 thunk.switch_2nd_bank:
-    jmp switch_2nd_page             ; FF09 4C 1F FF
+    jmp switch_2nd_bank             ; FF09 4C 1F FF
+
+;; the following functions are NOT directly referred to by codes other than here.
 
 switch_1st_bank:
     pha             ; FF0C 48

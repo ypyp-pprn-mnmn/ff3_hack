@@ -8,7 +8,7 @@
     <meta name="generator" content="pandoc">
     <meta name="description" content>
     <meta name="author" content="ypyp-pprn-mnmn (aka “301”)">
-    <!-- generated-at 2017-12-30 18:56:56+0900 -->
+    <!-- generated-at 2017-12-30 19:31:13+0900 -->
     <title>FF3@FC Original Code Documentation</title>
 
     <!-- Bootstrap core CSS -->
@@ -948,15 +948,15 @@ code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Infor
           <li><a href="#ffda6-loadto7400ex">$3f:fda6 loadTo7400Ex</a></li>
           <li><a href="#ffddc-copyto7400">$3f:fddc copyTo7400</a></li>
           <li><a href="#ffdf3-call_bank30_9e58">$3f:fdf3 call_bank30_9e58()</a></li>
-          <li><a href="#fff00-thunk_await_nmi_by_set_handler">$3f:ff00 thunk_await_nmi_by_set_handler</a></li>
+          <li><a href="#fff00-thunk.await_nmi_by_set_handler">$3f:ff00 thunk.await_nmi_by_set_handler</a></li>
           <li><a href="#fff03-thunk.switch_2banks">$3f:ff03 thunk.switch_2banks</a></li>
           <li><a href="#fff06-thunk.switch_1st_bank">$3f:ff06 thunk.switch_1st_bank</a></li>
           <li><a href="#fff09-thunk.switch_2nd_bank">$3f:ff09 thunk.switch_2nd_bank</a></li>
           <li><a href="#fff0c-switch_1st_bank">$3f:ff0c switch_1st_bank</a></li>
           <li><a href="#fff17-switch_2banks">$3f:ff17 switch_2banks</a></li>
-          <li><a href="#fff1f-switch_2nd_bank-切り替え可能ななprg-rom-bankの二つ目a000-bfffを指定のbankへ切り替える"><span class="math inline">3<em>f</em> : <em>f</em><em>f</em>1<em>f</em><em>s</em><em>w</em><em>i</em><em>t</em><em>c</em><em>h</em><sub>2</sub><em>n</em><em>d</em><sub><em>b</em></sub><em>a</em><em>n</em><em>k</em> &gt; <em>切</em><em>り</em><em>替</em><em>え</em><em>可</em><em>能</em><em>な</em><em>な</em><em>P</em><em>R</em><em>G</em><em>R</em><em>O</em><em>M</em><em>b</em><em>a</em><em>n</em><em>k</em><em>の</em><em>二</em><em>つ</em><em>目</em>(</span>A000-BFFF)を指定のbankへ切り替える。</a></li>
-          <li><a href="#fff2a-nmi_handler_01">$3f:ff2a nmi_handler_01</a></li>
-          <li><a href="#fff36-setnmihandlerto_ff2a_andwaitnmi">$3f:ff36 setNmiHandlerTo_ff2a_andWaitNmi</a></li>
+          <li><a href="#fff1f-switch_2nd_bank">$3f:ff1f switch_2nd_bank</a></li>
+          <li><a href="#fff2a-disable_handler_and_return_from_nmi">$3f:ff2a disable_handler_and_return_from_nmi</a></li>
+          <li><a href="#fff36-await_nmi_by_set_handler">$3f:ff36 await_nmi_by_set_handler</a></li>
           <li><a href="#ffff0-hardware_vectors">$3f:fff0 hardware_vectors</a></li>
           </ul>
         </div>
@@ -26422,21 +26422,28 @@ $fc3b a9 01</code></pre>
 <div class="sourceLine" id="cb750-4" data-line-number="4">    <span class="at">switchBankAndReturn</span>(#1a)<span class="op">;</span></div>
 <div class="sourceLine" id="cb750-5" data-line-number="5"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="fff00-thunk_await_nmi_by_set_handler">$3f:ff00 thunk_await_nmi_by_set_handler</h1>
+<h1 id="fff00-thunk.await_nmi_by_set_handler">$3f:ff00 thunk.await_nmi_by_set_handler</h1>
+<blockquote>
+<p>$3f:ff36へのthunk. (次のNMIを待つ)</p>
+</blockquote>
+<h3 id="args-371">args:</h3>
+<p>none.</p>
+<h3 id="notes-154">notes:</h3>
+<p>processor registers carry, overflow, X and Y are preserved acorss the call.</p>
 <h3 id="code-313">code:</h3>
 <pre class="sourceCode js" id="cb751"><code class="sourceCode javascript"><div class="sourceLine" id="cb751-1" data-line-number="1"><span class="op">{</span></div>
-<div class="sourceLine" id="cb751-2" data-line-number="2">    <span class="cf">return</span> <span class="at">setNmiHandlerTo_ff2a_andWaitNmi</span>()<span class="op">;</span>   <span class="co">//jmp $ff36();</span></div>
+<div class="sourceLine" id="cb751-2" data-line-number="2">    <span class="cf">return</span> <span class="at">await_nmi_by_set_handler</span>()<span class="op">;</span>  <span class="co">//jmp $ff36();</span></div>
 <div class="sourceLine" id="cb751-3" data-line-number="3"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fff03-thunk.switch_2banks">$3f:ff03 thunk.switch_2banks</h1>
 <blockquote>
 <p>$3f:ff17 switch_2banks へのthunk. (切り替え可能ななPRG ROM bankのページ二つ($8000-BFFF)を指定のbankへ切り替える。)</p>
 </blockquote>
-<h3 id="args-371">args:</h3>
+<h3 id="args-372">args:</h3>
 <ul>
 <li>in u8 A: index of first PRG ROM bank (per 8k bytes) to switch.</li>
 </ul>
-<h3 id="notes-154">notes:</h3>
+<h3 id="notes-155">notes:</h3>
 <p>this function always maps 2 consecutive 8k banks into <span class="math inline">8000−</span>bfff.</p>
 <h3 id="code-314">code:</h3>
 <pre class="sourceCode js" id="cb752"><code class="sourceCode javascript"><div class="sourceLine" id="cb752-1" data-line-number="1"><span class="op">{</span></div>
@@ -26447,7 +26454,7 @@ $fc3b a9 01</code></pre>
 <blockquote>
 <p>$3f:ff0c switch_1st_bank へのthunk. (切り替え可能ななPRG ROM bankの一つ目($8000-9FFF)を指定のbankへ切り替える。)</p>
 </blockquote>
-<h3 id="args-372">args:</h3>
+<h3 id="args-373">args:</h3>
 <ul>
 <li>in u8 A: index of PRG ROM bank (per 8k bytes) to switch.</li>
 </ul>
@@ -26458,9 +26465,9 @@ $fc3b a9 01</code></pre>
 <hr />
 <h1 id="fff09-thunk.switch_2nd_bank">$3f:ff09 thunk.switch_2nd_bank</h1>
 <blockquote>
-<p><span class="math inline">3<em>f</em> : <em>f</em><em>f</em>1<em>f</em><em>s</em><em>w</em><em>i</em><em>t</em><em>c</em><em>h</em><sub>2</sub><em>n</em><em>d</em><sub><em>b</em></sub><em>a</em><em>n</em><em>k</em><em>へ</em><em>の</em><em>t</em><em>h</em><em>u</em><em>n</em><em>k</em>.(<em>切</em><em>り</em><em>替</em><em>え</em><em>可</em><em>能</em><em>な</em><em>な</em><em>P</em><em>R</em><em>G</em><em>R</em><em>O</em><em>M</em><em>b</em><em>a</em><em>n</em><em>k</em><em>の</em><em>二</em><em>つ</em><em>目</em>(</span>A000-BFFF)を指定のbankへ切り替える。)</p>
+<p>$3f:ff1f switch_2nd_bank へのthunk. (切り替え可能なPRG ROM bankの二つ目(A000-BFFF)を指定のbankへ切り替える。)</p>
 </blockquote>
-<h3 id="args-373">args:</h3>
+<h3 id="args-374">args:</h3>
 <ul>
 <li>in u8 A: index of PRG ROM bank (per 8k bytes) to switch.</li>
 </ul>
@@ -26473,7 +26480,7 @@ $fc3b a9 01</code></pre>
 <blockquote>
 <p>切り替え可能ななPRG ROM bankの一つ目($8000-9FFF)を指定のbankへ切り替える。</p>
 </blockquote>
-<h3 id="args-374">args:</h3>
+<h3 id="args-375">args:</h3>
 <ul>
 <li>in u8 A: index of PRG ROM bank (per 8k bytes) to switch.</li>
 </ul>
@@ -26494,7 +26501,7 @@ $fc3b a9 01</code></pre>
 <blockquote>
 <p>Switches PRG banks mapped to first two 8k pages (<span class="math inline">8000−</span>BFFF) to the given consecutive banks.</p>
 </blockquote>
-<h3 id="args-375">args:</h3>
+<h3 id="args-376">args:</h3>
 <ul>
 <li>in u8 A: basebank (per 8k)</li>
 </ul>
@@ -26502,7 +26509,7 @@ $fc3b a9 01</code></pre>
 <ul>
 <li>$3f:ff03 thunk.switch_2banks: it is an only caller of this function.</li>
 </ul>
-<h3 id="notes-155">notes:</h3>
+<h3 id="notes-156">notes:</h3>
 <p>processor registers X and Y are unaffected and preserved across calls. some status flags are affected but in a manner expectible. specifically, status flags are affected in the following way:</p>
 <h3 id="processor-flags">processor flags:</h3>
 <ul>
@@ -26521,8 +26528,11 @@ $fc3b a9 01</code></pre>
 <div class="sourceLine" id="cb756-8" data-line-number="8"><span class="op">}</span></div></code></pre>
 <p><strong>fall through</strong></p>
 <hr />
-<h1 id="fff1f-switch_2nd_bank-切り替え可能ななprg-rom-bankの二つ目a000-bfffを指定のbankへ切り替える"><span class="math inline">3<em>f</em> : <em>f</em><em>f</em>1<em>f</em><em>s</em><em>w</em><em>i</em><em>t</em><em>c</em><em>h</em><sub>2</sub><em>n</em><em>d</em><sub><em>b</em></sub><em>a</em><em>n</em><em>k</em> &gt; <em>切</em><em>り</em><em>替</em><em>え</em><em>可</em><em>能</em><em>な</em><em>な</em><em>P</em><em>R</em><em>G</em><em>R</em><em>O</em><em>M</em><em>b</em><em>a</em><em>n</em><em>k</em><em>の</em><em>二</em><em>つ</em><em>目</em>(</span>A000-BFFF)を指定のbankへ切り替える。</h1>
-<h3 id="args-376">args:</h3>
+<h1 id="fff1f-switch_2nd_bank">$3f:ff1f switch_2nd_bank</h1>
+<blockquote>
+<p>切り替え可能なPRG ROM bankの二つ目(A000-BFFF)を指定のbankへ切り替える。</p>
+</blockquote>
+<h3 id="args-377">args:</h3>
 <ul>
 <li>in u8 A: index of PRG ROM bank (per 8k bytes) to switch.</li>
 </ul>
@@ -26530,7 +26540,7 @@ $fc3b a9 01</code></pre>
 <ul>
 <li>$3f:ff09 thunk.switch_2nd_bank: it is an only caller of this function.</li>
 </ul>
-<h3 id="notes-156">notes:</h3>
+<h3 id="notes-157">notes:</h3>
 <p>processor registers X and Y are unaffected and preserved across calls.</p>
 <h3 id="code-319">code:</h3>
 <pre class="sourceCode js" id="cb757"><code class="sourceCode javascript"><div class="sourceLine" id="cb757-1" data-line-number="1"><span class="op">{</span></div>
@@ -26541,19 +26551,31 @@ $fc3b a9 01</code></pre>
 <div class="sourceLine" id="cb757-6" data-line-number="6"><span class="dt">$ff2a</span><span class="op">:</span></div>
 <div class="sourceLine" id="cb757-7" data-line-number="7"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="fff2a-nmi_handler_01">$3f:ff2a nmi_handler_01</h1>
+<h1 id="fff2a-disable_handler_and_return_from_nmi">$3f:ff2a disable_handler_and_return_from_nmi</h1>
+<blockquote>
+<p>nmiハンドラから自身を取り除き、$3f:ff36の呼び出し元へ直接戻る。</p>
+</blockquote>
+<h3 id="args-378">args:</h3>
+<p>none. as this is an NMI handler.</p>
+<h3 id="notes-158">notes:</h3>
+<p>technically the continuation of this function is NOT an instruction executed right before the NMI inturrupt happened as usual. rather, it is a return address of <code>$3f:ff36 await_nmi_by_set_handler</code> which had set this function as NMI handler. this is done by manipulating stacks.</p>
 <h3 id="code-320">code:</h3>
 <pre class="sourceCode js" id="cb758"><code class="sourceCode javascript"><div class="sourceLine" id="cb758-1" data-line-number="1"><span class="op">{</span></div>
 <div class="sourceLine" id="cb758-2" data-line-number="2">    $2002<span class="op">;</span></div>
-<div class="sourceLine" id="cb758-3" data-line-number="3">    $0100 <span class="op">=</span> #<span class="dv">40</span><span class="op">;</span></div>
-<div class="sourceLine" id="cb758-4" data-line-number="4">    pop a<span class="op">;</span> pop a<span class="op">;</span> pop a<span class="op">;</span> <span class="co">//flag,addr,addr</span></div>
+<div class="sourceLine" id="cb758-3" data-line-number="3">    $0100 <span class="op">=</span> <span class="bn">0x40</span><span class="op">;</span>   <span class="co">//rti.</span></div>
+<div class="sourceLine" id="cb758-4" data-line-number="4">    <span class="at">pop</span>()<span class="op">;</span> <span class="at">pop</span>()<span class="op">;</span> <span class="at">pop</span>()<span class="op">;</span> <span class="co">//flag,addr,addr</span></div>
 <div class="sourceLine" id="cb758-5" data-line-number="5">    <span class="cf">return</span><span class="op">;</span></div>
 <div class="sourceLine" id="cb758-6" data-line-number="6"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="fff36-setnmihandlerto_ff2a_andwaitnmi">$3f:ff36 setNmiHandlerTo_ff2a_andWaitNmi</h1>
+<h1 id="fff36-await_nmi_by_set_handler">$3f:ff36 await_nmi_by_set_handler</h1>
+<blockquote>
+<p>この関数の呼び出し元へ直接戻る特殊なNMIハンドラを設定することによって、次のNMIを待つ。</p>
+</blockquote>
+<h3 id="notes-159">notes:</h3>
+<p>this function internally utilizes nmi handler to await next NMI, but returns to caller as usual function. this is done by the NMI handler by manipulating stacks. processor registers carry, overflow, X and Y are preserved acorss the call.</p>
 <h3 id="code-321">code:</h3>
 <pre class="sourceCode js" id="cb759"><code class="sourceCode javascript"><div class="sourceLine" id="cb759-1" data-line-number="1"><span class="op">{</span></div>
-<div class="sourceLine" id="cb759-2" data-line-number="2">    $0100<span class="op">,</span><span class="dv">0101</span><span class="op">,</span><span class="dv">0102</span> <span class="op">=</span> #4c<span class="op">,</span>#2a<span class="op">,</span>#ff<span class="op">;</span> <span class="co">//jmp $ff2a</span></div>
+<div class="sourceLine" id="cb759-2" data-line-number="2">    [$0100<span class="op">,</span>$0101<span class="op">,</span>$0102] <span class="op">=</span> [<span class="bn">0x4c</span><span class="op">,</span> <span class="bn">0x2a</span><span class="op">,</span> <span class="bn">0xff</span>]<span class="op">;</span> <span class="co">//jmp $ff2a</span></div>
 <div class="sourceLine" id="cb759-3" data-line-number="3"><span class="dt">$ff45</span><span class="op">:</span></div>
 <div class="sourceLine" id="cb759-4" data-line-number="4">    <span class="cf">for</span> (<span class="op">;;</span>) <span class="op">{}</span> <span class="co">//jmp $ff45</span></div>
 <div class="sourceLine" id="cb759-5" data-line-number="5"><span class="op">}</span></div></code></pre>
