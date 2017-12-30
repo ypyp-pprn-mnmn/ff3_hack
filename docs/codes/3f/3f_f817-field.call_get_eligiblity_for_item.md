@@ -1,5 +1,4 @@
 ﻿
-
 # $3f:f817 field.call_get_eligiblity_for_item
 > 一時的に戦闘モードへ移行し、指定のキャラクターについて指定のアイテムの装備可否を `$34:8009` を呼び出すことによって計算する。
 
@@ -14,7 +13,8 @@
 none.
 
 ### notes:
-write notes here
+this function takes approx 82-83 scanlines enough time to complete.
+in which large amount of the time spent on saving/restoring variables.
 
 ### (pseudo)code:
 ```js
@@ -26,5 +26,6 @@ write notes here
 */
 }
 ```
+
 
 

@@ -8,7 +8,7 @@
 	where bit 3 denotes character #0, bit2 for char #1, and so forth.
 
 ### callers:
-+	`jsr .L_D113   ; AEE3 20 13 D1` @ $3d:aee3 menu.stomach.get_eligibility_of_item_for_all_unsafe
++	`jsr .L_D113   ; AEE3 20 13 D1` @ $3d:aee3 menu.get_eligibility_of_item_for_all
 
 ### local variables:
 none.
@@ -47,4 +47,5 @@ write notes here
 */
 }
 ```
+
 

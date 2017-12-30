@@ -1,5 +1,5 @@
 ﻿
-# $3d:b492 menu.stomach.get_eligibility_of_item_for_all
+# $3d:b492 menu.stomach.get_eligibility_for_item_for_all
 > (デブチョコボのメニューで)指定したアイテムの装備可能フラグを取得し、各プレイヤーキャラクターのステータスに反映する。
 
 ### args:
@@ -15,7 +15,10 @@
 
 ### notes:
 this function is observed to take long time to complete and is causing slowdown of rendering of the item window and sound playback.
-specifically, it takes approximately 1.5 ppu frame per a call. (1 frame (262 scanlines) + 133 scanlines)
+specifically, it takes approximately 1.5 ppu frame per a call. (1 frame (262 scanlines) + 133 scanlines).
+basically underlying functions are responsible for such a slowness,
+but this function also pays cost to take extra care of buffer at $7470,
+that is only utilized by stomach menu and thus underlying functions don't care much about.
 
 ### (pseudo)code:
 ```js
@@ -38,6 +41,7 @@ specifically, it takes approximately 1.5 ppu frame per a call. (1 frame (262 sca
     bne .L_B4A4   ; B4AB D0 F7
 	rts             ; B4AD 60
 */
+$b4ae:
 }
 ```
 
