@@ -39,18 +39,14 @@ render_x.deferred_renderer:
 	tya
 	pha
 ;; dummy read to ensure unset nmi flag.
-	lda $2002	
-;; preserve local variables.
-;	ldx #(render_x.nmi.LOCALS_COUNT-1)
-;.push_variables:
-;		lda <$80,x
-;		pha
-;		dex
-;		bpl .push_variables
+	lda $2002
+;; preserve spaces utilized by local variables, if any.
+;; (as of 0.8.2, no local variables needed & utilized)
 ;; do rendering.
 	ldx #0
-;	sta <render_x.nmi.sequence
 	jsr render_x.render_deferred_contents
+	jsr render_x.remove_nmi_handler
+;; finish rendering with ppu.
 	;; as calling sound driver need change of program bank,
 	;; we can't safely call the driver from within nmi handler,
 	;; unless under the situation which is known
@@ -58,25 +54,26 @@ render_x.deferred_renderer:
 	;inc <field.frame_counter
 	;jsr field_x.end_ppu_update	;sync_ppu_scroll+call_sound_driver
 	jsr field.sync_ppu_scroll
-	jsr render_x.remove_nmi_handler
-
 	;; there is no reliable way (found so far) to preserve program bank.
 	;; so here can't safely restore banks.
-	;jsr field.restore_banks
-
-;; restore local variables.
-;	ldx #~(render_x.nmi.LOCALS_COUNT-1)
-;.pop_variables:
-;		pla
-;		sta <$80+(render_x.nmi.LOCALS_COUNT),x
-;		inx
-;		bne .pop_variables
+	.ifdef _FEATURE_MEMOIZE_BANK_SWITCH
+		lda <sys_x.last_bank.2nd
+		pha
+		lda <sys_x.last_bank.1st
+		pha
+		jsr field.call_sound_driver
+		pla
+		jsr thunk.switch_1st_bank
+		pla
+		jsr thunk.switch_2nd_bank
+	.endif	;;_FEATURE_MEMOIZE_BANK_SWITCH
+;; restore local variables, if any (as of 0.8.2, no local variables needed & utilized)
 	pla
 	tay
 	pla
 	tax
 	pla
-	rti
+	rti	
 ;--------------------------------------------------------------------------------------------------
 ;; in:
 ;;	X = source buffer offset.
@@ -276,12 +273,6 @@ render_x.reset_states:
 	sta <render_x.q.fuel
 	lda #0
 	sta <render_x.q.available_bytes	;;this will free up a waiting thread
-;	ldy #(render_x.nmi.STATE_VARIABLES_END - render_x.nmi.STATE_VARIABLES_BASE)
-;.reset:
-;		sta render_x.nmi.STATE_VARIABLES_BASE-1,y
-;		;sta <render_x.q.available_bytes
-;		dey
-;		bne .reset
 	rts
 
 ;--------------------------------------------------------------------------------------------------
@@ -336,6 +327,7 @@ render_x.ensure_buffer_available:
 	bit $2002
 	;bmi render_x.on_nmi_completed
 	bpl render_x.rts_1
+		;;in NMI
 		jmp field_x.advance_frame_no_wait
 
 	;rts
@@ -359,8 +351,13 @@ render_x.await_complete_rendering:
 	lda <render_x.q.available_bytes
 	bne .wait_nmi
 render_x.on_nmi_completed:
-	;; FIXME: this is a temporary measure to workaround PRG bank mismatch on nmi
-	jmp field_x.advance_frame_no_wait	;;inc <.frame_counter + call sound driver
+	.ifdef _FEATURE_MEMOIZE_BANK_SWITCH
+		inc <field.frame_counter
+		rts
+	.else
+		;; FIXME: this is a temporary measure to workaround PRG bank mismatch on nmi
+		jmp field_x.advance_frame_no_wait	;;inc <frame_counter + call sound driver
+	.endif	;;_FEATURE_MEMOIZE_BANK_SWITCH
 ;--------------------------------------------------------------------------------------------------
 render_x.queue_content:
 	DECLARE_WINDOW_VARIABLES
@@ -661,10 +658,6 @@ render_x.build_temp_buffer:
 	sta render_x.temp_buffer,x
 	inx
 	rts
-;--------------------------------------------------------------------------------------------------
-;render_x.init_as_with_bottom:
-;	ldx #(render_x.NEED_BOTTOM_BORDER|render_x.PENDING_INIT|render_x.RENDER_RUNNING)
-;	bne render_x.setup_deferred_rendering
 ;--------------------------------------------------------------------------------------------------
 render_x.init_as_no_borders:
 	ldx #(render_x.NO_BORDERS|render_x.PENDING_INIT|render_x.RENDER_RUNNING)
