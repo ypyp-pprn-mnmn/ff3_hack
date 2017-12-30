@@ -137,11 +137,11 @@ module.exports = {
             //           60 48 30 24 20 18 12 10 0C 09 08 06 04 03 02 01
             const LEN = "1  2. 2  4. 3  4  8. 6  8  16. 12 16 24 32 48 96".split(/ +/);
             const CHANNEL_DEFAULTS = [
-                `%1 @2 t150 o${OCTAVE_SHIFT + 4} v15`,
-                `%1 @3 o${OCTAVE_SHIFT + 4} v15`,
-                `%1 @8 o${OCTAVE_SHIFT + 4} v15`,
-                `%1 @9 o${OCTAVE_SHIFT + 4} v15`,
-                `%1 @10 o${OCTAVE_SHIFT + 4} v15`,
+                `%1 @2 q6 o${OCTAVE_SHIFT + 4} v8 t150`,   //ff3's key-off is defined as 66%
+                `%1 @3 q6 o${OCTAVE_SHIFT + 4} v8`,
+                `%1 @8 q8 o${OCTAVE_SHIFT + 4} v15`,        //ff3's driver don't control triangle channel's key-off
+                `%1 @9 q1 o${OCTAVE_SHIFT + 4} v8`,
+                `%1 @10 q1 o${OCTAVE_SHIFT + 4} v8`,
             ];
             const DUTY_MAPS = [
                 [1, 2, 4],
@@ -149,6 +149,13 @@ module.exports = {
                 [8, 8, 8],
                 [9, 9, 9],
                 [10, 10, 10],
+            ];
+            const VOLUME_MAPS = [
+                4 / 5,
+                4 / 5,
+                1,
+                2 / 3,
+                2 / 3,
             ];
             Object.defineProperty(this, 'default_config', {
                 writable: false,
@@ -160,6 +167,7 @@ module.exports = {
                     LEN,
                     DUTY_MAPS,
                     OCTAVE_SHIFT,
+                    VOLUME_MAPS,
                 }
             });
         }
@@ -179,7 +187,7 @@ module.exports = {
                 return `T${command_bytes[1]}`;
             } else if (0xe1 <= command && command < 0xef) {
                 //E1...EF: set volume goals ($7f90)
-                return `V${command - 0xe1 + 2}`;
+                return `V${Math.floor(config.VOLUME_MAPS[channel] * (command - 0xe1 + 2))}`;
             } else if (0xEf <= command && command < 0xf5) {
                 //EF...F5: set octave ($7f66).
                 return `O${command - 0xEF + config.OCTAVE_SHIFT}`;
@@ -195,13 +203,13 @@ module.exports = {
                 // $7f66 = octave = 4
                 // $7f90 = volume goal = 8
                 // $7fc1 = volume envelope type = 0
-                return `O${4 + config.OCTAVE_SHIFT} V8`;
+                return `O${4 + config.OCTAVE_SHIFT} V${Math.floor(8 * config.VOLUME_MAPS[channel])}`;
             } else if (command == 0xFA) {
                 //FA: set note defaults?
                 // $7f66 = octave = 5
                 // $7f90 = volume goal = 0xF
                 // $7fc1 = volume envelope type = 1
-                return `O${5 + config.OCTAVE_SHIFT} V15`;
+                return `O${5 + config.OCTAVE_SHIFT} V${Math.floor(15 * config.VOLUME_MAPS[channel])}`;
             } else if (0xfb <= command && command < 0xff) {
                 //FB: enter (initialize) loop.
                 //FC: end loop, decrement counter.

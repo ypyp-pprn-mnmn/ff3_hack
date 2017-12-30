@@ -250,7 +250,7 @@ sound.volume_curves.type = $7fba	;; tbc. used to index curve patterns
 ;;sound.volume_curves.x = $7fc1		;;tbc.
 sound.volume_curves.phase = $7fc8	;; tbc. used to index stream (pointed to by $9a7c, which is looked up by $7fc1) of volumes.
 sound.volume_curves.volume = $7fcf	;; tbc.
-sound.volume_curves.interval = $7fd6	;; tbc. 2/3 of bpm.
+sound.volume_curves.interval = $7fd6	;; tbc. 2/3 of bpm. (as timer delta is 2/3 of what for play notes)
 sound.volume_curves.timer = $7fdd	;; triggers lowering volume,  once reached to 100 (0x64)
 sound.volume_curves.countdown = $7fe4	;; triggers volume change
 
