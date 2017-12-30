@@ -6,13 +6,17 @@
 +	yet to be investigated
 
 ### callers:
-+	yet to be investigated
++	`jmp menu.stomach.main_loop      ; AF5B 4C 83 B3` @ $3d:af1f menu.stomach.open
 
 ### local variables:
 +	yet to be investigated
 
 ### notes:
-write notes here
+there are chances to optimize buffer utilization here, as the following behaviors observed:
+
+-	text buffer describing content in the stomach is built upon *whenever* the window is scrolled;
+-	the window has only space for 32 items - that is, larger portion of the buffer constructed in the above is merely ignored.
+-	each time selection of item is changed, eligibility flag is retrived for animation. this is very time-consuming operation.
 
 ### (pseudo)code:
 ```js
@@ -107,7 +111,7 @@ write notes here
     sta <$A4     ; B440 85 A4
     jsr menu.items.save_render_params   ; B442 20 3D 90
     lda $7C00   ; B445 AD 00 7C
-    beq .L_B44D   ; B448 F0 03
+	beq .L_B44D   ; B448 F0 03
     jsr .L_B492   ; B44A 20 92 B4
 .L_B44D:
     jsr menu.render_cursor          ; B44D 20 CD A7
@@ -125,7 +129,8 @@ write notes here
     beq .L_B479   ; B46C F0 0B
     jsr menu.clear_eligible_status_of_all_characters; B46E 20 C3 AE
     lda $7C00,y ; B471 B9 00 7C
-    beq .L_B479   ; B474 F0 03
+	beq .L_B479   ; B474 F0 03
+	;; this is a cause of the slowdown issue (#34)
     jsr .L_B492   ; B476 20 92 B4
 .L_B479:
     lda <$25     ; B479 A5 25

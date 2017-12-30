@@ -21,11 +21,10 @@ write notes here
     jsr .L_F82C   ; F820 20 2C F8
 	;;here bank 34-35.
     jsr .L_8006   ; F823 20 06 80
-    pha             ; F826 48
-    jsr restoreFieldVariables       ; F827 20 3B F8
-    pla             ; F82A 68
-    rts             ; F82B 60
 */
+$f826:
 }
 ```
+**fall through**
+
 
