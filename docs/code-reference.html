@@ -8,7 +8,7 @@
     <meta name="generator" content="pandoc">
     <meta name="description" content>
     <meta name="author" content="ypyp-pprn-mnmn (aka “301”)">
-    <!-- generated-at 2017-12-30 05:50:36+0900 -->
+    <!-- generated-at 2017-12-30 18:56:56+0900 -->
     <title>FF3@FC Original Code Documentation</title>
 
     <!-- Bootstrap core CSS -->
@@ -949,12 +949,12 @@ code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Infor
           <li><a href="#ffddc-copyto7400">$3f:fddc copyTo7400</a></li>
           <li><a href="#ffdf3-call_bank30_9e58">$3f:fdf3 call_bank30_9e58()</a></li>
           <li><a href="#fff00-thunk_await_nmi_by_set_handler">$3f:ff00 thunk_await_nmi_by_set_handler</a></li>
-          <li><a href="#fff03-call_switchfirst2banks">$3f:ff03 call_switchFirst2Banks</a></li>
-          <li><a href="#fff06-call_switch1stbank">$3f:ff06 call_switch1stBank</a></li>
-          <li><a href="#fff09-call_switch2ndbank">$3f:ff09 call_switch2ndBank</a></li>
-          <li><a href="#fff0c-switch_1st_page">$3f:ff0c switch_1st_page</a></li>
-          <li><a href="#fff17-switch_2pages">$3f:ff17 switch_2pages</a></li>
-          <li><a href="#fff1f-switch_2nd_page">$3f:ff1f switch_2nd_page</a></li>
+          <li><a href="#fff03-thunk.switch_2banks">$3f:ff03 thunk.switch_2banks</a></li>
+          <li><a href="#fff06-thunk.switch_1st_bank">$3f:ff06 thunk.switch_1st_bank</a></li>
+          <li><a href="#fff09-thunk.switch_2nd_bank">$3f:ff09 thunk.switch_2nd_bank</a></li>
+          <li><a href="#fff0c-switch_1st_bank">$3f:ff0c switch_1st_bank</a></li>
+          <li><a href="#fff17-switch_2banks">$3f:ff17 switch_2banks</a></li>
+          <li><a href="#fff1f-switch_2nd_bank-切り替え可能ななprg-rom-bankの二つ目a000-bfffを指定のbankへ切り替える"><span class="math inline">3<em>f</em> : <em>f</em><em>f</em>1<em>f</em><em>s</em><em>w</em><em>i</em><em>t</em><em>c</em><em>h</em><sub>2</sub><em>n</em><em>d</em><sub><em>b</em></sub><em>a</em><em>n</em><em>k</em> &gt; <em>切</em><em>り</em><em>替</em><em>え</em><em>可</em><em>能</em><em>な</em><em>な</em><em>P</em><em>R</em><em>G</em><em>R</em><em>O</em><em>M</em><em>b</em><em>a</em><em>n</em><em>k</em><em>の</em><em>二</em><em>つ</em><em>目</em>(</span>A000-BFFF)を指定のbankへ切り替える。</a></li>
           <li><a href="#fff2a-nmi_handler_01">$3f:ff2a nmi_handler_01</a></li>
           <li><a href="#fff36-setnmihandlerto_ff2a_andwaitnmi">$3f:ff36 setNmiHandlerTo_ff2a_andWaitNmi</a></li>
           <li><a href="#ffff0-hardware_vectors">$3f:fff0 hardware_vectors</a></li>
@@ -26428,64 +26428,115 @@ $fc3b a9 01</code></pre>
 <div class="sourceLine" id="cb751-2" data-line-number="2">    <span class="cf">return</span> <span class="at">setNmiHandlerTo_ff2a_andWaitNmi</span>()<span class="op">;</span>   <span class="co">//jmp $ff36();</span></div>
 <div class="sourceLine" id="cb751-3" data-line-number="3"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="fff03-call_switchfirst2banks">$3f:ff03 call_switchFirst2Banks</h1>
+<h1 id="fff03-thunk.switch_2banks">$3f:ff03 thunk.switch_2banks</h1>
+<blockquote>
+<p>$3f:ff17 switch_2banks へのthunk. (切り替え可能ななPRG ROM bankのページ二つ($8000-BFFF)を指定のbankへ切り替える。)</p>
+</blockquote>
+<h3 id="args-371">args:</h3>
+<ul>
+<li>in u8 A: index of first PRG ROM bank (per 8k bytes) to switch.</li>
+</ul>
+<h3 id="notes-154">notes:</h3>
+<p>this function always maps 2 consecutive 8k banks into <span class="math inline">8000−</span>bfff.</p>
 <h3 id="code-314">code:</h3>
 <pre class="sourceCode js" id="cb752"><code class="sourceCode javascript"><div class="sourceLine" id="cb752-1" data-line-number="1"><span class="op">{</span></div>
-<div class="sourceLine" id="cb752-2" data-line-number="2">    <span class="cf">return</span> <span class="at">switch_2pages</span>()<span class="op">;</span> <span class="co">//jmp ff17</span></div>
+<div class="sourceLine" id="cb752-2" data-line-number="2">    <span class="cf">return</span> <span class="at">switch_2banks</span>()<span class="op">;</span> <span class="co">//jmp $ff17</span></div>
 <div class="sourceLine" id="cb752-3" data-line-number="3"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="fff06-call_switch1stbank">$3f:ff06 call_switch1stBank</h1>
+<h1 id="fff06-thunk.switch_1st_bank">$3f:ff06 thunk.switch_1st_bank</h1>
+<blockquote>
+<p>$3f:ff0c switch_1st_bank へのthunk. (切り替え可能ななPRG ROM bankの一つ目($8000-9FFF)を指定のbankへ切り替える。)</p>
+</blockquote>
+<h3 id="args-372">args:</h3>
+<ul>
+<li>in u8 A: index of PRG ROM bank (per 8k bytes) to switch.</li>
+</ul>
 <h3 id="code-315">code:</h3>
 <pre class="sourceCode js" id="cb753"><code class="sourceCode javascript"><div class="sourceLine" id="cb753-1" data-line-number="1"><span class="op">{</span></div>
-<div class="sourceLine" id="cb753-2" data-line-number="2">    <span class="cf">return</span> <span class="at">switch_1st_page</span>()<span class="op">;</span></div>
+<div class="sourceLine" id="cb753-2" data-line-number="2">    <span class="cf">return</span> <span class="at">switch_1st_bank</span>()<span class="op">;</span>   <span class="co">//jmp $ff0c</span></div>
 <div class="sourceLine" id="cb753-3" data-line-number="3"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="fff09-call_switch2ndbank">$3f:ff09 call_switch2ndBank</h1>
+<h1 id="fff09-thunk.switch_2nd_bank">$3f:ff09 thunk.switch_2nd_bank</h1>
+<blockquote>
+<p><span class="math inline">3<em>f</em> : <em>f</em><em>f</em>1<em>f</em><em>s</em><em>w</em><em>i</em><em>t</em><em>c</em><em>h</em><sub>2</sub><em>n</em><em>d</em><sub><em>b</em></sub><em>a</em><em>n</em><em>k</em><em>へ</em><em>の</em><em>t</em><em>h</em><em>u</em><em>n</em><em>k</em>.(<em>切</em><em>り</em><em>替</em><em>え</em><em>可</em><em>能</em><em>な</em><em>な</em><em>P</em><em>R</em><em>G</em><em>R</em><em>O</em><em>M</em><em>b</em><em>a</em><em>n</em><em>k</em><em>の</em><em>二</em><em>つ</em><em>目</em>(</span>A000-BFFF)を指定のbankへ切り替える。)</p>
+</blockquote>
+<h3 id="args-373">args:</h3>
+<ul>
+<li>in u8 A: index of PRG ROM bank (per 8k bytes) to switch.</li>
+</ul>
 <h3 id="code-316">code:</h3>
 <pre class="sourceCode js" id="cb754"><code class="sourceCode javascript"><div class="sourceLine" id="cb754-1" data-line-number="1"><span class="op">{</span></div>
-<div class="sourceLine" id="cb754-2" data-line-number="2">    <span class="cf">return</span> <span class="at">switch_2nd_page</span>()<span class="op">;</span></div>
+<div class="sourceLine" id="cb754-2" data-line-number="2">    <span class="cf">return</span> <span class="at">switch_2nd_bank</span>()<span class="op">;</span>   <span class="co">//jmp $ff1f</span></div>
 <div class="sourceLine" id="cb754-3" data-line-number="3"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="fff0c-switch_1st_page">$3f:ff0c switch_1st_page</h1>
+<h1 id="fff0c-switch_1st_bank">$3f:ff0c switch_1st_bank</h1>
+<blockquote>
+<p>切り替え可能ななPRG ROM bankの一つ目($8000-9FFF)を指定のbankへ切り替える。</p>
+</blockquote>
+<h3 id="args-374">args:</h3>
+<ul>
+<li>in u8 A: index of PRG ROM bank (per 8k bytes) to switch.</li>
+</ul>
+<h3 id="callers-128">callers:</h3>
+<ul>
+<li>$3f:ff06 thunk.switch_2nd_bank</li>
+<li>$3f:ff17 switch_2banks</li>
+</ul>
 <h3 id="code-317">code:</h3>
 <pre class="sourceCode js" id="cb755"><code class="sourceCode javascript"><div class="sourceLine" id="cb755-1" data-line-number="1"><span class="op">{</span></div>
-<div class="sourceLine" id="cb755-2" data-line-number="2">    push a<span class="op">;</span></div>
+<div class="sourceLine" id="cb755-2" data-line-number="2">    <span class="at">push</span>(a)<span class="op">;</span></div>
 <div class="sourceLine" id="cb755-3" data-line-number="3">    $8000 <span class="op">=</span> <span class="dv">6</span><span class="op">;</span></div>
-<div class="sourceLine" id="cb755-4" data-line-number="4">    $8001 <span class="op">=</span> pop a<span class="op">;</span></div>
+<div class="sourceLine" id="cb755-4" data-line-number="4">    $8001 <span class="op">=</span> <span class="at">pop</span>()<span class="op">;</span></div>
 <div class="sourceLine" id="cb755-5" data-line-number="5">    <span class="cf">return</span><span class="op">;</span></div>
 <div class="sourceLine" id="cb755-6" data-line-number="6"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="fff17-switch_2pages">$3f:ff17 switch_2pages</h1>
+<h1 id="fff17-switch_2banks">$3f:ff17 switch_2banks</h1>
 <blockquote>
 <p>Switches PRG banks mapped to first two 8k pages (<span class="math inline">8000−</span>BFFF) to the given consecutive banks.</p>
 </blockquote>
+<h3 id="args-375">args:</h3>
+<ul>
+<li>in u8 A: basebank (per 8k)</li>
+</ul>
+<h3 id="callers-129">callers:</h3>
+<ul>
+<li>$3f:ff03 thunk.switch_2banks: it is an only caller of this function.</li>
+</ul>
+<h3 id="notes-155">notes:</h3>
+<p>processor registers X and Y are unaffected and preserved across calls. some status flags are affected but in a manner expectible. specifically, status flags are affected in the following way:</p>
 <h3 id="processor-flags">processor flags:</h3>
 <ul>
 <li>carry: usually 0. this is the result of addition (bank number + 1) performed in this logic. so as long as caller supplies valid bank number (00-3f), it is safe to assume this to be 0 as carry never happen in that range.</li>
 <li>zero: usually 0 as long as caller supplies valid bank number (00-3f).</li>
 <li>negative: depends on the bank number given, usually 0 as valid bank number fall in positibe range (00-3F.) rest are unaffected.</li>
 </ul>
-<h3 id="args-371">args:</h3>
-<ul>
-<li><a href="#in-2">in</a> u8 a : basebank (per 8k)</li>
-</ul>
 <h3 id="code-318">code:</h3>
 <pre class="sourceCode js" id="cb756"><code class="sourceCode javascript"><div class="sourceLine" id="cb756-1" data-line-number="1"><span class="op">{</span></div>
 <div class="sourceLine" id="cb756-2" data-line-number="2">    <span class="at">push</span>(a)<span class="op">;</span></div>
-<div class="sourceLine" id="cb756-3" data-line-number="3">    <span class="at">switch_1st_page</span>()<span class="op">;</span>  <span class="co">//$ff0c();</span></div>
+<div class="sourceLine" id="cb756-3" data-line-number="3">    <span class="at">switch_1st_bank</span>()<span class="op">;</span>  <span class="co">//$ff0c();</span></div>
 <div class="sourceLine" id="cb756-4" data-line-number="4">    <span class="at">pop</span>(a)<span class="op">;</span></div>
 <div class="sourceLine" id="cb756-5" data-line-number="5">    a <span class="op">+=</span> <span class="dv">1</span><span class="op">;</span></div>
 <div class="sourceLine" id="cb756-6" data-line-number="6"><span class="dt">$ff1f</span><span class="op">:</span></div>
-<div class="sourceLine" id="cb756-7" data-line-number="7">    <span class="cf">return</span> <span class="at">switch_2nd_page</span>()<span class="op">;</span>   <span class="co">//$ff1f (fall through)</span></div>
+<div class="sourceLine" id="cb756-7" data-line-number="7">    <span class="cf">return</span> <span class="at">switch_2nd_bank</span>()<span class="op">;</span>   <span class="co">//$ff1f (fall through)</span></div>
 <div class="sourceLine" id="cb756-8" data-line-number="8"><span class="op">}</span></div></code></pre>
 <p><strong>fall through</strong></p>
 <hr />
-<h1 id="fff1f-switch_2nd_page">$3f:ff1f switch_2nd_page</h1>
+<h1 id="fff1f-switch_2nd_bank-切り替え可能ななprg-rom-bankの二つ目a000-bfffを指定のbankへ切り替える"><span class="math inline">3<em>f</em> : <em>f</em><em>f</em>1<em>f</em><em>s</em><em>w</em><em>i</em><em>t</em><em>c</em><em>h</em><sub>2</sub><em>n</em><em>d</em><sub><em>b</em></sub><em>a</em><em>n</em><em>k</em> &gt; <em>切</em><em>り</em><em>替</em><em>え</em><em>可</em><em>能</em><em>な</em><em>な</em><em>P</em><em>R</em><em>G</em><em>R</em><em>O</em><em>M</em><em>b</em><em>a</em><em>n</em><em>k</em><em>の</em><em>二</em><em>つ</em><em>目</em>(</span>A000-BFFF)を指定のbankへ切り替える。</h1>
+<h3 id="args-376">args:</h3>
+<ul>
+<li>in u8 A: index of PRG ROM bank (per 8k bytes) to switch.</li>
+</ul>
+<h3 id="callers-130">callers:</h3>
+<ul>
+<li>$3f:ff09 thunk.switch_2nd_bank: it is an only caller of this function.</li>
+</ul>
+<h3 id="notes-156">notes:</h3>
+<p>processor registers X and Y are unaffected and preserved across calls.</p>
 <h3 id="code-319">code:</h3>
 <pre class="sourceCode js" id="cb757"><code class="sourceCode javascript"><div class="sourceLine" id="cb757-1" data-line-number="1"><span class="op">{</span></div>
-<div class="sourceLine" id="cb757-2" data-line-number="2">    push a<span class="op">;</span></div>
+<div class="sourceLine" id="cb757-2" data-line-number="2">    <span class="at">push</span>(a)<span class="op">;</span></div>
 <div class="sourceLine" id="cb757-3" data-line-number="3">    $8000 <span class="op">=</span> <span class="dv">7</span><span class="op">;</span></div>
-<div class="sourceLine" id="cb757-4" data-line-number="4">    $8001 <span class="op">=</span> pop a<span class="op">;</span></div>
+<div class="sourceLine" id="cb757-4" data-line-number="4">    $8001 <span class="op">=</span> <span class="at">pop</span>()<span class="op">;</span></div>
 <div class="sourceLine" id="cb757-5" data-line-number="5">    <span class="cf">return</span><span class="op">;</span></div>
 <div class="sourceLine" id="cb757-6" data-line-number="6"><span class="dt">$ff2a</span><span class="op">:</span></div>
 <div class="sourceLine" id="cb757-7" data-line-number="7"><span class="op">}</span></div></code></pre>

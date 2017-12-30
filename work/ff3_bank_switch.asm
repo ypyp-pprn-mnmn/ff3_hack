@@ -11,7 +11,16 @@ __FF3_BANK_SWITCH_INCLUDED__
 ;--------------------------------------------------------------------------------------------------
 	INIT_PATCH_EX sys.switch_bank, $3f,$ff0c,$ff2a,$ff0c
 
-switch_1st_page:
+thunk.switch_2banks:
+    jmp switch_2banks               ; FF03 4C 17 FF
+
+thunk.switch_1st_bank:
+    jmp switch_1st_page             ; FF06 4C 0C FF
+
+thunk.switch_2nd_bank:
+    jmp switch_2nd_page             ; FF09 4C 1F FF
+
+switch_1st_bank:
     pha             ; FF0C 48
     lda #$06    ; FF0D A9 06
     sta $8000   ; FF0F 8D 00 80
@@ -19,15 +28,15 @@ switch_1st_page:
     sta $8001   ; FF13 8D 01 80
     rts             ; FF16 60
 
-switch_2pages:
+switch_2banks:
     pha             ; FF17 48
-    jsr switch_1st_page             ; FF18 20 0C FF
+    jsr switch_1st_bank             ; FF18 20 0C FF
     pla             ; FF1B 68
     clc             ; FF1C 18
     adc #$01    ; FF1D 69 01
-    FALL_THROUGH_TO switch_2nd_page
-    
-switch_2nd_page:
+    FALL_THROUGH_TO switch_2nd_bank
+
+switch_2nd_bank:
     pha             ; FF1F 48
     lda #$07    ; FF20 A9 07
     sta $8000   ; FF22 8D 00 80
