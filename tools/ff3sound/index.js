@@ -2,28 +2,6 @@
 const BinaryFile = require('binary-file');
 
 module.exports = {
-    ADDITIONAL_LENGTH: [
-        1, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,
-        0, 0, 0, 0,  0, 2, 2, 2,  1, 0, 0, 1,  2, 2, 2, 0,
-    ],
-    TRACK_BOUNDARIES: [
-        //0,
-        0x19,
-        0x2b,
-        0x37,
-        0x3b,
-        0xff
-    ],
-    TRACK_BANKS: [
-        0x37, 0x38, 0x39, 0x3a, 0x09
-    ],
-    OFFSET_TO_TABLE: [
-        (0xA000),
-        (0xA000),
-        (0x8C77),
-        (0xB3AE),
-        (0xB400)
-    ],
     export_track_as({input, output, track_no, format}) {
         const get_input_buffer = (async function() {
             const infile = new BinaryFile(input, 'r', true);
@@ -59,6 +37,28 @@ module.exports = {
             }
         });
     },
+    ADDITIONAL_LENGTH: [
+        1, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,
+        0, 0, 0, 0,  0, 2, 2, 2,  1, 0, 0, 1,  2, 2, 2, 0,
+    ],
+    TRACK_BOUNDARIES: [
+        //0,
+        0x19,
+        0x2b,
+        0x37,
+        0x3b,
+        0xff
+    ],
+    TRACK_BANKS: [
+        0x37, 0x38, 0x39, 0x3a, 0x09
+    ],
+    OFFSET_TO_TABLE: [
+        (0xA000),
+        (0xA000),
+        (0x8C77),
+        (0xB3AE),
+        (0xB400)
+    ],
     get_native_stream(track_no, buffer) {
         const map_address = (offset) => {
             const do_map = (bank, offset) => ((bank << 13) & 0xfe000) | (offset & ((1 << 13) -1));
@@ -91,9 +91,9 @@ module.exports = {
                     address_trails: [],
                     map_address
                 };
-                const address_queue = [result.start];
                 console.log(`channel #${k} - stream begins at ${p.toString(16)} => ${result.start.toString(16)}`);
                 
+                const address_queue = [result.start];
                 while (address_queue.length > 0) {
                     let cursor = address_queue.pop();
                     if (!!result.commands[cursor]) {
@@ -102,10 +102,7 @@ module.exports = {
                     }
                     result.address_trails.push(cursor);
                     let note = buffer.readUInt8(cursor);
-                    /*
-                    if (note == 0xff) {
-                        continue;
-                    }//*/
+
                     const command_bytes = (result.commands[cursor++] = []);
                     const len = ((note < 0xe0) ? 0 : this.ADDITIONAL_LENGTH[note - 0xe0]);
                     command_bytes.push(
@@ -127,85 +124,112 @@ module.exports = {
             });
            
     },
+    // --- stateless mml converter.
+    mml: new (class _mml {
+        constructor() {
+            const OCTAVE_SHIFT = 3;
+            const PITCH = "C C+ D D+ E F F+ G G+ A A+ B".split(/ +/);
+            //           60 48 30 24 20 18 12 10 0C 09 08 06 04 03 02 01
+            const LEN = "1  2. 2  4. 3  4  8. 6  8  16. 12 16 24 32 48 96".split(/ +/);
+            const CHANNEL_DEFAULTS = [
+                `%1 @2 t150 o${OCTAVE_SHIFT + 4} v15`,
+                `%1 @3 o${OCTAVE_SHIFT + 4} v15`,
+                `%1 @8 o${OCTAVE_SHIFT + 4} v15`,
+                `%1 @9 o${OCTAVE_SHIFT + 4} v15`,
+                `%1 @10 o${OCTAVE_SHIFT + 4} v15`,
+            ];
+            const DUTY_MAPS = [
+                [1, 2, 4],
+                [5, 6, 4],
+                [8, 8, 8],
+                [9, 9, 9],
+                [10, 10, 10],
+            ];
+            Object.defineProperty(this, 'default_config', {
+                writable: false,
+                configurable: false,
+                enumerable: true,
+                value: {
+                    CHANNEL_DEFAULTS,
+                    PITCH,
+                    LEN,
+                    DUTY_MAPS,
+                    OCTAVE_SHIFT,
+                }
+            });
+        }
+        from(channel, command_bytes, last_play_note, config) {
+            const command = command_bytes[0];
+            if (command < 0xc0) {
+                //00-BF: play note.
+                return `${config.PITCH[command >> 4]}${config.LEN[command & 0xF]}`;
+            } else if (command < 0xd0) {
+                //C0-CF: rest note.
+                return `R${config.LEN[command & 0xF]}`;
+            } else if (command < 0xe0) {
+                //D0-DF: tie note.
+                return `&${config.PITCH[last_play_note >> 4]}${config.LEN[command & 0xF]}`;
+            } else if (command == 0xe0) {
+                //E0: set tempo ($7f45)
+                return `T${command_bytes[1]}`;
+            } else if (0xe1 <= command && command < 0xef) {
+                //E1...EF: set volume goals ($7f90)
+                return `V${command - 0xe1 + 2}`;
+            } else if (0xEf <= command && command < 0xf5) {
+                //EF...F5: set octave ($7f66).
+                return `O${command - 0xEF + config.OCTAVE_SHIFT}`;
+            } else if (0xf5 <= command && command < 0xf8) {
+                //F5: set duty/envelope ($7f89).
+                return `@${config.DUTY_MAPS[channel][command - 0xf5]}`;
+            } else if (command == 0xf8) {
+                //F8: set sweep ($7f82).
+                //FIXME: use pitch envelope to simulate this
+                return `K${command_bytes[1]}`;
+            } else if (command == 0xF9) {
+                //F9: set note defaults?
+                // $7f66 = octave = 4
+                // $7f90 = volume goal = 8
+                // $7fc1 = volume envelope type = 0
+                return `O${4 + config.OCTAVE_SHIFT} V8`;
+            } else if (command == 0xFA) {
+                //FA: set note defaults?
+                // $7f66 = octave = 5
+                // $7f90 = volume goal = 0xF
+                // $7fc1 = volume envelope type = 1
+                return `O${5 + config.OCTAVE_SHIFT} V15`;
+            } else if (0xfb <= command && command < 0xff) {
+                //FB: enter (initialize) loop.
+                //FC: end loop, decrement counter.
+                //FD: exit loop, if loop counter is odd.
+                //FE: jump.
+                //return `!:${command.toString(16)}`;
+                return "";
+            }
+            //FF: end of track.
+            return "";
+        }
+    })(),
     to_format(format, streams) {
-        const PITCH = "C C+ D D+ E F F+ G G+ A A+ B".split(/ +/);
-        //           60 48 30 24 20 18 12 10 0C 09 08 06 04 03 02 01
-        const LEN = "1  2. 2  4. 3  4  8. 6  8  16. 12 16 24 32 48 96".split(/ +/);
-        const DUTY_MAPS = [
-            [1, 2, 4],
-            [5, 6, 4],
-            [8, 8, 8],
-            [9, 9, 9],
-            [10, 10, 10],
-        ];
-        const OCTAVE_SHIFT = 3;
-        const CHANNEL_DEFAULTS = [
-            `%1 @2 t150 o${OCTAVE_SHIFT + 4} v15`,
-            `%1 @3 o${OCTAVE_SHIFT + 4} v15`,
-            `%1 @8 o${OCTAVE_SHIFT + 4} v15`,
-            `%1 @9 o${OCTAVE_SHIFT + 4} v15`,
-            `%1 @10 o${OCTAVE_SHIFT + 4} v15`,
-        ];
         return streams.map(
             (note_stream, k) => {
                 const mml_stream = Object.keys(note_stream.commands).reduce((result, rom_addr) => {
                     const command_bytes = note_stream.commands[rom_addr];
-                    const to_mml = ((command_bytes) => {
-                        const command = command_bytes[0];
-                        if (command < 0xc0) {
-                            //00-BF: play note.
-                            return `${PITCH[command >> 4]}${LEN[command & 0xF]}`;
-                        } else if (command < 0xd0) {
-                            //C0-CF: rest note.
-                            return `R${LEN[command & 0xF]}`;
-                        } else if (command < 0xe0) {
-                            //D0-DF: tie note.
-                            //return `!:${command.toString(16)}`;
-                            return `&${PITCH[result.states.last_note >> 4]}${LEN[command & 0xF]}`;
-                        } else if (command == 0xe0) {
-                            //E0: set tempo ($7f45)
-                            return `T${command_bytes[1]}`;
-                        } else if (0xe1 <= command && command < 0xef) {
-                            //E1...EF: set volume goals ($7f90)
-                            return `V${command - 0xe1 + 2}`;
-                        } else if (0xEf <= command && command < 0xf5) {
-                            //EF...F5: set octave ($7f66).
-                            return `O${command - 0xEF + OCTAVE_SHIFT}`;
-                        } else if (0xf5 <= command && command < 0xf8) {
-                            //F5: set duty/envelope ($7f89).
-                            return `@${DUTY_MAPS[k][command - 0xf5]}`;
-                        } else if (command == 0xf8) {
-                            //F8: set sweep ($7f82).
-                            //FIXME: use pitch envelope to simulate this
-                            return `K${command_bytes[1]}`;
-                        } else if (command == 0xF9) {
-                            //F9: set note defaults?
-                            // $7f66 = octave = 4
-                            // $7f90 = volume goal = 8
-                            // $7fc1 = volume envelope type = 0
-                            return `O${4 + OCTAVE_SHIFT} V8`;
-                        } else if (command == 0xFA) {
-                            //FA: set note defaults?
-                            // $7f66 = octave = 5
-                            // $7f90 = volume goal = 0xF
-                            // $7fc1 = volume envelope type = 1
-                            return `O${5 + OCTAVE_SHIFT} V15`;
-                        } else if (0xfb <= command && command < 0xff) {
-                            //FB: enter (initialize) loop.
-                            //FC: end loop, decrement counter.
-                            //FD: exit loop, if loop counter is odd.
-                            //FE: jump.
-                            //return `!:${command.toString(16)}`;
-                            return "";
-                        }
-                        //FF: end of track.
-                        return "";
-                    });
-                    result.mml[rom_addr] = to_mml(command_bytes);
+                    result.mml[rom_addr] = this.mml.from(
+                        k,
+                        command_bytes,
+                        result.states.last_note,
+                        this.mml.default_config
+                    );
                     //
                     if (command_bytes < 0xc0) {
                         result.states.last_note = command_bytes[0];
                     }
+                    //TODO:
+                    //  it is better to move this responsibility to get_native_inputs or like,
+                    //  as this actually handling rather 'native' stream's details, not mml's details.
+                    //  there still need some tasks here once the abovementioned refactoring done,
+                    //  since it's appropriate to do here the management of states of entire resultant mml stream,
+                    //  as a driver of underlying mml converter. (which merely handles a mapping of internal expression into mml)
                     // handle loops.
                     if (command_bytes[0] == 0xfb) {
                         //enter loop.
@@ -233,7 +257,7 @@ module.exports = {
                 });
 
                 return [
-                    CHANNEL_DEFAULTS[k],
+                    this.mml.default_config.CHANNEL_DEFAULTS[k],
                     ...note_stream.address_trails.map((rom_addr) => mml_stream.mml[rom_addr]),
                 ].map((note) => note.toLowerCase()).join(" ");
             }
