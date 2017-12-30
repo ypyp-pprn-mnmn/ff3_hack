@@ -12,7 +12,7 @@ module.exports = {
                 const result = await infile.read(len - skip, skip);
                 return result;
             } catch (e) {
-                console.log(`exception while getting input: ${e}`);
+                console.exception(`exception while getting input: ${e}`);
             } finally {
                 await infile.close();
             }
@@ -31,10 +31,11 @@ module.exports = {
                     }
                 });
             } catch (e) {
-                console.log(`exception while writing output: ${e}`);
+                console.exception(`exception while writing output: ${e}`);
             } finally {
 
             }
+            console.info(`successfully exported track #${track_no} into ${output_path}`);
         });
     },
     ADDITIONAL_LENGTH: [
@@ -78,7 +79,7 @@ module.exports = {
         if (typeof p_stream === 'undefined') {
             throw `eighter track_no or input_file is wrong. track_no=${track_no}`;
         }
-        console.log(`track #${track_no} - pointer to stream at ${pp_stream.toString(16)}
+        console.info(`track #${track_no} - pointer to stream at ${pp_stream.toString(16)}
             => stream pointers begin at ${p_stream.toString(16)} / range: ${track_range_index}`);
         //const pointers = 
         return Array(5).fill(0)
@@ -91,13 +92,13 @@ module.exports = {
                     address_trails: [],
                     map_address
                 };
-                console.log(`channel #${k} - stream begins at ${p.toString(16)} => ${result.start.toString(16)}`);
+                console.info(`channel #${k} - stream begins at ${p.toString(16)} => ${result.start.toString(16)}`);
                 
                 const address_queue = [result.start];
                 while (address_queue.length > 0) {
                     let cursor = address_queue.pop();
                     if (!!result.commands[cursor]) {
-                        console.log(`address ${cursor.toString(16)} has already parsed.`);
+                        console.debug(`address ${cursor.toString(16)} has already parsed.`);
                         continue;
                     }
                     result.address_trails.push(cursor);
@@ -112,7 +113,7 @@ module.exports = {
                     // parse jump target later, if any.
                     if (0xfc <= note && note < 0xff) {
                         const jump_target = command_bytes[1] | (command_bytes[2] << 8);
-                        console.log(`adding jump target for parsing: ${jump_target.toString(16)}`);
+                        console.debug(`adding jump target for parsing: ${jump_target.toString(16)}`);
                         address_queue.push(map_address(jump_target));
                     }
                     if (0x00 <= note && note < 0xfe) {
@@ -120,6 +121,10 @@ module.exports = {
                         address_queue.push(cursor);
                     }
                 }
+                const total_bytes = Object.keys(result.commands).reduce((sum, addr) => sum + result.commands[addr].length, 0);
+                const last_addr = result.address_trails.slice(-1)[0];
+                console.info(`channel #${k} - stream ends at ${(last_addr + result.commands[last_addr].length).toString(16)},`+
+                    ` total ${total_bytes} (${total_bytes.toString(16)}) bytes.`);
                 return result;
             });
            

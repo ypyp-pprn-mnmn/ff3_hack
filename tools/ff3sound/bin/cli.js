@@ -22,8 +22,8 @@ const argv = require('minimist')(
     }
 );
 
-console.dir(argv);
-console.log(process.argv);
+//console.dir(argv);
+console.debug(process.argv);
 
 const ff3sound = require('../');
 if (argv.all) {
