@@ -1,5 +1,4 @@
 ﻿
-
 # $3e:d113 field.get_eligibility_flags
 > 指定したアイテムの装備可能フラグを各プレイヤーキャラクターごとに1bitで表すようにまとめた値を取得する。
 
@@ -15,7 +14,10 @@
 none.
 
 ### notes:
-write notes here
+see also:
+    `$34:8043 battle.character.is_eligible_for_item`,
+    `$35:b8fd isPlayerAllowedToUseItem`,
+    `$3f:fd8b battle.map_user_type_to_eligibility_flags`
 
 ### (pseudo)code:
 ```js
@@ -48,6 +50,4 @@ write notes here
 */
 }
 ```
-
-
 

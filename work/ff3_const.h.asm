@@ -8,6 +8,7 @@
 ;status flags
 ;
 STATUS_LITE_MASK	= $01
+STATUS_ELIGIBLE     = $01   ;valid only in menu
 ; heavy
 STATUS_POISON		= $02
 STATUS_BLIND		= $04

@@ -33,6 +33,7 @@ field.get_input				= $d281	;$3e:d281 field::get_input
 floor.main_loop = $e1dc
 field.sync_ppu_scroll_with_player	= $e571
 floor.load_data = $e7ec
+field.switch_to_floor_logics_bank = $eb28
 ;field.seek_text_to_next_line = $eba9
 ;field.hide_sprites_under_window = $ec18
 ;field.await_and_get_next_input	= $ecab
@@ -206,14 +207,14 @@ play_segmentedGroup = $7ee1
 effect.proliferated_group = $7ee1
 ;--------------------------------------------------------------------------------------------------
 ;; sound driver
-;	.rsset 0
-;SOUND_TRACK_MUSIC_PULSE1	.rs 1
-;SOUND_TRACK_MUSIC_PULSE2	.rs 1
-;SOUND_TRACK_MUSIC_TRIANGLE	.rs 1
-;SOUND_TRACK_MUSIC_NOISE		.rs 1
-;SOUND_TRACK_MUSIC_DM		.rs 1
-;SOUND_TRACK_EFFECT_PULSE2	.rs 1
-;SOUND_TRACK_EFFECT_NOISE	.rs 1
+	.rsset 0
+SOUND_TRACK_MUSIC_PULSE1	.rs 1
+SOUND_TRACK_MUSIC_PULSE2	.rs 1
+SOUND_TRACK_MUSIC_TRIANGLE	.rs 1
+SOUND_TRACK_MUSIC_NOISE		.rs 1
+SOUND_TRACK_MUSIC_DM		.rs 1
+SOUND_TRACK_EFFECT_PULSE2	.rs 1
+SOUND_TRACK_EFFECT_NOISE	.rs 1
 	.rsset 0
 SOUND_CHANNEL_DMC		.rs 1
 SOUND_CHANNEL_NOISE		.rs 1
@@ -309,10 +310,12 @@ textd.item_names = $8800;
 ;--------------------------------------------------------------------------------------------------
 ;in rom structs
 userFlags			= $00900
+rom.eligibility_flags = $00900
 stringPtrTable		= $30000
 monsterBaseParams	= $60000	;8*256
 monsterBattleParams = $61000
 itemBaseParams		= $61400
+rom.item_params		= $61400
 initialMps			= $73b88
 lvupParamPtrTable	= $7ad59
 ;handler tables

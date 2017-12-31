@@ -32,25 +32,30 @@ STOMACH_TEXT_BUFFER = $7300
 ;;+	u8 $7200[0x100]: variables utilized in battle-mode
 menu.stomach.get_eligibility_for_item_for_all:
 ;; fixups.
-    FIX_ADDR_ON_CALLER $3d,$b44a+1
-    FIX_ADDR_ON_CALLER $3d,$b476+1
+;    FIX_ADDR_ON_CALLER $3d,$b44a+1
+;    FIX_ADDR_ON_CALLER $3d,$b476+1
 ;; ---
-	pha             ; B492 48
-    ldx #$00    ; B493 A2 00
-.L_B495:
-    lda $7470,x ; B495 BD 70 74
-    sta $7200,x ; B498 9D 00 72
-    inx             ; B49B E8
-    bne .L_B495   ; B49C D0 F7
-    pla             ; B49E 68
-    jsr menu.get_eligibility_for_item_for_all   ; B49F 20 E3 AE
-    ldx #$00    ; B4A2 A2 00
-.L_B4A4:
-    lda $7200,x ; B4A4 BD 00 72
-    sta $7470,x ; B4A7 9D 70 74
-    inx             ; B4AA E8
-    bne .L_B4A4   ; B4AB D0 F7
-	rts             ; B4AD 60
+    .ifdef _FEATURE_FAST_ELIGIBILITY
+        ;;there don't need to care about buffer
+        jmp menu.get_eligibility_for_item_for_all
+    .else   ;;_FEATURE_FAST_ELIGIBILITY
+        pha                 ; B492 48
+        ldx #$00            ; B493 A2 00
+    .L_B495:
+            lda $7470,x     ; B495 BD 70 74
+            sta $7200,x     ; B498 9D 00 72
+            inx             ; B49B E8
+            bne .L_B495     ; B49C D0 F7
+        pla                 ; B49E 68
+        jsr menu.get_eligibility_for_item_for_all   ; B49F 20 E3 AE
+        ldx #$00            ; B4A2 A2 00
+    .L_B4A4:
+            lda $7200,x     ; B4A4 BD 00 72
+            sta $7470,x     ; B4A7 9D 70 74
+            inx             ; B4AA E8
+            bne .L_B4A4     ; B4AB D0 F7
+        rts                 ; B4AD 60
+    .endif  ;;_FEATURE_FAST_ELIGIBILITY
     VERIFY_PC_TO_PATCH_END menu.stomach.eligibility
 ;-------------------------------------------------------------------------------------------------- 
 ;; locating...
