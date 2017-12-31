@@ -1,10 +1,10 @@
 ﻿
-# $3f:f817 field.call_get_eligiblity_for_item
+# $3f:f817 field.call_get_eligibility_for_item
 > 一時的に戦闘モードへ移行し、指定のキャラクターについて指定のアイテムの装備可否を `$34:8009` を呼び出すことによって計算する。
 
 ### args:
 +	in u8 A: item_id
-+	in u8 X: byte offset of character to get eligiblity.
++	in u8 X: byte offset of character to get eligibility.
 
 ### callers:
 +	`jmp .L_F817   ; F806 4C 17 F8` @ $3f:f806 thunk.call_get_eligibility_for_item
@@ -26,6 +26,7 @@ in which large amount of the time spent on saving/restoring variables.
 */
 }
 ```
+
 
 
 

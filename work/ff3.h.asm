@@ -19,6 +19,7 @@
 menu.stream_window_content = $a66b
 menu.savefile.load_game_at = $a9f9
 menu.get_window_metrics = $aabc
+;menu.get_eligibility_for_item_for_all = $aee3
 
 ;$3e-3f
 field.call_sound_driver			= $c750
@@ -26,6 +27,7 @@ field.update_window_attr_buff	= $c98f
 field.set_bg_attr_for_window	= $c9a9
 field.merge_bg_attr_with_buffer = $cab1
 field.update_vram_by_07d0	= $cb6b	;[in] $07d0[16]: vram address low, $07e0[16]: vram high, $07f0[16]: vram value
+field.get_eligibility_flags = $d113
 field.get_input				= $d281	;$3e:d281 field::get_input
 ;;
 floor.main_loop = $e1dc
@@ -69,6 +71,7 @@ textd.tile_map_upper = $f515	;static table that maps charcode into tile id
 ;;
 ;switchBanksTo3c3d			= $f727
 switch_to_character_logics_bank = $f727
+thunk.call_get_eligibility_for_item = $f806
 ;; ppu drivers, mostly used only in battle mode
 ppud.do_sprite_dma			= $f8aa
 ppud.update_sprites_and_palette_after_nmi = $f8b0
@@ -101,6 +104,7 @@ copyTo7400					= $fddc
 invoke_b30_battleFunction	= $fdf3
 waitNmiBySetHandler			= $ff00
 call_switch_2banks			= $ff03	; => jmp $ff17
+thunk.switch_2banks			= $ff03
 call_switch1stBank			= $ff06	; => jmp $ff0c
 call_switch2ndBank			= $ff09	; => jmp $ff1f
 ;--------------------------------------------------------------------------------------------------

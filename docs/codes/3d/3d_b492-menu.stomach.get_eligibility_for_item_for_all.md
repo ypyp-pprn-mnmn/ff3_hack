@@ -1,4 +1,5 @@
 ﻿
+
 # $3d:b492 menu.stomach.get_eligibility_for_item_for_all
 > (デブチョコボのメニューで)指定したアイテムの装備可能フラグを取得し、各プレイヤーキャラクターのステータスに反映する。
 
@@ -44,4 +45,5 @@ that is only utilized by stomach menu and thus underlying functions don't care m
 $b4ae:
 }
 ```
+
 

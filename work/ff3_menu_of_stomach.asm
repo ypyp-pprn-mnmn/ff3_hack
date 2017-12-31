@@ -16,6 +16,44 @@ STOMACH_TEXT_BUFFER = $7300
     .endif
 ;-------------------------------------------------------------------------------------------------- 
 ;; locating...
+	INIT_PATCH_EX menu.stomach.eligibility,$3d,$b492,$b4ae,$b492
+;;# $3d:b492 menu.stomach.get_eligiblity_for_item_for_all
+;;> (デブチョコボのメニューで)指定したアイテムの装備可能フラグを取得し、各プレイヤーキャラクターのステータスに反映する。
+;;
+;;### args:
+;;+	in u8 A: item_id
+;;
+;;### callers:
+;;+	`1E:B44A:20 92 B4  JSR $B492` @ menu.stomach.main_loop
+;;+	`1E:B476:20 92 B4  JSR $B492` @ menu.stomach.main_loop
+;;
+;;### local variables:
+;;+	u8 $7470[0x100]: variables utilized in menu-mode
+;;+	u8 $7200[0x100]: variables utilized in battle-mode
+menu.stomach.get_eligibility_for_item_for_all:
+;; fixups.
+    FIX_ADDR_ON_CALLER $3d,$b44a+1
+    FIX_ADDR_ON_CALLER $3d,$b476+1
+;; ---
+	pha             ; B492 48
+    ldx #$00    ; B493 A2 00
+.L_B495:
+    lda $7470,x ; B495 BD 70 74
+    sta $7200,x ; B498 9D 00 72
+    inx             ; B49B E8
+    bne .L_B495   ; B49C D0 F7
+    pla             ; B49E 68
+    jsr menu.get_eligibility_for_item_for_all   ; B49F 20 E3 AE
+    ldx #$00    ; B4A2 A2 00
+.L_B4A4:
+    lda $7200,x ; B4A4 BD 00 72
+    sta $7470,x ; B4A7 9D 70 74
+    inx             ; B4AA E8
+    bne .L_B4A4   ; B4AB D0 F7
+	rts             ; B4AD 60
+    VERIFY_PC_TO_PATCH_END menu.stomach.eligibility
+;-------------------------------------------------------------------------------------------------- 
+;; locating...
 	INIT_PATCH_EX menu.stomach,$3d,$b570,$b5ed,$b570
 
 ;;#### in:

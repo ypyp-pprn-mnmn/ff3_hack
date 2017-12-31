@@ -8,7 +8,7 @@
     <meta name="generator" content="pandoc">
     <meta name="description" content>
     <meta name="author" content="ypyp-pprn-mnmn (aka “301”)">
-    <!-- generated-at 2017-12-31 06:05:42+0900 -->
+    <!-- generated-at 2017-12-31 12:00:29+0900 -->
     <title>FF3@FC Original Code Documentation</title>
 
     <!-- Bootstrap core CSS -->
@@ -744,7 +744,7 @@ code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Infor
           <li><a href="#dad85-menu.jobs.get_change_costs">$3d:ad85 menu.jobs.get_change_costs</a></li>
           <li><a href="#dadf2-getjobparameter">$3d:adf2 getJobParameter</a></li>
           <li><a href="#daec3-menu.clear_eligible_status_of_all_characters">$3d:aec3 menu.clear_eligible_status_of_all_characters</a></li>
-          <li><a href="#daed5-menu.shop.update_eligiblity_for_item">$3d:aed5 menu.shop.update_eligiblity_for_item</a></li>
+          <li><a href="#daed5-menu.shop.update_eligibility_for_item">$3d:aed5 menu.shop.update_eligibility_for_item</a></li>
           <li><a href="#daee3-menu.get_eligibility_for_item_for_all">$3d:aee3 menu.get_eligibility_for_item_for_all</a></li>
           <li><a href="#daf1f-menu.stomach.open">$3d:af1f menu.stomach.open</a></li>
           <li><a href="#daf5e-menu.stomach.close">$3d:af5e menu.stomach.close</a></li>
@@ -804,7 +804,7 @@ code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Infor
           <li><a href="#ecd7e-getvehiclespeed">$3e:cd7e getVehicleSpeed</a></li>
           <li><a href="#ece7a-gettileparamsvertical">$3e:ce7a getTileParamsVertical</a></li>
           <li><a href="#ed10b-menu.call_recalc_character_params">$3e:d10b menu.call_recalc_character_params</a></li>
-          <li><a href="#ed113-field.get_eligiblity_flags">$3e:d113 field.get_eligiblity_flags</a></li>
+          <li><a href="#ed113-field.get_eligibility_flags">$3e:d113 field.get_eligibility_flags</a></li>
           <li><a href="#ed1b1-field.load_label_text_into_buffer">$3e:d1b1 field.load_label_text_into_buffer</a></li>
           <li><a href="#ed20d-field.queue_se_of_valid_action">$3e:d20d field.queue_SE_of_valid_action</a></li>
           <li><a href="#ed213-field.queue_se_of_move_of_cursor">$3e:d213 field.queue_SE_of_move_of_cursor</a></li>
@@ -914,8 +914,8 @@ code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Infor
           <li><a href="#ff727-switch_to_character_logics_bank">$3f:f727 switch_to_character_logics_bank</a></li>
           <li><a href="#ff800-call_dobattle">$3f:f800 call_doBattle</a></li>
           <li><a href="#ff803-thunk.call_recalc_character_params">$3f:f803 thunk.call_recalc_character_params</a></li>
-          <li><a href="#ff806-thunk.call_get_eligiblity_for_item">$3f:f806 thunk.call_get_eligiblity_for_item</a></li>
-          <li><a href="#ff817-field.call_get_eligiblity_for_item">$3f:f817 field.call_get_eligiblity_for_item</a></li>
+          <li><a href="#ff806-thunk.call_get_eligibility_for_item">$3f:f806 thunk.call_get_eligibility_for_item</a></li>
+          <li><a href="#ff817-field.call_get_eligibility_for_item">$3f:f817 field.call_get_eligibility_for_item</a></li>
           <li><a href="#ff820-field.call_recalc_character_params">$3f:f820 field.call_recalc_character_params</a></li>
           <li><a href="#ff826-field.back_to_field_mode_with_result">$3f:f826 field.back_to_field_mode_with_result</a></li>
           <li><a href="#ff82c-field.switch_to_battle_mode">$3f:f82c field.switch_to_battle_mode</a></li>
@@ -20980,7 +20980,7 @@ SoundEffectTrack: {
 <div class="sourceLine" id="cb544-15" data-line-number="15"><span class="co">*/</span></div>
 <div class="sourceLine" id="cb544-16" data-line-number="16"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="daed5-menu.shop.update_eligiblity_for_item">$3d:aed5 menu.shop.update_eligiblity_for_item</h1>
+<h1 id="daed5-menu.shop.update_eligibility_for_item">$3d:aed5 menu.shop.update_eligibility_for_item</h1>
 <blockquote>
 <p>short description of the function</p>
 </blockquote>
@@ -21024,7 +21024,7 @@ SoundEffectTrack: {
 <h3 id="callers-78">callers:</h3>
 <ul>
 <li><code>jsr .L_AEE3   ; B49F 20 E3 AE</code> @ $3d:b492 menu.stomach.get_eligibility_for_all_characters</li>
-<li><code>lda $7B80,x ; AEE0 BD 80 7B</code> (fall through) @ $3d:aed5 menu.shop.update_eligiblity_for_item</li>
+<li><code>lda $7B80,x ; AEE0 BD 80 7B</code> (fall through) @ $3d:aed5 menu.shop.update_eligibility_for_item</li>
 </ul>
 <h3 id="local-variables-89">local variables:</h3>
 <ul>
@@ -22877,7 +22877,7 @@ SoundEffectTrack: {
 <div class="sourceLine" id="cb603-6" data-line-number="6"><span class="co">*/</span></div>
 <div class="sourceLine" id="cb603-7" data-line-number="7"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="ed113-field.get_eligiblity_flags">$3e:d113 field.get_eligiblity_flags</h1>
+<h1 id="ed113-field.get_eligibility_flags">$3e:d113 field.get_eligibility_flags</h1>
 <blockquote>
 <p>指定したアイテムの装備可能フラグを各プレイヤーキャラクターごとに1bitで表すようにまとめた値を取得する。</p>
 </blockquote>
@@ -26353,21 +26353,21 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb715-4" data-line-number="4"><span class="co">*/</span></div>
 <div class="sourceLine" id="cb715-5" data-line-number="5"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="ff806-thunk.call_get_eligiblity_for_item">$3f:f806 thunk.call_get_eligiblity_for_item</h1>
+<h1 id="ff806-thunk.call_get_eligibility_for_item">$3f:f806 thunk.call_get_eligibility_for_item</h1>
 <blockquote>
 <p>$f817を呼び出すためのthunk.</p>
 </blockquote>
 <h3 id="args-359">args:</h3>
 <ul>
 <li>in u8 A: item_id</li>
-<li>in u8 X: byte offset of character to get eligiblity.</li>
+<li>in u8 X: byte offset of character to get eligibility.</li>
 </ul>
 <h3 id="callers-143">callers:</h3>
 <ul>
-<li><code>jsr .L_F806   ; D116 20 06 F8</code> @ $3e:d113 field.get_eligiblity_flags</li>
-<li><code>jsr .L_F806   ; D121 20 06 F8</code> @ $3e:d113 field.get_eligiblity_flags</li>
-<li><code>jsr .L_F806   ; D12C 20 06 F8</code> @ $3e:d113 field.get_eligiblity_flags</li>
-<li><code>jsr .L_F806   ; D136 20 06 F8</code> @ $3e:d113 field.get_eligiblity_flags</li>
+<li><code>jsr .L_F806   ; D116 20 06 F8</code> @ $3e:d113 field.get_eligibility_flags</li>
+<li><code>jsr .L_F806   ; D121 20 06 F8</code> @ $3e:d113 field.get_eligibility_flags</li>
+<li><code>jsr .L_F806   ; D12C 20 06 F8</code> @ $3e:d113 field.get_eligibility_flags</li>
+<li><code>jsr .L_F806   ; D136 20 06 F8</code> @ $3e:d113 field.get_eligibility_flags</li>
 <li><code>1F:D18B:20 06 F8  JSR thunk.call_get_eligiblity_of_i</code> @ ?</li>
 </ul>
 <h3 id="local-variables-124">local variables:</h3>
@@ -26376,17 +26376,17 @@ sta $4014   ;DMA</code></pre></li>
 <p>write notes here</p>
 <h3 id="pseudocode-145">(pseudo)code:</h3>
 <pre class="sourceCode js" id="cb716"><code class="sourceCode javascript"><div class="sourceLine" id="cb716-1" data-line-number="1"><span class="op">{</span></div>
-<div class="sourceLine" id="cb716-2" data-line-number="2">    <span class="cf">return</span> <span class="va">field</span>.<span class="at">call_get_eligiblity_for_item</span>()<span class="op">;</span> <span class="co">// jmp .L_F817   ; F806 4C 17 F8</span></div>
+<div class="sourceLine" id="cb716-2" data-line-number="2">    <span class="cf">return</span> <span class="va">field</span>.<span class="at">call_get_eligibility_for_item</span>()<span class="op">;</span> <span class="co">// jmp .L_F817   ; F806 4C 17 F8</span></div>
 <div class="sourceLine" id="cb716-3" data-line-number="3"><span class="op">}</span></div></code></pre>
 <hr />
-<h1 id="ff817-field.call_get_eligiblity_for_item">$3f:f817 field.call_get_eligiblity_for_item</h1>
+<h1 id="ff817-field.call_get_eligibility_for_item">$3f:f817 field.call_get_eligibility_for_item</h1>
 <blockquote>
 <p>一時的に戦闘モードへ移行し、指定のキャラクターについて指定のアイテムの装備可否を <code>$34:8009</code> を呼び出すことによって計算する。</p>
 </blockquote>
 <h3 id="args-360">args:</h3>
 <ul>
 <li>in u8 A: item_id</li>
-<li>in u8 X: byte offset of character to get eligiblity.</li>
+<li>in u8 X: byte offset of character to get eligibility.</li>
 </ul>
 <h3 id="callers-144">callers:</h3>
 <ul>

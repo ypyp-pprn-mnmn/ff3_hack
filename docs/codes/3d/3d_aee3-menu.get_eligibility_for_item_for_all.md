@@ -1,4 +1,5 @@
 ﻿
+
 # $3d:aee3 menu.get_eligibility_for_item_for_all
 > 指定したアイテムの装備可能フラグを取得し、各プレイヤーキャラクターのステータスに反映する。
 
@@ -8,7 +9,7 @@
 
 ### callers:
 +	`jsr .L_AEE3   ; B49F 20 E3 AE` @ $3d:b492 menu.stomach.get_eligibility_for_all_characters
-+   `lda $7B80,x ; AEE0 BD 80 7B` (fall through) @ $3d:aed5 menu.shop.update_eligiblity_for_item
++   `lda $7B80,x ; AEE0 BD 80 7B` (fall through) @ $3d:aed5 menu.shop.update_eligibility_for_item
 
 ### local variables:
 +	yet to be investigated
@@ -53,5 +54,6 @@ write notes here
 */
 }
 ```
+
 
 

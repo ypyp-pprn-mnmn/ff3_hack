@@ -1,5 +1,6 @@
 ﻿
-# $3e:d113 field.get_eligiblity_flags
+
+# $3e:d113 field.get_eligibility_flags
 > 指定したアイテムの装備可能フラグを各プレイヤーキャラクターごとに1bitで表すようにまとめた値を取得する。
 
 ### args:
@@ -47,5 +48,6 @@ write notes here
 */
 }
 ```
+
 
 

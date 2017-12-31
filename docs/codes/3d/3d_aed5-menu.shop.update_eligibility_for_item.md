@@ -1,5 +1,6 @@
 ﻿
-# $3d:aed5 menu.shop.update_eligiblity_for_item
+
+# $3d:aed5 menu.shop.update_eligibility_for_item
 > short description of the function
 
 ### args:
@@ -29,5 +30,6 @@ write notes here
 }
 ```
 **fall through**
+
 
 
