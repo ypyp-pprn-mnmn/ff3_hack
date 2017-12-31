@@ -38,6 +38,27 @@ menu.stomach.get_eligibility_for_item_for_all:
     .ifdef _FEATURE_FAST_ELIGIBILITY
         ;;there don't need to care about buffer
         jmp menu.get_eligibility_for_item_for_all
+menu_x.get_item_data_ptr:
+.p_data = $80
+;;A : index of item data (adjuted item_id)
+        ldy #0
+        sty <.p_data+1
+        asl A
+        rol <.p_data+1
+        asl A
+        rol <.p_data+1
+        asl A
+        rol <.p_data+1
+        ;clc    ;;always clear
+        adc #7
+        sta <.p_data
+        
+        lda #HIGH((rom.item_params & $1fff)|$8000)
+        ;clc    ;;always clear
+        adc <.p_data+1
+        sta <.p_data+1
+
+        rts
     .else   ;;_FEATURE_FAST_ELIGIBILITY
         pha                 ; B492 48
         ldx #$00            ; B493 A2 00

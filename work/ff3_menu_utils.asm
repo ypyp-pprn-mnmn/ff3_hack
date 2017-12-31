@@ -46,17 +46,16 @@ menu_x.get_eligibility_flags:
             lsr A
             lsr A
             tay
-            ;dex
+            ;; note: elibibility flags are stored in big endian order.
+            ;; that is, the higher job_id, the lower the address.
             inx
         .seek_to_flag:
-                ;inx
                 dex
                 dey
                 bpl .seek_to_flag
             pla ;; job_id
             and #$7
             tay
-            ;lda ((rom.eligibility_flags & $7fff) | $8000),x
             lda ((rom.eligibility_flags & $7fff) | $8000)+2,x
         .get_flag_bit:
                 lsr A
@@ -76,7 +75,6 @@ menu_x.get_eligibility_flags:
             tay
             bne .for_each_characters
         pla ;;dispose. (user type)
-        ;lda <.result_flags
         rts
     .else ;;_FEATURE_FAST_ELIGIBILITY
         jsr field.get_eligibility_flags   ; AEE3 20 13 D1
@@ -128,6 +126,7 @@ field.get_eligibility_flags:
     .ifdef _FEATURE_FAST_ELIGIBILITY
 field_x.get_and_update_eligibility_flags:
 .user_type = $80
+.p_data = $80
         ;; --- get user type of item
         cmp #eligibility.CONSUMABLES_BEGIN    ;;$98
         bcc .calc_offset
@@ -136,13 +135,18 @@ field_x.get_and_update_eligibility_flags:
         .magic:
             sbc #(eligibility.CONSUMABLES_END - eligibility.CONSUMABLES_BEGIN);
     .calc_offset:
-        asl A
-        asl A
-        asl A
-        tax ;;byte offset into item.
+        ;asl A
+        ;asl A
+        ;asl A
+        ;tax ;;byte offset into item.
+        ;lda #(rom.item_params >> 13)   ;;$30
+        ;jsr thunk.switch_1st_bank   ;;preserves X.
+        ;lda ((rom.item_params & $1fff)|$8000)+7,x   ;;user type.
+        ;and #$7f
+        jsr menu_x.get_item_data_ptr
         lda #(rom.item_params >> 13)   ;;$30
         jsr thunk.switch_1st_bank   ;;preserves X.
-        lda ((rom.item_params & $1fff)|$8000)+7,x   ;;user type.
+        lda [.p_data],y   ;;user type.
         and #$7f
         sta <.user_type
         asl A
