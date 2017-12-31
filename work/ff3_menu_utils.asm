@@ -135,14 +135,6 @@ field_x.get_and_update_eligibility_flags:
         .magic:
             sbc #(eligibility.CONSUMABLES_END - eligibility.CONSUMABLES_BEGIN);
     .calc_offset:
-        ;asl A
-        ;asl A
-        ;asl A
-        ;tax ;;byte offset into item.
-        ;lda #(rom.item_params >> 13)   ;;$30
-        ;jsr thunk.switch_1st_bank   ;;preserves X.
-        ;lda ((rom.item_params & $1fff)|$8000)+7,x   ;;user type.
-        ;and #$7f
         jsr menu_x.get_item_data_ptr
         lda #(rom.item_params >> 13)   ;;$30
         jsr thunk.switch_1st_bank   ;;preserves X.
