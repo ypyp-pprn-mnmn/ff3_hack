@@ -27,7 +27,7 @@ console.debug(process.argv);
 
 const ff3sound = require('../');
 if (argv.all) {
-    Array(0x3b).fill(0).forEach((i, k) => {
+    Array(0x41).fill(0).forEach((i, k) => {
         ff3sound.export_track_as({
             input: argv['input-path'],
             output: argv['output-path'],

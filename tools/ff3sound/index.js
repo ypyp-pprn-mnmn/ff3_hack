@@ -48,10 +48,10 @@ module.exports = {
         0x2b,
         0x37,
         0x3b,
-        0xff
+        0x41
     ],
     TRACK_BANKS: [
-        0x37, 0x38, 0x39, 0x3a, 0x09
+        0x37, 0x38, 0x39, 0x39, 0x09
     ],
     OFFSET_TO_TABLE: [
         (0xA000),
@@ -132,16 +132,18 @@ module.exports = {
     // --- stateless mml converter.
     mml: new (class _mml {
         constructor() {
-            const OCTAVE_SHIFT = 3;
+            const OCTAVE_SHIFT = [
+                3, 3, 2, 2, 1,
+            ];
             const PITCH = "C C+ D D+ E F F+ G G+ A A+ B".split(/ +/);
             //           60 48 30 24 20 18 12 10 0C 09 08 06 04 03 02 01
             const LEN = "1  2. 2  4. 3  4  8. 6  8  16. 12 16 24 32 48 96".split(/ +/);
             const CHANNEL_DEFAULTS = [
-                `%1 @2 q6 o${OCTAVE_SHIFT + 4} v8 t150`,   //ff3's key-off is defined as 66%
-                `%1 @3 q6 o${OCTAVE_SHIFT + 4} v8`,
-                `%1 @8 q8 o${OCTAVE_SHIFT + 4} v15`,        //ff3's driver don't control triangle channel's key-off
-                `%1 @9 q1 o${OCTAVE_SHIFT + 4} v8`,
-                `%1 @10 q1 o${OCTAVE_SHIFT + 4} v8`,
+                `%1 @2 q6 o${OCTAVE_SHIFT[0] + 4} v8 t150`,   //ff3's key-off is defined as 66%
+                `%1 @3 q6 o${OCTAVE_SHIFT[1] + 4} v8`,
+                `%1 @8 q8 o${OCTAVE_SHIFT[2] + 4} v15`,        //ff3's driver don't control triangle channel's key-off
+                `%1 @9 q1 o${OCTAVE_SHIFT[3] + 4} v8`,
+                `%1 @10 q1 o${OCTAVE_SHIFT[4] + 4} v8`,
             ];
             const DUTY_MAPS = [
                 [1, 2, 4],
@@ -190,7 +192,7 @@ module.exports = {
                 return `V${Math.floor(config.VOLUME_MAPS[channel] * (command - 0xe1 + 2))}`;
             } else if (0xEf <= command && command < 0xf5) {
                 //EF...F5: set octave ($7f66).
-                return `O${command - 0xEF + config.OCTAVE_SHIFT}`;
+                return `O${command - 0xEF + config.OCTAVE_SHIFT[channel]}`;
             } else if (0xf5 <= command && command < 0xf8) {
                 //F5: set duty/envelope ($7f89).
                 return `@${config.DUTY_MAPS[channel][command - 0xf5]}`;
@@ -203,13 +205,13 @@ module.exports = {
                 // $7f66 = octave = 4
                 // $7f90 = volume goal = 8
                 // $7fc1 = volume envelope type = 0
-                return `O${4 + config.OCTAVE_SHIFT} V${Math.floor(8 * config.VOLUME_MAPS[channel])}`;
+                return `O${4 + config.OCTAVE_SHIFT[channel]} V${Math.floor(8 * config.VOLUME_MAPS[channel])}`;
             } else if (command == 0xFA) {
                 //FA: set note defaults?
                 // $7f66 = octave = 5
                 // $7f90 = volume goal = 0xF
                 // $7fc1 = volume envelope type = 1
-                return `O${5 + config.OCTAVE_SHIFT} V${Math.floor(15 * config.VOLUME_MAPS[channel])}`;
+                return `O${5 + config.OCTAVE_SHIFT[channel]} V${Math.floor(15 * config.VOLUME_MAPS[channel])}`;
             } else if (0xfb <= command && command < 0xff) {
                 //FB: enter (initialize) loop.
                 //FC: end loop, decrement counter.
