@@ -126,7 +126,7 @@ field.get_eligibility_flags:
     .ifdef _FEATURE_FAST_ELIGIBILITY
 field_x.get_and_update_eligibility_flags:
 .user_type = $80
-.p_data = $80
+.p_item_data = $80
         ;; --- get user type of item
         cmp #eligibility.CONSUMABLES_BEGIN    ;;$98
         bcc .calc_offset
@@ -138,7 +138,8 @@ field_x.get_and_update_eligibility_flags:
         jsr menu_x.get_item_data_ptr
         lda #(rom.item_params >> 13)   ;;$30
         jsr thunk.switch_1st_bank   ;;preserves X.
-        lda [.p_data],y   ;;user type.
+        ldy #7  ;;user type.
+        lda [.p_item_data],y   ;;user type.
         and #$7f
         sta <.user_type
         asl A

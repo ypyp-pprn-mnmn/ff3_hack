@@ -50,7 +50,7 @@ menu_x.get_item_data_ptr:
         asl A
         rol <.p_data+1
         ;clc    ;;always clear
-        adc #7
+        ;adc #7
         sta <.p_data
         
         lda #HIGH((rom.item_params & $1fff)|$8000)
