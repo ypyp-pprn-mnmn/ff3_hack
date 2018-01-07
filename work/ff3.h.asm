@@ -210,26 +210,26 @@ effect.proliferated_group = $7ee1
 ;--------------------------------------------------------------------------------------------------
 ;; sound driver
 	.rsset 0
-SOUND_TRACK_MUSIC_PULSE1	.rs 1
-SOUND_TRACK_MUSIC_PULSE2	.rs 1
-SOUND_TRACK_MUSIC_TRIANGLE	.rs 1
-SOUND_TRACK_MUSIC_NOISE		.rs 1
-SOUND_TRACK_MUSIC_DM		.rs 1
-SOUND_TRACK_EFFECT_PULSE2	.rs 1
-SOUND_TRACK_EFFECT_NOISE	.rs 1
+sound.TRACK_MUSIC_PULSE1	.rs 1
+sound.TRACK_MUSIC_PULSE2	.rs 1
+sound.TRACK_MUSIC_TRIANGLE	.rs 1
+sound.TRACK_MUSIC_NOISE		.rs 1
+sound.TRACK_MUSIC_DM		.rs 1
+sound.TRACK_EFFECT_PULSE2	.rs 1
+sound.TRACK_EFFECT_NOISE	.rs 1
 	.rsset 0
-SOUND_CHANNEL_DMC		.rs 1
-SOUND_CHANNEL_NOISE		.rs 1
-SOUND_CHANNEL_TRIANGLE	.rs 1
-SOUND_CHANNEL_PULSE2	.rs 1
-SOUND_CHANNEL_PULSE1	.rs 1
+sound.CHANNEL_DMC		.rs 1
+sound.CHANNEL_NOISE		.rs 1
+sound.CHANNEL_TRIANGLE	.rs 1
+sound.CHANNEL_PULSE2	.rs 1
+sound.CHANNEL_PULSE1	.rs 1
 
 sound.music_id = $7f40
 sound.previous_music_id = $7f41
 sound.request = $7f42	;01:play next(7f43) 02:play previous(7f41,saved when 01) 04:stop 80:play on
 sound.next_music_id = $7f43;
 sound.master_volume = $7f44	;;details TBC. valid only lower 4 bits.
-sound.tempo = $74f5	;;BPM.
+sound.bpm = $7f45	;;BPM.
 sound.beat_counter.low = $7f46		;; decremented by 150 (= 240 * 5 / 8) per a callout to the sound driver.
 sound.beat_counter.high = $7f47		;; on the other hand, length of a whole note is defined to 96 (60 * 8 / 5).
 sound.effect_id = $7f49	;msb should be 1
@@ -245,21 +245,21 @@ sound.note_pitch_timers.high = $7f74	;;note: APU outputs 8-phased 1-bit waveform
 sound.volume_controls = $7f7b	;; will be fed into $4000+4n. details TBC. 
 sound.sweep_controls = $7f82	;; will be fed into $4001+4n. details TBC. 
 sound.duty_controls = $7f89		;; will be fed into $4000+4n. details TBC. 
-sound.volume_curves.control = $7f90	;; details tbc.
+sound.volume_envelopes.control = $7f90	;; details tbc.
 sound.key_off_timers.low = $7f97	;; in 96th of a whole note. (but defined as 2/3 of corresponding notes)
 sound.key_off_timers.high = $7f9e	;;
 
-sound.loop.controls = $7fa5		;; 00 = use $7fac; !00 = use $7fb3. note: this variable is initilized on stream load, and set to 0xff.
-sound.loop.counter_1 = $7fac
-sound.loop.counter_2 = $7fb3
+sound.loops.control = $7fa5		;; 00 = use $7fac; !00 = use $7fb3. note: this variable is initilized on stream load, and set to 0xff.
+sound.loops.counter_1 = $7fac
+sound.loops.counter_2 = $7fb3
 
-sound.volume_curves.type = $7fba	;; tbc. used to index curve patterns
-;;sound.volume_curves.x = $7fc1		;;tbc.
-sound.volume_curves.phase = $7fc8	;; tbc. used to index stream (pointed to by $9a7c, which is looked up by $7fc1) of volumes.
-sound.volume_curves.volume = $7fcf	;; tbc.
-sound.volume_curves.interval = $7fd6	;; tbc. 2/3 of bpm. (as timer delta is 2/3 of what for play notes)
-sound.volume_curves.timer = $7fdd	;; triggers lowering volume,  once reached to 100 (0x64)
-sound.volume_curves.countdown = $7fe4	;; triggers volume change
+sound.volume_envelopes.type = $7fba	;; tbc. used to index curve patterns
+;;sound.volume_envelopes.x = $7fc1		;;tbc.
+sound.volume_envelopes.phase = $7fc8	;; tbc. used to index stream (pointed to by $9a7c, which is looked up by $7fc1) of volumes.
+sound.volume_envelopes.volume = $7fcf	;; tbc.
+sound.volume_envelopes.interval = $7fd6	;; tbc. 2/3 of bpm. (as timer delta is 2/3 of what for play notes)
+sound.volume_envelopes.timer = $7fdd	;; triggers lowering volume,  once reached to 100 (0x64)
+sound.volume_envelopes.countdown = $7fe4	;; triggers volume change
 
 sound.pitch_modulations.type = $7feb	;; tbc.
 sound.pitch_modulations.phase = $7ff2	;; tbc.

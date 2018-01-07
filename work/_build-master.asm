@@ -94,6 +94,7 @@
 	;;v0.9.0:
 	.include "ff3_bank_switch.asm"
 	.include "ff3_menu_utils.asm"
+	.include "ff3_sound_driver.asm"
 	
 	.ifdef EXPERIMENTAL
 		.include "ff3_experimental.asm"
