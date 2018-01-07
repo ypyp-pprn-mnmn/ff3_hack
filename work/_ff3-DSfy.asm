@@ -3,7 +3,18 @@
 ;;	creates a patch with newly implemented features.
 ;;
 ;;=================================================================================================
-;; feature flags.
+;; feature flag declarations. flags roughly follow the naming convension below:
+;;	- _OPTIMIZE_XXX:
+;;		if enabled, it will replace the original implementation with 'optimized' code.
+;;		basically this only changes implementation details and
+;;		so that behaviors / specifications are left unchanged.
+;;		though performance of execution may slightly differ.
+;;	- _FEATURE_XXX:
+;;		if enabled, it will install a feature designated by its name.
+;;		usually this is done by using extra bytes from somewhere and
+;;		gives extended user experiences compared to the original.
+;;	- _FIX_XXX:
+;;		if enabled, it will install a patch changing the original behavior it deemed to a kind of bug.
 BETA
 ;BALANCED_VERSION
 ;TEST_MAP
