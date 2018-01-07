@@ -114,9 +114,9 @@ commandWindow_OnItem:
 		
 		cmp #$62	;leather cap
 		bcc .check_equip_valid_for_job
-		cmp #$98	;magical key
+		cmp items.CONSUMABLES_BEGIN	;;#$98	;magical key
 		bcc .cannot_use
-		cmp #$c8	;magic 'flare'
+		cmp items.CONSUMABLES_END	;;#$c8	;magic 'flare'
 		bcs .cannot_use
 		bcc .next
 	.check_equip_valid_for_job:

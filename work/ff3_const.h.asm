@@ -124,3 +124,6 @@ effect.DAMAGE_NONE = $ffff
 ;effect.DAMAGE_MISS = $3fff
 effect.ACTOR_ENEMY = $80
 effect.TARGET_ENEMY = $40
+
+    DEFINE_DEFAULT items.CONSUMABLES_BEGIN, $98
+    DEFINE_DEFAULT items.CONSUMABLES_END, $c8

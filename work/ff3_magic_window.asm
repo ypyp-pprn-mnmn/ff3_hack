@@ -1,10 +1,11 @@
+;; encoding: utf-8
 ; ff3_magic_window.asm
 ;
 ;description:
 ;	replaces magic-selection-window 
 ;
 ;version:
-;	0.06 (2006-10-29)
+;	0.7 (2018-01-08)
 ;
 ;======================================================================================================
 ff3_magic_window_begin:
@@ -396,7 +397,7 @@ isPlayerAllowedToUseItem:
 	;clc always clearted (&7f ed)
 	adc <.userType
 	tax
-	jsr $fd8b	;loadUserFlags
+	jsr battle.eligibility_flags_from_user_type	;;$fd8b	;loadUserFlags
 	jsr getPlayerOffset	;$a541
 	tay
 	lda [.pPlayerBaseParam],y	;job

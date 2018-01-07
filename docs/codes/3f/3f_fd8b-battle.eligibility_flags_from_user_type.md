@@ -1,5 +1,5 @@
 ﻿
-# $3f:fd8b battle.map_user_type_to_eligibility_flags
+# $3f:fd8b battle.eligibility_flags_from_user_type
 > 各アイテムに設定された利用可能者タイプから、各ジョブの利用資格フラグを取得する。
 
 ### args:

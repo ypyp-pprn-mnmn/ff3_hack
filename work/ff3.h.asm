@@ -100,6 +100,7 @@ shiftLeft6					= $fd3c
 shiftRight6					= $fd43
 loadStringWorker			= $fd4a
 get2byteAtBank18			= $fd60
+battle.eligibility_flags_from_user_type = $fd8b
 loadTo7400Ex				= $fda6
 copyTo7400					= $fddc
 ;call_30_9e58				= $fdf3

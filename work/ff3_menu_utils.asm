@@ -7,9 +7,6 @@
 ;;	0.1.0
 ;;=================================================================================================
 __FF3_MENU_UTILS_INCLUDED__
-	
-    DEFINE_DEFAULT eligibility.CONSUMABLES_BEGIN, $98
-    DEFINE_DEFAULT eligibility.CONSUMABLES_END, $c8
 ;;-------------------------------------------------------------------------------------------------
 	INIT_PATCH_EX menu.eligibility, $3d,$aee3,$af1f,$aee3
 
@@ -128,12 +125,12 @@ field_x.get_and_update_eligibility_flags:
 .user_type = $80
 .p_item_data = $80
         ;; --- get user type of item
-        cmp #eligibility.CONSUMABLES_BEGIN    ;;$98
+        cmp #items.CONSUMABLES_BEGIN    ;;$98
         bcc .calc_offset
-            cmp #eligibility.CONSUMABLES_END  ;;$c8
+            cmp #items.CONSUMABLES_END  ;;$c8
             bcc .do_return
         .magic:
-            sbc #(eligibility.CONSUMABLES_END - eligibility.CONSUMABLES_BEGIN);
+            sbc #(items.CONSUMABLES_END - items.CONSUMABLES_BEGIN);
     .calc_offset:
         jsr menu_x.get_item_data_ptr
         lda #(rom.item_params >> 13)   ;;$30
