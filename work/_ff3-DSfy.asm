@@ -16,6 +16,8 @@ BETA
 _OPTIMIZE_FIELD_WINDOW
 _FEATURE_STOMACH_AMOUNT_1BYTE
 _FEATURE_DEFERRED_RENDERING
+_FEATURE_FAST_BATTLE_WINDOW
+_FEATURE_FAST_BATTLE_WINDOW_ERASE
 ;; fixes for unintentional behavior found in the original version
 
 FIX_COMMAND_COUNT_UPDATE	;0.8.0	@see http://966-yyff.cocolog-nifty.com/blog/2013/06/ff3-d544.html

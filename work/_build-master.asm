@@ -50,8 +50,11 @@
 
 		.include "ff3_item_window.asm"	;save
 		.include "ff3_magic_window.asm"	;save
-		.include "ff3_window.asm"		;consume( origin )
-
+	.endif	;;BETA
+	
+	.include "ff3_window.asm"		;consume( origin )
+	
+	.ifdef BETA
 		.include "ff3_command_04.asm"	;consume( genCode_end, getCommandInput_end )
 		.include "ff3_command_13.asm"	;save
 			

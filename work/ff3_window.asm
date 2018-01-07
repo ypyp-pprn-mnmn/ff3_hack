@@ -17,8 +17,13 @@
 ;
 ;	$1b,22,23,24,25,26 used in caller (so should be avoided)
 ;
-;======================================================================================================
+;==================================================================================================
+__FF3_WINDOW_INCLUDED__
 
+	.ifdef _FEATURE_FAST_BATTLE_WINDOW
+	.ifndef BETA
+		.fail	;;as of 0.8.3, it is requied to enable BETA in order to inmplement FAST_BATTLE_WINDOW.
+	.endif	;;BETA
 ff3_window_begin:
 
 ;GENCODE_ENABLE_LOOP
@@ -26,7 +31,7 @@ UNROLL_SHIFT = 5	;valid range: 1-5
 UNROLL_COUNT = (1 << UNROLL_SHIFT)
 SIZEOF_PUT_CODE = 6	;lda $xxxx, sta $2007
 LOOP_OVERHEAD = ((69+14) >> 3) + 1
-;------------------------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------
 ;shared variables:
 pLeftParts = $18
 pRightParts = $1a
@@ -38,7 +43,7 @@ lineLen = $1f			;total line width without border
 drawLen = $20			;line length for bg currently drawing
 vram = $2e
 pTileArray = $7ac0	;see also initTileArrayStorage
-;------------------------------------------------------------------------------------------------------
+;==================================================================================================
 	INIT_PATCH $34,$8b38,$8d03
 
 draw8LineWindow:
@@ -451,17 +456,23 @@ copyCodeBytes:
 	cpy <.copyLast
 	bne .copy
 	rts
-ff3_window_last:	
-;------------------------------------------------------------------------------------------------------
-	INIT_PATCH $34,$8eb0,$8f0b
+	.else	;;_FEATURE_FAST_BATTLE_WINDOW
+	;;FIXME: this shouln't be hardcoded anyways
+drawWindow_setVramAddr = $8c3a
+drawWindow_setVramAndInitPpu = $8c44
+	.endif	;;_FEATURE_FAST_BATTLE_WINDOW
+ff3_window_last:
 
+;------------------------------------------------------------------------------------------------------
+	.ifdef _FEATURE_FAST_BATTLE_WINDOW_ERASE
+	INIT_PATCH $34,$8eb0,$8f0b
 
 eraseWindow:
 .vram1stBegin = $2240
 .vram1stEnd = $23a0	;last line begins $2380
 .vram2ndBegin = $2640
 .generated_code = TEMP_RAM
-.template_code = genCode_loop_begin + 3
+.template_code = $f8a1	;;in `$3f:f897 ppud.upload_palette`; sta $2007.
 .ERASE_UNROLL_COUNT = 85
 	ldx #(.ERASE_UNROLL_COUNT*3)
 .generate_uploader:
@@ -495,7 +506,7 @@ eraseWindow:
 	lda #0		;3
 	;ldx #$20
 	;ldx #$16	;3
-	jsr .generated_code + (3*(.ERASE_UNROLL_COUNT-12))	;;352 - 85 x 4 = 12
+	jsr .generated_code + (3 * (.ERASE_UNROLL_COUNT - (352 % .ERASE_UNROLL_COUNT)))	;;352 - 85 x 4 = 12
 	ldx #(352 / .ERASE_UNROLL_COUNT)
 .erase_loop:
 	;fill 32*11 bytes. 1loop = 49cycles = (4*11)+5. 32x49=1568 cycles.
@@ -503,28 +514,8 @@ eraseWindow:
 	;; if an emulator running the game is accurately emulating ppu behaviors,
 	;; code here can't complete rendering within v-blank period, and would be causing glithces.
 	;; 'accurate' one seems to take more cycles than not.
-	;; the 50-cycles gain achieved by unrolling mitigates this.
-	.if 0
-		sta $2007
-		sta $2007
-		sta $2007
-		sta $2007
-		sta $2007
-		sta $2007
-		sta $2007
-		sta $2007
-		sta $2007
-		sta $2007
-		sta $2007	;11 STA's so far
-
-		sta $2007
-		sta $2007
-		sta $2007
-		sta $2007
-		sta $2007	;16 STA's so far
-	.else
 		jsr .generated_code
-	.endif
+
 		dex
 		bne .erase_loop
 	;;here, the v-blank period is reaching almost the end.
@@ -562,3 +553,4 @@ eraseFromLeftBottom0Bx0A:
 	;jmp ppud.sync_registers_with_cache
 ;=======================================================================================================	
 	RESTORE_PC	ff3_window_last
+	.endif	;;_FEATURE_FAST_BATTLE_WINDOW
