@@ -199,7 +199,7 @@ module.exports = {
             } else if (command == 0xf8) {
                 //F8: set sweep ($7f82).
                 //FIXME: use pitch envelope to simulate this
-                return `K${command_bytes[1]}`;
+                return `na${(command_bytes[1] & 0x80) ? 1 + (command_bytes & 0x7f) : 0}`;
             } else if (command == 0xF9) {
                 //F9: set note defaults?
                 // $7f66 = octave = 4
