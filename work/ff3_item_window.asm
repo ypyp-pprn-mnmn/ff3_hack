@@ -114,9 +114,9 @@ commandWindow_OnItem:
 		
 		cmp #$62	;leather cap
 		bcc .check_equip_valid_for_job
-		cmp items.CONSUMABLES_BEGIN	;;#$98	;magical key
+		cmp #items.CONSUMABLES_BEGIN	;;#$98	;magical key
 		bcc .cannot_use
-		cmp items.CONSUMABLES_END	;;#$c8	;magic 'flare'
+		cmp #items.CONSUMABLES_END	;;#$c8	;magic 'flare'
 		bcs .cannot_use
 		bcc .next
 	.check_equip_valid_for_job:
@@ -1199,9 +1199,9 @@ itemWindow_OnUse:
 	;[c8-ff]
 	cpx #$57
 	bcc .use_equip
-	cpx #$98
+	cpx #items.CONSUMABLES_BEGIN ;#$98
 	bcc .fail
-	cpx #$c8
+	cpx #items.CONSUMABLES_END	;#$c8
 	bcs .fail
 	;[98-c7] $b564:
 		lda $7400
