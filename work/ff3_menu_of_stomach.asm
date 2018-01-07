@@ -196,25 +196,19 @@ menu.stomach.BULK_PATCH_FREE_BEGIN:
 
     .ifdef _FEATURE_STOMACH_AMOUNT_1BYTE
     .ifdef __HACK_FOR_FF3C
-        INIT_PATCH_EX menu.stomach_x.ff3c, $3d,$a2bb,$a2d8,$a2bb
-;; 1E:A2BB:AD FF 7A  LDA $7AFF = #$00
-;; 1E:A2BE:C9 76     CMP #$76
-;; 1E:A2C0:B0 11     BCS $A2D3
-;; 1E:A2C2:85 3F     STA $003F = #$95
-;; 1E:A2C4:A9 48     LDA #$48
-;; 1E:A2C6:18        CLC
-;; 1E:A2C7:6D FE 7A  ADC $7AFE = #$00
-;; 1E:A2CA:85 3E     STA $003E = #$5A
-;; 1E:A2CC:90 02     BCC $A2D0
-;; 1E:A2CE:E6 3F     INC $003F = #$95
-;; 1E:A2D0:4C 32 B4  JMP $B432
-;; 1E:A2D3:4C 4D B4  JMP $B44D
-;; 1E:A2D6:00        BRK
-;; 1E:A2D7:00        BRK
-            ldx $7a00+$3f ;;MenuItem.+03: parameter byte of CHAR.ITEM_NAME_IN_STOMACH (i.e., item index)
-            inx
+        INIT_PATCH_EX menu.stomach_x.ff3c, $3d,$a2ad,$a2d8,$a2ad
+menu.stomach_x.ff3c.do_paging:
+            lda <$24
+            beq .paging
+            jmp $B484 ;;in menu.stomach.main_loop
+        .paging:
+            lda <$22
             beq .no_update
-                clc
+            jsr menu.init_input_states  ;$9592
+            ldx $7a00+$3f ;;MenuItem.+03: parameter byte of CHAR.ITEM_NAME_IN_STOMACH (i.e., item index)
+            cpx #$f0
+            bcs .no_update
+                ;clc    ;;always clear
                 lda #(7*8)  ;;7 bytes * 8 rows
                 adc $7afe
                 sta <$3e

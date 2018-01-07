@@ -16,6 +16,7 @@
 ;--------------------------------------------------------------------------------------------------
 ;;$3c-3d
 ;;TODO: move this into separate file.
+menu.init_input_states = $9592
 menu.stream_window_content = $a66b
 menu.savefile.load_game_at = $a9f9
 menu.get_window_metrics = $aabc
