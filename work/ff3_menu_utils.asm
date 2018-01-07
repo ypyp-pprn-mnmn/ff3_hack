@@ -25,15 +25,19 @@ menu.get_eligibility_for_item_for_all:
 ;; ---
     .ifdef _FEATURE_FAST_ELIGIBILITY
         jmp field_x.get_and_update_eligibility_flags
-    ;; A = user type
+    ;; A = user type (* 3)
 menu_x.get_eligibility_flags:
 .result_flags = $80
         pha ;;user type.
         ldy #0
     .for_each_characters:
             pla ;;user type.
-            tax
+            ;; note: elibibility flags are stored in big endian order.
+            ;; that is, the higher job_id, the lower the address.
             pha
+            clc
+            adc #3  ;;
+            tax
 
             tya
             pha ;;byte offset.
@@ -43,9 +47,6 @@ menu_x.get_eligibility_flags:
             lsr A
             lsr A
             tay
-            ;; note: elibibility flags are stored in big endian order.
-            ;; that is, the higher job_id, the lower the address.
-            inx
         .seek_to_flag:
                 dex
                 dey
@@ -53,7 +54,7 @@ menu_x.get_eligibility_flags:
             pla ;; job_id
             and #$7
             tay
-            lda ((rom.eligibility_flags & $7fff) | $8000)+2,x
+            lda ((rom.eligibility_flags & $7fff) | $8000),x ;;x will be (user_type * 3) + [2...0]
         .get_flag_bit:
                 lsr A
                 dey
