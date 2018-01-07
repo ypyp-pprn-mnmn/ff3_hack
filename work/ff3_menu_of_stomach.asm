@@ -7,10 +7,25 @@
 ;==================================================================================================
     .ifdef _FEATURE_STOMACH_AMOUNT_1BYTE
 STOMACH_TEXT_BUFFER = $7400   ;;original = $7300
-    ;; 1E:B432:A9 73     LDA #$73
-        .bank $3d
-        .org $b432+1
-        .db HIGH(STOMACH_TEXT_BUFFER)
+        INIT_PATCH_EX menu.stomach.main_loop, $3d,$b427,$b436,$b427
+        jsr menu.stomach.build_content_text ; B427 20 70 B5
+        .ifdef __HACK_FOR_FF3C
+            ;lda #$18    ; B42A A9 18
+            ;sta <$93    ; B42C 85 93
+            ;lda #$01    ; B42E A9 01
+            ;sta <$3E    ; B430 85 3E
+            ;lda #$73    ; B432 A9 73
+            ;sta <$3F    ; B434 85 3F
+            INIT16 <$3e, #STOMACH_TEXT_BUFFER+1
+            lda #TEXT_BANK_BASE ;#$18
+            sta <$93
+        .else
+            lda #TEXT_BANK_BASE ;#$18
+            sta <$93
+            INIT16 <$3e, #STOMACH_TEXT_BUFFER+1
+        .endif  ;;__HACK_FOR_FF3c
+        ;;jsr field.reflect_window_scroll ; B436 20 61 EB
+        VERIFY_PC_TO_PATCH_END menu.stomach.main_loop
     .else
 STOMACH_TEXT_BUFFER = $7300
     .endif
@@ -173,3 +188,39 @@ menu.stomach.build_content_text:
 ;-------------------------------------------------------------------------------------------------- 
     VERIFY_PC_TO_PATCH_END menu.stomach
 menu.stomach.BULK_PATCH_FREE_BEGIN:
+
+    .ifdef _FEATURE_STOMACH_AMOUNT_1BYTE
+    .ifdef __HACK_FOR_FF3C
+        INIT_PATCH_EX menu.stomach_x.ff3c, $3d,$a2bb,$a2d8,$a2bb
+;; 1E:A2BB:AD FF 7A  LDA $7AFF = #$00
+;; 1E:A2BE:C9 76     CMP #$76
+;; 1E:A2C0:B0 11     BCS $A2D3
+;; 1E:A2C2:85 3F     STA $003F = #$95
+;; 1E:A2C4:A9 48     LDA #$48
+;; 1E:A2C6:18        CLC
+;; 1E:A2C7:6D FE 7A  ADC $7AFE = #$00
+;; 1E:A2CA:85 3E     STA $003E = #$5A
+;; 1E:A2CC:90 02     BCC $A2D0
+;; 1E:A2CE:E6 3F     INC $003F = #$95
+;; 1E:A2D0:4C 32 B4  JMP $B432
+;; 1E:A2D3:4C 4D B4  JMP $B44D
+;; 1E:A2D6:00        BRK
+;; 1E:A2D7:00        BRK
+            ldx $7a00+$3f ;;MenuItem.+03: parameter byte of CHAR.ITEM_NAME_IN_STOMACH (i.e., item index)
+            inx
+            beq .no_update
+                clc
+                lda #(7*8)  ;;7 bytes * 8 rows
+                adc $7afe
+                sta <$3e
+                ldx $7aff
+                bcc .update_view
+                    inx
+            .update_view:
+                stx <$3f
+                jmp $b432 ;;in menu.stomach.main_loop
+        .no_update:
+            jmp $b44d   ;;in menu.stomach.main_loop
+        VERIFY_PC_TO_PATCH_END menu.stomach_x.ff3c
+    .endif  ;;__HACK_FOR_FF3C
+    .endif  ;;_FEATURE_STOMACH_AMOUNT_1BYTE
