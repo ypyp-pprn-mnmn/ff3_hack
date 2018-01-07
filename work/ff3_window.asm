@@ -460,6 +460,23 @@ eraseWindow:
 .vram1stBegin = $2240
 .vram1stEnd = $23a0	;last line begins $2380
 .vram2ndBegin = $2640
+.generated_code = TEMP_RAM
+.template_code = genCode_loop_begin + 3
+.ERASE_UNROLL_COUNT = 85
+	ldx #(.ERASE_UNROLL_COUNT*3)
+.generate_uploader:
+		ldy #3
+	.copy_code_bytes:
+			lda .template_code-1,y
+			sta .generated_code-1,x		
+			dex
+			dey
+			bne .copy_code_bytes
+		txa
+		bne .generate_uploader
+	lda #$60	;;rts
+	sta .generated_code+(.ERASE_UNROLL_COUNT*3)
+
 	;jsr ppud.await_nmi_completion	;presentCharacterのかわりに使うと画面消去中キャラが動かないが多少(5scanline分) 描画に使える時間が増える
 	jsr presentCharacter	;;ステータスエフェクトを動かすために必要。@see $32:9f11 effectCommand_03
 	;; scanline 247, pixel 48 (fceux+old PPU) remaining 1591.7 + 97.7 cpu cycles. (14 x 113.7 + ((341 - 48) / 3)) 
@@ -477,7 +494,9 @@ eraseWindow:
 	jsr drawWindow_setVramAddr	;6+18
 	lda #0		;3
 	;ldx #$20
-	ldx #$16	;3
+	;ldx #$16	;3
+	jsr .generated_code + (3*(.ERASE_UNROLL_COUNT-12))	;;352 - 85 x 4 = 12
+	ldx #(352 / .ERASE_UNROLL_COUNT)
 .erase_loop:
 	;fill 32*11 bytes. 1loop = 49cycles = (4*11)+5. 32x49=1568 cycles.
 	;fill 22*16 bytes. 1loop = 69cycles. 22x69 = 1518 cycles.
@@ -485,6 +504,7 @@ eraseWindow:
 	;; code here can't complete rendering within v-blank period, and would be causing glithces.
 	;; 'accurate' one seems to take more cycles than not.
 	;; the 50-cycles gain achieved by unrolling mitigates this.
+	.if 0
 		sta $2007
 		sta $2007
 		sta $2007
@@ -502,11 +522,15 @@ eraseWindow:
 		sta $2007
 		sta $2007
 		sta $2007	;16 STA's so far
+	.else
+		jsr .generated_code
+	.endif
 		dex
 		bne .erase_loop
 	;;here, the v-blank period is reaching almost the end.
 	;;ppu is operating at scanline 260, cycle around 319
 	jmp ppud.sync_registers_with_cache
+
 ;$8f0b
 ;------------------------------------------------------------------------------------------------------
 	;.bank	$34
