@@ -14,6 +14,8 @@
 	.include "ff3_32-33.h.asm"
 	.include "ff3_34-35.h.asm"
 ;--------------------------------------------------------------------------------------------------
+;;$36
+sound.udpate_keyoff_timers = $831d
 ;;$3c-3d
 ;;TODO: move this into separate file.
 menu.init_input_states = $9592
