@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.8.3 (08/01/2018)
+
+#### feature
+
+- [**feature**] 戦闘時のウインドウ消去ロジックをさらに最適化する [#42](https://github.com/ypyp-pprn-mnmn/ff3_hack/issues/42)
+- [**feature**] デブちゃんもっとスピードでない？ [#34](https://github.com/ypyp-pprn-mnmn/ff3_hack/issues/34)
+- [**feature**] ウインドウ描画中のサウンドがsloooooooowly [#33](https://github.com/ypyp-pprn-mnmn/ff3_hack/issues/33)
+
+---
+
 ## v0.8.2 (24/12/2017)
 
 #### bug
