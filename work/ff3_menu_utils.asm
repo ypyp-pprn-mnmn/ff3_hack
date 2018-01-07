@@ -138,7 +138,7 @@ field_x.get_and_update_eligibility_flags:
         jsr menu_x.get_item_data_ptr
         lda #(rom.item_params >> 13)   ;;$30
         jsr thunk.switch_1st_bank   ;;preserves X.
-        ldy #7  ;;user type.
+        ldy #7  ;;ItemParam.+07 := user type.
         lda [.p_item_data],y   ;;user type.
         and #$7f
         sta <.user_type

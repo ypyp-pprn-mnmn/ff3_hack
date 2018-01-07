@@ -23,8 +23,8 @@ JOB_AVAILABILITY.WATER = $10
 JOB_AVAILABILITY.EARTH = $13
 JOB_AVAILABILITY.EUREKA = $15	;;original == 30
 
-;; TODO:
-;;	add fix for 'STOMACH PAGING'
+eligibility.CONSUMABLES_BEGIN = $a2	;;original = $98
+eligibility.CONSUMABLES_END = $c8	;;original = $c8
 
-; the below should be the final line of this file
+;; the below should be the final line of this file
 	.include "_build-master.asm"

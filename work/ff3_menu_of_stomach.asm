@@ -64,12 +64,17 @@ menu_x.get_item_data_ptr:
         rol <.p_data+1
         asl A
         rol <.p_data+1
-        ;clc    ;;always clear
-        ;adc #7
-        sta <.p_data
+        .ifdef __HACK_FOR_FF3C
+            ;clc    ;;always clear
+            adc #$b0
+            sta <.p_data
+            lda #$93
+        .else
+            sta <.p_data
+            lda #HIGH((rom.item_params & $1fff)|$8000)
+        .endif ;;__HACK_FOR_FF3C
         
-        lda #HIGH((rom.item_params & $1fff)|$8000)
-        ;clc    ;;always clear
+        ;clc    ;;it always is in desired state
         adc <.p_data+1
         sta <.p_data+1
 
