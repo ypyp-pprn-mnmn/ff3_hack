@@ -1,5 +1,6 @@
 'use strict';
 const BinaryFile = require('binary-file');
+const fs = require('fs');
 
 module.exports = {
     export_track_as({input, output, track_no, format}) {
@@ -25,7 +26,7 @@ module.exports = {
                     this.get_native_stream(track_no, buffer)
                 );
             try {
-                require('fs').writeFile(output_path, out_buffer, "utf8", (error) => {
+                fs.writeFile(output_path, out_buffer, "utf8", (error) => {
                     if (!!error) {
                         console.log(error);
                     }
@@ -61,6 +62,9 @@ module.exports = {
         (0xB400)
     ],
     get_native_stream(track_no, buffer) {
+        // while ff3's sound driver performing its tasks,
+        // each of 8k banks is mapped in this order from lower address to higher, as follows:
+        // [$36] [bank of stream data] [$3e] [$3f]
         const map_address = (offset) => {
             const do_map = (bank, offset) => ((bank << 13) & 0xfe000) | (offset & ((1 << 13) -1));
             if ((offset & 0xe000) != 0x8000) {
@@ -226,11 +230,11 @@ module.exports = {
     })(),
     to_format(format, streams) {
         return streams.map(
-            (note_stream, k) => {
+            (note_stream, channel) => {
                 const mml_stream = Object.keys(note_stream.commands).reduce((result, rom_addr) => {
                     const command_bytes = note_stream.commands[rom_addr];
                     result.mml[rom_addr] = this.mml.from(
-                        k,
+                        channel,
                         command_bytes,
                         result.states.last_note,
                         this.mml.default_config
@@ -272,7 +276,7 @@ module.exports = {
                 });
 
                 return [
-                    this.mml.default_config.CHANNEL_DEFAULTS[k],
+                    this.mml.default_config.CHANNEL_DEFAULTS[channel],
                     ...note_stream.address_trails.map((rom_addr) => mml_stream.mml[rom_addr]),
                 ].map((note) => note.toLowerCase()).join(" ");
             }
