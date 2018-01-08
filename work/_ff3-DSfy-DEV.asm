@@ -30,5 +30,24 @@ POISON_DAMAGE_SHIFT = 1
 ;JOB_AVAILABILITY.EARTH = $13	;;original == 13
 ;JOB_AVAILABILITY.EUREKA = $30
 
-;; the below should be the final line of this file
+;; usually the below would be the final line of this file
 	.include "_ff3-DSfy.asm"
+;;
+	.bank $3f
+	.org $e1bc
+	;; palette entries for menu.
+	;; --- BG.
+	;.db $0F,$00,$01,$2A
+	.db $03,$00,$03,$35
+	;.db $0F,$00,$01,$27
+	.db $0F,$00,$03,$27
+	;.db $0F,$00,$01,$24
+	.db $0F,$00,$03,$24
+	;.db $0F,$00,$01,$30
+	.db $0F,$13,$03,$20
+	;; --- sprites.
+	.db $0F,$36,$30,$16
+	.db $0F,$27,$18,$21
+	.db $0F,$36,$17,$2A
+	.db $0F,$00,$10,$30
+;;
