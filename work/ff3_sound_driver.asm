@@ -9,7 +9,7 @@
 __FF3_SOUND_DRIVER_INCLUDED__
 
 ;--------------------------------------------------------------------------------------------------
-    .ifdef _FEATURE_CONTINUOUS_MUSIC
+    .ifdef _OPTIMIZE_SOUND_DRIVER
 
 sound.table.note_lengths = $8805
 sound.table.pitch_periods = $872d
@@ -334,171 +334,69 @@ sound.note.set_tempo:
     sta sound.bpm   ; 8356 8D 45 7F
     jmp sound.fetch_note_for_track.continue   ; 8359 4C 17 82
 ;--------------------------------------------------------------------------------------------------
-;; case 0xe1:
+;; case 0xe1...ee:
 sound.note.set_volume_2:
+sound.note.set_volume_3:
+sound.note.set_volume_4:
+sound.note.set_volume_5:
+sound.note.set_volume_6:
+sound.note.set_volume_7:
+sound.note.set_volume_8:
+sound.note.set_volume_9:
+sound.note.set_volume_a:
+sound.note.set_volume_b:
+sound.note.set_volume_c:
+sound.note.set_volume_d:
+sound.note.set_volume_e:
+sound.note.set_volume_f:
     DECLARE_SOUND_DRIVER_VARIABLES
+    inx
+    inx
+    txa ;;a = ((command_byte - 0xE0) << 1 + 2)
+    lsr A
     ldx <.track_id     ; 835C A6 D0
-    lda #$02    ; 835E A9 02
+    ;lda #$02    ; 835E A9 02
     sta sound.volume_envelopes.control,x ; 8360 9D 90 7F
     jmp sound.fetch_note_for_track.continue   ; 8363 4C 17 82
 ;--------------------------------------------------------------------------------------------------
-;; case 0xe2:
-sound.note.set_volume_3:
-    DECLARE_SOUND_DRIVER_VARIABLES
-    ldx <.track_id     ; 8366 A6 D0
-    lda #$03    ; 8368 A9 03
-    sta sound.volume_envelopes.control,x ; 836A 9D 90 7F
-    jmp sound.fetch_note_for_track.continue   ; 836D 4C 17 82
-;--------------------------------------------------------------------------------------------------
-;; case 0xe3:
-sound.note.set_volume_4:
-    DECLARE_SOUND_DRIVER_VARIABLES
-    ldx <.track_id     ; 8370 A6 D0
-    lda #$04    ; 8372 A9 04
-    sta sound.volume_envelopes.control,x ; 8374 9D 90 7F
-    jmp sound.fetch_note_for_track.continue   ; 8377 4C 17 82
-;--------------------------------------------------------------------------------------------------
-;; case 0xe4:
-sound.note.set_volume_5:
-    DECLARE_SOUND_DRIVER_VARIABLES
-    ldx <.track_id     ; 837A A6 D0
-    lda #$05    ; 837C A9 05
-    sta sound.volume_envelopes.control,x ; 837E 9D 90 7F
-    jmp sound.fetch_note_for_track.continue   ; 8381 4C 17 82
-;--------------------------------------------------------------------------------------------------
-;; case 0xe5:
-sound.note.set_volume_6:
-    DECLARE_SOUND_DRIVER_VARIABLES
-    ldx <.track_id     ; 8384 A6 D0
-    lda #$06    ; 8386 A9 06
-    sta sound.volume_envelopes.control,x ; 8388 9D 90 7F
-    jmp sound.fetch_note_for_track.continue   ; 838B 4C 17 82
-;--------------------------------------------------------------------------------------------------
-;; case 0xe6:
-sound.note.set_volume_7:
-    DECLARE_SOUND_DRIVER_VARIABLES
-    ldx <.track_id     ; 838E A6 D0
-    lda #$07    ; 8390 A9 07
-    sta sound.volume_envelopes.control,x ; 8392 9D 90 7F
-    jmp sound.fetch_note_for_track.continue   ; 8395 4C 17 82
-;--------------------------------------------------------------------------------------------------
-;; case 0xe7:
-sound.note.set_volume_8:
-    DECLARE_SOUND_DRIVER_VARIABLES
-    ldx <.track_id     ; 8398 A6 D0
-    lda #$08    ; 839A A9 08
-    sta sound.volume_envelopes.control,x ; 839C 9D 90 7F
-    jmp sound.fetch_note_for_track.continue   ; 839F 4C 17 82
-;--------------------------------------------------------------------------------------------------
-;; case 0xe8:
-sound.note.set_volume_9:
-    DECLARE_SOUND_DRIVER_VARIABLES
-    ldx <.track_id     ; 83A2 A6 D0
-    lda #$09    ; 83A4 A9 09
-    sta sound.volume_envelopes.control,x ; 83A6 9D 90 7F
-    jmp sound.fetch_note_for_track.continue   ; 83A9 4C 17 82
-;--------------------------------------------------------------------------------------------------
-;; case 0xe9:
-sound.note.set_volume_a:
-    DECLARE_SOUND_DRIVER_VARIABLES
-    ldx <.track_id     ; 83AC A6 D0
-    lda #$0A    ; 83AE A9 0A
-    sta sound.volume_envelopes.control,x ; 83B0 9D 90 7F
-    jmp sound.fetch_note_for_track.continue   ; 83B3 4C 17 82
-;--------------------------------------------------------------------------------------------------
-;; case 0xea:
-sound.note.set_volume_b:
-    DECLARE_SOUND_DRIVER_VARIABLES
-    ldx <.track_id     ; 83B6 A6 D0
-    lda #$0B    ; 83B8 A9 0B
-    sta sound.volume_envelopes.control,x ; 83BA 9D 90 7F
-    jmp sound.fetch_note_for_track.continue   ; 83BD 4C 17 82
-;--------------------------------------------------------------------------------------------------
-;; case 0xeb:
-sound.note.set_volume_c:
-    DECLARE_SOUND_DRIVER_VARIABLES
-    ldx <.track_id     ; 83C0 A6 D0
-    lda #$0C    ; 83C2 A9 0C
-    sta sound.volume_envelopes.control,x ; 83C4 9D 90 7F
-    jmp sound.fetch_note_for_track.continue   ; 83C7 4C 17 82
-;--------------------------------------------------------------------------------------------------
-;; case 0xec:
-sound.note.set_volume_d:
-    DECLARE_SOUND_DRIVER_VARIABLES
-    ldx <.track_id     ; 83CA A6 D0
-    lda #$0D    ; 83CC A9 0D
-    sta sound.volume_envelopes.control,x ; 83CE 9D 90 7F
-    jmp sound.fetch_note_for_track.continue   ; 83D1 4C 17 82
-;--------------------------------------------------------------------------------------------------
-;; case 0xed:
-sound.note.set_volume_e:
-    DECLARE_SOUND_DRIVER_VARIABLES
-    ldx <.track_id     ; 83D4 A6 D0
-    lda #$0E    ; 83D6 A9 0E
-    sta sound.volume_envelopes.control,x ; 83D8 9D 90 7F
-    jmp sound.fetch_note_for_track.continue   ; 83DB 4C 17 82
-;--------------------------------------------------------------------------------------------------
-;; case 0xee:
-sound.note.set_volume_f:
-    DECLARE_SOUND_DRIVER_VARIABLES
-    ldx <.track_id     ; 83DE A6 D0
-    lda #$0F    ; 83E0 A9 0F
-    sta sound.volume_envelopes.control,x ; 83E2 9D 90 7F
-    jmp sound.fetch_note_for_track.continue   ; 83E5 4C 17 82
+
 ;--------------------------------------------------------------------------------------------------
 ;; case 0xef:
 sound.note.set_octave_0:
+sound.note.set_octave_1:
+sound.note.set_octave_2:
+sound.note.set_octave_3:
+sound.note.set_octave_4:
+sound.note.set_octave_5:
     DECLARE_SOUND_DRIVER_VARIABLES
+    txa ;;x := [1e...28]
+    lsr A
+    ;;here carry is always 'clear'
+    ;; A := 0f...14
+    sbc #($0f-1)
     ldx <.track_id     ; 83E8 A6 D0
-    lda #$00    ; 83EA A9 00
+    ;lda #$00    ; 83EA A9 00
     sta sound.note_octaves,x ; 83EC 9D 66 7F
     jmp sound.fetch_note_for_track.continue   ; 83EF 4C 17 82
 ;--------------------------------------------------------------------------------------------------
-;; case 0xF0:
-sound.note.set_octave_1:
-    DECLARE_SOUND_DRIVER_VARIABLES
-    ldx <.track_id     ; 83F2 A6 D0
-    lda #$01    ; 83F4 A9 01
-    sta sound.note_octaves,x ; 83F6 9D 66 7F
-    jmp sound.fetch_note_for_track.continue   ; 83F9 4C 17 82
-;--------------------------------------------------------------------------------------------------
-;; case 0xF1:
-sound.note.set_octave_2:
-    DECLARE_SOUND_DRIVER_VARIABLES
-    ldx <.track_id     ; 83FC A6 D0
-    lda #$02    ; 83FE A9 02
-    sta sound.note_octaves,x ; 8400 9D 66 7F
-    jmp sound.fetch_note_for_track.continue   ; 8403 4C 17 82
-;--------------------------------------------------------------------------------------------------
-;; case 0xF2:
-sound.note.set_octave_3:
-    DECLARE_SOUND_DRIVER_VARIABLES
-    ldx <.track_id     ; 8406 A6 D0
-    lda #$03    ; 8408 A9 03
-    sta sound.note_octaves,x ; 840A 9D 66 7F
-    jmp sound.fetch_note_for_track.continue   ; 840D 4C 17 82
-;--------------------------------------------------------------------------------------------------
-;; case 0xF3:
-sound.note.set_octave_4:
-    DECLARE_SOUND_DRIVER_VARIABLES
-    ldx <.track_id     ; 8410 A6 D0
-    lda #$04    ; 8412 A9 04
-    sta sound.note_octaves,x ; 8414 9D 66 7F
-    jmp sound.fetch_note_for_track.continue   ; 8417 4C 17 82
-;--------------------------------------------------------------------------------------------------
-;; case 0xF4:
-sound.note.set_octave_5:
-    DECLARE_SOUND_DRIVER_VARIABLES
-    ldx <.track_id     ; 841A A6 D0
-    lda #$05    ; 841C A9 05
-    sta sound.note_octaves,x ; 841E 9D 66 7F
-    jmp sound.fetch_note_for_track.continue   ; 8421 4C 17 82
+
 ;--------------------------------------------------------------------------------------------------
 ;; case 0xF5:
 sound.note.set_duty_30:
+sound.note.set_duty_70:
+sound.note.set_duty_b0:
     DECLARE_SOUND_DRIVER_VARIABLES
+    txa ;; x := [2a...2e]
+    lsr A
+    ;;here carry is always 'clear'
+    sbc #($15-1)
+    ;; A := [0...2]
+    lsr A
+    ror A
+    ror A
+    ora #$30
     ldx <.track_id     ; 8424 A6 D0
-    lda #$30    ; 8426 A9 30
+    ;lda #$30    ; 8426 A9 30
     sta sound.duty_controls,x ; 8428 9D 89 7F
     lda [.p_stream],y ; 842B B1 D3
     iny             ; 842D C8
@@ -508,33 +406,7 @@ sound.note.set_duty_30:
     sta sound.pitch_modulations.type,x ; 8434 9D EB 7F
     jmp sound.fetch_note_for_track.continue   ; 8437 4C 17 82
 ;--------------------------------------------------------------------------------------------------
-;; case 0xF6:
-sound.note.set_duty_70:
-    DECLARE_SOUND_DRIVER_VARIABLES
-    ldx <.track_id     ; 843A A6 D0
-    lda #$70    ; 843C A9 70
-    sta sound.duty_controls,x ; 843E 9D 89 7F
-    lda [.p_stream],y ; 8441 B1 D3
-    iny             ; 8443 C8
-    sta $7FC1,x ; 8444 9D C1 7F
-    lda [.p_stream],y ; 8447 B1 D3
-    iny             ; 8449 C8
-    sta sound.pitch_modulations.type,x ; 844A 9D EB 7F
-    jmp sound.fetch_note_for_track.continue   ; 844D 4C 17 82
-;--------------------------------------------------------------------------------------------------
-;; case 0xF7:
-sound.note.set_duty_b0:
-    DECLARE_SOUND_DRIVER_VARIABLES
-    ldx <.track_id     ; 8450 A6 D0
-    lda #$B0    ; 8452 A9 B0
-    sta sound.duty_controls,x ; 8454 9D 89 7F
-    lda [.p_stream],y ; 8457 B1 D3
-    iny             ; 8459 C8
-    sta $7FC1,x ; 845A 9D C1 7F
-    lda [.p_stream],y ; 845D B1 D3
-    iny             ; 845F C8
-    sta sound.pitch_modulations.type,x ; 8460 9D EB 7F
-    jmp sound.fetch_note_for_track.continue   ; 8463 4C 17 82
+
 ;--------------------------------------------------------------------------------------------------
 ;; case 0xF8:
 sound.note.set_sweep:
@@ -547,27 +419,34 @@ sound.note.set_sweep:
 ;--------------------------------------------------------------------------------------------------
 ;; case 0xF9:
 sound.note.init_track_o4:
+sound.note.init_track_o5:
     DECLARE_SOUND_DRIVER_VARIABLES
+    txa
+    lsr A
+    sbc #($19-1)
+    pha
     ldx <.track_id     ; 8471 A6 D0
-    lda #$04    ; 8473 A9 04
+    ;lda #$04    ; 8473 A9 04
+    ora #$04
     sta sound.note_octaves,x ; 8475 9D 66 7F
-    lda #$00    ; 8478 A9 00
+    ;lda #$00    ; 8478 A9 00
+    pla
     sta $7FC1,x ; 847A 9D C1 7F
     lda #$08    ; 847D A9 08
     sta sound.volume_envelopes.control,x ; 847F 9D 90 7F
     jmp sound.fetch_note_for_track.continue   ; 8482 4C 17 82
 ;--------------------------------------------------------------------------------------------------
-;; case 0xFA:
-sound.note.init_track_o5:
-    DECLARE_SOUND_DRIVER_VARIABLES
-    ldx <.track_id     ; 8485 A6 D0
-    lda #$05    ; 8487 A9 05
-    sta sound.note_octaves,x ; 8489 9D 66 7F
-    lda #$01    ; 848C A9 01
-    sta $7FC1,x ; 848E 9D C1 7F
-    lda #$0F    ; 8491 A9 0F
-    sta sound.volume_envelopes.control,x ; 8493 9D 90 7F
-    jmp sound.fetch_note_for_track.continue   ; 8496 4C 17 82
+;;; case 0xFA:
+;sound.note.init_track_o5:
+;    DECLARE_SOUND_DRIVER_VARIABLES
+;    ldx <.track_id     ; 8485 A6 D0
+;    lda #$05    ; 8487 A9 05
+;    sta sound.note_octaves,x ; 8489 9D 66 7F
+;    lda #$01    ; 848C A9 01
+;    sta $7FC1,x ; 848E 9D C1 7F
+;    lda #$0F    ; 8491 A9 0F
+;    sta sound.volume_envelopes.control,x ; 8493 9D 90 7F
+;    jmp sound.fetch_note_for_track.continue   ; 8496 4C 17 82
 ;--------------------------------------------------------------------------------------------------
 ;; case 0xFB:
 sound.note.enter_loop:
@@ -716,5 +595,5 @@ sound.note.end_of_stream:
 ; ----------------------------------------------------------------------------
     VERIFY_PC_TO_PATCH_END sound.process_note_command
 ;--------------------------------------------------------------------------------------------------
-    .endif ;;_FEATURE_CONTINUOUS_MUSIC
+    .endif ;;_OPTIMIZE_SOUND_DRIVER
 ;==================================================================================================
