@@ -257,6 +257,8 @@ field_x.reflect_item_window_scroll:
 ;;+	`1F:EB9F:4C 61 EB  JMP field.reflect_item_window_scroll` @ $3f$eb69 field.scrollup_item_window
 field_x.reflect_window_scroll_without_borders
 	FIX_ADDR_ON_CALLER $3c,$9f92+1	;;@ $3c:9ec2 menu.items.main_loop
+	;FIX_ADDR_ON_CALLER $3d,$b436+1	;;@ $3d:b383 menu.stomach.main_loop
+	FIX_ADDR_ON_CALLER $3d,$b624+1	;;shop, right after selected to sell item
 	.ifdef _FEATURE_DEFERRED_RENDERING
 		;;note:
 		;;	the item window could be rendered with border
@@ -272,9 +274,9 @@ field.reflect_window_scroll:	;;$3f$eb61
 ;; fixups:
 	;FIX_ADDR_ON_CALLER $3c,$9f92+1	;;@ $3c:9ec2 menu.items.main_loop
 	FIX_ADDR_ON_CALLER $3d,$a889+1	;;@ $3d:a87a menu.draw_view_of_buffered_string
-	FIX_ADDR_ON_CALLER $3d,$b436+1
+	FIX_ADDR_ON_CALLER $3d,$b436+1	;;@ $3d:b383 menu.stomach.main_loop
 	FIX_ADDR_ON_CALLER $3d,$b616+1
-	FIX_ADDR_ON_CALLER $3d,$b624+1	;;shop, right after selected to sell item
+	;FIX_ADDR_ON_CALLER $3d,$b624+1	;;shop, right after selected to sell item
 	FIX_ADDR_ON_CALLER $3d,$bc0f+1
 ;; ---
 	.ifdef _FEATURE_DEFERRED_RENDERING
