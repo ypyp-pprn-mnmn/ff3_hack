@@ -286,7 +286,7 @@ nmi_counter16 = $0106
 			;valid id:00-40
 			sta sound.next_music_id
 			pha
-			lda #SOUND_PLAY_NEXT	;1	;play
+			lda #sound.REQ_PLAY_NEXT	;1	;play
 			sta sound.request
 			jmp .input_handler
 		.OnSelect:
@@ -296,7 +296,7 @@ nmi_counter16 = $0106
 			sta <$50
 			rts
 		.stopMusic:
-			lda #SOUND_STOP	;4
+			lda #sound.REQ_STOP	;4
 			sta sound.request
 		.wait_for_music_end:
 				lda sound.music_id

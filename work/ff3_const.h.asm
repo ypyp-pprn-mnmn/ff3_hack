@@ -86,13 +86,31 @@ FIELD_WINDOW_GIL = $03
 FIELD_WINDOW_FLOOR_TITLE = $04
 
 ;--------------------------------------------------------------------------------
-; sound driver request codes
-;01:play next(7f43) 02:play previous(7f41,saved when 01) 04:stop 80:play on
-SOUND_PLAY_NEXT = $01
-SOUND_PLAY_PREV = $02
-SOUND_STOP = $04
-SOUND_CONTINUE = $80
+; sound driver request & status codes (-> $7f42)
+;
+sound.REQ_PLAY_NEXT = $01
+sound.REQ_PLAY_PREV = $02
+sound.REQ_STOP = $04
+sound.REQ_SOFT_TRANSITION = $08
+sound.FADING_IN = $20
+sound.FADING_OUT = $40
+sound.PLAYING = $80
 
+
+	.rsset 0
+sound.TRACK_MUSIC_PULSE1	.rs 1
+sound.TRACK_MUSIC_PULSE2	.rs 1
+sound.TRACK_MUSIC_TRIANGLE	.rs 1
+sound.TRACK_MUSIC_NOISE		.rs 1
+sound.TRACK_MUSIC_DM		.rs 1
+sound.TRACK_EFFECT_PULSE2	.rs 1
+sound.TRACK_EFFECT_NOISE	.rs 1
+	.rsset 0
+sound.CHANNEL_DMC		.rs 1
+sound.CHANNEL_NOISE		.rs 1
+sound.CHANNEL_TRIANGLE	.rs 1
+sound.CHANNEL_PULSE2	.rs 1
+sound.CHANNEL_PULSE1	.rs 1
 ;--------------------------------------------------------------------------------
 ; extention to original
 
@@ -124,6 +142,7 @@ effect.DAMAGE_NONE = $ffff
 ;effect.DAMAGE_MISS = $3fff
 effect.ACTOR_ENEMY = $80
 effect.TARGET_ENEMY = $40
-
+;; ------------------------------------------------------------------------------------------------
     DEFINE_DEFAULT items.CONSUMABLES_BEGIN, $98
     DEFINE_DEFAULT items.CONSUMABLES_END, $c8
+;; ------------------------------------------------------------------------------------------------

@@ -211,21 +211,6 @@ play_segmentedGroup = $7ee1
 effect.proliferated_group = $7ee1
 ;--------------------------------------------------------------------------------------------------
 ;; sound driver
-	.rsset 0
-sound.TRACK_MUSIC_PULSE1	.rs 1
-sound.TRACK_MUSIC_PULSE2	.rs 1
-sound.TRACK_MUSIC_TRIANGLE	.rs 1
-sound.TRACK_MUSIC_NOISE		.rs 1
-sound.TRACK_MUSIC_DM		.rs 1
-sound.TRACK_EFFECT_PULSE2	.rs 1
-sound.TRACK_EFFECT_NOISE	.rs 1
-	.rsset 0
-sound.CHANNEL_DMC		.rs 1
-sound.CHANNEL_NOISE		.rs 1
-sound.CHANNEL_TRIANGLE	.rs 1
-sound.CHANNEL_PULSE2	.rs 1
-sound.CHANNEL_PULSE1	.rs 1
-
 sound.music_id = $7f40
 sound.previous_music_id = $7f41
 sound.request = $7f42	;01:play next(7f43) 02:play previous(7f41,saved when 01) 04:stop 80:play on
