@@ -16,6 +16,10 @@
 ;--------------------------------------------------------------------------------------------------
 ;;$36
 sound.udpate_keyoff_timers = $831d
+sound.music.load_stream = $89c3
+sound.music.cue_up = $8a87
+sound.music.end = $8aa7
+sound.music.update_each_track = $8b2d
 ;;$3c-3d
 ;;TODO: move this into separate file.
 menu.init_input_states = $9592
@@ -117,6 +121,7 @@ call_switch2ndBank			= $ff09	; => jmp $ff1f
 pNmiHandler			= $0101	;$0100 jmp xxxx, sometimes just rti :$0100 rti (0x40)
 nmi_handler_entry	= $0100
 pIrqHandler			= $0104	;$0103 jmp xxxx, sometimes just rti :$0103 rti
+irq_handler_entry	= $0103
 irqFlag				= $00
 enableScanlineCounter = $01	;mmc3's irq
 irqCountDown		= $03

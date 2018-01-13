@@ -8,7 +8,7 @@
     <meta name="generator" content="pandoc">
     <meta name="description" content>
     <meta name="author" content="ypyp-pprn-mnmn (aka “301”)">
-    <!-- generated-at 2018-01-08 16:10:18+0900 -->
+    <!-- generated-at 2018-01-09 21:05:51+0900 -->
     <title>FF3@FC Original Code Documentation</title>
 
     <!-- Bootstrap core CSS -->
@@ -16342,14 +16342,20 @@ SoundEffectTrack: {
 </blockquote>
 <h3 id="args-176">args:</h3>
 <ul>
-<li>in u8 $7f42: request flag. see also <code>$36:80ab sound.play_music</code>.
+<li>in,out u8 $7f42: request flag and playback status. see also <code>$36:80ab sound.play_music</code>. on exit, updated to a value reflecting the request:
 <ul>
-<li>0x08: soft transition.</li>
+<li>0x00: if immediate stop was requested</li>
+<li>0xC0: if soft transition was requested</li>
 </ul></li>
+<li>out u8 $7f48: 0 if soft transition (0x08) was requested by caller. otherwise left unchanged.</li>
+</ul>
+<h3 id="callers-27">callers:</h3>
+<ul>
+<li><code>jsr sound.music.end ; 897C 20 A7 8A</code> @ $36:8925 sound.music.update_or_load_stream</li>
 </ul>
 <h3 id="code-141">code:</h3>
 <pre class="sourceCode js" id="cb444"><code class="sourceCode javascript"><div class="sourceLine" id="cb444-1" data-line-number="1"><span class="op">{</span></div>
-<div class="sourceLine" id="cb444-2" data-line-number="2">    <span class="cf">if</span> (a <span class="op">=</span> ($7f42 <span class="op">&amp;</span> <span class="bn">0x8</span>)) <span class="op">{</span></div>
+<div class="sourceLine" id="cb444-2" data-line-number="2">    <span class="cf">if</span> (<span class="op">!</span>(a <span class="op">=</span> ($7f42 <span class="op">&amp;</span> <span class="bn">0x8</span>))) <span class="op">{</span></div>
 <div class="sourceLine" id="cb444-3" data-line-number="3">        $7f42 <span class="op">=</span> a<span class="op">;</span>  <span class="co">//0</span></div>
 <div class="sourceLine" id="cb444-4" data-line-number="4">        <span class="va">sound</span>.<span class="va">music</span>.<span class="at">mute_channels</span>()<span class="op">;</span>    <span class="co">//$8ac0();</span></div>
 <div class="sourceLine" id="cb444-5" data-line-number="5">    <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></div>
@@ -16382,7 +16388,7 @@ SoundEffectTrack: {
 <ul>
 <li>in u8 $7f4a[7]: track controls</li>
 </ul>
-<h3 id="callers-27">callers:</h3>
+<h3 id="callers-28">callers:</h3>
 <ul>
 <li>$36:89c3 sound.music.load_stream</li>
 </ul>
@@ -16470,7 +16476,7 @@ SoundEffectTrack: {
 <li>in,out u16 $7f46: beat counter, decremented by 150 on each call.</li>
 <li><p>out u8 $d0: track #, [0…7). music 5 channels + SE 2 channels. set to 3 on exit.</p></li>
 </ul>
-<h3 id="callers-28">callers:</h3>
+<h3 id="callers-29">callers:</h3>
 <ul>
 <li>$36:8925 sound.music.update_stream</li>
 </ul>
@@ -16591,7 +16597,7 @@ SoundEffectTrack: {
 </ul>
 <h3 id="local-variables-41">local variables:</h3>
 <p>none.</p>
-<h3 id="callers-29">callers:</h3>
+<h3 id="callers-30">callers:</h3>
 <ul>
 <li>$36:8003 sound.update_playback</li>
 </ul>
@@ -16665,7 +16671,7 @@ SoundEffectTrack: {
 <li>out u8 $7fc6,7fc7: ?</li>
 <li>out u8 $7ff0,7ff1: ?</li>
 </ul>
-<h3 id="callers-30">callers:</h3>
+<h3 id="callers-31">callers:</h3>
 <ul>
 <li>$36:8b9d sound.effect.update_or_load_stream</li>
 </ul>
@@ -16790,7 +16796,7 @@ SoundEffectTrack: {
 <li>in,out u8 $7f4f: track control flags, #6 (SE #1)</li>
 <li>in,out u8 $7f50: track control flags, #7 (SE #2)</li>
 </ul>
-<h3 id="callers-31">callers:</h3>
+<h3 id="callers-32">callers:</h3>
 <ul>
 <li>$36:8bb8 sound.effect.load_stream</li>
 </ul>
@@ -16852,7 +16858,7 @@ SoundEffectTrack: {
 </ul></li>
 <li>u8 $d2: ?, something related to volume. ($8595, $86d5. see <code>$36:857d sound.apply_effecters</code>.)</li>
 </ul>
-<h3 id="callers-32">callers:</h3>
+<h3 id="callers-33">callers:</h3>
 <ul>
 <li>$36:8b9d sound.effect.update_or_load_stream</li>
 </ul>
@@ -17690,7 +17696,7 @@ SoundEffectTrack: {
 <ul>
 <li>in u8 A: summary position, biased by 1. (1: file #1) if 0, then all of summaries will be processed.</li>
 </ul>
-<h3 id="callers-33">callers:</h3>
+<h3 id="callers-34">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -17775,7 +17781,7 @@ SoundEffectTrack: {
 <ul>
 <li>yet to be investigated</li>
 </ul>
-<h3 id="callers-34">callers:</h3>
+<h3 id="callers-35">callers:</h3>
 <ul>
 <li><code>1E:B3BA:20 8C 80  JSR $808C</code></li>
 <li><code>1E:B3F5:20 8C 80  JSR $808C</code></li>
@@ -17830,7 +17836,7 @@ SoundEffectTrack: {
 <ul>
 <li>yet to be investigated</li>
 </ul>
-<h3 id="callers-35">callers:</h3>
+<h3 id="callers-36">callers:</h3>
 <p>7 JMPs, 7 JSRs found so far.</p>
 <h3 id="local-variables-47">local variables:</h3>
 <ul>
@@ -17912,7 +17918,7 @@ SoundEffectTrack: {
 <ul>
 <li>yet to be investigated</li>
 </ul>
-<h3 id="callers-36">callers:</h3>
+<h3 id="callers-37">callers:</h3>
 <ul>
 <li><code>EF8F 20 78 8B</code> @ $3f:eefa textd.draw_in_box</li>
 </ul>
@@ -17940,7 +17946,7 @@ SoundEffectTrack: {
 <li>out u8 $24: is ‘A’ button down (= 0)</li>
 <li>out u8 $25: is ‘B’ button down (= 0)</li>
 </ul>
-<h3 id="callers-37">callers:</h3>
+<h3 id="callers-38">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -17987,7 +17993,7 @@ SoundEffectTrack: {
 <li>u8 $7afd: window height</li>
 <li>string* $7afe: pointer to buffer</li>
 </ul>
-<h3 id="callers-38">callers:</h3>
+<h3 id="callers-39">callers:</h3>
 <ul>
 <li><code>1E:8DF8:20 3D 90  JSR menu.items.init_states</code></li>
 <li><code>1E:9238:20 3D 90  JSR menu.items.init_states</code></li>
@@ -18062,7 +18068,7 @@ SoundEffectTrack: {
 <li>u8 $97: cursor stop offset x</li>
 <li>u8 $98: cursor stop offset y</li>
 </ul>
-<h3 id="callers-39">callers:</h3>
+<h3 id="callers-40">callers:</h3>
 <ul>
 <li>$3c:9ec2 menu.items.main_loop</li>
 </ul>
@@ -18109,7 +18115,7 @@ SoundEffectTrack: {
 <li>in u8 $78f0: byte offset of selected item (each menu item consists of 4-byte structure)</li>
 <li>in MenuItem $7800<a href="#section-7"></a>: cursor stop</li>
 </ul>
-<h3 id="callers-40">callers:</h3>
+<h3 id="callers-41">callers:</h3>
 <ul>
 <li>$3c:a7cd menu.render_cursor</li>
 </ul>
@@ -18151,7 +18157,7 @@ SoundEffectTrack: {
 <li>in u8 $79f0: byte offset of selected item (each menu item consists of 4-byte structure)</li>
 <li>in MenuItem $7900<a href="#section-7"></a>: cursor stop</li>
 </ul>
-<h3 id="callers-41">callers:</h3>
+<h3 id="callers-42">callers:</h3>
 <ul>
 <li>$3c:a7cd menu.render_cursor</li>
 </ul>
@@ -18204,7 +18210,7 @@ SoundEffectTrack: {
 <li>in u8 $7af0: byte offset of selected item (each menu item consists of 4-byte structure)</li>
 <li>in MenuItem $7a00<a href="#section-7"></a>: cursor stop</li>
 </ul>
-<h3 id="callers-42">callers:</h3>
+<h3 id="callers-43">callers:</h3>
 <ul>
 <li>$3c:a7cd menu.render_cursor</li>
 </ul>
@@ -18254,7 +18260,7 @@ SoundEffectTrack: {
 <li>in u8 A: cursor y</li>
 <li>in u8 X: cursor x</li>
 </ul>
-<h3 id="callers-43">callers:</h3>
+<h3 id="callers-44">callers:</h3>
 <ul>
 <li>$3c:9119 menu.put_cursor_on_window1</li>
 <li>$3c:912a menu.put_cursor_on_window2</li>
@@ -18297,7 +18303,7 @@ SoundEffectTrack: {
 <li>in,out u8 $47: ?</li>
 <li>in,out u8 $a1: previous input bits.</li>
 </ul>
-<h3 id="callers-44">callers:</h3>
+<h3 id="callers-45">callers:</h3>
 <ul>
 <li>$3c:9ec2 menu.items.main_loop</li>
 </ul>
@@ -18392,7 +18398,7 @@ SoundEffectTrack: {
 <li>in,out u8 $79f0: byte offset of selected item (each menu item consists of 4-byte structure)</li>
 <li>in u8 $79f1: byte offset of the end of menu-item in the view</li>
 </ul>
-<h3 id="callers-45">callers:</h3>
+<h3 id="callers-46">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -18448,7 +18454,7 @@ SoundEffectTrack: {
 <li>in,out u8 $7af0: byte offset of selected item (each menu item consists of 4-byte structure)</li>
 <li>in u8 $7af1: byte offset of the end of menu-item in the view</li>
 </ul>
-<h3 id="callers-46">callers:</h3>
+<h3 id="callers-47">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -18594,7 +18600,7 @@ SoundEffectTrack: {
 </blockquote>
 <h3 id="args-216">args:</h3>
 <p>none.</p>
-<h3 id="callers-47">callers:</h3>
+<h3 id="callers-48">callers:</h3>
 <ul>
 <li><code>1E:9638:20 6F 95  JSR menu.upload_default_bg_attrs</code></li>
 <li><code>1E:9767:20 6F 95  JSR menu.upload_default_bg_attrs</code></li>
@@ -18635,7 +18641,7 @@ SoundEffectTrack: {
 <ul>
 <li>out u8 $7f49: sound effect id (= 0x3d) and play flags (= 0x80: play)</li>
 </ul>
-<h3 id="callers-48">callers:</h3>
+<h3 id="callers-49">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -18661,7 +18667,7 @@ SoundEffectTrack: {
 <li>out u8 $24: is ‘A’ button down, 0 on exit.</li>
 <li>out u8 $25: is ‘B’ button down, 0 on exit.</li>
 </ul>
-<h3 id="callers-49">callers:</h3>
+<h3 id="callers-50">callers:</h3>
 <ul>
 <li><code>1E:9632:20 92 95  JSR $9592</code>@</li>
 <li><code>1E:9761:20 92 95  JSR $9592</code>@</li>
@@ -18696,7 +18702,7 @@ SoundEffectTrack: {
 <ul>
 <li>in u8 $ff: ppu ctrl cache.</li>
 </ul>
-<h3 id="callers-50">callers:</h3>
+<h3 id="callers-51">callers:</h3>
 <ul>
 <li><code>1E:9B0D:20 9F 95  JSR menu.init_ppu</code></li>
 <li><code>1E:A55B:20 9F 95  JSR menu.init_ppu</code></li>
@@ -18860,7 +18866,7 @@ SoundEffectTrack: {
 <ul>
 <li>yet to be investigated</li>
 </ul>
-<h3 id="callers-51">callers:</h3>
+<h3 id="callers-52">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -19043,7 +19049,7 @@ SoundEffectTrack: {
 </blockquote>
 <h3 id="args-223">args:</h3>
 <p>none.</p>
-<h3 id="callers-52">callers:</h3>
+<h3 id="callers-53">callers:</h3>
 <ul>
 <li>$3c:9ec2 menu.items.main_loop</li>
 </ul>
@@ -19067,7 +19073,7 @@ SoundEffectTrack: {
 <ul>
 <li>yet to be investigated</li>
 </ul>
-<h3 id="callers-53">callers:</h3>
+<h3 id="callers-54">callers:</h3>
 <ul>
 <li>$3d:a52f menu.main_loop</li>
 </ul>
@@ -19205,7 +19211,7 @@ SoundEffectTrack: {
 <ul>
 <li>yet to be investigated</li>
 </ul>
-<h3 id="callers-54">callers:</h3>
+<h3 id="callers-55">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -19502,7 +19508,7 @@ SoundEffectTrack: {
 </blockquote>
 <h3 id="args-226">args:</h3>
 <p>none.</p>
-<h3 id="callers-55">callers:</h3>
+<h3 id="callers-56">callers:</h3>
 <ul>
 <li><code>1E:9778:20 28 A3  JSR menu.draw_pc_window</code></li>
 <li><code>1E:9ECF:20 28 A3  JSR menu.draw_pc_window</code> @ $3c:9ec2 menu.items.main_loop</li>
@@ -19529,7 +19535,7 @@ SoundEffectTrack: {
 <ul>
 <li>yet to be investigated</li>
 </ul>
-<h3 id="callers-56">callers:</h3>
+<h3 id="callers-57">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -19560,7 +19566,7 @@ SoundEffectTrack: {
 <li>out u8 $60c0[X]: item id, cleared to 0 if amount reached to 0</li>
 <li>out u8 $60e0[X]: amount of item, that has just used.</li>
 </ul>
-<h3 id="callers-57">callers:</h3>
+<h3 id="callers-58">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -19594,7 +19600,7 @@ SoundEffectTrack: {
 <li>out MenuItem $7900[0x21]: cloned menu-items, with right-shifted X by 1</li>
 <li>out u8 $79f1: byte offset of the end of menu-item in the view (of $7900, set to $7af1 on ext)</li>
 </ul>
-<h3 id="callers-58">callers:</h3>
+<h3 id="callers-59">callers:</h3>
 <ul>
 <li>$3c:9ec2 menu.items.main_loop</li>
 <li>yet to be investigated</li>
@@ -19650,7 +19656,7 @@ SoundEffectTrack: {
 <li>u8 $b7: = $79ee</li>
 <li>u8 $b8: = $79ef</li>
 </ul>
-<h3 id="callers-59">callers:</h3>
+<h3 id="callers-60">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -19696,7 +19702,7 @@ SoundEffectTrack: {
 <li>u8 $79ee: = $b7</li>
 <li>u8 $79ef: = $b8</li>
 </ul>
-<h3 id="callers-60">callers:</h3>
+<h3 id="callers-61">callers:</h3>
 <ul>
 <li><code>1E:9C1B:20 A8 A3  JSR menu.pc_select.init_states</code></li>
 <li><code>1E:9E2B:20 A8 A3  JSR menu.pc_select.init_states</code></li>
@@ -19894,7 +19900,7 @@ SoundEffectTrack: {
 <ul>
 <li>u8 a : text_id, specifies the text to be rendered in the window</li>
 </ul>
-<h3 id="callers-61">callers:</h3>
+<h3 id="callers-62">callers:</h3>
 <ul>
 <li><code>1E:96EE:20 6B A6  JSR menu.stream_window_content</code></li>
 <li><code>1E:98C2:20 6B A6  JSR menu.stream_window_content</code></li>
@@ -19980,7 +19986,7 @@ SoundEffectTrack: {
 </blockquote>
 <h3 id="args-235">args:</h3>
 <p>none.</p>
-<h3 id="callers-62">callers:</h3>
+<h3 id="callers-63">callers:</h3>
 <ul>
 <li><code>1E:9635:20 85 A6  JSR menu.main.erase</code></li>
 <li><code>1E:9764:20 85 A6  JSR menu.main.erase</code></li>
@@ -20038,7 +20044,7 @@ SoundEffectTrack: {
 <li><p>u8 $b8: ? right part of cursor, x (-&gt; $0207 + x)</p></li>
 <li><p>u8 $f0: frame counter</p></li>
 </ul>
-<h3 id="callers-63">callers:</h3>
+<h3 id="callers-64">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -20363,7 +20369,7 @@ SoundEffectTrack: {
 </blockquote>
 <h3 id="args-241">args:</h3>
 <p>no direct arguments. (functions called within this function may have arguments).</p>
-<h3 id="callers-64">callers:</h3>
+<h3 id="callers-65">callers:</h3>
 <ul>
 <li>$3d:a897 menu.savefile.main_loop</li>
 </ul>
@@ -20395,7 +20401,7 @@ SoundEffectTrack: {
 <ul>
 <li>in u8 A: text_id of message to draw</li>
 </ul>
-<h3 id="callers-65">callers:</h3>
+<h3 id="callers-66">callers:</h3>
 <ul>
 <li>$3d:a984 menu.savefile.build_menu</li>
 </ul>
@@ -20424,7 +20430,7 @@ SoundEffectTrack: {
 <li>out MenuItem $7900[4]: menu items describing each file menu and command menu on top right on the screen</li>
 <li>out u8 $79f1: byte offset of the end of menu-item in the view (= 0x0c)</li>
 </ul>
-<h3 id="callers-66">callers:</h3>
+<h3 id="callers-67">callers:</h3>
 <ul>
 <li><code>1E:A98E:20 A0 A9  JSR menu.savefile.build_file_menu</code> @ $3d:a984 menu.savefile.build_menu</li>
 <li><code>1E:BA4B:20 A0 A9  JSR menu.savefile.build_file_menu</code> @ ?, probably load menu</li>
@@ -20485,7 +20491,7 @@ SoundEffectTrack: {
 <li>0 = unavailable. (therefore window hasn’t drawn.)</li>
 </ul></li>
 </ul>
-<h3 id="callers-67">callers:</h3>
+<h3 id="callers-68">callers:</h3>
 <ul>
 <li><code>1E:A9AF:20 E1 A9  JSR menu.savefile.draw_summary</code> file1 @$3d:a9a0 menu.savefile.build_file_menu</li>
 <li><code>1E:A9BB:20 E1 A9  JSR menu.savefile.draw_summary</code> file2 @$3d:a9a0 menu.savefile.build_file_menu</li>
@@ -20544,7 +20550,7 @@ SoundEffectTrack: {
 <ul>
 <li>u8 $6000[0x400] : the game state</li>
 </ul>
-<h3 id="callers-68">callers:</h3>
+<h3 id="callers-69">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -20576,7 +20582,7 @@ SoundEffectTrack: {
 <ul>
 <li>u8 $6000[0x400] : the game states</li>
 </ul>
-<h3 id="callers-69">callers:</h3>
+<h3 id="callers-70">callers:</h3>
 <ul>
 <li>$3d:aa18 menu.savefile.save_or_load_current_game_with_buffer</li>
 </ul>
@@ -20604,7 +20610,7 @@ SoundEffectTrack: {
 <li>u8 $6000[0x400]: current game states (if carry == 1)</li>
 <li>u8 $7400[0x400]: copied states (if carry == 0)</li>
 </ul>
-<h3 id="callers-70">callers:</h3>
+<h3 id="callers-71">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -20647,7 +20653,7 @@ SoundEffectTrack: {
 </blockquote>
 <h3 id="args-248">args:</h3>
 <p>none.</p>
-<h3 id="callers-71">callers:</h3>
+<h3 id="callers-72">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -20681,7 +20687,7 @@ SoundEffectTrack: {
 </blockquote>
 <h3 id="args-249">args:</h3>
 <p>none.</p>
-<h3 id="callers-72">callers:</h3>
+<h3 id="callers-73">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -20751,7 +20757,7 @@ SoundEffectTrack: {
 <ul>
 <li>yet to be investigated</li>
 </ul>
-<h3 id="callers-73">callers:</h3>
+<h3 id="callers-74">callers:</h3>
 <ul>
 <li>$3c:9ec2 menu.items.main_loop</li>
 </ul>
@@ -20782,7 +20788,7 @@ SoundEffectTrack: {
 <ul>
 <li>in u8 X: window_id</li>
 </ul>
-<h3 id="callers-74">callers:</h3>
+<h3 id="callers-75">callers:</h3>
 <ul>
 <li>$3d:aa8e menu.items.erase_message</li>
 <li>yet to be investigated</li>
@@ -20817,7 +20823,7 @@ SoundEffectTrack: {
 <li>u8 $97: cursor stop offset x</li>
 <li>u8 $98: cursor stop offset y</li>
 </ul>
-<h3 id="callers-75">callers:</h3>
+<h3 id="callers-76">callers:</h3>
 <ul>
 <li><code>1E:9660:20 A6 AA  JSR $AAA6</code> @ $3c:962f menu.jobs.main_loop</li>
 <li><code>1E:9791:20 A6 AA  JSR menu.get_window_content_metric</code> @ $3c:9761 menu.magic.main_loop</li>
@@ -21004,7 +21010,7 @@ SoundEffectTrack: {
 <ul>
 <li>in,out u8 $6102,$6142,$6182,$61c2: characters’ status</li>
 </ul>
-<h3 id="callers-76">callers:</h3>
+<h3 id="callers-77">callers:</h3>
 <ul>
 <li><code>1E:AED5:20 C3 AE  JSR menu.clear_eligible_status_of_</code></li>
 <li><code>1E:AFCF:20 C3 AE  JSR menu.clear_eligible_status_of_</code></li>
@@ -21042,7 +21048,7 @@ SoundEffectTrack: {
 <ul>
 <li>yet to be investigated</li>
 </ul>
-<h3 id="callers-77">callers:</h3>
+<h3 id="callers-78">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -21075,7 +21081,7 @@ SoundEffectTrack: {
 <li>in u8 A: item_id</li>
 <li>out u8 $6102, $6142, $6182, $61c2: status of player characters. bit0 = eligibilty, in context of menu-mode.</li>
 </ul>
-<h3 id="callers-78">callers:</h3>
+<h3 id="callers-79">callers:</h3>
 <ul>
 <li><code>jsr .L_AEE3   ; B49F 20 E3 AE</code> @ $3d:b492 menu.stomach.get_eligibility_for_all_characters</li>
 <li><code>lda $7B80,x ; AEE0 BD 80 7B</code> (fall through) @ $3d:aed5 menu.shop.update_eligibility_for_item</li>
@@ -21130,7 +21136,7 @@ SoundEffectTrack: {
 <ul>
 <li>yet to be investigated</li>
 </ul>
-<h3 id="callers-79">callers:</h3>
+<h3 id="callers-80">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -21178,7 +21184,7 @@ SoundEffectTrack: {
 </blockquote>
 <h3 id="args-263">args:</h3>
 <p>none.</p>
-<h3 id="callers-80">callers:</h3>
+<h3 id="callers-81">callers:</h3>
 <ul>
 <li><code>1E:B380:4C 5E AF  JMP $AF5E</code> @ $3d:b383 menu.stomach.main</li>
 </ul>
@@ -21287,7 +21293,7 @@ SoundEffectTrack: {
 <li>out u8 $fd: ppu ctrl cache?</li>
 <li>out u8 $ff: ppu ctrl cache.</li>
 </ul>
-<h3 id="callers-81">callers:</h3>
+<h3 id="callers-82">callers:</h3>
 <ul>
 <li><code>1E:AF44:20 69 B3  JSR $B369</code></li>
 <li><code>1E:B393:20 69 B3  JSR $B369</code> @ $3d:b383 menu.stomach.main</li>
@@ -21320,7 +21326,7 @@ SoundEffectTrack: {
 <ul>
 <li>yet to be investigated</li>
 </ul>
-<h3 id="callers-82">callers:</h3>
+<h3 id="callers-83">callers:</h3>
 <ul>
 <li><code>jmp menu.stomach.main_loop      ; AF5B 4C 83 B3</code> @ $3d:af1f menu.stomach.open</li>
 </ul>
@@ -21473,7 +21479,7 @@ SoundEffectTrack: {
 <ul>
 <li>in u8 A: item_id</li>
 </ul>
-<h3 id="callers-83">callers:</h3>
+<h3 id="callers-84">callers:</h3>
 <ul>
 <li><code>1E:B44A:20 92 B4  JSR $B492</code> @ menu.stomach.main_loop</li>
 <li><code>1E:B476:20 92 B4  JSR $B492</code> @ menu.stomach.main_loop</li>
@@ -21519,7 +21525,7 @@ SoundEffectTrack: {
 <li>in,out u8 $60c0[0x20]: IDs of items in backpack</li>
 <li>in,out u8 $60e0[0x20]: amounts of items in backpack</li>
 </ul>
-<h3 id="callers-84">callers:</h3>
+<h3 id="callers-85">callers:</h3>
 <ul>
 <li><code>1E:B40E:20 AE B4  JSR menu.stomach.store_item</code> @ $3d:b383 menu.stomach.main</li>
 </ul>
@@ -21599,7 +21605,7 @@ SoundEffectTrack: {
 <ul>
 <li>u8 $7300[0x500]: text buffer, ready to be supplied into rendering logics</li>
 </ul>
-<h3 id="callers-85">callers:</h3>
+<h3 id="callers-86">callers:</h3>
 <ul>
 <li><code>jsr menu.stomach.build_content_text    ; B427 20 70 B5</code> @ $3d:b383</li>
 </ul>
@@ -21734,7 +21740,7 @@ SoundEffectTrack: {
 <ul>
 <li>in u8 A: text_id</li>
 </ul>
-<h3 id="callers-86">callers:</h3>
+<h3 id="callers-87">callers:</h3>
 <ul>
 <li><code>1E:B3A0:20 ED B5  JSR $B5ED</code> @ $3d:b383 menu.stomach.main</li>
 </ul>
@@ -21761,7 +21767,7 @@ SoundEffectTrack: {
 <ul>
 <li>in u8 A: text_id</li>
 </ul>
-<h3 id="callers-87">callers:</h3>
+<h3 id="callers-88">callers:</h3>
 <ul>
 <li><code>1E:B39B:20 F7 B5  JSR $B5F7</code> @ $3d:b383 menu.stomach.main</li>
 <li><code>1E:B3D5:20 F7 B5  JSR $B5F7</code></li>
@@ -21798,7 +21804,7 @@ SoundEffectTrack: {
 <li>in ptr $1c: pointer to text, buffer for scroll.</li>
 <li>out ptr $3e: pointer to source text</li>
 </ul>
-<h3 id="callers-88">callers:</h3>
+<h3 id="callers-89">callers:</h3>
 <ul>
 <li><code>1E:B13A:20 19 B6  JSR menu.draw_item_window</code></li>
 <li><code>1E:B413:20 19 B6  JSR menu.draw_item_window</code> @ $3d:b383 menu.stomach.main</li>
@@ -21940,7 +21946,7 @@ SoundEffectTrack: {
 <ul>
 <li>yet to be investigated</li>
 </ul>
-<h3 id="callers-89">callers:</h3>
+<h3 id="callers-90">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -22175,7 +22181,7 @@ SoundEffectTrack: {
 <li>out u8 $26: ?, set to 0 on exit.</li>
 <li>out SpriteAttributes $0200[0x40]: sprite cache, filled with 0xF0’s on exit. which would mean: +00: Y is 240 +01: tile number 240 +02: flip x, flip y, behind background +03: X is 240</li>
 </ul>
-<h3 id="callers-90">callers:</h3>
+<h3 id="callers-91">callers:</h3>
 <ul>
 <li><code>1E:93A8:20 86 C4  JSR field.init_sprites_cache</code></li>
 <li><code>1E:A547:20 86 C4  JSR field.init_sprites_cache</code></li>
@@ -22473,7 +22479,7 @@ SoundEffectTrack: {
 <ul>
 <li>in u8 $57: bank number to set on exit</li>
 </ul>
-<h3 id="callers-91">callers:</h3>
+<h3 id="callers-92">callers:</h3>
 <ul>
 <li><code>1E:93EB:4C 58 C7  JMP field.call_update_playback_ex</code></li>
 <li><code>1E:943B:4C 58 C7  JMP field.call_update_playback_ex</code></li>
@@ -22912,7 +22918,7 @@ SoundEffectTrack: {
 <ul>
 <li>in u8 X: character index.</li>
 </ul>
-<h3 id="callers-92">callers:</h3>
+<h3 id="callers-93">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -22940,7 +22946,7 @@ SoundEffectTrack: {
 <li>in u8 A: item_id</li>
 <li>out u8 $80: eligibility flags for characters, where bit 3 denotes character #0, bit2 for char #1, and so forth.</li>
 </ul>
-<h3 id="callers-93">callers:</h3>
+<h3 id="callers-94">callers:</h3>
 <ul>
 <li><code>jsr .L_D113   ; AEE3 20 13 D1</code> @ $3d:aee3 menu.get_eligibility_of_item_for_all</li>
 </ul>
@@ -23041,7 +23047,7 @@ SoundEffectTrack: {
 <ul>
 <li>out u8 $7f49: sound effect id (= 0x05) and play flags (= 0x80: play new)</li>
 </ul>
-<h3 id="callers-94">callers:</h3>
+<h3 id="callers-95">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -23066,7 +23072,7 @@ SoundEffectTrack: {
 <ul>
 <li>out u8 $7f49: sound effect id (= 0x18) and play flags (= 0x80: play new)</li>
 </ul>
-<h3 id="callers-95">callers:</h3>
+<h3 id="callers-96">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -23206,7 +23212,7 @@ SoundEffectTrack: {
 <ul>
 <li>in NesColors $03c0[8]: palette entries, which each has 4 color indexes.</li>
 </ul>
-<h3 id="callers-96">callers:</h3>
+<h3 id="callers-97">callers:</h3>
 <p>(15 callers found so far, including the below)</p>
 <ul>
 <li><code>1E:B390:20 08 D3  JSR field.upload_all_palette_entri</code> @ $3d:b383 menu.stomach.main</li>
@@ -23246,7 +23252,7 @@ SoundEffectTrack: {
 </blockquote>
 <h3 id="args-301">args:</h3>
 <p>none.</p>
-<h3 id="callers-97">callers:</h3>
+<h3 id="callers-98">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -23274,7 +23280,7 @@ SoundEffectTrack: {
 <ul>
 <li>in NesColors $03f0[4]: palette entry.</li>
 </ul>
-<h3 id="callers-98">callers:</h3>
+<h3 id="callers-99">callers:</h3>
 <ul>
 <li><code>1F:D3D3:20 81 D3  JSR field.upload_bg_palette</code></li>
 <li><code>1F:D3F6:20 81 D3  JSR field.upload_bg_palette</code></li>
@@ -23328,7 +23334,7 @@ SoundEffectTrack: {
 <ul>
 <li>out u8 $7f49: sound effect id (= 0x06) and play flags (= 0x80: play new)</li>
 </ul>
-<h3 id="callers-99">callers:</h3>
+<h3 id="callers-100">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -23671,7 +23677,7 @@ SoundEffectTrack: {
 <ul>
 <li>out NesColors[8] $03c0: palette buffer</li>
 </ul>
-<h3 id="callers-100">callers:</h3>
+<h3 id="callers-101">callers:</h3>
 <p>there found to be only one callers for this function:</p>
 <ul>
 <li><code>1F:E08A:20 B0 E1  JSR $E1B0</code> @ ?</li>
@@ -24316,7 +24322,7 @@ SoundEffectTrack: {
 <li>in,out u8 $79f2: ?</li>
 <li><a href="#out-2">out</a> bool carry: 1: scroll aborted, 0: otherwise</li>
 </ul>
-<h3 id="callers-101">callers:</h3>
+<h3 id="callers-102">callers:</h3>
 <ul>
 <li><code>1E:9255:20 2D EB  JSR field.scrolldown_item_window</code> @ ?</li>
 </ul>
@@ -24340,7 +24346,7 @@ SoundEffectTrack: {
 <li><a href="#in-2">in</a> u8 $57: bank number to restore</li>
 <li><a href="#out-2">out</a> bool carry: always 1. (scroll aborted)</li>
 </ul>
-<h3 id="callers-102">callers:</h3>
+<h3 id="callers-103">callers:</h3>
 <ul>
 <li><code>1F:EBA6:4C 3C EB  JMP field.abort_item_window_scroll</code> @ <span class="math inline">3<em>f</em></span>eb69 field.scrollup_item_window</li>
 </ul>
@@ -24360,7 +24366,7 @@ SoundEffectTrack: {
 <ul>
 <li><a href="#out-2">out</a> bool carry: always 0. (= scroll successful)</li>
 </ul>
-<h3 id="callers-103">callers:</h3>
+<h3 id="callers-104">callers:</h3>
 <ul>
 <li><code>1F:EB36:D0 0B     BNE field.scrolldown_item_window</code> @ <span class="math inline">3<em>f</em></span>eb2d field.scrolldown_item_window</li>
 </ul>
@@ -24390,7 +24396,7 @@ SoundEffectTrack: {
 <li><a href="#in-2">in</a> u8 $57: bank number to restore</li>
 <li><a href="#out-2">out</a> bool carry: always 0. (= scroll successful)</li>
 </ul>
-<h3 id="callers-104">callers:</h3>
+<h3 id="callers-105">callers:</h3>
 <ul>
 <li><code>1E:9F92:20 61 EB  JSR field.reflect_item_window_scro</code> @ $3c:9ec2 menu.items.main_loop</li>
 <li><code>1E:A889:4C 61 EB  JMP field.reflect_item_window_scro</code> @ $3d:a87a menu.draw_view_of_buffered_string</li>
@@ -24420,7 +24426,7 @@ SoundEffectTrack: {
 <li>in,out u8 $79f2: ?</li>
 <li><a href="#out-2">out</a> bool carry: 1: scroll aborted, 0: scroll successful</li>
 </ul>
-<h3 id="callers-105">callers:</h3>
+<h3 id="callers-106">callers:</h3>
 <ul>
 <li><code>1E:9233:20 69 EB  JSR field.scrollup_item_window</code> @ ?</li>
 </ul>
@@ -24465,7 +24471,7 @@ SoundEffectTrack: {
 <li>[in,out] ptr $1c: pointer to text to seek with</li>
 <li><a href="#out-2">out</a> ptr $3e: pointer to the text, pointing the beginning of next line</li>
 </ul>
-<h3 id="callers-106">callers:</h3>
+<h3 id="callers-107">callers:</h3>
 <ul>
 <li><code>1F:EB5E:20 A9 EB  JSR field::seek_to_next_line</code></li>
 <li>$3f:ee65 field::stream_string_in_window</li>
@@ -24502,7 +24508,7 @@ SoundEffectTrack: {
 <li>[in,out] ptr $1c: pointer to text to seek with</li>
 <li><a href="#out-2">out</a> ptr $3e: pointer to the text, pointing the beginning of line</li>
 </ul>
-<h3 id="callers-107">callers:</h3>
+<h3 id="callers-108">callers:</h3>
 <ul>
 <li><code>1F:EB81:20 D1 EB  JSR field.unseek_to_line_beginning</code></li>
 </ul>
@@ -24571,7 +24577,7 @@ SoundEffectTrack: {
 <div class="sourceLine" id="cb663-60" data-line-number="60"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fec0c-fieldshow_sprites_on_lower_half_screen">$3f:ec0c field::show_sprites_on_lower_half_screen</h1>
-<h3 id="callers-108">callers:</h3>
+<h3 id="callers-109">callers:</h3>
 <ul>
 <li><code>1F:C9B6:20 0C EC  JSR field.show_sprites_on_region6</code></li>
 </ul>
@@ -24586,7 +24592,7 @@ SoundEffectTrack: {
 <div class="sourceLine" id="cb664-8" data-line-number="8"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fec12-fieldshow_sprites_on_region7-bug">$3f:ec12 field::show_sprites_on_region7 (bug?)</h1>
-<h3 id="callers-109">callers:</h3>
+<h3 id="callers-110">callers:</h3>
 <ul>
 <li><code>1F:C9C1:20 12 EC  JSR field.show_sprites_on_region7</code></li>
 </ul>
@@ -24607,7 +24613,7 @@ SoundEffectTrack: {
 <ul>
 <li><a href="#in-2">in</a> u8 X: window_type (0…4)</li>
 </ul>
-<h3 id="callers-110">callers:</h3>
+<h3 id="callers-111">callers:</h3>
 <ul>
 <li><span class="math inline">3<em>f</em></span>ed61 field::get_window_region</li>
 </ul>
@@ -24628,7 +24634,7 @@ SoundEffectTrack: {
 </ul></li>
 <li><a href="#in-2">in</a> u8 X: region_type (0..6; with 0 to 4 being shared with window_type)</li>
 </ul>
-<h3 id="callers-111">callers:</h3>
+<h3 id="callers-112">callers:</h3>
 <ul>
 <li>$3f:ec0c field::show_sprites_on_lower_half_screen</li>
 <li>$3f:ec12 field::show_sprites_on_region7 (with X set to 7)</li>
@@ -24710,7 +24716,7 @@ SoundEffectTrack: {
 <div class="sourceLine" id="cb669-7" data-line-number="7"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fec8b-fieldshow_message_window">$3f:ec8b field::show_message_window</h1>
-<h3 id="callers-112">callers:</h3>
+<h3 id="callers-113">callers:</h3>
 <ul>
 <li><code>1F:E237:20 8B EC  JSR field::show_message_window</code></li>
 </ul>
@@ -24723,7 +24729,7 @@ SoundEffectTrack: {
 <p><strong>fall through</strong></p>
 <hr />
 <h1 id="fec8d-fieldshow_window">$3f:ec8d field::show_window:</h1>
-<h3 id="callers-113">callers:</h3>
+<h3 id="callers-114">callers:</h3>
 <ul>
 <li><code>1F:E264:20 8D EC  JSR $EC8D</code></li>
 </ul>
@@ -24751,7 +24757,7 @@ SoundEffectTrack: {
 <div class="sourceLine" id="cb671-17" data-line-number="17"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fecab-fieldawait_and_get_new_input">$3f:ECAB field::await_and_get_new_input:</h1>
-<h3 id="callers-114">callers:</h3>
+<h3 id="callers-115">callers:</h3>
 <ul>
 <li><code>1F:EC93:20 AB EC  JSR field::await_and_get_new_input</code> ($3f:ec8b field::show_message_window)</li>
 <li><code>1F:ECBA:4C AB EC  JMP field::await_and_get_new_input</code> (tail recursion)</li>
@@ -24781,7 +24787,7 @@ SoundEffectTrack: {
 <div class="sourceLine" id="cb673-7" data-line-number="7"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fecc4-fieldget_next_input">$3f:ECC4 field::get_next_input:</h1>
-<h3 id="callers-115">callers:</h3>
+<h3 id="callers-116">callers:</h3>
 <ul>
 <li><code>1F:EC9E:20 C4 EC  JSR field::get_next_input</code></li>
 </ul>
@@ -24800,7 +24806,7 @@ SoundEffectTrack: {
 <div class="sourceLine" id="cb674-12" data-line-number="12"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fecd8-fieldadvance_frame_with_sound">$3f:ecd8 field::advance_frame_with_sound</h1>
-<h3 id="callers-116">callers:</h3>
+<h3 id="callers-117">callers:</h3>
 <ul>
 <li><code>1F:EE74:20 D8 EC  JSR field::advance_frame_w_sound</code> ($3f:ee65 field::stream_string_in_window)</li>
 </ul>
@@ -24816,7 +24822,7 @@ SoundEffectTrack: {
 <div class="sourceLine" id="cb675-9" data-line-number="9"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fece5-fielddraw_window_top">$3f:ece5 field::draw_window_top</h1>
-<h3 id="callers-117">callers:</h3>
+<h3 id="callers-118">callers:</h3>
 <ul>
 <li><code>1E:AAA3:4C E5 EC  JMP field::draw_window_top</code> @ ?</li>
 </ul>
@@ -24834,7 +24840,7 @@ SoundEffectTrack: {
 <p><strong>fall through</strong></p>
 <hr />
 <h1 id="fecf5-restore_banks_by_57">$3f:ecf5 restore_banks_by_$57</h1>
-<h3 id="callers-118">callers:</h3>
+<h3 id="callers-119">callers:</h3>
 <ul>
 <li><code>1F:EB64:20 F5 EC  JSR field::restore_bank</code> @ <span class="math inline">3<em>f</em></span>eb61 field.update_item_window</li>
 <li>field::draw_window_top (by falling thourgh)</li>
@@ -24883,7 +24889,7 @@ SoundEffectTrack: {
 <li>u8 $3a : offset_x (or column in drawing)</li>
 <li>u8 $3b : offset_y (or row in drawing)</li>
 </ul>
-<h3 id="callers-119">callers:</h3>
+<h3 id="callers-120">callers:</h3>
 <ul>
 <li><code>1E:8EFD:20 02 ED  JSR field::draw_window_box</code> @ $3c:8ef5 ?; window_type = 0</li>
 <li><code>1E:8F0E:20 02 ED  JSR field::draw_window_box</code> @ $3c:8f04 ?; window_type = 1</li>
@@ -25038,7 +25044,7 @@ SoundEffectTrack: {
 <li>u8 $b7: sprite placement box bottom. (top + window box height - 3)</li>
 <li>u8 $b8: sprite placement box right. (left + window box width - 1)</li>
 </ul>
-<h3 id="callers-120">callers:</h3>
+<h3 id="callers-121">callers:</h3>
 <ul>
 <li>$3f:ed02 field::draw_window_box</li>
 </ul>
@@ -25107,7 +25113,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li><a href="#in-2">in</a> u8 $3c : width (border incl)</li>
 </ul>
-<h3 id="callers-121">callers:</h3>
+<h3 id="callers-122">callers:</h3>
 <ul>
 <li>$3f:ecef</li>
 <li>$3f:ed17</li>
@@ -25129,7 +25135,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb685-14" data-line-number="14"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fee1d-fieldgetwindowtilesformiddle">$3f:ee1d field::getWindowTilesForMiddle</h1>
-<h3 id="callers-122">callers:</h3>
+<h3 id="callers-123">callers:</h3>
 <ul>
 <li>field::drawWindow</li>
 </ul>
@@ -25148,7 +25154,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb686-12" data-line-number="12"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fee3e-fieldgetwindowtilesforbottom">$3f:ee3e field::getWindowTilesForBottom</h1>
-<h3 id="callers-123">callers:</h3>
+<h3 id="callers-124">callers:</h3>
 <ul>
 <li>$3f:ed3b</li>
 </ul>
@@ -25169,7 +25175,7 @@ sta $4014   ;DMA</code></pre></li>
 <div class="sourceLine" id="cb687-14" data-line-number="14"><span class="op">}</span></div></code></pre>
 <hr />
 <h1 id="fee65-fieldstream_string_in_window">$3f:ee65 field::stream_string_in_window:</h1>
-<h3 id="callers-124">callers:</h3>
+<h3 id="callers-125">callers:</h3>
 <ul>
 <li>$3c:90ff ? 1E:9109:4C 65 EE JMP $EE65</li>
 <li>$3d:a666 ? 1E:A675:4C 65 EE JMP $EE65</li>
@@ -25228,7 +25234,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>ptr $3e: offset to the string, assuming the bank it to be loaded is at 1st page (starting at $8000)</li>
 <li>u8 $93: bank number which the string would be loaded from</li>
 </ul>
-<h3 id="callers-125">callers:</h3>
+<h3 id="callers-126">callers:</h3>
 <ul>
 <li><code>1F:C036:20 9A EE  JSR field::load_and_draw_string</code> @ opening title</li>
 <li><code>1F:EE65:20 9A EE  JSR field::load_and_draw_string</code> @ $3f:ee65 field::stream_string_in_window</li>
@@ -25257,7 +25263,7 @@ sta $4014   ;DMA</code></pre></li>
 <li><a href="#in-2">in</a> u8 $93 : string bank</li>
 <li><a href="#out-2">out</a> bool carry: more_to_draw</li>
 </ul>
-<h3 id="callers-126">callers:</h3>
+<h3 id="callers-127">callers:</h3>
 <ul>
 <li><code>1F:EB61:20 C0 EE  JSR field::draw_string_in_window</code> @ $3f:eb61 field.reflect_window_scroll</li>
 <li><code>1F:EE80:20 C0 EE  JSR field::draw_string_in_window</code> @ $3f:ee65 field::stream_string_in_window</li>
@@ -25320,7 +25326,7 @@ sta $4014   ;DMA</code></pre></li>
 <li><a href="#in-2">in</a> u8 $98: bot top (in 8x8 unit). used to calculate menu item’s coordinates.</li>
 <li><a href="#in-2">in</a> u8 $bb: treasure item id</li>
 </ul>
-<h3 id="callers-127">callers:</h3>
+<h3 id="callers-128">callers:</h3>
 <ul>
 <li><code>1F:EEE4:20 FA EE  JSR field.eval_and_draw_string</code> @ $3f:eec0 field.draw_string_in_window</li>
 </ul>
@@ -25653,7 +25659,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>in u8 $6021 : event flags, […fffff] where lower 5 bits represents each Crystal event</li>
 <li>out u8 A : maximum available job_id in accordance with game flags</li>
 </ul>
-<h3 id="callers-128">callers:</h3>
+<h3 id="callers-129">callers:</h3>
 <ul>
 <li><code>jsr field.get_max_available_job_id  ; F17E 20 8A F3</code> @ textd.eval_replacement (handler for 0x1e)</li>
 </ul>
@@ -25704,7 +25710,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>+03: 2nd byte of the char code directing a label built with the menu item. in this function, it is item_id, from $84.</li>
 </ul></li>
 </ul>
-<h3 id="callers-129">callers:</h3>
+<h3 id="callers-130">callers:</h3>
 <ul>
 <li><code>jsr $F3AC ; F12C 20 AC F3</code> @ textd.eval_replacement (case 0x1b)</li>
 </ul>
@@ -25759,7 +25765,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>in string* $3e: pointer to save</li>
 <li>out string* $99: saved pointer</li>
 </ul>
-<h3 id="callers-130">callers:</h3>
+<h3 id="callers-131">callers:</h3>
 <ul>
 <li><code>F0A4 20 E4 F3</code></li>
 <li><code>F20D 20 E4 F3</code></li>
@@ -25793,7 +25799,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>in string* $99: saved pointer previously saved with <code>$3f:f3e4 textd.save_text_ptr</code>.</li>
 <li>in u8 $93: bank number which the text pointed to is stored</li>
 </ul>
-<h3 id="callers-131">callers:</h3>
+<h3 id="callers-132">callers:</h3>
 <ul>
 <li><code>F342 20 ED F3</code></li>
 <li><code>F0DB 20 ED F3</code></li>
@@ -25821,7 +25827,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li>in,out u8 $5a[6]: player character name</li>
 </ul>
-<h3 id="callers-132">callers:</h3>
+<h3 id="callers-133">callers:</h3>
 <p>none? there is no byte patterns matched with ‘4c fa f3’ or ‘20 fa f3’ and no branches pointing to the range of code nearby.</p>
 <h3 id="local-variables-118">local variables:</h3>
 <p>none.</p>
@@ -25860,7 +25866,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>u8 $f4a1[32]: vram address low (index := Y coords)</li>
 <li>u8 $f4c1[32]: vram address high (index := Y coords)</li>
 </ul>
-<h3 id="callers-133">callers:</h3>
+<h3 id="callers-134">callers:</h3>
 <ul>
 <li><code>1F:F6B2:20 0A F4  JSR $F40A</code> @ $3f:f6aa field.upload_window_content</li>
 <li><code>1F:F6CE:20 0A F4  JSR $F40A</code> @ $3f:f6aa field.upload_window_content</li>
@@ -25897,7 +25903,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>out u8 $54: vram low</li>
 <li>out u8 $55: vram high</li>
 </ul>
-<h3 id="callers-134">callers:</h3>
+<h3 id="callers-135">callers:</h3>
 <p>none. there is no byte patterns matched with ‘4c 35 f4’ or ‘20 35 f4’ and no branches pointing to the range of code nearby.</p>
 <h3 id="local-variables-119">local variables:</h3>
 <p>none.</p>
@@ -25932,7 +25938,7 @@ sta $4014   ;DMA</code></pre></li>
 </blockquote>
 <h3 id="args-349">args:</h3>
 <p>none.</p>
-<h3 id="callers-135">callers:</h3>
+<h3 id="callers-136">callers:</h3>
 <ul>
 <li><code>1E:AA8E:20 4B F4  JSR $F44B</code> @ $3d:aa8e menu.items.erase_message</li>
 <li>yet to be investigated</li>
@@ -25969,7 +25975,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li>yet to be investigated</li>
 </ul>
-<h3 id="callers-136">callers:</h3>
+<h3 id="callers-137">callers:</h3>
 <ul>
 <li><code>1E:AF76:20 61 F4  JSR $F461</code> @ ?</li>
 </ul>
@@ -25993,7 +25999,7 @@ sta $4014   ;DMA</code></pre></li>
 </blockquote>
 <h3 id="args-351">args:</h3>
 <p>none.</p>
-<h3 id="callers-137">callers:</h3>
+<h3 id="callers-138">callers:</h3>
 <ul>
 <li><code>1E:A693:4C 65 F4  JMP $F465</code> @ ?</li>
 </ul>
@@ -26018,7 +26024,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li>in u8 A: box height.</li>
 </ul>
-<h3 id="callers-138">callers:</h3>
+<h3 id="callers-139">callers:</h3>
 <ul>
 <li><code>1E:9BD2:20 67 F4  JSR $F467</code> @ ?</li>
 </ul>
@@ -26065,7 +26071,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>u8 $3c: box width</li>
 <li>u8 $3d: box height</li>
 </ul>
-<h3 id="callers-139">callers:</h3>
+<h3 id="callers-140">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -26212,7 +26218,7 @@ sta $4014   ;DMA</code></pre></li>
 <li><a href="#in-2">in</a> x : item_id</li>
 <li><a href="#out-2">out</a> u24 $80 : = $10:9e00[x]</li>
 </ul>
-<h3 id="callers-140">callers:</h3>
+<h3 id="callers-141">callers:</h3>
 <ul>
 <li>$3d:b230 @ floor::shop::getItemValues</li>
 <li>$3d:b271 @ floor::shop::getItemValue</li>
@@ -26243,7 +26249,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li><a href="#in-2">in</a> u24 $80 : gil</li>
 </ul>
-<h3 id="callers-141">callers:</h3>
+<h3 id="callers-142">callers:</h3>
 <ul>
 <li>$3d:b1c2 @ floor::shop::</li>
 <li>$3f:f5bb @ floor::getTreasure</li>
@@ -26312,7 +26318,7 @@ sta $4014   ;DMA</code></pre></li>
 </ul></li>
 <li>in,out u8 $f0: window scroll frame counter.</li>
 </ul>
-<h3 id="callers-142">callers:</h3>
+<h3 id="callers-143">callers:</h3>
 <ul>
 <li><code>1F:EEE9:20 92 F6  JSR field::draw_window_content</code> @ $3f:eec0 field.draw_string_in_window</li>
 <li><code>1F:EF49:20 92 F6  JSR field::draw_window_content</code> @ $3f:eefa textd.draw_in_box</li>
@@ -26426,7 +26432,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li>in u8 X: character index.</li>
 </ul>
-<h3 id="callers-143">callers:</h3>
+<h3 id="callers-144">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -26452,7 +26458,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>in u8 A: item_id</li>
 <li>in u8 X: byte offset of character to get eligibility.</li>
 </ul>
-<h3 id="callers-144">callers:</h3>
+<h3 id="callers-145">callers:</h3>
 <ul>
 <li><code>jsr .L_F806   ; D116 20 06 F8</code> @ $3e:d113 field.get_eligibility_flags</li>
 <li><code>jsr .L_F806   ; D121 20 06 F8</code> @ $3e:d113 field.get_eligibility_flags</li>
@@ -26478,7 +26484,7 @@ sta $4014   ;DMA</code></pre></li>
 <li>in u8 A: item_id</li>
 <li>in u8 X: byte offset of character to get eligibility.</li>
 </ul>
-<h3 id="callers-145">callers:</h3>
+<h3 id="callers-146">callers:</h3>
 <ul>
 <li><code>jmp .L_F817   ; F806 4C 17 F8</code> @ $3f:f806 thunk.call_get_eligibility_for_item</li>
 </ul>
@@ -26503,7 +26509,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li>in u8 X: character index.</li>
 </ul>
-<h3 id="callers-146">callers:</h3>
+<h3 id="callers-147">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -26532,7 +26538,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li>in u8 A: result value from battle-mode function</li>
 </ul>
-<h3 id="callers-147">callers:</h3>
+<h3 id="callers-148">callers:</h3>
 <ul>
 <li><code>jmp .L_F826   ; F81D 4C 26 F8</code> @ $3f:f817 field.call_get_eligiblity_for_item</li>
 <li><code>jsr .L_8006   ; F823 20 06 80</code> (fall through) @ $3f:f820 field.call_recalc_character_params</li>
@@ -26560,7 +26566,7 @@ sta $4014   ;DMA</code></pre></li>
 </blockquote>
 <h3 id="args-365">args:</h3>
 <p>no direct arguments.</p>
-<h3 id="callers-148">callers:</h3>
+<h3 id="callers-149">callers:</h3>
 <p>yet to be investigated.</p>
 <h3 id="local-variables-130">local variables:</h3>
 <p>none.</p>
@@ -26679,7 +26685,7 @@ sta $4014   ;DMA</code></pre></li>
 <ul>
 <li>see [$3f:f897 ppud.up<em>load</em>_palette]</li>
 </ul>
-<h3 id="callers-149">callers:</h3>
+<h3 id="callers-150">callers:</h3>
 <ul>
 <li>yet to be investigated</li>
 </ul>
@@ -27566,7 +27572,7 @@ $fc3b a9 01</code></pre>
 <ul>
 <li>in u8 A: index of PRG ROM bank (per 8k bytes) to switch.</li>
 </ul>
-<h3 id="callers-150">callers:</h3>
+<h3 id="callers-151">callers:</h3>
 <ul>
 <li>$3f:ff06 thunk.switch_2nd_bank</li>
 <li>$3f:ff17 switch_2banks</li>
@@ -27587,7 +27593,7 @@ $fc3b a9 01</code></pre>
 <ul>
 <li>in u8 A: basebank (per 8k)</li>
 </ul>
-<h3 id="callers-151">callers:</h3>
+<h3 id="callers-152">callers:</h3>
 <ul>
 <li>$3f:ff03 thunk.switch_2banks: it is an only caller of this function.</li>
 </ul>
@@ -27618,7 +27624,7 @@ $fc3b a9 01</code></pre>
 <ul>
 <li>in u8 A: index of PRG ROM bank (per 8k bytes) to switch.</li>
 </ul>
-<h3 id="callers-152">callers:</h3>
+<h3 id="callers-153">callers:</h3>
 <ul>
 <li>$3f:ff09 thunk.switch_2nd_bank: it is an only caller of this function.</li>
 </ul>

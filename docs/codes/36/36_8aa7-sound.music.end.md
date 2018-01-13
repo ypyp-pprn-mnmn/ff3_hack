@@ -3,13 +3,19 @@
 > 現在再生中の曲を、要求フラグ($7f42)にもとづいて、停止状態またはフェードアウト状態へ移行させる。
 
 ### args:
-+	in u8 $7f42: request flag. see also `$36:80ab sound.play_music`.
-	- 0x08: soft transition.
++	in,out u8 $7f42: request flag and playback status. see also `$36:80ab sound.play_music`.
+    on exit, updated to a value reflecting the request:
+	- 0x00: if immediate stop was requested
+    - 0xC0: if soft transition was requested
++   out u8 $7f48: 0 if soft transition (0x08) was requested by caller. otherwise left unchanged.
+
+### callers:
++   `jsr sound.music.end ; 897C 20 A7 8A` @ $36:8925 sound.music.update_or_load_stream
 
 ### code:
 ```js
 {
-	if (a = ($7f42 & 0x8)) {
+	if (!(a = ($7f42 & 0x8))) {
 		$7f42 = a;	//0
 		sound.music.mute_channels();	//$8ac0();
 	} else {
@@ -34,7 +40,4 @@
 */
 }
 ```
-
-
-
 

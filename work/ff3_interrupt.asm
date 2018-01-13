@@ -19,7 +19,11 @@ disable_handler_and_return_from_nmi:
 	lda $2002
 	lda #$40	;RTI
 	sta pNmiHandler-1
-	pla
+	.ifdef _FEATURE_CONTINUOUS_MUSIC
+		plp
+	.else
+		pla
+	.endif	;;_FEATURE_CONTINUOUS_MUSIC
 	pla
 	pla
 	rts
