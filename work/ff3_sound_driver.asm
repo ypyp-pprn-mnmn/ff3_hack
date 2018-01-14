@@ -14,6 +14,8 @@ __FF3_SOUND_DRIVER_INCLUDED__
 sound.table.note_lengths = $8805
 sound.table.pitch_periods = $872d
 sound.table.noise_periods = $87bd
+sound_x.saved_states = $7f30
+sound_x.saved_music_id = $7f35
 
     .macro DECLARE_SOUND_DRIVER_VARIABLES
 .track_id = $d0
@@ -593,9 +595,287 @@ sound.note.end_of_stream:
 .L_857C:
     rts             ; 857C 60
 ;--------------------------------------------------------------------------------------------------
+    .if 0
+sound_x.load_dummy_sample:
+.null_delta_modulation_data = $e9c0
+    lda #((.null_delta_modulation_data & $3fc0) >> 6)
+    sta $4012   ;;sample address
+    lda #0
+    sta $4013   ;;sample length
+    rts
 
+sound_x.set_dmc_irq_handler:
+    lda #($80 | $0f)    ;;pitch index = 0f / interrupt requested (80), loop disabled
+    sta $4010   ;; 
+    jsr sound_x.load_dummy_sample
+    lda #$10    ;;enable DMC
+    sta $4015
+    ;; set handler address
+    lda #HIGH(sound_x.on_dmc_irq)
+    sta irq_handler_entry+2
+    lda #LOW(sound_x.on_dmc_irq)
+    sta irq_handler_entry+1
+
+    lda #$4c    
+    cli
+sound_x.update_irq_entry:
+    sta irq_handler_entry+0
+    rts
+
+sound_x.remove_dmc_irq_handler:
+    sei
+    lda #$40    ;;rti
+    bne sound_x.update_irq_entry
+
+sound_x.test:
+    FIX_ADDR_ON_CALLER $36,$8022+1  ;;8022 20 AB 80 @ $36:8003 sound.update_playback
+    
+    lda irq_handler_entry
+    cmp #$40    ;;rti
+    bne .have_handler
+        lda #0
+        sta $7f30
+        sta $7f31
+        sta $7f32
+        sta $7f33
+        sta $7f34
+        jmp sound_x.set_dmc_irq_handler
+.have_handler:
+    lda #$10    ;;enable DMC
+    sta $4015
+    rts
+    
+sound_x.update_dmc:
+    ldx sound.note_pitch_timers.low     ;;unit = 16 CPU cycles.
+    ldy sound.note_pitch_timers.high
+    cpx $7f30
+    bne .pitch_chnaged
+    cpy $7f31
+    beq .pitch_unchanged
+.pitch_chnaged:
+        stx $7f30
+        sty $7f31
+        ;stx $7f32
+        ;sty $7f33
+        lda #0
+        sta $7f34
+        beq .output_waveform
+.pitch_unchanged:
+    ;;27 * 16 = 432 = 54 * 8 ($0f = 54 CPU cycles / output level changes
+    ;SUB16by8 $7f32,#27
+    sec
+    lda $7f32
+    ;sbc #27
+    sbc #108
+    sta $7f32
+    lda $7f33
+    sbc #0
+    sta $7f33
+    bcs .leave_interrupt
+.output_waveform:
+        stx $7f32
+        sty $7f33
+        jsr sound_x.load_dummy_sample
+        ldx $7f34
+        lda sound_x.waveform,x
+        lda #$7f
+        sta $4011
+        inx
+        txa
+        ;and #$1f
+        and #$1f
+        sta $7f34
+.leave_interrupt:
+    lda $4015
+    and #$1f
+    sta $4015
+    rts
+
+sound_x.waveform:
+;020030605070506050607F5868340002
+    .db $3f,$7f,$3f,$1f
+    .db $04,$02,$10,$20, $30,$3b,$32,$41
+    .db $3c,$3a,$32,$3b, $30,$37,$3d,$39
+    .db $33,$40,$49,$4c, $46,$40,$39,$3c
+    .db $42,$32,$24,$16, $08,$00,$04,$03
+    .endif ;;0
+
+    .if 0
+    FIX_ADDR_ON_CALLER $36,$8014+1  ;;8014 20 25 89 @ $36:8003 sound.update_playback
+.length_counter.low = $d4
+.length_counter.high = $d5
+.pitch.low = $d6
+.pitch.high = $d7
+.timer.low = $d8
+.timer.high = $d9
+    ldy #0
+.play_notes:
+        tya
+        and #$7
+        tay
+        ldx .notes,y
+        lda sound.table.pitch_periods+0,x
+        sta <.pitch.low
+        lda sound.table.pitch_periods+1,x
+        sta <.pitch.high
+
+        lsr <.pitch.high
+        ror <.pitch.low
+        lsr <.pitch.high
+        ror <.pitch.low
+        lsr <.pitch.high
+        ror <.pitch.low
+        sec
+        ;lda <.pitch.low
+        ;sbc #3
+        ;sta <.pitch.low
+        ;lda <.pitch.high
+        ;sbc #0
+        ;sta <.pitch.high
+        
+        lda #$00
+        sta <.length_counter.low
+        lda #$10
+        sta <.length_counter.high
+    .generate_sound:
+            ldx #32
+        .generate_waveform:
+                lda .waveform,x
+                sta $4011
+                lda <.pitch.low
+                sta <.timer.low
+                lda <.pitch.high
+                sta <.timer.high
+            .delay:
+                    bit <.timer.low
+                    dec <.timer.low ;2
+                    bne .delay  ;3 (if taken)
+                    lda <.timer.high
+                    beq .next
+                    dec <.timer.high
+                    jmp .delay
+            .next:
+                dex
+                bne .generate_waveform
+            sec
+            lda <.length_counter.low
+            sbc <.pitch.low
+            sta <.length_counter.low
+            lda <.length_counter.high
+            sbc <.pitch.high
+            sta <.length_counter.high
+            bcs .generate_sound
+            
+    .next_note:
+        iny
+        bne .play_notes
+.notes:
+    .db 2*(12*3+0)
+    .db 2*(12*3+2)
+    .db 2*(12*3+4)
+    .db 2*(12*3+5)
+    .db 2*(12*3+7)
+    .db 2*(12*3+9)
+    .db 2*(12*3+11)
+    .db 2*(12*4+0)
+    .endif  ;;0
+;--------------------------------------------------------------------------------------------------
+    .if 0
+    ;.ifdef _FEATURE_CONTINUOUS_MUSIC
+sound_x.offsets:
+    .db sound.loops.control - $7f40
+    .db sound.loops.counter_1 - $7f40
+    .db sound.loops.counter_2 - $7f40
+    .db sound.p_streams.high - $7f40
+    .db sound.p_streams.low - $7f40
+
+sound_x.music.on_load:
+    FIX_ADDR_ON_CALLER $36,$8952+1  ;;jsr .L_89C3   ; 8952 20 C3 89
+    FIX_ADDR_ON_CALLER $36,$8973+1  ;;jsr .L_89C3   ; 8973 20 C3 89
+;;
+    lda sound.next_music_id
+    ;and #$7f
+    cmp sound.previous_music_id
+    beq .just_load_music
+    cmp sound_x.saved_music_id
+    beq .just_load_music
+        ldx #4
+    .save_playback_states:
+            ldy sound_x.offsets,x
+            lda $7f40,y
+            sta sound_x.saved_states,x
+            dex
+            bpl .save_playback_states
+        lda sound.previous_music_id
+        sta sound_x.saved_music_id
+.just_load_music:
+    jmp sound.music.load_stream ;;$89c3
+;;$36:8a87 sound.music.cue_up
+;;    リクエストされた曲を、要求フラグ($7f42)に応じて、開始状態またはフェードイン状態へ移行させる。
+;;args:
+;;    in,out u8 $7f42: request flags. see also $36:80ab sound.play_music.
+;;callers:
+;;    $36:89c3 sound.music.load_stream
+sound_x.music.on_cue:
+    FIX_ADDR_ON_CALLER $36,$8a83+1      ;;jsr .L_8A87   ; 8A83 20 87 8A
+;;---
+    lda sound.next_music_id
+    ;and #$7f
+    cmp sound_x.saved_music_id
+    bne .cue
+
+    ;lda sound.next_music_id
+    cmp sound.previous_music_id
+    ;and #$7f
+    beq .cue
+    ;beq .fast_forward
+    bne .fast_forward
+    
+    .do_forward:
+        jsr sound.music.update_each_track   ;;8b2d
+    ;;fast forward to saved state.
+    .fast_forward:
+        ldx #4
+        .check_loop:
+            ldy sound_x.offsets,x
+            lda $7f40,y
+            cmp sound_x.saved_states,x
+            bne .do_forward
+            dex
+            bpl .check_loop
+.cue:
+    jmp sound.music.cue_up
+    .endif  ;;_FEATURE_CONTINUOUS_MUSIC
 ;--------------------------------------------------------------------------------------------------
     VERIFY_PC_TO_PATCH_END sound.process_note_command
+;--------------------------------------------------------------------------------------------------
+    .if 0
+    RESTORE_PC floor.treasure.FREE_BEGIN
+sound_x.on_dmc_irq:
+    pha
+    txa
+    pha
+    tya
+    pha
+
+    lda <sys_x.last_bank.1st
+    pha
+    lda #$36
+    jsr thunk.switch_1st_bank
+
+    jsr sound_x.update_dmc
+
+    pla
+    jsr thunk.switch_1st_bank
+
+    pla
+    tay
+    pla
+    tax
+    pla
+    rti
+    VERIFY_PC_TO_PATCH_END floor.treasure
+    .endif ;;0
 ;--------------------------------------------------------------------------------------------------
     .endif ;;_OPTIMIZE_SOUND_DRIVER
 ;==================================================================================================
