@@ -20,6 +20,13 @@ cd ./work
 ./package.ps1
 ```
 
+### リリースノートの作成
+node.js / gren installed な環境で以下のコマンドを実行。
+```powershell
+gren changelog --generate --tags=all -B --override
+gren release --draft
+```
+
 # ベースにするff3
 
 オリジナルである必要はありません。
