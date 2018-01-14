@@ -7,17 +7,20 @@
 [2]をbase-binaryフォルダに ff3_hack_base.nes という名前で置き
 以下のいずれかのバージョンをnesasmでアセンブルしてください。
 `nesasm xxx.asm`
--	ff3_hack.asm
--	ff3_hack_beta.asm
--	ff3_hack_another.asm
--	ff3_hack_soundtest.asm
--	ff3_hack_encounter.asm
--	ff3_hack_noitem99.asm
+-	_ff3-DSfy.asm
 
 上手くいけば、同じフォルダに <アセンブルしたファイル>.nes という名前でパッチが適用されたff3が出来上がります。
 
+## 0.8.0以降
+PowerShellが利用可能な環境で以下のコマンドを実行してください。
 
-# ベースにするff3について
+```powershell
+cd ./work
+./make-versions.ps1
+./package.ps1
+```
+
+# ベースにするff3
 
 オリジナルである必要はありません。
 必要な部分を上書きする形になっているため、
