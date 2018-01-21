@@ -5,8 +5,8 @@
 ### args:
 +	in u8 $d0: track #, [0...7). music 5 channels + SE 2 channels.
 +	in u8 $7f4a[7]: track control flags. where:
-	- 0x01: feed next wave data?
-	- 0x02: ?
+	- 0x01: feed next wave data. set when a play note has just been fetched.
+	- 0x02: in rest note. set when a rest note has just been fetched.
 	- 0x80: track enable.
 +	in u8 $7f7b[7?]: ?, set to 0 if the track is disabled,
 	will be fed into duty/volume register on each channel. ($4000,4004,4008,400c,4010)
@@ -57,6 +57,5 @@ $8594:
 $8595:
 }
 ```
-
 
 

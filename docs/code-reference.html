@@ -8,7 +8,7 @@
     <meta name="generator" content="pandoc">
     <meta name="description" content>
     <meta name="author" content="ypyp-pprn-mnmn (aka “301”)">
-    <!-- generated-at 2018-01-14 20:01:32+0900 -->
+    <!-- generated-at 2018-01-22 03:24:12+0900 -->
     <title>FF3@FC Original Code Documentation</title>
 
     <!-- Bootstrap core CSS -->
@@ -15240,8 +15240,8 @@ f8 8466 8471 8485 8499 84AF 84D0 84F0 84FF </code></pre>
 <li>in u8 $d0: track #, [0…7). music 5 channels + SE 2 channels.</li>
 <li>in u8 $7f4a[7]: track control flags. where:
 <ul>
-<li>0x01: feed next wave data?</li>
-<li>0x02: ?</li>
+<li>0x01: feed next wave data. set when a play note has just been fetched.</li>
+<li>0x02: in rest note. set when a rest note has just been fetched.</li>
 <li>0x80: track enable.</li>
 </ul></li>
 <li>in u8 $7f7b[7?]: ?, set to 0 if the track is disabled, will be fed into duty/volume register on each channel. ($4000,4004,4008,400c,4010)</li>
@@ -15301,9 +15301,18 @@ f8 8466 8471 8485 8499 84AF 84D0 84F0 84FF </code></pre>
 <li>out u8 $7f7b[7]: volume for each track.</li>
 <li>in u8 $7f97[7]: current note’s key-off timer, low.</li>
 <li>in u8 $7f9e[7]: current note’s key-off timer, high.</li>
-<li>in,out u8 $7fba[7]: ?, incremented by 1 if key-off timer has reached to 0. on entry, 0 if the last note command was &lt; 0xe0 1: indicating that a note is still in play but no longer is sounding since key-off timer had reached.</li>
-<li>in u8 $7fc1[7]: ?, used to index $9a7c.</li>
-<li>out u8 $7fc8[7]: ?, 0 if key-off timer had reached to 0.</li>
+<li>in,out u8 $7fba[7]: stage of volume envelope. where:
+<ul>
+<li>0: attack.</li>
+<li>1: decay / sustain.</li>
+<li>2: release.</li>
+<li>3: silence. on entry, 0 if the last note command was &lt; 0xe0. transition of each stage is made as follows:</li>
+<li>attack -&gt; sustain: is processed by <code>$36:85fa</code>, when envelope wave (pointed to by $9a7c) has reached to its end.</li>
+<li>sustain -&gt; release: is processed by this function, when the key-off timer has reached to 0.</li>
+<li>release -&gt; silence: is processed by <code>$36:8635</code>, when evelope volume has reached to 0.</li>
+</ul></li>
+<li>in u8 $7fc1[7]: volume envelope type?, used to index $9a7c.</li>
+<li>out u8 $7fc8[7]: volume envelop phase?, 0 if key-off timer had reached to 0.</li>
 </ul>
 <h3 id="callers-20">callers:</h3>
 <ul>
@@ -15312,14 +15321,14 @@ f8 8466 8471 8485 8499 84AF 84D0 84F0 84FF </code></pre>
 <h3 id="local-variables-34">local variables:</h3>
 <ul>
 <li>ptr $d6: pointer stored at $9a7c, or pointer to function, stored at $85f4</li>
-<li>ptr $d8: some pointer value dereferenced by $9a7c[indexed by $7fc1]</li>
+<li>VolumeEnvelope* $d8: some pointer value dereferenced by $9a7c[indexed by $7fc1]</li>
 </ul>
 <h3 id="static-references-6">static references:</h3>
 <ul>
-<li>VolumeEnvelope* $9a7c[0x21?]:</li>
+<li>VolumeEnvelopes* $9a7c[0x21?]:</li>
 </ul>
-<pre class="sourceCode cpp" id="cb428"><code class="sourceCode cpp"><div class="sourceLine" id="cb428-1" data-line-number="1"><span class="kw">struct</span> VolumeEnvelope {</div>
-<div class="sourceLine" id="cb428-2" data-line-number="2">    s8* volume_indexes[<span class="dv">3</span>];</div>
+<pre class="sourceCode cpp" id="cb428"><code class="sourceCode cpp"><div class="sourceLine" id="cb428-1" data-line-number="1"><span class="kw">struct</span> VolumeEnvelopes {</div>
+<div class="sourceLine" id="cb428-2" data-line-number="2">    VolumeEnvelope* volume_indexes[<span class="dv">3</span>];</div>
 <div class="sourceLine" id="cb428-3" data-line-number="3">};</div></code></pre>
 <pre><code>    9ACE 9ADB 9AED 9B0E 9B55 9B83 9BA0 9BAA 
     9BC9 9BE8 9C0A 9B18 9B73 9B22 9B7B 9C24 
@@ -15360,8 +15369,8 @@ f8 8466 8471 8485 8499 84AF 84D0 84F0 84FF </code></pre>
 <pre class="sourceCode js" id="cb430"><code class="sourceCode javascript"><div class="sourceLine" id="cb430-1" data-line-number="1"><span class="op">{</span></div>
 <div class="sourceLine" id="cb430-2" data-line-number="2">    x <span class="op">=</span> $d0<span class="op">;</span></div>
 <div class="sourceLine" id="cb430-3" data-line-number="3">    a <span class="op">=</span> <span class="va">$7fba</span>.<span class="at">x</span><span class="op">;</span></div>
-<div class="sourceLine" id="cb430-4" data-line-number="4">    <span class="cf">if</span> (a <span class="op">&lt;</span> <span class="dv">3</span>) <span class="op">{</span></div>
-<div class="sourceLine" id="cb430-5" data-line-number="5">        <span class="cf">if</span> (a <span class="op">==</span> <span class="dv">1</span>) <span class="op">{</span></div>
+<div class="sourceLine" id="cb430-4" data-line-number="4">    <span class="cf">if</span> (a <span class="op">&lt;</span> <span class="dv">3</span>) <span class="op">{</span>    <span class="co">//ENVELOPE_STAGE_SILIENCE</span></div>
+<div class="sourceLine" id="cb430-5" data-line-number="5">        <span class="cf">if</span> (a <span class="op">==</span> <span class="dv">1</span>) <span class="op">{</span>   <span class="co">//ENVELOPE_STAGE_SUSTAIN</span></div>
 <div class="sourceLine" id="cb430-6" data-line-number="6">            <span class="cf">if</span> (<span class="va">$7f97</span>.<span class="at">x</span> <span class="op">==</span> <span class="dv">0</span> <span class="op">&amp;&amp;</span> <span class="va">$7f9e</span>.<span class="at">x</span> <span class="op">==</span> <span class="dv">0</span>) <span class="op">{</span></div>
 <div class="sourceLine" id="cb430-7" data-line-number="7">                <span class="va">$7fba</span>.<span class="at">x</span><span class="op">++;</span></div>
 <div class="sourceLine" id="cb430-8" data-line-number="8">                $7fc8 <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></div>
@@ -15448,18 +15457,28 @@ f8 8466 8471 8485 8499 84AF 84D0 84F0 84FF </code></pre>
 <hr />
 <h1 id="fa-sound.volume_control_handler_00">$36:85fa sound.volume_control_handler_00</h1>
 <blockquote>
-<p>short description of the function</p>
+<p>ADSR エンベロープフィルタのうち、音の立ち上がり(Attack)部分の処理を行う。</p>
 </blockquote>
 <h3 id="args-169">args:</h3>
 <ul>
-<li>in u8 $d0: track #</li>
-<li>in u8 $d2: ?, some ctrl flags</li>
-<li>in ptr $d8: some pointer value dereferenced by $9a7c[indexed by $7fc1]</li>
-<li>out u8 $7f7b[7]: volume controls for each track</li>
-<li>in u8 $7f90[7]: ?, index of volume control pattern?</li>
-<li>in,out u8 $7fba[7]: ?</li>
-<li>in,out u8 $7fc8[7]: ?, some index, incremented by 1 after read of a value pointed to by $d8.</li>
-<li>in,out u8 $7fe4[7]: ?, phase of volumne control pattern?</li>
+<li>in u8 $d0: track #.</li>
+<li>in u8 $d2: some ctrl flags. where:
+<ul>
+<li>00: music playback.</li>
+<li>ff: otherwiese.</li>
+</ul></li>
+<li>in VolumeEnvelope* $d8: pointer value dereferenced from $9a7c[indexed by $7fc1]</li>
+<li>out u8 $7f7b[7]: volume controls for each track. if track is for music, then volume is theoritically calculated as: <code>15*(master volume/15 x each track's volume/15 x envelope's level/15)</code>.</li>
+<li>in u8 $7f90[7]: volume goals. lower 4bit: base volume.</li>
+<li>in,out u8 $7fba[7]: stage of volume envelope, where:
+<ul>
+<li>0: attack.</li>
+<li>1: decay / sustain.</li>
+<li>2: release.</li>
+<li>3: silence.</li>
+</ul></li>
+<li>in,out u8 $7fc8[7]: phase of volume envelope wave, incremented by 1 after read of a value pointed to by $d8. 0 on exit if the envelope sequence had reaced to the end.</li>
+<li>in,out u8 $7fe4[7]: envelope’s volume level</li>
 </ul>
 <h3 id="callers-21">callers:</h3>
 <ul>
@@ -15471,7 +15490,7 @@ f8 8466 8471 8485 8499 84AF 84D0 84F0 84FF </code></pre>
 </ul>
 <h3 id="static-references-7">static references:</h3>
 <ul>
-<li><p>$8825[0xff?]:</p>
+<li><p>u8 $8825[0x10] [0x10]: volume matrix.</p>
 <pre><code>8825    00000000000000000000000000000000
 8835    00000000000000000000000000000001
 8845    00000000000000000101010101010102
@@ -15494,17 +15513,17 @@ f8 8466 8471 8485 8499 84AF 84D0 84F0 84FF </code></pre>
 <h3 id="pseudocode-10">(pseudo)code:</h3>
 <pre class="sourceCode js" id="cb432"><code class="sourceCode javascript"><div class="sourceLine" id="cb432-1" data-line-number="1"><span class="op">{</span></div>
 <div class="sourceLine" id="cb432-2" data-line-number="2">    x <span class="op">=</span> $d0<span class="op">;</span></div>
-<div class="sourceLine" id="cb432-3" data-line-number="3">    y <span class="op">=</span> <span class="va">$7fc8</span>.<span class="at">x</span></div>
-<div class="sourceLine" id="cb432-4" data-line-number="4">    <span class="va">$7fe4</span>.<span class="at">x</span> <span class="op">=</span> $d8[y]</div>
+<div class="sourceLine" id="cb432-3" data-line-number="3">    y <span class="op">=</span> <span class="va">$7fc8</span>.<span class="at">x</span><span class="op">;</span>        <span class="co">//envelope phase</span></div>
+<div class="sourceLine" id="cb432-4" data-line-number="4">    <span class="va">$7fe4</span>.<span class="at">x</span> <span class="op">=</span> $d8[y]<span class="op">;</span>   <span class="co">//volume level</span></div>
 <div class="sourceLine" id="cb432-5" data-line-number="5">    <span class="va">$7fc8</span>.<span class="at">x</span><span class="op">++;</span></div>
-<div class="sourceLine" id="cb432-6" data-line-number="6">    <span class="cf">if</span> ($d8[<span class="op">++</span>y] <span class="op">&lt;</span> <span class="dv">0</span>) <span class="op">{</span></div>
+<div class="sourceLine" id="cb432-6" data-line-number="6">    <span class="cf">if</span> ($d8[<span class="op">++</span>y] <span class="op">&lt;</span> <span class="dv">0</span>) <span class="op">{</span> <span class="co">//End of envelope (0xff)</span></div>
 <div class="sourceLine" id="cb432-7" data-line-number="7">        <span class="va">$7fba</span>.<span class="at">x</span><span class="op">++;</span></div>
 <div class="sourceLine" id="cb432-8" data-line-number="8">        <span class="va">$7fc8</span>.<span class="at">x</span> <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></div>
 <div class="sourceLine" id="cb432-9" data-line-number="9">    <span class="op">}</span></div>
 <div class="sourceLine" id="cb432-10" data-line-number="10"><span class="dt">$8614</span><span class="op">:</span></div>
-<div class="sourceLine" id="cb432-11" data-line-number="11">    y <span class="op">=</span> (<span class="va">$7f90</span>.<span class="at">x</span> <span class="op">&lt;&lt;</span> <span class="dv">4</span>) <span class="op">|</span> <span class="va">$7fe4</span>.<span class="at">x</span><span class="op">;</span></div>
+<div class="sourceLine" id="cb432-11" data-line-number="11">    y <span class="op">=</span> (<span class="va">$7f90</span>.<span class="at">x</span> <span class="op">&lt;&lt;</span> <span class="dv">4</span>) <span class="op">|</span> <span class="va">$7fe4</span>.<span class="at">x</span><span class="op">;</span>   <span class="co">//volume_goals[track_id] &lt;&lt; 4 | next_volume_level</span></div>
 <div class="sourceLine" id="cb432-12" data-line-number="12">    <span class="cf">if</span> ($d2 <span class="op">==</span> <span class="dv">0</span>) <span class="op">{</span></div>
-<div class="sourceLine" id="cb432-13" data-line-number="13">        y <span class="op">=</span> ($7f44 <span class="op">&lt;&lt;</span> <span class="dv">4</span>) <span class="op">|</span> <span class="va">$8825</span>.<span class="at">y</span><span class="op">;</span></div>
+<div class="sourceLine" id="cb432-13" data-line-number="13">        y <span class="op">=</span> ($7f44 <span class="op">&lt;&lt;</span> <span class="dv">4</span>) <span class="op">|</span> <span class="va">$8825</span>.<span class="at">y</span><span class="op">;</span> <span class="co">//master_volume &lt;&lt; 4 | ()</span></div>
 <div class="sourceLine" id="cb432-14" data-line-number="14">    <span class="op">}</span></div>
 <div class="sourceLine" id="cb432-15" data-line-number="15"><span class="dt">$862e</span><span class="op">:</span></div>
 <div class="sourceLine" id="cb432-16" data-line-number="16">    <span class="va">$7f7b</span>.<span class="at">x</span> <span class="op">=</span> <span class="va">$8825</span>.<span class="at">y</span><span class="op">;</span></div>
@@ -15550,21 +15569,31 @@ f8 8466 8471 8485 8499 84AF 84D0 84F0 84FF </code></pre>
 <hr />
 <h1 id="sound.volume_control_handler_01_02">$36:8635 sound.volume_control_handler_01_02</h1>
 <blockquote>
-<p>short description of the function</p>
+<p>ADSR エンベロープフィルタのうち、減衰部分(Decay/Sustain/Release)の処理を行う。</p>
 </blockquote>
 <h3 id="args-170">args:</h3>
 <ul>
 <li>in u8 $d0: track #</li>
-<li>in u8 $d2: ?, some ctrl flags</li>
-<li>in ptr $d8: some pointer value dereferenced by $9a7c[indexed by $7fc1]</li>
+<li>in u8 $d2: some ctrl flags. where:
+<ul>
+<li>00: music playback.</li>
+<li>ff: otherwiese.</li>
+</ul></li>
+<li>in VolumeEnvelope* $d8: pointer value dereferenced from $9a7c[indexed by $7fc1]</li>
 <li>out u8 $7f7b[7]: volume controls for each track</li>
-<li>in u8 $7f90[7]: ?, index of volume control pattern?</li>
-<li>in,out u8 $7dba[7]: phase of volumne curve pattern? possible values are: [3,2,1].</li>
-<li>in,out u8 $7fc8[7]: ?, some index</li>
+<li>in u8 $7f90[7]: volume goals. lower 4bit: base volume.</li>
+<li>in,out u8 $7fba[7]: stage of volume envelope, where:
+<ul>
+<li>0: attack.</li>
+<li>1: decay / sustain.</li>
+<li>2: release.</li>
+<li>3: silence.</li>
+</ul></li>
+<li>in,out u8 $7fc8[7]: phase of volume envelope wave, incremented by 1 after read of a value pointed to by $d8.</li>
 <li>in,out u8 $7fcf[7]:</li>
 <li>in u8 $7fd6[7]: ?, volume curve timing delta?</li>
 <li>in,out u8 $7fdd[7]: ? volume curve timing counter?</li>
-<li>in,out u8 $7fe4[7]: volume change countdown? decremented by 1 if volume curve timing counter had reached to 100</li>
+<li>in,out u8 $7fe4[7]: envelope’s volume level. decremented by 1 if volume curve timing counter had reached to 100</li>
 </ul>
 <h3 id="callers-22">callers:</h3>
 <ul>
@@ -15576,7 +15605,7 @@ f8 8466 8471 8485 8499 84AF 84D0 84F0 84FF </code></pre>
 </ul>
 <h3 id="static-references-8">static references:</h3>
 <ul>
-<li><p>$8825[0xff?]:</p>
+<li><p>u8 $8825[0x10] [0x10]: volume matrix.</p>
 <pre><code>8825    00000000000000000000000000000000
 8835    00000000000000000000000000000001
 8845    00000000000000000101010101010102

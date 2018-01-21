@@ -1,16 +1,25 @@
 ﻿
+
 # $36:85fa sound.volume_control_handler_00
-> short description of the function
+> ADSR エンベロープフィルタのうち、音の立ち上がり(Attack)部分の処理を行う。
 
 ### args:
-+	in u8 $d0: track #
-+	in u8 $d2: ?, some ctrl flags
-+	in ptr $d8: some pointer value dereferenced by $9a7c[indexed by $7fc1]
-+	out u8 $7f7b[7]: volume controls for each track
-+	in u8 $7f90[7]: ?, index of volume control pattern?
-+	in,out u8 $7fba[7]: ?
-+	in,out u8 $7fc8[7]: ?, some index, incremented by 1 after read of a value pointed to by $d8.
-+	in,out u8 $7fe4[7]: ?, phase of volumne control pattern?
++	in u8 $d0: track #.
++	in u8 $d2: some ctrl flags. where:
+	+ 00: music playback.
+	+ ff: otherwiese.
++	in VolumeEnvelope* $d8: pointer value dereferenced from $9a7c[indexed by $7fc1]
++	out u8 $7f7b[7]: volume controls for each track.
+	if track is for music, then volume is theoritically calculated as: `15*(master volume/15 x each track's volume/15 x envelope's level/15)`.
++	in u8 $7f90[7]: volume goals. lower 4bit: base volume.
++	in,out u8 $7fba[7]: stage of volume envelope, where:
+	+ 0: attack.
+	+ 1: decay / sustain.
+	+ 2: release.
+	+ 3: silence.
++	in,out u8 $7fc8[7]: phase of volume envelope wave, incremented by 1 after read of a value pointed to by $d8.
+	0 on exit if the envelope sequence had reaced to the end.
++	in,out u8 $7fe4[7]: envelope's volume level
 
 ### callers:
 +	$36:8595 sound.apply_volume_effects
@@ -19,7 +28,7 @@
 +	none.
 
 ### static references:
-+	$8825[0xff?]:
++	u8 $8825[0x10] [0x10]: volume matrix. 
 
 		8825	00000000000000000000000000000000
 		8835	00000000000000000000000000000001
@@ -46,17 +55,17 @@ write notes here
 ```js
 {
 	x = $d0;
-	y = $7fc8.x
-	$7fe4.x = $d8[y]
+	y = $7fc8.x;		//envelope phase
+	$7fe4.x = $d8[y];	//volume level
 	$7fc8.x++;
-	if ($d8[++y] < 0) {
+	if ($d8[++y] < 0) {	//End of envelope (0xff)
 		$7fba.x++;
 		$7fc8.x = 0;
 	}
 $8614:
-	y = ($7f90.x << 4) | $7fe4.x;
+	y = ($7f90.x << 4) | $7fe4.x;	//volume_goals[track_id] << 4 | next_volume_level
 	if ($d2 == 0) {
-		y = ($7f44 << 4) | $8825.y;
+		y = ($7f44 << 4) | $8825.y;	//master_volume << 4 | ()
 	}
 $862e:
 	$7f7b.x = $8825.y;
@@ -100,4 +109,5 @@ $8635:
 */
 }
 ```
+
 
