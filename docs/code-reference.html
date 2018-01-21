@@ -8,7 +8,7 @@
     <meta name="generator" content="pandoc">
     <meta name="description" content>
     <meta name="author" content="ypyp-pprn-mnmn (aka “301”)">
-    <!-- generated-at 2018-01-22 03:24:12+0900 -->
+    <!-- generated-at 2018-01-22 03:43:06+0900 -->
     <title>FF3@FC Original Code Documentation</title>
 
     <!-- Bootstrap core CSS -->
@@ -16109,11 +16109,11 @@ f8 8466 8471 8485 8499 84AF 84D0 84F0 84FF </code></pre>
 <li>out u8 $7f7b[7]: volume, set to 0x00 on exit.</li>
 <li>out u8 $7f82[7]: sweep, set to 0x08 on exit.</li>
 <li>out u8 $7f89[7]: duty/envelope, set to 0x30 on exit.</li>
-<li>out u8 $7f90[7]: ?, set to 0x0f on exit. volume curve pattern? some enum used to index static curve patterns.</li>
-<li>out u8 $7fa5[7]: ?, set to 0xff on exit.</li>
-<li>out u8 $7fba[7]: ?, set to 0xff on exit. some looped counter related to volume control commands.</li>
-<li>out u8 $7fc1[7]: ?, set to 0xff on exit. some index related to volume control commands.</li>
-<li>out u8 $7feb[7]: ?, set to 0xff on exit. some enum related to pitch modulation commands.</li>
+<li>out u8 $7f90[7]: volume goal. set to 0x0f on exit. final volume ($7f7b) of each track is calculated as: <code>15 * (volume goal/15 * envelope level/15 * master volume/15)</code></li>
+<li>out u8 $7fa5[7]: loop index, set to 0xff on exit.</li>
+<li>out u8 $7fba[7]: stage of volume envelope, set to 0xff on exit.</li>
+<li>out u8 $7fc1[7]: type of volume envelope?, set to 0xff on exit.</li>
+<li>out u8 $7feb[7]: type of pitch modulation?, set to 0xff on exit.</li>
 </ul>
 <h3 id="callers-25">callers:</h3>
 <ul>

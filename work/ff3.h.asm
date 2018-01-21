@@ -237,7 +237,7 @@ sound.note_pitch_timers.high = $7f74	;;note: APU outputs 8-phased 1-bit waveform
 sound.volume_controls = $7f7b	;; will be fed into $4000+4n. details TBC. 
 sound.sweep_controls = $7f82	;; will be fed into $4001+4n. details TBC. 
 sound.duty_controls = $7f89		;; will be fed into $4000+4n. details TBC. 
-sound.volume_envelopes.control = $7f90	;; details tbc.
+sound.volume_goals = $7f90	;; details tbc.
 sound.key_off_timers.low = $7f97	;; in 96th of a whole note. (but defined as 2/3 of corresponding notes)
 sound.key_off_timers.high = $7f9e	;;
 
@@ -245,13 +245,13 @@ sound.loops.control = $7fa5		;; 00 = use $7fac; !00 = use $7fb3. note: this vari
 sound.loops.counter_1 = $7fac
 sound.loops.counter_2 = $7fb3
 
-sound.volume_envelopes.type = $7fba	;; tbc. used to index curve patterns
-;;sound.volume_envelopes.x = $7fc1		;;tbc.
-sound.volume_envelopes.phase = $7fc8	;; tbc. used to index stream (pointed to by $9a7c, which is looked up by $7fc1) of volumes.
-sound.volume_envelopes.volume = $7fcf	;; tbc.
-sound.volume_envelopes.interval = $7fd6	;; tbc. 2/3 of bpm. (as timer delta is 2/3 of what for play notes)
-sound.volume_envelopes.timer = $7fdd	;; triggers lowering volume,  once reached to 100 (0x64)
-sound.volume_envelopes.countdown = $7fe4	;; triggers volume change
+sound.volume_envelopes.stage = $7fba		;; 0: attack - 1: decay/sustain - 2: release - 3: mute
+sound.volume_envelopes.timbre = $7fc1		;; or index of envelope pattern.
+sound.volume_envelopes.phase = $7fc8		;; used to index wave stream (pointed to by $9a7c, which is looked up by $7fc1) of volumes.
+;sound.volume_envelopes.volume = $7fcf		;; tbc.
+sound.volume_envelopes.interval = $7fd6		;; tbc. 2/3 of bpm. (as timer delta is 2/3 of what for play notes)
+sound.volume_envelopes.timer = $7fdd		;; triggers lowering volume,  once reached to 100 (0x64)
+sound.volume_envelopes.volume = $7fe4		;; triggers volume change
 
 sound.pitch_modulations.type = $7feb	;; tbc.
 sound.pitch_modulations.phase = $7ff2	;; tbc.

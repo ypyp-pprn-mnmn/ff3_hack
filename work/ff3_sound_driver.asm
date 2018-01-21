@@ -193,7 +193,7 @@ sound.process_play_note:
             and #$FD    ; 829F 29 FD
             sta sound.track_controls,x ; 82A1 9D 4A 7F
             lda #$00    ; 82A4 A9 00
-            sta sound.volume_envelopes.type,x ; 82A6 9D BA 7F
+            sta sound.volume_envelopes.stage,x ; 82A6 9D BA 7F
             sta sound.volume_envelopes.phase,x ; 82A9 9D C8 7F
             sta sound.volume_envelopes.timer,x ; 82AC 9D DD 7F
             sta sound.pitch_modulations.timer,x ; 82AF 9D F9 7F
@@ -358,7 +358,7 @@ sound.note.set_volume_f:
     lsr A
     ldx <.track_id     ; 835C A6 D0
     ;lda #$02    ; 835E A9 02
-    sta sound.volume_envelopes.control,x ; 8360 9D 90 7F
+    sta sound.volume_goals,x ; 8360 9D 90 7F
     jmp sound.fetch_note_for_track.continue   ; 8363 4C 17 82
 ;--------------------------------------------------------------------------------------------------
 
@@ -435,7 +435,7 @@ sound.note.init_track_o5:
     pla
     sta $7FC1,x ; 847A 9D C1 7F
     lda #$08    ; 847D A9 08
-    sta sound.volume_envelopes.control,x ; 847F 9D 90 7F
+    sta sound.volume_goals,x ; 847F 9D 90 7F
     jmp sound.fetch_note_for_track.continue   ; 8482 4C 17 82
 ;--------------------------------------------------------------------------------------------------
 ;;; case 0xFA:
